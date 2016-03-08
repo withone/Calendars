@@ -18,6 +18,94 @@
 class CalendarTime {
 
 /**
+ * getPlanInfo
+ *
+ * プラン情報取得
+ *
+ * @param int $year 年
+ * @param int $month 月
+ * @param int $day 日
+ * @param array $vars 元情報
+ * @return string 組み立てた文字列
+ */
+	public static function getPlanInfo($year, $month, $day, $vars) {
+		return "<div>&nbsp;</div>";	//本メソッドは強化後Helperに移動予定.
+	}
+
+/**
+ * getMonthlyInfo
+ *
+ * 月カレンダーで必要な情報を返す
+ *
+ * @param int $year 年
+ * @param int $month 月
+ * @return array 前月、次月、今月の月カレンダー情報の配列
+ */
+	public static function getMonthlyInfo($year, $month) {
+		$julian1stDay = gregoriantojd($month, 1, $year);	//当月１日のグレゴリウス日をユリウス積算日に変換
+		$wdayOf1stDay = jddayofweek($julian1stDay);	//ユリウス積算日から曜日を返す
+
+		$daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year); //指定した年とカレンダーについて月の日数を返す(グレゴリオ暦)
+		$julianLastDay = gregoriantojd($month, $daysInMonth, $year);	//当月末日のグレゴリウス日をユリウス積算日に変換
+		$wdayOfLastDay = jddayofweek($julianLastDay);	//ユリウス積算日から曜日を返す
+
+		$numOfWeek = ceil(($daysInMonth + $wdayOf1stDay) / 7);	//当月の週数
+
+		if ($month == 1) {
+			$yearOfPrevMonth = $year - 1;
+			$prevMonth = 12;
+		} else {
+			$yearOfPrevMonth = $year;
+			$prevMonth = $month - 1;
+		}
+		$daysInPrevMonth = cal_days_in_month(CAL_GREGORIAN, $prevMonth, $yearOfPrevMonth);
+
+		if ($month == 12) {
+			$yearOfNextMonth = $year + 1;
+			$nextMonth = 1;
+		} else {
+			$yearOfNextMonth = $year;
+			$nextMonth = $month + 1;
+		}
+
+		return array(
+			'yearOfPrevMonth' => $yearOfPrevMonth,
+			'prevMonth' => $prevMonth,
+			'daysInPrevMonth' => $daysInPrevMonth,
+			'yearOfNextMonth' => $yearOfNextMonth,
+			'nextMonth' => $nextMonth,
+			'year' => $year,
+			'month' => $month,
+			'wdayOf1stDay' => $wdayOf1stDay,
+			'daysInMonth' => $daysInMonth,
+			'wdayOfLastDay' => $wdayOfLastDay,
+			'numOfWeek' => $numOfWeek,
+		);
+	}
+
+/**
+ * transFromYmdHisToArray
+ *
+ * Y-m-d H:i:s形式の文字列から配列に変える
+ *
+ * @param string $strYmdHis Y-m-d H:i:s形式の文字列
+ * @return mix 成功時は、各時間の構成要素からなる配列(array). 失敗時はfalse.
+ */
+	public static function transFromYmdHisToArray($strYmdHis) {
+		$tmArray = array();
+		if (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2}) (\d{1,2}):(\d{1,2}):(\d{1,2})$/', $strYmdHis, $matches) !== 1) {
+			return false;
+		}
+		$tmArray['year'] = $matches[1];
+		$tmArray['month'] = $matches[2];
+		$tmArray['day'] = $matches[3];
+		$tmArray['hour'] = $matches[4];
+		$tmArray['min'] = $matches[5];
+		$tmArray['sec'] = $matches[6];
+		return $tmArray;
+	}
+
+/**
  * タイムゾーンの計算処理
  * 登録時：第一引数が入っていれば画面から取得したものとみなして、_default_TZから引く
  * 　　　　第一引数がnullならば、_server_TZから引く

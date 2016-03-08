@@ -33,10 +33,10 @@ class CalendarFrameSettingSelectRoom extends CalendarsAppModel {
 		'Workflow.WorkflowComment',
 		'Workflow.Workflow',
 		'Calendars.CalendarValidate',
-		'Calendars.CalendarApp',	//base$B%S%X%$%S%"(B
-		'Calendars.CalendarInsertPlan', //Insert$BMQ(B
-		'Calendars.CalendarUpdatePlan', //Update$BMQ(B
-		'Calendars.CalendarDeletePlan', //Delete$BMQ(B
+		'Calendars.CalendarApp',	//baseビヘイビア
+		'Calendars.CalendarInsertPlan', //Insert用
+		'Calendars.CalendarUpdatePlan', //Update用
+		'Calendars.CalendarDeletePlan', //Delete用
 	);
 
 /**

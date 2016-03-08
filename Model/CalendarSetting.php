@@ -33,10 +33,10 @@ class CalendarSetting extends CalendarsAppModel {
 		'Workflow.WorkflowComment',
 		'Workflow.Workflow',
 		'Calendars.CalendarValidate',
-		'Calendars.CalendarApp',	//base$B%S%X%$%S%"(B
-		'Calendars.CalendarInsertPlan', //Insert$BMQ(B
-		'Calendars.CalendarUpdatePlan', //Update$BMQ(B
-		'Calendars.CalendarDeletePlan', //Delete$BMQ(B
+		'Calendars.CalendarApp',	//baseビヘイビア
+		'Calendars.CalendarInsertPlan', //Insert用
+		'Calendars.CalendarUpdatePlan', //Update用
+		'Calendars.CalendarDeletePlan', //Delete用
 	);
 
 /**
@@ -73,15 +73,15 @@ class CalendarSetting extends CalendarsAppModel {
  */
 	public function beforeValidate($options = array()) {
 		$this->validate = Hash::merge($this->validate, array(
-			'block_id' => array(
-				'rule1' => array(
-					'rule' => array('numeric'),
+			'block_key' => array(
+				'notBlank' => array(
+					'rule' => array('notBlank'),
 					'message' => __d('net_commons', 'Invalid request'),
 					'required' => true,
 				),
 			),
 			'use_workflow' => array(
-				'rule1' => array(
+				'boolean' => array(
 					'rule' => 'boolean',
 					'message' => __d('net_commons', 'Invalid request'),
 					'required' => true,
@@ -92,12 +92,40 @@ class CalendarSetting extends CalendarsAppModel {
 	}
 
 /**
- * Called after each successful save operation.
+ * saveCalendarSetting
  *
- * @param bool $created True if this save created a new record
- * @param array $options Options passed from Model::save().
- * @return void
+ * @param array $data save data
+ * @return mixed On success Model::$data if its not empty or true, false on failure
  * @throws InternalErrorException
  */
+	public function saveCalendarSetting($data) {
+		//トランザクションBegin
+		$this->begin();
+
+		// フレーム設定のバリデート
+		$this->set($data);
+		if (! $this->validates()) {
+			CakeLog::error(serialize($this->validationErrors));
+
+			$this->rollback();
+			return false;
+		}
+
+		try {
+			//権限の登録
+			if (! ($data = $this->save($data, false))) {	//バリデートは前で終わっているので第二引数=false
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			$this->commit();
+		} catch (Exception $ex) {
+			CakeLog::error($ex);
+
+			//トランザクションRollback
+			$this->rollback();
+
+			throw $ex;
+		}
+		return $data;
+	}
 
 }

@@ -13,6 +13,7 @@
  */
 
 App::uses('CalendarsAppModel', 'Calendars.Model');
+App::uses('CalendarsComponent', 'Calendars.Controller/Component');	//constを使うため
 
 /**
  * CalendarFrameSetting Model
@@ -23,36 +24,48 @@ App::uses('CalendarsAppModel', 'Calendars.Model');
 class CalendarFrameSetting extends CalendarsAppModel {
 
 /**
+ * Display type value
+ *
+ * @var string
+ */
+	const DISPLAY_TYPE_SMALL_MONTHLY_VALUE	= '0',
+			DISPLAY_TYPE_LARGE_MONTHLY_VALUE	= '1',
+			DISPLAY_TYPE_WEEKLY_VALUE = '2',
+			DISPLAY_TYPE_DAILY_VALUE = '3',
+			DISPLAY_TYPE_SCHEDULE_TIME_VALUE = '4',
+			DISPLAY_TYPE_SCHEDULE_MEMBER_VALUE = '5';
+
+/**
  * use behaviors
  *
  * @var array
  */
 	public $actsAs = array(
-		'NetCommons.OriginalKey',	//key,origin_id $B$"$C$?$iF0:n$7!"$J$/$F$bL532$J%S%X%$%S%"(B
+		'NetCommons.OriginalKey',	//key,origin_id あったら動作し、なくても無害なビヘイビア
 
-		'NetCommons.Trackable',	// TBL$B$,(B Trackable$B9`L\%;%C%H(B(created_uer$B!\(Bmodified_user)$B$r$b$C$F$$$?$i!"(BTrackable($B?M$NDI@W2DG=!K$H$_$J$5$l$k!#(B
-								// Trackable$B$H$_$J$5$l$?$?$i!"(Bcreated_user$B$KBP1~$9$k(Busername,handle(TrackableCreator)$B$,!"(B
-								// modified_user$B$KBP1~$9$k(Busername,hanldle(TrackableUpdator)$B$,!"(B
-								// belongTo$B$G<+F0DI2C$5$l!"<hF@%G!<%?$K$/$C$D$$$F$/$k!#(B
-								// $B$J$*!"(Bcreated_user, modified_user$B$,$J$/$F$bL532$J%S%X%$%S%"$G$"$k!#(B
+		'NetCommons.Trackable',	// TBLが Trackable項目セット(created_user＋modified_user)をもっていたらTrackable(人の追跡可能）とみなされる。
+								// Trackableとみなされたたら、created_userに対応するusername,handle(TrackableCreator)が、
+								// modified_userに対応するusername,hanldle(TrackableUpdator)が、
+								// belongToで自動追加され、取得データにくっついてくる。
+								// なお、created_user, modified_userがなくても無害なビヘイビアである。
 
-		'Workflow.Workflow',	// TBL$B$K(B $B>5G'9`L\%;%C%H(B(status + is_active + is_latest + language_id + (origin_id|key) )$B$,$"$l$P!">5G'(BTBL$B$H$_$J$5$l$k!#(B
-								// $B>5G'(BTBL$B$N(BINSERT$B$N;~$@$1F/$/!#(BUPDATE$B$N;~$OF/$+$J$$!#(B
-								// status===STATUS_PUBLISHED$B!J8x3+!K$N;~$@$1(BINSERT$B%G!<%?$N(Bis_active$B$,(Btrue$B$K$J$j!"(B
-								//	key,$B8@8l$,0lCW$9$k$=$NB>$N%G!<%?$O(Bis_active$B$,(Bfalse$B$K$5$l$k!#(B
-								// is_latest$B$O(B(status$B$K4X78$J$/(B)INSERT$B%G!<%?$N(Bis_latest$B$,(Btrue$B$K$J$j!"(B
-								//	key,$B8@8l$,0lCW$9$k$=$NB>$N%G!<%?$O(Bis_latest$B$,(Bfalse$B$K$5$l$k!#(B
+		'Workflow.Workflow',	// TBLに 承認項目セット(status + is_active + is_latest + language_id + (origin_id|key) )があれば、承認TBLとみなされる。
+								// 承認TBLのINSERTの時だけ働く。UPDATEの時は働かない。
+								// status===STATUS_PUBLISHED（公開）の時だけINSERTデータのis_activeがtrueになり、
+								//	key,言語が一致するその他のデータはis_activeがfalseにされる。
+								// is_latestは(statusに関係なく)INSERTデータのis_latestがtrueになり、
+								//	key,言語が一致するその他のデータはis_latestがfalseにされる。
 								//
-								// $B$J$*!">5G'9`L\%;%C%H$,$J$/$F$bL532$J%S%X%$%S%"$G$"$k!#(B
+								// なお、承認項目セットがなくても無害なビヘイビアである。
 
-		'Workflow.WorkflowComment', // $model->data['WorkflowComment'] $B$,$"$l$PF/$/$7!"$J$/$F$bL532$J%S%X%$%S%"!#(B
-								// $model->data['WorkflowComment'] $B$,$"$l$P!"$3$N(BTBL$B$K(Bstatus$B$,$"$k$3$H!J$J$1$l$P!"(Bstatus=NULL$B$GFM$C9~$_$^$9!K(B
+		'Workflow.WorkflowComment', // $model->data['WorkflowComment'] があれば働くし、なくても無害なビヘイビア。
+								// $model->data['WorkflowComment'] があれば、このTBLにstatusがあること（なければ、status=NULLで突っ込みます）
 
 		'Calendars.CalendarValidate',
-		'Calendars.CalendarApp',	//base$B%S%X%$%S%"(B
-		'Calendars.CalendarInsertPlan', //Insert$BMQ(B
-		'Calendars.CalendarUpdatePlan', //Update$BMQ(B
-		'Calendars.CalendarDeletePlan', //Delete$BMQ(B
+		'Calendars.CalendarApp',	//baseビヘイビア
+		'Calendars.CalendarInsertPlan', //Insert用
+		'Calendars.CalendarUpdatePlan', //Update用
+		'Calendars.CalendarDeletePlan', //Delete用
 	);
 
 /**
@@ -165,11 +178,54 @@ class CalendarFrameSetting extends CalendarsAppModel {
 	}
 
 /**
- * Called after each successful save operation.
+ * saveFrameSetting
  *
- * @param bool $created True if this save created a new record
- * @param array $options Options passed from Model::save().
+ * @param array $data save data
+ * @return mixed On success Model::$data if its not empty or true, false on failure
+ * @throws InternalErrorException
+ */
+	public function saveFrameSetting($data) {
+		//トランザクションBegin
+		$this->begin();
+		try {
+			// フレーム設定のバリデート
+			$this->set($data);
+			if (! $this->validates()) {
+				CakeLog::error(serialize($this->validationErrors));
+
+				$this->rollback();
+				return false;
+			}
+
+			//フレームの登録
+			if (! ($data = $this->save($data, false))) {	//バリデートは前で終わっているので第二引数=false
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+
+			$this->commit();
+		} catch (Exception $ex) {
+			CakeLog::error($ex);
+
+			$this->rollback();
+			throw $ex;
+		}
+		return $data;
+	}
+
+/**
+ * setDefaultValue
+ *
+ * @param array &$data save data
  * @return void
  * @throws InternalErrorException
  */
+	public function setDefaultValue(&$data) {
+		$data[$this->alias]['display_type'] = CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY;
+		//start_pos、is_myroom、is_select_roomはtableの初期値をつかう。
+		$data[$this->alias]['display_count'] = CalendarsComponent::CALENDAR_STANDARD_DISPLAY_DAY_COUNT;
+
+		//frame_key,room_idは明示的に設定されることを想定し、setDefaultではなにもしない。
+		$data[$this->alias]['timeline_base_time'] = CalendarsComponent::CALENDAR_TIMELINE_DEFAULT_BASE_TIME;
+	}
+
 }
