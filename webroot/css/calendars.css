@@ -1,0 +1,452 @@
+﻿/* カレンダー要素の非表示 */
+.calendar-hide {
+ display: none;
+}
+
+/* カレンダー要素の表示 */
+.calendar-show {
+ display: block;
+}
+
+.calendar-border {
+	border: solid 1px #000;
+}
+
+.calendar-inline {
+  	display:inline;
+}
+
+
+.calendar-table {
+  	display:table;
+	width: 100%;
+}
+
+.calendar-table-row {
+  	display:table-row;
+}
+
+.calendar-table-cell {
+  	display:table-cell;
+}
+
+.calendar-cell {
+  	/* display:table-cell; */
+	min-width: 20em;
+	max-width: 20em;
+}
+
+.calendar-border {
+  	border-top: 1px solid #ddd;
+  	border-right: 1px solid #ddd;
+  	border-bottom: 0px solid #ddd;
+  	border-left: 0px solid #ddd;
+}
+
+.calendar-head {
+  	border-top: 0px solid #ddd;
+  	border-right: 0px solid #ddd;
+  	border-bottom: 0px solid #ddd;
+  	border-left: 0px solid #ddd;
+}
+
+.calendar-sun {
+	color: #d9534f; /* brand-danger: */
+}
+
+.calendar-sat {
+	color: #5bc0de; /* @brand-info: */
+}
+
+.calendar-tbl-td-pos {
+	vertical-align: top;
+}
+
+.calendar-col-week-head {
+	width: 4.1%;
+	border-width: 0 0 1px 0;
+	border-style: solid;
+	border-color: #ddd;
+}
+
+.calendar-col-day-head {
+	width: 13.7%;
+	border-width: 0 0 1px 0;
+	border-style: solid;
+	border-color: #ddd;
+	padding: 5px;
+}
+
+/*-- カレンダー カラム 月縮小　ヘッダー --*/
+.calendar-col-small-day-head {
+	width: 14.3%;
+	border-width: 0 0 1px 0;
+	border-style: solid;
+	border-color: #ddd;
+	padding: 5px;
+}
+
+/*-- カレンダー カラム 月縮小 --*/
+.calendar-col-small-day {
+	width: 14.3%;
+	border-width: 1px 1px 1px 1px;
+	border-style: solid;
+	border-color: #ddd;
+	padding: 5px;
+}
+
+/*-- カレンダー カラム 月縮小 (ホバー時) --*/
+.calendar-col-small-day:hover {
+	cursor: pointer;
+	background-color: #eee;
+}
+
+.calendar-col-week {
+	width: 4.1%;
+	border: 1px solid #ddd;
+	height: 10em;
+}
+
+.calendar-col-week:hover {
+	cursor: pointer;
+	background-color: #eee;
+}
+
+.calendar-col-day {
+	width: 13.7%;
+	border: 1px solid #ddd;
+	padding: 5px;
+}
+
+.calendar-plan-mark	{
+	border-left-width: 5px;
+	border-left-style: solid;
+	margin: 0 ;
+	padding: 0 5px 0 0;
+}
+
+/*-- 単一日カレンダー　非タイムライン　時間帯 装飾 --*/
+.calendar-daily-nontimeline-periodtime-deco {
+	padding: 0 5px 0 0;
+}
+
+.calendar-plan-mark-public {
+	border-left-color: #04419a;
+}
+
+.calendar-plan-mark-group {
+	border-left-color: #5da302;
+}
+
+.calendar-plan-mark-private {
+	border-left-color: #d78f03;
+}
+
+.calendar-plan-mark-allmember {
+	border-left-color: #c90505;
+}
+
+/*-- カレンダー月縮小用mark 色 --*/
+.calendar-plan-smallmonthly-mark-deco {
+	height: 4px;
+	width: 4px;
+	margin: 1px 0px 1px 1px;
+}
+
+/*-- カレンダー月縮小用mark 色 --*/
+.calendar-plan-smallmonthly-mark-public {
+	background-color: #04419a;
+}
+.calendar-plan-smallmonthly-mark-group {
+	background-color: #5da302;
+}
+.calendar-plan-smallmonthly-mark-private {
+	background-color: #d78f03;
+}
+.calendar-plan-smallmonthly-mark-allmember {
+	background-color: #c90505;
+}
+
+/*-- 月拡大カレンダーの予定が入っている日 --*/
+.calendar-tbl-td-plan {
+	background-color: #dff0d8;
+}
+
+/*-- 週カレンダーのルーム単位の予定 --*/
+.calendar-tbl-td-room-plan {
+	/* background-color: #dff0d8; */
+}
+
+.glyphicon-edit:hover, .glyphicon-plus:hover, .glyphicon-eye-open:hover, .glyphicon-eye-close:hover {
+	cursor: pointer;
+	background-color: #eee;
+}
+
+.calendar-plan-clickable:hover {
+	cursor: pointer;
+	background-color: #eee;
+}
+
+.calendar-day:hover {
+	cursor: pointer;
+	background-color: #eee;
+}
+
+/*-- カレンダー　予定共有 人情報 --*/
+.calendar-share-person {
+	margin-right: 1em;
+}
+
+/*-- カレンダー 予定共有　人情報 （ホバー時)--*/
+.calendar-share-person:hover {
+	cursor: pointer;
+	background-color: #eee;
+}
+
+
+.calendar-monthly-table {
+	width: 100%;
+}
+
+/*-- カレンダー月縮小 --*/
+.calendar-smallmonthly-table {
+	width: 50%;
+}
+
+.calendar-weekly-table {
+	width: 100%;
+}
+
+.calendar-daily-timeline-table {
+	width: 100%;
+}
+
+/*-- 週カレンダー のルーム名のヘッダ--*/
+.calendar-weekly-col-room-name-head {
+	width: 16%;
+	border-width: 0 0 1px 0;
+	border-style: solid;
+	border-color: #ddd;
+}
+
+
+.calendar-weekly-col-day-head {
+	width: 12%;
+	border-width: 0 0 1px 0;
+	border-style: solid;
+	border-color: #ddd;
+	padding: 5px;
+}
+
+/*-- 週カレンダーのルーム名のセル --*/
+.calendar-weekly-col-room-name {
+	width: 16%;
+	border: 1px solid #ddd;
+	height: 2em;
+	padding: 5px;
+}
+
+/*-- 単一日カレンダー タイムライン カラム 時間帯 --*/
+.calendar-daily-timeline-col-periodtime {
+	width: 10%;
+	border-width: 0 1px 1px 1px;
+	border-style: solid;
+	border-color: #ddd;
+	height: 2em;
+	padding: 5px;
+}
+/*-- 単一日カレンダー タイムライン カラム 時間　ヘッダー --*/
+.calendar-daily-timeline-col-periodtime-head {
+	width: 10%;
+	border-width: 1px 1px 1px 1px;
+	border-style: solid;
+	border-color: #ddd;
+	height: 2em;
+	padding: 5px;
+}
+
+/*-- 単一日カレンダーのタイムラインのスリット --*/
+.calendar-daily-timeline-col-slit {
+	width: 90%;
+	border-width: 0 1px 1px 1px;
+	border-style: solid;
+	border-color: #ddd;
+	padding: 0px;
+}
+
+/*-- 単一日カレンダーのタイムラインのスリット ヘッド--*/
+.calendar-daily-timeline-col-slit-head {
+	width: 90%;
+	border-width: 1px 1px 1px 1px;
+	border-style: solid;
+	border-color: #ddd;
+	padding: 0px;
+}
+
+/*-- 単一日カレンダーの予定 --*/
+.calendar-daily-nontimeline-col-plan {
+	/* border: 1px solid #ddd; */
+	height: 1em;
+	padding: 10px 5px 0px 5px;
+}
+
+.calendar-weekly-col-day {
+	width: 12%;
+	border: 1px solid #ddd;
+	padding: 5px;
+}
+
+.calendar-weekly-subroom, .calendar-daily-nontimeline-plan, .calendar-schedule-row-title {
+	margin-left: 10px;
+}
+
+/*-- カレンダー スケジュール行の予定 --*/
+.calendar-schedule-row-plan {
+	margin-left: 35px;
+}
+
+/*-- カレンダーヘッダーのページャー部 --*/
+.calendar-weekly-year-pager, .calendar-weekly-month-pager .calender-month-pager{
+	height: auto;
+}
+
+/*-- カレンダーヘッダーのページャー部 (ボタン) 2016.3.3--*/
+.calendar-pager-button{
+	padding-right:5px !important;
+}
+
+
+/*-- 単一日カレンダー 非タイムライン --*/
+.calendar-daily-nontimeline-table {
+	width:100%;
+	height:1em;
+	border: 1px solid #ddd;
+	padding: 5px;
+}
+
+/*-- 単一日カレンダー タイムライン スリット装飾 --*/
+.calendar-daily-timeline-slit-deco {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	background-color: #eee;
+	text-align: left;
+	width: 6em;
+	border-left-width: 5px;
+	border-left-style: solid;
+	margin: 0 0 0 5px;
+	padding: 5px;
+}
+
+/*-- 共通マージン・パディング(0) --*/
+.calendar-common-margin-padding {
+	margin: 0;
+	padding: 0;
+}
+
+/*-- スケジュール（会員順）会員 --*/
+/*
+.calendar-schedule-member {
+	margin-left: 30px;
+}
+*/
+
+/*-- スケジュール（時間順・会員順）会員 --*/
+.calendar-schedule-row-member-t { /* kuma mとtで分けた */
+	margin-left: 30px;
+	text-align:right; /* 2016.02.29kuma */
+}
+
+.calendar-schedule-row-member { /* kuma */
+	margin-left: 30px;
+}
+
+/*-- カレンダー スケジュール行の予定（会員順） --*/
+.calendar-schedule-row-plan-member {
+	margin-left: 0px;
+}
+
+/*-- カレンダー スケジュール行(行頭 並べ替え) 2016.3.3 --*/
+.calendar-schedule-sort-top {
+	margin-bottom: 5px;
+	padding-bottom: 10px;
+	border-bottom: 2px solid #eee;
+}
+
+/*-- カレンダー スケジュール行(行末 並べ替え) 2016.3.3 --*/
+.calendar-schedule-sort-bottom {
+	margin-bottom: 5px;
+	padding-top: 10px;
+	border-top: 2px solid #eee;
+}
+
+
+
+/*-- カレンダー 範囲外 --*/
+.calendar-out-of-range {
+	background-color: #F5F5F5;
+}
+
+/*-- カレンダー セル 祝日--*/
+.calendar-tbl-td-holiday {
+	background-color: #F2DEDE;
+}
+
+/*-- カレンダー 対象の回転表示 --*/
+.calendar-rotate-right-90deg {
+	transform: rotate(90deg);
+}
+
+/*-- カレンダー スケジュール行の予定（会員順） --*/
+.calendar-schedule-row-plan-member {
+	margin-left: 30px;
+}
+
+/*-- カレンダー 詳細編集フィールド 2016.3.2 --*/
+.calendar-detailedit-detail {
+	padding-left:30px;
+}
+
+/*-- カレンダー 予定追加・編集 詳細（添え文字）2016.3.2  --*/
+.calendar-detailedit-addchar {
+	padding-top:1em;
+}
+
+/*-- カレンダー 特定予定の情報（間隔）2016.3.3  --*/
+.calendar-eachplan-box {
+	padding-top:10px;
+	padding-bottom:10px;
+	margin-top:10px;
+}
+
+
+/*  カレンダー 月拡大表示の画面サイズxsの場合  */
+@media screen and (max-width:767px) {
+  table.calendar-monthly-table td.calendar-col-day{
+    width:100%;
+    height:auto;
+    display:block !important;
+  }
+
+  /*-- カレンダー 詳細編集フィールド(max-width:767px) --*/
+  .calendar-detailedit-detail {
+  	padding-left:0px;
+  }
+
+/* カレンダー 週表示 2016.03.03 */
+.calendar-weekly-table {
+	font-size: 75%;
+}
+/* カレンダー 週表示(ルーム名)  2016.03.03 */
+.calendar-weekly-col-room-name {
+ white-space:nowrap;
+}
+
+/* カレンダー 管理系 表示変更(タブ)  2016.03.04 */
+.calendar-change-nav-tabs > li > a {
+ padding:10px 10px !important;
+ font-size:88%;
+}
+
+}
+
