@@ -32,9 +32,7 @@
 			<td class='calendar-col-small-day-head'><span class='text-primary h4'><?php echo __d('calendars', '土'); ?></span></td>
 		</tr>
 <?php
-	echo $this->element('Calendars.Calendars/smonthly_body', array(
-		'frameId' => $frameId, 'languageId' => $languageId, 'vars' => $vars
-	));
+	echo $this->CalendarMonthly->makeSmallMonthyBodyHtml($vars);
 ?>
 		</tbody>
 		</table>

@@ -18,21 +18,6 @@
 class CalendarTime {
 
 /**
- * getPlanInfo
- *
- * プラン情報取得
- *
- * @param int $year 年
- * @param int $month 月
- * @param int $day 日
- * @param array $vars 元情報
- * @return string 組み立てた文字列
- */
-	public static function getPlanInfo($year, $month, $day, $vars) {
-		return "<div>&nbsp;</div>";	//本メソッドは強化後Helperに移動予定.
-	}
-
-/**
  * getMonthlyInfo
  *
  * 月カレンダーで必要な情報を返す
@@ -67,6 +52,7 @@ class CalendarTime {
 			$yearOfNextMonth = $year;
 			$nextMonth = $month + 1;
 		}
+		$daysInNextMonth = cal_days_in_month(CAL_GREGORIAN, $nextMonth, $yearOfNextMonth);
 
 		return array(
 			'yearOfPrevMonth' => $yearOfPrevMonth,
@@ -74,6 +60,7 @@ class CalendarTime {
 			'daysInPrevMonth' => $daysInPrevMonth,
 			'yearOfNextMonth' => $yearOfNextMonth,
 			'nextMonth' => $nextMonth,
+			'daysInNextMonth' => $daysInNextMonth,
 			'year' => $year,
 			'month' => $month,
 			'wdayOf1stDay' => $wdayOf1stDay,

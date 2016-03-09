@@ -36,6 +36,7 @@ class CalendarsController extends CalendarsAppController {
 		'Calendars.CalendarCompDtstartendShareUser',
 		'Calendars.CalendarFrameSettingSelectRoom',
 		'Calendars.CalendarSetting',
+		'Holidays.Holiday',
 	);
 
 /**
@@ -64,6 +65,7 @@ class CalendarsController extends CalendarsAppController {
 		'NetCommons.Date',
 		'NetCommons.DisplayNumber',
 		'NetCommons.Button',
+		'Calendars.CalendarMonthly',
 	);
 
 /**
@@ -273,13 +275,13 @@ class CalendarsController extends CalendarsAppController {
 	}
 
 /**
- * getSmallMonthlyVars
+ * getMonthlyVars
  *
- * 月（縮小）用変数取得
+ * 月カレンダー用変数取得
  *
  * @return array $vars 月（縮小用）データ
  */
-	public function getSmallMonthlyVars() {
+	public function getMonthlyVars() {
 		$vars = array();
 		$this->setCalendarCommonCurrent();
 		$vars['CalendarFrameSetting'] = Current::read('CalendarFrameSetting');
@@ -304,20 +306,17 @@ class CalendarsController extends CalendarsAppController {
 		if (isset($this->request->params['named']['day'])) {
 			$vars['day'] = intval($this->request->params['named']['day']);
 		} else { //省略時は、現在の日を設置
-			$vars['day'] = intval($userNowArray['day']);
+			//$vars['day'] = intval($userNowArray['day']);
+			$vars['day'] = 1;	//月末日は月によって替わるので、すべての月でかならず存在する日にする。
 		}
-		return $vars;
-	}
 
-/**
- * getLargeMonthlyVars():
- *
- * 月（縮小）用変数取得
- *
- * @return array $vars 月（縮小用）データ
- */
-	public function getLargeMonthlyVars() {
-		$vars = array();
+		$vars['mInfo'] = CalendarTime::getMonthlyInfo($vars['year'], $vars['month']);	//月カレンダー情報
+		$vars['holidays'] = $this->Holiday->getHoliday(
+			sprintf("%04d-%02d-%02d",
+				$vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], 1),
+			sprintf("%04d-%02d-%02d",
+				$vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $vars['mInfo']['daysInNextMonth'])
+		);
 		return $vars;
 	}
 
@@ -455,12 +454,12 @@ class CalendarsController extends CalendarsAppController {
 		switch ($style) {
 			case 'smallmonthly':
 				$ctpName = 'smonthly';
-				$vars = $this->getSmallMonthlyVars();
+				$vars = $this->getMonthlyVars();	//月カレンダー情報は、拡大・縮小共通
 				$vars['style'] = 'smallmonthly';
 				break;
 			case 'largemonthly':
 				$ctpName = 'lmonthly';
-				$vars = $this->getLargeMonthlyVars();
+				$vars = $this->getMonthlyVars();	//月カレンダー情報は、拡大・縮小共通
 				$vars['style'] = 'largemonthly';
 				break;
 			case 'weekly':
@@ -481,7 +480,7 @@ class CalendarsController extends CalendarsAppController {
 			default:
 				//不明時は月（縮小）
 				$ctpName = 'smonthly';
-				$vars = $this->getSmallMonthlyVars();
+				$vars = $this->getMonthlyVars();
 				$vars['style'] = 'smallmonthly';
 		}
 

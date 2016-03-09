@@ -146,6 +146,16 @@ NetCommonsApp.controller('CalendarsDetailEdit',
 
       console.log('DEBUGGING...');
 
+      $scope.changeYearMonth = function(prototypeUrl) {
+        var elms = $scope.targetYear.split('-');
+        var url = prototypeUrl.replace('YYYY', elms[0]);
+        url = url.replace('MM', elms[1]);
+        //console.log('frameId[' + frameId + '] prototypeUrl[' +
+        //  prototypeUrl + '] targetYear[' + $scope.targetYear +
+        //  '] url[' + url + ']');
+        window.location = url;
+      };
+
       $scope.toggleRepeatArea = function(frameId) {
         var elm = $('.calendar-repeat-a-plan-detail_' + frameId);
         if ($scope.repeatArray[frameId]) {
@@ -405,3 +415,16 @@ CalendarFrameSettingJS.changeIsSelectRoom = function(id, frameId) {
     $('div[name=roomSelect]').addClass('calendar-hide');
   }
 };
+
+
+var CalendarJS = {};  //専用空間
+
+$(function() {
+  $('.calendar-col-week').on('click', function(evt) {
+    window.location = $(evt.target).attr('data-url');
+  });
+  $('.calendar-easy-edit').on('click', function(evt) {
+    window.location = $(evt.target).attr('data-url');
+  });
+});
+
