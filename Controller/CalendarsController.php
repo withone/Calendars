@@ -48,11 +48,11 @@ class CalendarsController extends CalendarsAppController {
 		'NetCommons.Permission' => array(
 			//アクセスの権限
 			'allow' => array(
-				'add,edit,delete' => 'content_creatable',	//indexとviewは祖先基底クラスNetCommonsAppControllerで許可済
+				//indexとviewは祖先基底クラスNetCommonsAppControllerで許可済なので、あえて書かない。
+				//予定のCRUDはCalendarsPlancontrollerが担当。このcontrollerは表示系conroller.とする。
 			),
 		),
 		'Paginator',
-		'Calendars.CalendarsDaily',
 	);
 
 /**
@@ -61,10 +61,10 @@ class CalendarsController extends CalendarsAppController {
  * @var array
  */
 	public $helpers = array(
-		'Workflow.Workflow',
-		'NetCommons.Date',
-		'NetCommons.DisplayNumber',
-		'NetCommons.Button',
+		//'Workflow.Workflow',
+		//'NetCommons.Date',
+		//'NetCommons.DisplayNumber',
+		//'NetCommons.Button',
 		'Calendars.CalendarMonthly',
 	);
 
@@ -75,8 +75,10 @@ class CalendarsController extends CalendarsAppController {
  */
 	public function beforeFilter() {
 		parent::beforeFilter();
-
 		if (! Current::read('Block.id')) {
+			//Block.idが無い時は、基底クラスNetCommonsAppControllerのemptyRenderアクションを実行(=autoRenderを止める)
+			//した後、falseを返して、filterを失敗させる。結果として、エラー詳細が表示されない真っ白い画面表示となる。
+			//
 			$this->setAction('emptyRender');
 			return false;
 		}
@@ -124,157 +126,6 @@ class CalendarsController extends CalendarsAppController {
 	}
 
 /**
- * view
- *
- * @return void
- */
-	public function view() {
-		/*
-		$faqQuestionKey = null;
-		if (isset($this->params['pass'][1])) {
-			$faqQuestionKey = $this->params['pass'][1];
-		}
-		$faqQuestion = $this->FaqQuestion->getWorkflowContents('first', array(
-			'recursive' => 0,
-			'conditions' => array(
-				$this->FaqQuestion->alias . '.faq_id' => $this->viewVars['faq']['id'],
-				$this->FaqQuestion->alias . '.key' => $faqQuestionKey
-			)
-		));
-		if (! $faqQuestion) {
-			$this->setAction('throwBadRequest');
-			return false;
-		}
-		$this->set('faqQuestion', $faqQuestion);
-		*/
-	}
-
-/**
- * add
- *
- * @return void
- */
-	public function add() {
-		/*
-		$this->view = 'edit';
-
-		if ($this->request->isPost()) {
-			//登録処理
-			$data = $this->data;
-			$data['FaqQuestion']['status'] = $this->Workflow->parseStatus();
-			unset($data['FaqQuestion']['id']);
-
-			if ($this->FaqQuestion->saveFaqQuestion($data)) {
-				$this->redirect(NetCommonsUrl::backToPageUrl());
-				return;
-			}
-			$this->NetCommons->handleValidationError($this->FaqQuestion->validationErrors);
-
-		} else {
-			//表示処理
-			$this->request->data = Hash::merge($this->request->data,
-				$this->FaqQuestion->create(array(
-					'faq_id' => $this->viewVars['faq']['id'],
-				)),
-				$this->FaqQuestionOrder->create(array(
-					'faq_key' => $this->viewVars['faq']['key'],
-				))
-			);
-			$this->request->data['Faq'] = $this->viewVars['faq'];
-			$this->request->data['Frame'] = Current::read('Frame');
-			$this->request->data['Block'] = Current::read('Block');
-		}
-		*/
-	}
-
-/**
- * edit
- *
- * @return void
- */
-	public function edit() {
-		/*
-		//データ取得
-		$faqQuestionKey = $this->params['pass'][1];
-		if ($this->request->isPut()) {
-			$faqQuestionKey = $this->data['FaqQuestion']['key'];
-		}
-		$faqQuestion = $this->FaqQuestion->getWorkflowContents('first', array(
-			'recursive' => 0,
-			'conditions' => array(
-				$this->FaqQuestion->alias . '.faq_id' => $this->viewVars['faq']['id'],
-				$this->FaqQuestion->alias . '.key' => $faqQuestionKey
-			)
-		));
-
-		//編集権限チェック
-		if (! $this->FaqQuestion->canEditWorkflowContent($faqQuestion)) {
-			$this->throwBadRequest();
-			return false;
-		}
-
-		if ($this->request->isPut()) {
-			//登録処理
-			$data = $this->data;
-			$data['FaqQuestion']['status'] = $this->Workflow->parseStatus();
-			unset($data['FaqQuestion']['id']);
-
-			if ($this->FaqQuestion->saveFaqQuestion($data)) {
-				$this->redirect(NetCommonsUrl::backToPageUrl());
-				return;
-			}
-			$this->NetCommons->handleValidationError($this->FaqQuestion->validationErrors);
-
-		} else {
-			//表示処理
-			$this->request->data = $faqQuestion;
-			$this->request->data['Faq'] = $this->viewVars['faq'];
-			$this->request->data['Frame'] = Current::read('Frame');
-			$this->request->data['Block'] = Current::read('Block');
-		}
-
-		$comments = $this->FaqQuestion->getCommentsByContentKey($this->request->data['FaqQuestion']['key']);
-		$this->set('comments', $comments);
-		*/
-	}
-
-/**
- * delete
- *
- * @return void
- */
-	public function delete() {
-		/*
-		if (! $this->request->isDelete()) {
-			$this->throwBadRequest();
-			return;
-		}
-
-		//データ取得
-		$faqQuestion = $this->FaqQuestion->getWorkflowContents('first', array(
-			'recursive' => -1,
-			'conditions' => array(
-				$this->FaqQuestion->alias . '.faq_id' => $this->data['FaqQuestion']['faq_id'],
-				$this->FaqQuestion->alias . '.key' => $this->data['FaqQuestion']['key']
-			)
-		));
-
-		//削除権限チェック
-		if (! $this->FaqQuestion->canDeleteWorkflowContent($faqQuestion)) {
-			$this->throwBadRequest();
-			return false;
-		}
-
-		if (! $this->FaqQuestion->deleteFaqQuestion($this->data)) {
-			$this->throwBadRequest();
-			return;
-		}
-
-		$this->redirect(NetCommonsUrl::backToPageUrl());
-		*/
-	}
-
-/**
  * getMonthlyVars
  *
  * 月カレンダー用変数取得
@@ -286,7 +137,7 @@ class CalendarsController extends CalendarsAppController {
 		$this->setCalendarCommonCurrent();
 		$vars['CalendarFrameSetting'] = Current::read('CalendarFrameSetting');
 
-		//現在のユーザTZ考慮済 年月日時分秒を取得
+		//現在のユーザTZ「考慮済」年月日時分秒を取得
 		$nctm = new NetCommonsTime();
 		$userNowYmdHis = $nctm->toUserDatetime('now');
 		$userNowArray = CalendarTime::transFromYmdHisToArray($userNowYmdHis);
@@ -307,7 +158,7 @@ class CalendarsController extends CalendarsAppController {
 			$vars['day'] = intval($this->request->params['named']['day']);
 		} else { //省略時は、現在の日を設置
 			//$vars['day'] = intval($userNowArray['day']);
-			$vars['day'] = 1;	//月末日は月によって替わるので、すべての月でかならず存在する日にする。
+			$vars['day'] = 1;	//月末日は月によって替わるので、すべての月でかならず存在する日(つまり一日）にする。
 		}
 
 		$vars['mInfo'] = CalendarTime::getMonthlyInfo($vars['year'], $vars['month']);	//月カレンダー情報
