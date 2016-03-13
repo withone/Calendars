@@ -217,8 +217,9 @@ class CalendarMonthlyHelper extends AppHelper {
 
 			$html .= $this->makeStartTr($cnt, $vars, $week);
 
-			$html .= "<td class='calendar-col-small-day calendar-out-of-range'><div><span class='text-center text-muted'>";
 			$day = $vars['mInfo']['daysInPrevMonth'] - $vars['mInfo']['wdayOf1stDay'] + ($idx + 1);
+			$url = $this->getPlanListUrl('prevMonth', $vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day, $vars);
+			$html .= "<td class='calendar-col-small-day calendar-out-of-range calendar-plan-list' data-url='" . $url . "'><div><span class='text-center text-muted'>";
 			$html .= $day;
 			$html .= '</span></div>';
 			$html .= $this->makePlansHtml($vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day);
@@ -235,7 +236,8 @@ class CalendarMonthlyHelper extends AppHelper {
 
 			$textColor = $this->makeTextColor($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
 
-			$html .= "<td class='calendar-col-small-day'><div><span class='text-center {$textColor}'>";
+			$url = $this->getPlanListUrl('thisMonth', $vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars);
+			$html .= "<td class='calendar-col-small-day calendar-plan-list' data-url='" . $url . "'><div><span class='text-center {$textColor}'>";
 			$html .= $day;
 			$html .= '</span></div>';
 			$html .= $this->makePlansHtml($vars['mInfo']['year'], $vars['mInfo']['month'], $day);
@@ -251,7 +253,8 @@ class CalendarMonthlyHelper extends AppHelper {
 
 			$html .= $this->makeStartTr($cnt, $vars, $week);
 
-			$html .= "<td class='calendar-col-small-day calendar-out-of-range'><div><span class='text-center text-muted'>";
+			$url = $this->getPlanListUrl('nextMonth', $vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $day, $vars);
+			$html .= "<td class='calendar-col-small-day calendar-out-of-range calendar-plan-list' data-url='" . $url . "'><div><span class='text-center text-muted'>";
 			$html .= $day;
 			$html .= '</span></div>';
 			$html .= $this->makePlansHtml($vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $day);
@@ -266,18 +269,77 @@ class CalendarMonthlyHelper extends AppHelper {
 	}
 
 /**
+ * getCalendarDailyUrl
+ *
+ * カレンダー日次URL取得
+ *
+ * @param int $year 年
+ * @param int $month 月
+ * @param int $day 日
+ * @return string URL
+ */
+	public function getCalendarDailyUrl($year, $month, $day) {
+		$url = NetCommonsUrl::actionUrl(array(
+			'controller' => 'calendars',
+			'action' => 'index',
+			'style' => 'daily',
+			'tab' => 'list',
+			'year' => $year,
+			'month' => $month,
+			'day' => $day,
+			'frame_id' => Current::read('Frame.id'),
+		));
+		return $url;
+	}
+
+/**
+ * getPlanListUrl
+ *
+ * 予定一覧表示Url取得
+ *
+ * @param string $place 場所(prevMonth|thisMonth|nextMonth)
+ * @param int $year 年
+ * @param int $month 月
+ * @param int $day 日
+ * @param array $vars カレンダー情報
+ * @return string URL
+ */
+	public function getPlanListUrl($place, $year, $month, $day, $vars) {
+		if ($place === 'thisMonth') {
+			$backYear = $year;
+			$backMonth = $month;
+		} else {	//nextMont またはprevMonthの時は、中央年月をセット
+			$backYear = $vars['mInfo']['year'];
+			$backMonth = $vars['mInfo']['month'];
+		}
+
+		$url = NetCommonsUrl::actionUrl(array(
+			'controller' => 'calendar_plans',
+			'action' => 'daylist',
+			'year' => $year,
+			'month' => $month,
+			'day' => $day,
+			'back_year' => $backYear,
+			'back_month' => $backMonth,
+			'frame_id' => Current::read('Frame.id'),
+		));
+		return $url;
+	}
+
+/**
  * makeGlyphiconPlusWithUrl
  *
  * Url付き追加アイコン生成
  *
- * @param array $vars コントローラーからの情報
+ * @param int $year 年
+ * @param int $month 月
  * @param int $day 日
  * @return string HTML
  */
-	public function makeGlyphiconPlusWithUrl($vars, $day) {
+	public function makeGlyphiconPlusWithUrl($year, $month, $day) {
 		$html = '';
 		if (Current::permission('content_creatable')) {
-			$url = $this->makeEasyEditUrl($vars['mInfo']['year'], $vars['mInfo']['month'], $day);
+			$url = $this->makeEasyEditUrl($year, $month, $day);
 			$html .= "<small><span class='pull-right glyphicon glyphicon-plus calendar-easy-edit' data-url='" . $url . "'></span></small>";
 		}
 		return $html;
@@ -288,6 +350,7 @@ class CalendarMonthlyHelper extends AppHelper {
  *
  * 初週前月部または最終週次月部の生成
  *
+ * @param array $type  'prev' or 'next'
  * @param array &$vars  vars
  * @param string &$html  html
  * @param int &$cnt  cnt
@@ -297,14 +360,23 @@ class CalendarMonthlyHelper extends AppHelper {
  * @param string &$holidayTitle  holidayTitle
  * @return void
  */
-	public function doPrevNextMonthPart(&$vars, &$html, &$cnt, &$week, &$idx, &$day, &$holidayTitle) {
+	public function doPrevNextMonthPart($type, &$vars, &$html, &$cnt, &$week, &$idx, &$day, &$holidayTitle) {
+		if ($type === 'prev') {
+			$year = $vars['mInfo']['yearOfPrevMonth'];
+			$month = $vars['mInfo']['prevMonth'];
+		} else {
+			$year = $vars['mInfo']['yearOfNextMonth'];
+			$month = $vars['mInfo']['nextMonth'];
+		}
+		$url = $this->getCalendarDailyUrl($year, $month, $day);
+
 		//<!-- 1row --> 日付と予定追加glyph
 		$html .= "<div class='row'>";
 		$html .= "<div class='col-xs-12'>";
 		$html .= "<p class='h4'>";
-		$html .= "<span class='pull-left text-muted calendar-day'>" . $day . '</span>';
+		$html .= "<span class='pull-left text-muted calendar-day calendar-daily-disp' data-url='" . $url . "'>" . $day . '</span>';
 		$html .= "<span class='pull-left text-muted visible-xs'><small>(" . __d('calendars', '日') . ')</small></span>';
-		$html .= $this->makeGlyphiconPlusWithUrl($vars, $day);
+		$html .= $this->makeGlyphiconPlusWithUrl($year, $month, $day);
 		$html .= '</p>';
 		$html .= '</div>';
 		$html .= "<div class='clearfix'></div>";
@@ -341,7 +413,7 @@ class CalendarMonthlyHelper extends AppHelper {
 			$html .= "<td class='calendar-col-day calendar-tbl-td-pos calendar-out-of-range'>";
 			$day = $vars['mInfo']['daysInPrevMonth'] - $vars['mInfo']['wdayOf1stDay'] + ($idx + 1);
 			$holidayTitle = $this->getHolidayTitle($vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day, $vars['holidays'], $cnt);
-			$this->doPrevNextMonthPart($vars, $html, $cnt, $week, $idx, $day, $holidayTitle); //生成結果等は、参照で返す.
+			$this->doPrevNextMonthPart('prev', $vars, $html, $cnt, $week, $idx, $day, $holidayTitle); //生成結果等は、参照で返す.
 
 			$html .= $this->makeEndTr($cnt);
 
@@ -350,6 +422,7 @@ class CalendarMonthlyHelper extends AppHelper {
 
 		//当月部
 		for ($day = 1; $day <= $vars['mInfo']['daysInMonth']; ++$day) {
+			$url = $this->getCalendarDailyUrl($vars['mInfo']['year'], $vars['mInfo']['month'], $day);
 
 			$html .= $this->makeStartTr($cnt, $vars, $week);
 
@@ -360,9 +433,9 @@ class CalendarMonthlyHelper extends AppHelper {
 			$html .= "<div class='row'>";
 			$html .= "<div class='col-xs-12'>";
 			$html .= "<p class='h4'>";
-			$html .= "<span class='pull-left calendar-day {$textColor}'>" . $day . '</span>';
+			$html .= "<span class='pull-left calendar-day calendar-daily-disp {$textColor}' data-url='" . $url . "'>" . $day . '</span>';
 			$html .= "<span class='pull-left text-muted visible-xs'><small>(" . __d('calendars', '日') . ')</small></span>';
-			$html .= $this->makeGlyphiconPlusWithUrl($vars, $day);
+			$html .= $this->makeGlyphiconPlusWithUrl($vars['mInfo']['year'], $vars['mInfo']['month'], $day);
 			$html .= '</p>';
 			$html .= '</div>';
 			$html .= "<div class='clearfix'></div>";
@@ -390,7 +463,7 @@ class CalendarMonthlyHelper extends AppHelper {
 
 			$html .= "<td class='calendar-col-day calendar-tbl-td-pos calendar-out-of-range'>";
 			$holidayTitle = $this->getHolidayTitle($vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $day, $vars['holidays'], $cnt);
-			$this->doPrevNextMonthPart($vars, $html, $cnt, $week, $idx, $day, $holidayTitle); //生成結果等は、参照で返す.
+			$this->doPrevNextMonthPart('next', $vars, $html, $cnt, $week, $idx, $day, $holidayTitle); //生成結果等は、参照で返す.
 
 			$html .= $this->makeEndTr($cnt);
 

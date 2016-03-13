@@ -12,6 +12,7 @@
 App::uses('ModelBehavior', 'Model');
 //App::uses('CalendarTime', 'Calendars.Utility');
 App::uses('CalendarTime', 'Calendars.Utility');
+App::uses('CalendarSupport', 'Calendars.Utility');
 App::uses('WorkflowComponent', 'Workflow.Controller/Component');
 
 /**
@@ -66,98 +67,100 @@ class CalendarAppBehavior extends ModelBehavior {
  * @param Model &$model 実際のモデル名
  * @param array $planParams planParams
  * @param array $rruleData rruleData
- * @param array $dtstartendData dtstartendデータ(CalendarCompDtstartendのモデルデータ)
+ * @param array $eventData eventデータ(CalendarEventのモデルデータ)
  * @param string $startTime startTime 開始日付時刻文字列
  * @param string $endTime endTime 開始日付時刻文字列
- * @return array $rDtstartendData
+ * @return array $rEventData
  * @throws InternalErrorException
  */
-	public function insert(Model &$model, $planParams, $rruleData, $dtstartendData, $startTime, $endTime) {
-		$this->loadDtstartendAndRruleModels($model);
+	public function insert(Model &$model, $planParams, $rruleData, $eventData, $startTime, $endTime) {
+		$this->loadEventAndRruleModels($model);
 		$params = array(
-			'conditions' => array('CalendarsCompRrule.id' => $dtstartendData['CalendarCompDtstartend']['calendar_comp_rrule_id']),
+			'conditions' => array('CalendarsRrule.id' => $eventData['CalendarEvent']['calendar_rrule_id']),
 			'recursive' => (-1),
-			'fields' => array('CalendarsCompRrule.*'),
+			'fields' => array('CalendarsRrule.*'),
 			'callbacks' => false
 		);
 		if (empty($this->rruleData)) {
-			//CalendarCompRruleのデータがないので初回アクセス
+			//CalendarRruleのデータがないので初回アクセス
 			//
-			$rruleData = $model->CalendarCompRrule->find('first', $params);
-			if (!is_array($rruleData) || !isset($rruleData['CalendarCompRrule'])) {
-				$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarCompRrule->validationErrors);
+			$rruleData = $model->CalendarRrule->find('first', $params);
+			if (!is_array($rruleData) || !isset($rruleData['CalendarRrule'])) {
+				$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarRrule->validationErrors);
 				//throw new InternalErrorException(__d('Calendars', 'insert find error.'));
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
-			$this->rruleData = $rruleData;	//CalendarCompRruleのデータを記録し、２度目以降に備える。
+			$this->rruleData = $rruleData;	//CalendarRruleのデータを記録し、２度目以降に備える。
 		}
 
 		$insertStartTime = CalendarTime::timezoneDate($startTime, 1, 'YmdHis');
 		$insertEndTime = CalendarTime::timezoneDate($endTime, 1, 'YmdHis');
 
-		$rDtstartendData = $this->setRdtstartendData($dtstartendData, $insertStartTime, $insertEndTime); //dtstartendDataをもとにrDtstartendDataをつくり、モデルにセット
-		$model->CalendarCompDtstartend->set($rDtstartendData);
+		$rEventData = $this->setReventData($eventData, $insertStartTime, $insertEndTime); //eventDataをもとにrEventDataをつくり、モデルにセット
 
-		if (!$model->CalendarCompDtstartend->validates()) {	//rDtstartendDataをチェック
-			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarCompDtstartend->validationErrors);
-			//throw new InternalErrorException(__d('Calendars', 'rDtstartend data check error.'));
+		$model->CalendarEvent->set($rEventData);
+
+		if (!$model->CalendarEvent->validates()) {	//rEventDataをチェック
+			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarEvent->validationErrors);
+			//throw new InternalErrorException(__d('Calendars', 'rEvent data check error.'));
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
-		if (!$model->CalendarCompDtstartend->save($rDtstartendData, false)) { //保存のみ
-			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarCompDtstartend->validationErrors);
-			//throw new InternalErrorException(__d('Calendars', 'rDtstartend data save error.'));
+		if (!$model->CalendarEvent->save($rEventData, false)) { //保存のみ
+			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarEvent->validationErrors);
+			//throw new InternalErrorException(__d('Calendars', 'rEvent data save error.'));
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
-		$rDtstartendData['CalendarCompDtstartend']['id'] = $model->CalendarCompDtstartend->id; //採番されたidをdtstartendDataにセ>
+		$rEventData['CalendarEvent']['id'] = $model->CalendarEvent->id; //採番されたidをeventDataにセ>
 
-		if ($rDtstartendData['CalendarCompDtstartend']['link_plugin'] !== '') {	//Task、施設予約のLinkデータの更新
-			if (!$model->Behaviors->hasMethod('updateLink')) {
-				$model->Behaviors->load('Calendars.CalendarLinkEntry');
+		if ($rEventData['CalendarEventContent']['linked_model'] !== '') { //関連コンテンツの登録
+			if (!(isset($this->CalendarEventContent))) {
+				$model->loadModels(['CalendarEventContent' => 'Calendar.CalendarEventContent']);
 			}
-			$this->updateLink($model, $planParams, $rruleData, $rDtstartendData);
+			$this->CalendarEventContent->saveLinkedData($rEventData);
 		}
 
-		return $rDtstartendData;
+		return $rEventData;
 	}
 
 /**
- * rDtstartendDataへのデータ設定
+ * rEventDataへのデータ設定
  *
- * @param array $dtstartendData 元になるdtstartendData配列
+ * @param array $eventData 元になるeventData配列
  * @param string $insertStartTime insertStartTime 登録用開始日付時刻文字列
  * @param string $insertEndTime insertEndTime 登録用終了日付時刻文字列
- * @return array 実際に登録する$rDtstartendData配列を返す
+ * @return array 実際に登録する$rEventData配列を返す
  */
-	public function setRdtstartendData($dtstartendData, $insertStartTime, $insertEndTime) {
-		$rDtstartendData = $dtstartendData;
-		$rDtstartendData['CalendarCompDtstartend']['id'] = null;		//新規登録用にidにnullセット
+	public function setReventData($eventData, $insertStartTime, $insertEndTime) {
+		$rEventData = $eventData;
 
-		$rDtstartendData['CalendarCompDtstartend']['start_date'] = substr($insertStartTime, 0, 8);
-		$rDtstartendData['CalendarCompDtstartend']['start_time'] = substr($insertStartTime, 8);
-		$rDtstartendData['CalendarCompDtstartend']['dtstart'] = $insertStartTime;
-		$rDtstartendData['CalendarCompDtstartend']['end_date'] = substr($insertEndTime, 0, 8);
-		$rDtstartendData['CalendarCompDtstartend']['end_time'] = substr($insertEndTime, 8);
-		$rDtstartendData['CalendarCompDtstartend']['dtend'] = $insertEndTime;
+		$rEventData['CalendarEvent']['id'] = null;		//新規登録用にidにnullセット
 
-		if (isset($dtstartendData['CalendarCompDtstartend']['created_user'])) {
-			$rDtstartendData['CalendarCompDtstartend']['created_user'] = $dtstartendData['CalendarCompDtstartend']['created_user'];
+		$rEventData['CalendarEvent']['start_date'] = substr($insertStartTime, 0, 8);
+		$rEventData['CalendarEvent']['start_time'] = substr($insertStartTime, 8);
+		$rEventData['CalendarEvent']['dtstart'] = $insertStartTime;
+		$rEventData['CalendarEvent']['end_date'] = substr($insertEndTime, 0, 8);
+		$rEventData['CalendarEvent']['end_time'] = substr($insertEndTime, 8);
+		$rEventData['CalendarEvent']['dtend'] = $insertEndTime;
+
+		if (isset($eventData['CalendarEvent']['created_user'])) {
+			$rEventData['CalendarEvent']['created_user'] = $eventData['CalendarEvent']['created_user'];
 		}
 
-		if (isset($dtstartendData['CalendarCompDtstartend']['created'])) {
-			$rDtstartendData['CalendarCompDtstartend']['created'] = $dtstartendData['CalendarCompDtstartend']['created'];
+		if (isset($eventData['CalendarEvent']['created'])) {
+			$rEventData['CalendarEvent']['created'] = $eventData['CalendarEvent']['created'];
 		}
 
-		if (isset($dtstartendData['CalendarCompDtstartend']['modified_user'])) {
-			$rDtstartendData['CalendarCompDtstartend']['modified_user'] = $dtstartendData['CalendarCompDtstartend']['modified_user'];
+		if (isset($eventData['CalendarEvent']['modified_user'])) {
+			$rEventData['CalendarEvent']['modified_user'] = $eventData['CalendarEvent']['modified_user'];
 		}
 
-		if (isset($dtstartendData['CalendarCompDtstartend']['modified'])) {
-			$rDtstartendData['CalendarCompDtstartend']['modified'] = $dtstartendData['CalendarCompDtstartend']['modified'];
+		if (isset($eventData['CalendarEvent']['modified'])) {
+			$rEventData['CalendarEvent']['modified'] = $eventData['CalendarEvent']['modified'];
 		}
 
-		return $rDtstartendData;
+		return $rEventData;
 	}
 
 /**
@@ -203,44 +206,11 @@ class CalendarAppBehavior extends ModelBehavior {
 			'description' => '',
 			'rrule' => '',
 			'room_id' => 1, //Current::read('Room.id'),		//ATODE
+			'icalendar_uid' => CalendarSupprt::generateIcalUid($planParams['start_date'], $planParams['start_time']),
 			'icalendar_comp_name' => self::CALENDAR_PLUGIN_NAME,
 			'status' => WorkflowComponent::STATUS_IN_DRAFT,
-			'language_id' => 1, //Current::read('Language.id'),	//ATODE
+			//'language_id' => 1, //Current::read('Language.id'),	//ATODE
 		);
-
-		/*
-		if (isset($planParams['location'])) {
-			$params['location'] = $planParams['location'];
-		}
-
-		if (isset($planParams['contact'])) {
-			$params['contact'] = $planParams['contact'];
-		}
-
-		if (isset($planParams['description'])) {
-			$params['description'] = $planParams['description'];
-		}
-
-		if (isset($planParams['rrule'])) {
-			$params['rrule'] = $planParams['rrule'];
-		}
-
-		if (isset($planParams['room_id'])) {
-			$params['room_id'] = $planParams['room_id'];
-		}
-
-		if (isset($planParams['icalendar_comp_name'])) {
-			$params['icalendar_comp_name'] = $planParams['icalendar_comp_name'];
-		}
-
-		if (isset($planParams['status'])) {
-			$params['status'] = $planParams['status'];
-		}
-
-		if (isset($planParams['language_id'])) {
-			$params['language_id'] = $planParams['language_id'];
-		}
-		*/
 
 		foreach ($planParams as $key => $val) {
 			if (isset($params[$key])) {
@@ -248,43 +218,78 @@ class CalendarAppBehavior extends ModelBehavior {
 			}
 		}
 
-		//レコード $rrule_data  の初期化と'CalendarCompRrule'キーセットはおわっているので省略
+		//レコード $rrule_data  の初期化と'CalendarRrule'キーセットはおわっているので省略
 		//$rruleData = array();
-		//$rruleData['CalendarCompRrule'] = array();
+		//$rruleData['CalendarRrule'] = array();
 
 		//rruleDataに詰める。
-		//$rruleData['CalendarCompRrule']['id'] = null;		//create()の後なので、不要。
-		$rruleData['CalendarCompRrule']['block_id'] = 1; //ATODE  Current::read('Block.id');	//Block.idを取得
+		//$rruleData['CalendarRrule']['id'] = null;		//create()の後なので、不要。
+		$rruleData['CalendarRrule']['block_id'] = 1; //ATODE  Current::read('Block.id');	//Block.idを取得
 		//keyは、Workflowが自動セット
-		$rruleData['CalendarCompRrule']['name'] = '';		//名前はデフォルトなし
-		$rruleData['CalendarCompRrule']['location'] = $params['location'];
-		$rruleData['CalendarCompRrule']['contact'] = $params['contact'];
-		$rruleData['CalendarCompRrule']['description'] = $params['description'];
-		$rruleData['CalendarCompRrule']['rrule'] = $params['rrule'];
+		$rruleData['CalendarRrule']['name'] = '';		//名前はデフォルトなし
+		////$rruleData['CalendarRrule']['location'] = $params['location'];
+		////$rruleData['CalendarRrule']['contact'] = $params['contact'];
+		////$rruleData['CalendarRrule']['description'] = $params['description'];
+		$rruleData['CalendarRrule']['rrule'] = $params['rrule'];
 		if ($mode === self::CALENDAR_INSERT_MODE) {
-			$rruleData['CalendarCompRrule']['icalendar_comp_name'] = $params['icalendar_comp_name'];
+			$rruleData['CalendarRrule']['icalendar_comp_name'] = $params['icalendar_comp_name'];
 		}
-		$rruleData['CalendarCompRrule']['room_id'] = $params['room_id'];
-		$rruleData['CalendarCompRrule']['status'] = $params['status'];
-		$rruleData['CalendarCompRrule']['language_id'] = $params['language_id'];
+		$rruleData['CalendarRrule']['room_id'] = $params['room_id'];
+		$rruleData['CalendarRrule']['status'] = $params['status'];
+		////$rruleData['CalendarRrule']['language_id'] = $params['language_id'];
 	}
 
 /**
- * dtstartendDataへのデータ設定
+ * setPlanParams2Params
+ *
+ * planParamsからparamsへの設定
+ *
+ * @param array &$planParams 予定パラメータ
+ * @param array &$params paramsパラメータ
+ * @return void
+ */
+	public function setPlanParams2Params(&$planParams, &$params) {
+		$keys = array(
+			'title',
+			'title_icon',
+			'location',
+			'contact',
+			'description',
+			'is_allday',
+			'timezone_offset',
+			//'link_plugin',
+			//'link_key',
+			//'link_plugin_controller_action_name',
+			'linked_model',
+			'linked_content_key',
+		);
+		foreach ($keys as $key) {
+			if (isset($planParams[$key])) {
+				$params[$key] = $planParams[$key];
+			}
+		}
+	}
+
+/**
+ * eventDataへのデータ設定
  *
  * @param array $planParams 予定パラメータ
  * @param array $rruleData rruleDataパラメータ
- * @param array &$dtstartendData dtstartendデータ
+ * @param array &$eventData eventデータ
  * @return void
  */
-	public function setDtstartendData($planParams, $rruleData, &$dtstartendData) {
+	public function setEventData($planParams, $rruleData, &$eventData) {
+		//初期化
 		$params = array(
-			'calendar_comp_rrule_id' => $rruleData['CalendarCompRrule']['id'],	//外部キーをセット
-			'room_id' => $rruleData['CalendarCompRrule']['room_id'],
-			'language_id' => $rruleData['CalendarCompRrule']['language_id'],
+			'calendar_rrule_id' => $rruleData['CalendarRrule']['id'],	//外部キーをセット
+			'room_id' => $rruleData['CalendarRrule']['room_id'],
+			'language_id' => $rruleData['CalendarRrule']['language_id'],
 			'target_user' => CakeSession::read('Calendars.target_user'),	//カレンダーの対象ユーザをSessionから取り出しセット
 			'title' => '',
 			'title_icon' => '',
+			'location' => '',
+			'contact' => '',
+			'description' => '',
 			'is_allday' => self::_OFF,
 			'start_date' => $planParams['start_date'],
 			'start_time' => $planParams['start_time'],
@@ -293,72 +298,59 @@ class CalendarAppBehavior extends ModelBehavior {
 			'end_time' => $planParams['end_time'],
 			'dtend' => $planParams['end_date'] . $planParams['end_time'],
 			'timezone_offset' => CakeSession::read('Calendars.timezone_offset'),
-			'link_plugin' => '',
-			'link_key' => '',
-			'link_plugin_controller_action_name' => ''
+			//'link_plugin' => '',
+			//'link_key' => '',
+			//'link_plugin_controller_action_name' => ''
+			'linked_model' => '',
+			'linked_content_key' => '',
 		);
-		if (isset($planParams['title'])) {
-			$params['title'] = $planParams['title'];
-		}
-		if (isset($planParams['title_icon'])) {
-			$params['title_icon'] = $planParams['title_icon'];
-		}
-		if (isset($planParams['is_allday'])) {
-			$params['is_allday'] = $planParams['is_allday'];
-		}
-		if (isset($planParams['timezone_offset'])) {
-			$params['timezone_offset'] = $planParams['timezone_offset'];
-		}
-		if (isset($planParams['link_plugin'])) {
-			$params['link_plugin'] = $planParams['link_plugin'];
-		}
-		if (isset($planParams['link_key'])) {
-			$params['link_key'] = $planParams['link_key'];
-		}
-		if (isset($planParams['link_plugin_controller_action_name'])) {
-			$params['link_plugin_controller_action_name'] = $planParams['link_plugin_controller_action_name'];
-		}
 
-		//レコード $dtstartend_data  の初期化と'CalendarCompDtstartend'キーセットはおわっているので省略
-		//$dtstartendData = array();
-		//$dtstartendData['CalendarCompDtstartend'] = array();
+		setPlanParams2Params($planParams, $params);
 
-		//dtstarendを詰める。
-		//$dtstartendData['CalendarCompDtstartend']['id'] = null;		//create()の後なので、不要。
-		$dtstartendData['CalendarCompDtstartend']['calendar_comp_rrule_id'] = $params['calendar_comp_rrule_id'];
-		$dtstartendData['CalendarCompDtstartend']['room_id'] = $params['room_id'];
-		$dtstartendData['CalendarCompDtstartend']['language_id'] = $params['language_id'];
-		$dtstartendData['CalendarCompDtstartend']['target_user'] = $params['target_user'];
-		$dtstartendData['CalendarCompDtstartend']['title'] = $params['title'];
-		$dtstartendData['CalendarCompDtstartend']['title_icon'] = $params['title_icon'];
-		$dtstartendData['CalendarCompDtstartend']['is_allday'] = $params['is_allday'];
-		$dtstartendData['CalendarCompDtstartend']['start_date'] = $params['start_date'];
-		$dtstartendData['CalendarCompDtstartend']['start_time'] = $params['start_time'];
-		$dtstartendData['CalendarCompDtstartend']['dtstart'] = $params['dtstart'];
-		$dtstartendData['CalendarCompDtstartend']['end_date'] = $params['end_date'];
-		$dtstartendData['CalendarCompDtstartend']['end_time'] = $params['end_time'];
-		$dtstartendData['CalendarCompDtstartend']['dtend'] = $params['dtend'];
-		$dtstartendData['CalendarCompDtstartend']['timezone_offset'] = $params['timezone_offset'];
-		$dtstartendData['CalendarCompDtstartend']['link_plugin'] = $params['link_plugin'];
-		$dtstartendData['CalendarCompDtstartend']['link_key'] = $params['link_key'];
-		$dtstartendData['CalendarCompDtstartend']['link_plugin_controller_action_name'] = $params['link_plugin_controller_action_name'];
+		//レコード $event_data  の初期化と'CalendarEvent'キーセットはおわっているので省略
+		//$eventData = array();
+		//$eventData['CalendarEvent'] = array();
+
+		//eventを詰める。
+		//$eventData['CalendarEvent']['id'] = null;		//create()の後なので、不要。
+		$eventData['CalendarEvent']['calendar_rrule_id'] = $params['calendar_rrule_id'];
+		$eventData['CalendarEvent']['room_id'] = $params['room_id'];
+		$eventData['CalendarEvent']['language_id'] = $params['language_id'];
+		$eventData['CalendarEvent']['target_user'] = $params['target_user'];
+		$eventData['CalendarEvent']['title'] = $params['title'];
+		$eventData['CalendarEvent']['title_icon'] = $params['title_icon'];
+		$eventData['CalendarEvent']['is_allday'] = $params['is_allday'];
+		$eventData['CalendarEvent']['start_date'] = $params['start_date'];
+		$eventData['CalendarEvent']['start_time'] = $params['start_time'];
+		$eventData['CalendarEvent']['dtstart'] = $params['dtstart'];
+		$eventData['CalendarEvent']['end_date'] = $params['end_date'];
+		$eventData['CalendarEvent']['end_time'] = $params['end_time'];
+		$eventData['CalendarEvent']['dtend'] = $params['dtend'];
+		$eventData['CalendarEvent']['timezone_offset'] = $params['timezone_offset'];
+
+		//$eventData['CalendarEvent']['link_plugin'] = $params['link_plugin'];
+		//$eventData['CalendarEvent']['link_key'] = $params['link_key'];
+		//$eventData['CalendarEvent']['link_plugin_controller_action_name'] = $params['link_plugin_controller_action_name'];
+		//保存するモデルをここで替える
+		$eventData['CalendarEventContent']['linked_model'] = $params['linked_model'];
+		$eventData['CalendarEventContent']['linked_content_key'] = $params['linked_content_key'];
 	}
 
 /**
- * dtstartendとrruleの両モデルをロードする。
+ * eventとrruleの両モデルをロードする。
  *
  * @param Model &$model モデル
  * @return void
  */
-	public function loadDtstartendAndRruleModels(Model &$model) {
-		if (!isset($model->CalendarCompDtstartend)) {
+	public function loadEventAndRruleModels(Model &$model) {
+		if (!isset($model->CalendarEvent)) {
 			$model->loadModels([
-				'CalendarCompDtstartend' => 'Calendars.CalendarCompDtstartend'
+				'CalendarEvent' => 'Calendars.CalendarEvent'
 			]);
 		}
-		if (!isset($model->CalendarCompRrule)) {
+		if (!isset($model->CalendarRrule)) {
 			$model->loadModels([
-				'CalendarCompRrule' => 'Calendars.CalendarCompRrule'
+				'CalendarRrule' => 'Calendars.CalendarRrule'
 			]);
 		}
 	}

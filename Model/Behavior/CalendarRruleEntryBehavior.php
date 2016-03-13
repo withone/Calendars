@@ -47,11 +47,11 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
  * @param Model &$model 実際のモデル名
  * @param array $planParams 予定パラメータ
  * @param array $rruleData rruleデータ
- * @param array $dtstartendData dtstartendデータ
+ * @param array $eventData eventデータ
  * @return void
  * @throws InternalErrorException
  */
-	public function insertRrule(Model &$model, $planParams, $rruleData, $dtstartendData) {
+	public function insertRrule(Model &$model, $planParams, $rruleData, $eventData) {
 		if (isset($model->rrule)) {	//behaviorメソッドでrruleを渡すための工夫
 			unset($model->rrule);
 		}
@@ -64,35 +64,35 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 			$model->rrule = $model->parseRrule($model->rrule);
 		}
 
-		if (!(isset($model->CalendarCompDtstartend) && is_callable($model->CalendarCompDtstartend->create))) {
-			$model->loadModels(['CalendarCompDtstartend' => 'Calendars.CalendarCompDtstartend']);
+		if (!(isset($model->CalendarEvent) && is_callable($model->CalendarEvent->create))) {
+			$model->loadModels(['CalendarEvent' => 'Calendars.CalendarEvent']);
 		}
 		$params = array(
-			'conditions' => array('CalendarsCompDtstartend.id' => $dtstartendData['CalendarCompDtstartend']['id']),
+			'conditions' => array('CalendarsEvent.id' => $eventData['CalendarEvent']['id']),
 			'recursive' => (-1),
-			'fields' => array('CalendarsCompDtstartend.*'),
+			'fields' => array('CalendarsEvent.*'),
 			'callbacks' => false
 		);
-		$rruleData = $model->CalendarCompDtstartend->find('all', $params);
-		if (!is_array($startDtstartendData) || !isset($startDtstartendData['CalendarCompDtstartend'])) {
-			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarCompDtstartend->validationErrors);
+		$rruleData = $model->CalendarEvent->find('all', $params);
+		if (!is_array($startEventData) || !isset($startEventData['CalendarEvent'])) {
+			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarEvent->validationErrors);
 			//throw new InternalErrorException(__d('Calendars', 'insertRrule find error.'));
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
 		$conditions = array(
-			'CalendarsCompDtstartend.calendar_comp_rrule_id' => $dtstartendData['CalendarCompDtstartend']['calendar_comp_rrule_id'],
-			'CalendarsCompDtstartend.id <>' => $dtstartendData['CalendarCompDtstartend']['id'],
+			'CalendarsEvent.calendar_rrule_id' => $eventData['CalendarEvent']['calendar_rrule_id'],
+			'CalendarsEvent.id <>' => $eventData['CalendarEvent']['id'],
 		);
 
-		if (!$model->CalendarCompDtstartend->deleteAll($conditions, false)) {
-			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarCompDtstartend->validationErrors);
+		if (!$model->CalendarEvent->deleteAll($conditions, false)) {
+			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarEvent->validationErrors);
 			//throw new InternalErrorException(__d('Calendars', 'insertRrule deleteAll error.'));
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
 		//rruleのin/outは、$modelのインスタンス変数をつかっておこなう。
-		$this->insertPriodEntry($model, $planParams, $rruleData, $startDtstartendData);
+		$this->insertPriodEntry($model, $planParams, $rruleData, $startEventData);
 	}
 
 /**
@@ -101,29 +101,29 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
  * @param Model &$model 実際のモデル名
  * @param array $planParams planParams
  * @param array $rruleData rruleData
- * @param array $startDtstartendData dtstartendデータ
+ * @param array $startEventData eventデータ
  * @return void
  */
-	public function insertPriodEntry(Model &$model, $planParams, $rruleData, $startDtstartendData) {
+	public function insertPriodEntry(Model &$model, $planParams, $rruleData, $startEventData) {
 		$model->rrule['INDEX'] = 1;
 		switch ($model->rrule['FREQ']) {
 			case 'YEARLY':
-				$this->insertYearly($model, $planParams, $rruleData, $startDtstartendData, 1);
+				$this->insertYearly($model, $planParams, $rruleData, $startEventData, 1);
 				break;
 			case 'MONTHLY':
 				if (isset($model->rrule['BYMONTHDAY'])) {	//指定月のx日、y日
-					$this->insertMonthlyByMonthday($model, $planParams, $rruleData, $startDtstartendData, 1);
+					$this->insertMonthlyByMonthday($model, $planParams, $rruleData, $startEventData, 1);
 				} else {	//第ｘ週ｙ曜日
-					$this->insertMonthlyByDay($model, $planParams, $rruleData, $startDtstartendData, 1);
+					$this->insertMonthlyByDay($model, $planParams, $rruleData, $startEventData, 1);
 				}
 				break;
 			case 'WEEKLY':
-				$this->insertWeekly($model, $planParams, $rruleData, $startDtstartendData, 1);
+				$this->insertWeekly($model, $planParams, $rruleData, $startEventData, 1);
 				break;
 			case 'DAILY':
-				$this->insertDaily($model, $planParams, $rruleData, $startDtstartendData);
+				$this->insertDaily($model, $planParams, $rruleData, $startEventData);
 				break;
 		}
-		////return $startDtstartendData;
+		////return $startEventData;
 	}
 }

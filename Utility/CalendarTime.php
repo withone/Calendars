@@ -18,6 +18,22 @@
 class CalendarTime {
 
 /**
+ * getWday
+ *
+ * 年月日から曜日(0-6)を返す
+ *
+ * @param int $year 年
+ * @param int $month 月
+ * @param int $day 日
+ * @return int 曜日(0-6)
+ */
+	public static function getWday($year, $month, $day) {
+		$julianDay = gregoriantojd($month, $day, $year);	//指定年月日のグレゴリウス日をユリウス積算日に変換
+		$wDay = jddayofweek($julianDay);	//ユリウス積算日から曜日を返す
+		return $wDay;
+	}
+
+/**
  * getMonthlyInfo
  *
  * 月カレンダーで必要な情報を返す

@@ -29,11 +29,10 @@ class CalendarPlansController extends CalendarsAppController {
  * @var array
  */
 	public $uses = array(
-		'Calendars.CalendarCompRrule',
-		'Calendars.CalendarCompDtstartend',
+		'Calendars.CalendarRrule',
+		'Calendars.CalendarEvent',
 		'Calendars.CalendarFrameSetting',
-		'Calendars.CalendarSettingManage',
-		'Calendars.CalendarCompDtstartendShareUser',
+		'Calendars.CalendarEventShareUser',
 		'Calendars.CalendarFrameSettingSelectRoom',
 		'Calendars.CalendarSetting',
 		'Holidays.Holiday',
@@ -49,6 +48,7 @@ class CalendarPlansController extends CalendarsAppController {
 			//アクセスの権限
 			'allow' => array(
 				'edit' => 'content_creatable',	//indexとviewは祖先基底クラスNetCommonsAppControllerで許可済
+				'daylist' => 'content_readable', //null,				//content_readableは全員に与えられているときいているので、チェック省略
 			),
 		),
 		'Paginator',
@@ -66,6 +66,7 @@ class CalendarPlansController extends CalendarsAppController {
 		'NetCommons.DisplayNumber',
 		'NetCommons.Button',
 		'Calendars.CalendarMonthly',
+		'Calendars.CalendarPlan',
 	);
 
 /**
@@ -80,10 +81,26 @@ class CalendarPlansController extends CalendarsAppController {
 			$this->setAction('emptyRender');
 			return false;
 		}
+
+		$this->Auth->allow('daylist');
 	}
 
 /**
- * index
+ * daylist
+ *
+ * @return void
+ */
+	public function daylist() {
+		$vars = array();
+		$ctpName = $this->getCtpAndVarsForList($vars);
+		$frameId = Current::read('Frame.id');
+		$languageId = Current::read('Language.id');
+		$this->set(compact('frameId', 'languageId', 'vars'));
+		$this->render($ctpName);
+	}
+
+/**
+ * edit
  *
  * @return void
  */
@@ -94,13 +111,7 @@ class CalendarPlansController extends CalendarsAppController {
 			$style = $this->request->params['named']['style'];
 		}
 
-		if ($style === 'easy') {
-			$ctpName = 'easy_edit';
-		} else {
-			$ctpName = '_edit';
-		}
-
-		list($ctpName, $vars) = $this->getCtpAndVars($style);
+		$ctpName = $this->getCtpAndVarsForEdit($style, $vars);
 
 		$frameId = Current::read('Frame.id');
 		$languageId = Current::read('Language.id');
@@ -109,16 +120,30 @@ class CalendarPlansController extends CalendarsAppController {
 	}
 
 /**
- * getCtpAndVars
+ * getCtpAndVarsForList
  *
- * Ctp名および予定情報の取得
+ * 予定一覧用のCtp名および予定情報の取得
  *
- * @param string $style 編集スタイル
- * @return array ctpNameとvarsの配列
+ * @param array &$vars カレンダー情報
+ * @return string ctpName
  * @throws InternalErrorException
  */
-	public function getCtpAndVars($style) {
-		$vars = array();
+	public function getCtpAndVarsForList(&$vars) {
+		$this->setCalendarCommonVars($vars);
+		$ctpName = 'daylist';
+		return $ctpName;
+	}
+/**
+ * getCtpAndVarsForEdit
+ *
+ * 予定編集用のCtp名および予定情報の取得
+ *
+ * @param string $style 編集スタイル
+ * @param array &$vars カレンダー情報
+ * @return string ctpName文字列
+ * @throws InternalErrorException
+ */
+	public function getCtpAndVarsForEdit($style, &$vars) {
 		if ($style === 'easy') {
 			$ctpName = 'easy_edit';
 		} else {
@@ -130,15 +155,15 @@ class CalendarPlansController extends CalendarsAppController {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 		if (isset($this->request->params['named']) && isset($this->request->params['named']['month'])) {
-			$vars['year'] = $this->request->params['named']['month'];
+			$vars['month'] = $this->request->params['named']['month'];
 		} else {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 		if (isset($this->request->params['named']) && isset($this->request->params['named']['day'])) {
-			$vars['year'] = $this->request->params['named']['day'];
+			$vars['day'] = $this->request->params['named']['day'];
 		} else {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
-		return array($ctpName, $vars);
+		return $ctpName;
 	}
 }

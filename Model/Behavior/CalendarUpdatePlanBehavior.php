@@ -47,7 +47,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @copyright Copyright 2015, NetCommons Project
  */
 	protected $_defaults = array(
-		'calendarCompRruleModel' => 'Calendars.CalendarCompRrule',
+		'calendarRruleModel' => 'Calendars.CalendarRrule',
 		'fields' => array(
 			'registered_into' => 'calendar_information',
 			),
@@ -60,30 +60,30 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * 予定の変更
  *
  * @param Model &$model 実際のモデル名
- * @param int $dtstartendId CalendarCompDtstarend.id
+ * @param int $eventId CalendarEvent.id
  * @param array $planParams  予定パラメータ
  * @param string $editRrule editRrule デフォルト値 self::CALENDAR_PLAN_EDIT_THIS
- * @return 変更成功時 int calendarCompDtstartendId
+ * @return 変更成功時 int calendarEventId
  */
-	public function updatePlan(Model &$model, $dtstartendId, $planParams, $editRrule = self::CALENDAR_PLAN_EDIT_THIS) {
+	public function updatePlan(Model &$model, $eventId, $planParams, $editRrule = self::CALENDAR_PLAN_EDIT_THIS) {
 		$this->arrangeData($planParams);
 
-		//CalendarCompDtstartendの対象データ取得
-		$this->loadDtstartendAndRruleModels($model);
+		//CalendarEventの対象データ取得
+		$this->loadEventAndRruleModels($model);
 
-		$results = $this->getCalendarCompDtstartendAndRrule($model, $dtstartendId, $editRrule);
+		$results = $this->getCalendarEventAndRrule($model, $eventId, $editRrule);
 		if (empty($results)) {
-			return $dtstartendId;	//対象が無い場合、成功したとみなし、$dtstartendIdを返す。
+			return $eventId;	//対象が無い場合、成功したとみなし、$eventIdを返す。
 		}
 
-		//対象となるデータを$dtstartendData、$rruleDataそれぞれにセット
-		$dtstartendData = $rruleData = array();
+		//対象となるデータを$eventData、$rruleDataそれぞれにセット
+		$eventData = $rruleData = array();
 
-		list($dtstartendData, $rruleData) = $this->setDtstartendDataAndRruleData($model, $results, $dtstartendData, $rruleData);
+		list($eventData, $rruleData) = $this->setEventDataAndRruleData($model, $results, $eventData, $rruleData);
 
-		$rruleKey = $rruleData['CalendarCompRrule']['key'];
-		if (!isset($planParams['timezone_offset'])) { //timezone_offsetがなければ、calendar_comp_dtstartendテーブルからセットする。
-			$planParams['timezone_offset'] = $dtstartendData['CalendarCompDtstartend']['timezone_offset'];
+		$rruleKey = $rruleData['CalendarRrule']['key'];
+		if (!isset($planParams['timezone_offset'])) { //timezone_offsetがなければ、calendar_eventテーブルからセットする。
+			$planParams['timezone_offset'] = $eventData['CalendarEvent']['timezone_offset'];
 		}
 
 		//Rruleデータの全更新、指定以降更新、追加処理
@@ -92,7 +92,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			$this->updateRruleDataAll($model, $planParams, $rruleData);
 		} elseif ($editRrule === self::CALENDAR_PLAN_EDIT_AFTER) {
 			$this->setRruleData($planParams, $rruleData, self::CALENDAR_UPDATE_MODE);
-			list($rruleData, $dtstartendData) = $this->updatePlanByAfter($model, $dtstartendId, $rruleKey, $planParams, $rruleData, $dtstartendData);
+			list($rruleData, $eventData) = $this->updatePlanByAfter($model, $eventId, $rruleKey, $planParams, $rruleData, $eventData);
 		} else {
 			if (!$model->Behaviors->hasMethod('insertRruleData')) {
 				$model->Behaviors->load('Calendars.CalendarInsertPlan');
@@ -102,18 +102,18 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 																//rruleDataの中身をここで新rruleDataで上書きする.
 		}
 
-		$this->setDtstartendData($planParams, $rruleData, $dtstartendData);
-		$dtstartendData = $this->updateDtstartData($model, $planParams, $rruleData, $dtstartendData);
+		$this->setEventData($planParams, $rruleData, $eventData);
+		$eventData = $this->updateDtstartData($model, $planParams, $rruleData, $eventData);
 
 		if ($editRrule !== self::CALENDAR_PLAN_EDIT_THIS) {
 			//新しく作った、または更新したrruleDataのrruleを改めて以下で設定(更新)している。
 			if (!$model->Behaviors->hasMethod('insertRrule')) {
 				$model->Behaviors->load('Calendars.CalendarRruleEntry');
 			}
-			$model->insertRrule($planParams, $rruleData, $dtstartendData);
+			$model->insertRrule($planParams, $rruleData, $eventData);
 		}
 
-		return $dtstartendId;
+		return $eventId;
 	}
 
 /**
@@ -150,21 +150,21 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 	}
 
 /**
- * CalendarCompDtstartendの対象データ取得
+ * CalendarEventの対象データ取得
  *
  * @param Model &$model 実際のモデル名
- * @param int $dtstartendId CalendarCompDtstarend.id
+ * @param int $eventId CalendarEvent.id
  * @param string $editRrule editRrule デフォルト値 self::CALENDAR_PLAN_EDIT_THIS
- * @return 成功時 array 条件にマッチするCalendarCompDtstartendDataとそのbelongsTo,hasOne関係のデータ（実際には、CalendarCompRruleData), 失敗時 空配列
+ * @return 成功時 array 条件にマッチするCalendarEventDataとそのbelongsTo,hasOne関係のデータ（実際には、CalendarRruleData), 失敗時 空配列
  */
-	public function getCalendarCompDtstartendAndRrule(Model &$model, $dtstartendId, $editRrule) {
+	public function getCalendarEventAndRrule(Model &$model, $eventId, $editRrule) {
 		$params = array(
-			'conditions' => array('CalendarsCompDtstartend.id' => $dtstartendId),
+			'conditions' => array('CalendarsEvent.id' => $eventId),
 			'recursive' => 0,		//belongTo, hasOneの１跨ぎの関係までとってくる。
-			'fields' => array('CalendarCompDtstartend.*', 'CalendarCompRrule.*'),
+			'fields' => array('CalendarEvent.*', 'CalendarRrule.*'),
 			'callbacks' => false
 		);
-		return $model->CalendarCompDtstartend->find('first', $params);
+		return $model->CalendarEvent->find('first', $params);
 	}
 
 /**
@@ -175,13 +175,13 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @return void
  */
 	public function setRruleData2Data($rruleData, &$data) {
-		$data['CalendarCompRrule']['location'] = $rruleData['CalendarCompRrule']['location'];
-		$data['CalendarCompRrule']['contact'] = $rruleData['CalendarCompRrule']['contact'];
-		$data['CalendarCompRrule']['description'] = $rruleData['CalendarCompRrule']['description'];
-		$data['CalendarCompRrule']['rrule'] = $rruleData['CalendarCompRrule']['rrule'];
-		$data['CalendarCompRrule']['room_id'] = $rruleData['CalendarCompRrule']['room_id'];
-		$data['CalendarCompRrule']['status'] = $rruleData['CalendarCompRrule']['status'];
-		$data['CalendarCompRrule']['language_id'] = $rruleData['CalendarCompRrule']['language_id'];
+		//$data['CalendarRrule']['location'] = $rruleData['CalendarRrule']['location'];
+		//$data['CalendarRrule']['contact'] = $rruleData['CalendarRrule']['contact'];
+		//$data['CalendarRrule']['description'] = $rruleData['CalendarRrule']['description'];
+		$data['CalendarRrule']['rrule'] = $rruleData['CalendarRrule']['rrule'];
+		$data['CalendarRrule']['room_id'] = $rruleData['CalendarRrule']['room_id'];
+		$data['CalendarRrule']['status'] = $rruleData['CalendarRrule']['status'];
+		//$data['CalendarRrule']['language_id'] = $rruleData['CalendarRrule']['language_id'];
 	}
 
 /**
@@ -194,26 +194,26 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  */
 	public function updateRruleDataAll(Model &$model, $planParams, $rruleData) {
-		if (!(isset($this->CalendarCompRrule))) {
+		if (!(isset($this->CalendarRrule))) {
 			$model->loadModels([
-				'CalendarCompRrule' => 'Calendars.CalendarCompRrule',
+				'CalendarRrule' => 'Calendars.CalendarRrule',
 			]);
 		}
 
 		//updateAllだとmodifiedを更新してくれないので、find+saveで実現する。
-		$conditions = array('CalendarCompRrule.key' => $rruleData['CalendarCompRrule']['key']);
+		$conditions = array('CalendarRrule.key' => $rruleData['CalendarRrule']['key']);
 		$params = array(
 			'conditions' => $conditions,
 			'recursive' => (-1),
-			'fields' => array('CalendarCompRrule.*'),
+			'fields' => array('CalendarRrule.*'),
 			'callbacks' => false
 		);
 		$results = $model->Task->find('all', $params);
 		if (is_array($results) && count($results) > 0) {
 			foreach ($results as $data) {
 				$this->setRruleData2Data($rruleData, $data);
-				if (!$model->CalendarCompRrule->save($data)) {	//validateもここで走る
-					$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarCompRrule->validationErrors);
+				if (!$model->CalendarRrule->save($data)) {	//validateもここで走る
+					$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarRrule->validationErrors);
 					//throw new InternalErrorException(__d('Calendars', 'Task plugin save error.'));
 					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 				}
@@ -222,105 +222,105 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 	}
 
 /**
- * DtstartendDataのデータ更新
+ * EventDataのデータ更新
  *
  * @param Model &$model モデル 
  * @param array $planParams 予定パラメータ
  * @param array $rruleData rruleデータ
- * @param array $dtstartendData dtstartendデータ
- * @return array $dtstartendData 変更後の$dtstartendDataを返す
+ * @param array $eventData eventデータ
+ * @return array $eventData 変更後の$eventDataを返す
  * @throws InternalErrorException
  */
-	public function updateDtstartData(Model &$model, $planParams, $rruleData, $dtstartendData) {
-		if (!(isset($this->CalendarCompDtstartend) && is_callable($this->CalendarCompDtstartend->create))) {
+	public function updateDtstartData(Model &$model, $planParams, $rruleData, $eventData) {
+		if (!(isset($this->CalendarEvent) && is_callable($this->CalendarEvent->create))) {
 			$model->loadModels([
-				'CalendarCompDtstartend' => 'Calendars.CalendarCompDtstartend',
+				'CalendarEvent' => 'Calendars.CalendarEvent',
 			]);
 		}
 
-		$this->CalendarCompDtstartend->set($dtstartendData);
-		$dtstartendId = $dtstartendData['CalendarCompDtstartend']['id'];	//update対象のststartendIdを退避
+		$this->CalendarEvent->set($eventData);
+		$eventId = $eventData['CalendarEvent']['id'];	//update対象のststartendIdを退避
 
-		if (!$this->CalendarCompDtstartend->validates()) {		//dtstartendDataをチェック
-			$this->validationErrors = Hash::merge($this->validationErrors, $this->CalendarCompDtstartend->validationErrors);
-			//throw new InternalErrorException(__d('Calendars', 'Dtstartend data ofr update check error.'));
+		if (!$this->CalendarEvent->validates()) {		//eventDataをチェック
+			$this->validationErrors = Hash::merge($this->validationErrors, $this->CalendarEvent->validationErrors);
+			//throw new InternalErrorException(__d('Calendars', 'Event data ofr update check error.'));
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
-		if (!$this->CalendarCompDtstartend->save($dtstartendData, false)) {	//保存のみ	//aaaaa
-			$this->validationErrors = Hash::merge($this->validationErrors, $this->CalendarCompDtstartend->validationErrors);
-			//throw new InternalErrorException(__d('Calendars', 'Dtstartend data for udapte save error.'));
+		if (!$this->CalendarEvent->save($eventData, false)) {	//保存のみ	//aaaaa
+			$this->validationErrors = Hash::merge($this->validationErrors, $this->CalendarEvent->validationErrors);
+			//throw new InternalErrorException(__d('Calendars', 'Event data for udapte save error.'));
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
-		if ($dtstartendId !== $this->CalendarCompDtstartend->id) {
+		if ($eventId !== $this->CalendarEvent->id) {
 			//insertではなくupdateでなくてはならないのに、insertになってしまった。(つまりid値が新しくなってしまった）
 			//throw new InternalErrorException(__d('Calendars', 'insert happened error.'));
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
-		$dtstartendData['CalendarCompDtstartend']['id'] = $this->CalendarCompDtstartend->id;	//採番されたidをdtstartendDataにセットしておく
+		$eventData['CalendarEvent']['id'] = $this->CalendarEvent->id;	//採番されたidをeventDataにセットしておく
 
-		$this->updateShareUsers($model, $planParams['share_users'], $dtstartendId); //カレンダー共有ユーザ更新
+		$this->updateShareUsers($model, $planParams['share_users'], $eventId); //カレンダー共有ユーザ更新
 
-		return $dtstartendData;
+		return $eventData;
 	}
 
 /**
- * 指定dtstartendデータ以降の予定の変更
+ * 指定eventデータ以降の予定の変更
  *
  * @param Model &$model 実際のモデル名
- * @param int $dtstartendId CalendarCompDtstarend.id
+ * @param int $eventId CalendarEvent.id
  * @param string $rruleKey rruleKey
  * @param array $planParams  予定パラメータ
  * @param array $rruleData rruleData
- * @param array $dtstartendData dtstartendData
- * @return array array($rruleData, $dtstartendData)を返す。
+ * @param array $eventData eventData
+ * @return array array($rruleData, $eventData)を返す。
  * @throws InternalErrorException
  */
-	public function updatePlanByAfter(Model &$model, $dtstartendId, $rruleKey, $planParams, $rruleData, $dtstartendData) {
-		//まずは、指定日付以降で自分以外の同一rruleIdを親にもつdtstartendDataをすべて消す。
+	public function updatePlanByAfter(Model &$model, $eventId, $rruleKey, $planParams, $rruleData, $eventData) {
+		//まずは、指定日付以降で自分以外の同一rruleIdを親にもつeventDataをすべて消す。
 		$conditions = array(
-			'CalendarCompDtstartend.calendar_comp_rrule_id' => $dtstartendData['CalendarCompDtstartend']['calendar_comp_rrule_id'],
-			'CalendarCompDtstartend.dtstart >=' => $dtstartendData['CalendarCompDtstartend']['dtstart'],
-			'CalendarCompDtstartend.id <>' => $dtstartendId,
+			'CalendarEvent.calendar_rrule_id' => $eventData['CalendarEvent']['calendar_rrule_id'],
+			'CalendarEvent.dtstart >=' => $eventData['CalendarEvent']['dtstart'],
+			'CalendarEvent.id <>' => $eventId,
 		);
-		if (!$model->CalendarCompDtstartend->deleteAll($conditions, true)) {	//第２引数のcascadeをtrueにして、このdtstartendDataに依存しているCalendarCompDtstartendShareUserデータもすべて消す。
+		if (!$model->CalendarEvent->deleteAll($conditions, true)) {	//第２引数のcascadeをtrueにして、このeventDataに依存しているCalendarEventShareUserデータもすべて消す。
 			//deleteAll失敗
 			//throw new InternalErrorException(__d('Calendars', 'delete all error.'));
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
-		//消した後、自分以外の同一rruleIdを親にもつdtstartendDataの件数を調べる。
+		//消した後、自分以外の同一rruleIdを親にもつeventDataの件数を調べる。
 		$params = array(
 			'conditions' => array(
-				'CalendarCompDtstartend.calendar_comp_rrule_id' => $dtstartendData['CalendarCompDtstartend']['calendar_comp_rrule_id'],
-				'CalendarCompDtstartend.id <>' => $dtstartendId,
+				'CalendarEvent.calendar_rrule_id' => $eventData['CalendarEvent']['calendar_rrule_id'],
+				'CalendarEvent.id <>' => $eventId,
 			),
 		);
-		$count = $model->CalendarCompDtstartend->find('count', $params);
+		$count = $model->CalendarEvent->find('count', $params);
 		if (!is_int($count)) {	//整数以外が返ってきたらエラー
 			//throw new InternalErrorException(__d('Calendars', 'find count error.'));
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 		if ($count === 0) {
-			//今の親rruleDataは、自分(dtstartendData)以外の子を持たなくなった。
+			//今の親rruleDataは、自分(eventData)以外の子を持たなくなった。
 			//（自分の新しい親rruleDataをこの後つくるので）現在の親rruleDataは消す。
 			//
 			$conditions = array(
 			);
-			if (!$model->CalendarCompRrule->delete($dtstartendData['CalendarCompDtstartend']['calendar_comp_rrule_id'], false)) {
+			if (!$model->CalendarRrule->delete($eventData['CalendarEvent']['calendar_rrule_id'], false)) {
 				//delete失敗
 				//throw new InternalErrorException(__d('Calendars', 'delete error.'));
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 		} else {
-			//今の親rruleDataは、自分(dtstartendData)以外の子（時間軸では自分より前の時間）を持っている。
+			//今の親rruleDataは、自分(eventData)以外の子（時間軸では自分より前の時間）を持っている。
 			//なので、今の親rruleDataのrruleのUNTIL値を「自分の直前まで」に書き換えて、
 			//自分を今の親rruleDataの管理下から切り離す。(自分の新しい親rruleDataはこのあと作る）
 			//
 
 			//親のrruleDataはすでに取得しているので、rrule文字列はすぐに取得できる。
-			$rruleArr = $this->parseRrule($rruleData['CalendarCompRrule']['rrule']);
+			$rruleArr = $this->parseRrule($rruleData['CalendarRrule']['rrule']);
 
 			//以下２行は冗長とおもわれる。取り出して上書きしても順番ふくめ変わらないので外す。
 			//$freq = $rruleArr['FREQ'];
@@ -334,9 +334,9 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 
 			//今のrruleDataデータのrrule文字列を書き換える。
 			$rruleDataBefore = $rruleData;
-			$rruleDataBefore['CalendarCompRrule']['rrule'] = $rruleBeforeStr;
-			$model->CalendarCompRrule->clear();
-			if (!$model->CalendarCompRrule->save($rruleDataBefore, false)) {	//rruleDataNowのidは、現rruleDataのidであるので、更新となる。
+			$rruleDataBefore['CalendarRrule']['rrule'] = $rruleBeforeStr;
+			$model->CalendarRrule->clear();
+			if (!$model->CalendarRrule->save($rruleDataBefore, false)) {	//rruleDataNowのidは、現rruleDataのidであるので、更新となる。
 				//save失敗
 				//throw new InternalErrorException(__d('Calendars', 'save error.'));
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
@@ -351,35 +351,35 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 															//(CalendarInsertPlanBehaviorのメソッドを利用)
 															//rruleDataは新rruleDataで上書きしている。
 
-		//新しく親(insertされた)CalendarCompRruleのidは $rruleData のidにセットされている。
+		//新しく親(insertされた)CalendarRruleのidは $rruleData のidにセットされている。
 
-		return array($rruleData, $dtstartendData);
+		return array($rruleData, $eventData);
 	}
 
 /**
- * resutlsよりdtstartendDataとrruleDataに値セット
+ * resutlsよりeventDataとrruleDataに値セット
  *
  * @param Model &$model モデル
  * @param array $results results
- * @param array $dtstartendData dtstartendData
+ * @param array $eventData eventData
  * @param array $rruleData rruleData
- * @return array array($dtstartendData, $rruleData)を返す
+ * @return array array($eventData, $rruleData)を返す
  * @throws InternalErrorException
  */
-	public function setDtstartendDataAndRruleData(Model &$model, $results, $dtstartendData, $rruleData) {
-		if (!is_array($results) || !isset($results['CalendarCompDtstartend'])) {
-			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarCompDtstartend->validationErrors);
-				//throw new InternalErrorException(__d('Calendars', 'find result at dtstartend error.'));
+	public function setEventDataAndRruleData(Model &$model, $results, $eventData, $rruleData) {
+		if (!is_array($results) || !isset($results['CalendarEvent'])) {
+			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarEvent->validationErrors);
+				//throw new InternalErrorException(__d('Calendars', 'find result at event error.'));
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
-		$dtstartendData['CalendarCompDtstartend'] = $resutls['CalendarCompDtstartend'];
-		if (!is_array($results) || !isset($results['CalendarCompRrule'])) {
-			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarCompDtstartend->validationErrors);
+		$eventData['CalendarEvent'] = $resutls['CalendarEvent'];
+		if (!is_array($results) || !isset($results['CalendarRrule'])) {
+			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarEvent->validationErrors);
 				//throw new InternalErrorException(__d('Calendars', 'find result at rrule error.'));
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
-		$rruleData['CalendarCompRrule'] = $resutls['CalendarCompRrule'];
+		$rruleData['CalendarRrule'] = $resutls['CalendarRrule'];
 
-		return array($dtstartendData, $rruleData);
+		return array($eventData, $rruleData);
 	}
 }

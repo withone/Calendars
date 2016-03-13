@@ -39,14 +39,14 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * @param Model &$model 実際のモデル名
  * @param array $planParams planParams
  * @param ssary $rruleData rruleData
- * @param array $dtstartendData dtstartendデータ(CalendarCompDtstartendのモデルデータ)
+ * @param array $eventData eventデータ(CalendarEventのモデルデータ)
  * @param int $first 最初のデータかどうか 1:最初である  0:最初ではない
  * @param int $bymonthday bymonthday
  * @return array $result 結果
  */
-	public function insertYearly(Model &$model, $planParams, $rruleData, $dtstartendData, $first = 0, $bymonthday = 0) {
-		list($startDate, $startTime, $endDate, $endTime, $diffNum) = $this->setStartEndDateAndTime($model, $dtstartendData, $first);
-		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $dtstartendData['CalendarCompRtstartend']['timezone_offset'])) {
+	public function insertYearly(Model &$model, $planParams, $rruleData, $eventData, $first = 0, $bymonthday = 0) {
+		list($startDate, $startTime, $endDate, $endTime, $diffNum) = $this->setStartEndDateAndTime($model, $eventData, $first);
+		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $eventData['CalendarEvent']['timezone_offset'])) {
 
 			//insertYearly()は再帰callされるが、ここ(isRepeatable()===falseになった時、復帰する。
 			return true;
@@ -58,19 +58,19 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 
 		$startDateTime = $endDateTime = '';
 		$dtArray = array($startDate, $startTime, $endDate, $endTime);
-		list($dtstartendData, $startDateTime, $endDateTime) = $this->setStartAndEndDateTimeEtc($model, $dtArray, $first, $bymonthday, $diffNum, $dtstartendData);
+		list($eventData, $startDateTime, $endDateTime) = $this->setStartAndEndDateTimeEtc($model, $dtArray, $first, $bymonthday, $diffNum, $eventData);
 
 		//
-		//dtstartendDataの開始・終了の日付と時刻を更新するしてから、insertYearly()を再帰callする。
+		//eventDataの開始・終了の日付と時刻を更新するしてから、insertYearly()を再帰callする。
 		//
-		$dtstartendData['CalendarCompRtstartend']['start_date'] = CalendarTime::timezoneDate($startDateTime, 1, 'Ymd');
-		$dtstartendData['CalendarCompRtstartend']['start_time'] = CalendarTime::timezoneDate($startDateTime, 1, 'His');
-		$dtstartendData['CalendarCompRtstartend']['end_date'] = CalendarTime::timezoneDate($endDateTime, 1, 'Ymd');
-		$dtstartendData['CalendarCompRtstartend']['end_time'] = CalendarTime::timezoneDate($endDateTime, 1, 'His');
+		$eventData['CalendarEvent']['start_date'] = CalendarTime::timezoneDate($startDateTime, 1, 'Ymd');
+		$eventData['CalendarEvent']['start_time'] = CalendarTime::timezoneDate($startDateTime, 1, 'His');
+		$eventData['CalendarEvent']['end_date'] = CalendarTime::timezoneDate($endDateTime, 1, 'Ymd');
+		$eventData['CalendarEvent']['end_time'] = CalendarTime::timezoneDate($endDateTime, 1, 'His');
 		if (!empty($model->rrule['BYDAY']) && count($model->rrule['BYDAY']) > 0) {
-			return $this->insertYearly($model, $planParams, $rruleData, $dtstartendData);	//insertYearly()の再帰call ケース1
+			return $this->insertYearly($model, $planParams, $rruleData, $eventData);	//insertYearly()の再帰call ケース1
 		} else {
-			return $this->insertYearly($model, $planParams, $rruleData, $dtstartendData, 0, $bymonthday); //insertYearly()の再帰call ケース2
+			return $this->insertYearly($model, $planParams, $rruleData, $eventData, 0, $bymonthday); //insertYearly()の再帰call ケース2
 		}
 	}
 
@@ -78,13 +78,13 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * 開始と終了の日付、時刻の生成
  *
  * @param Model &$model モデル
- * @param array $dtstartendData dtstartend配列データ
+ * @param array $eventData event配列データ
  * @param int $first 最初のデータかどうか. 1:最初 0:最初ではない
  * @return array array($startDate, $startTime, $endDate, $endTime, $diffNum)を返す
  */
-	public function setStartEndDateAndTime(Model &$model, $dtstartendData, $first) {
-		$sTime = CalendarTime::timezoneDate($dtstartendData['CalendarCompRtstartend']['start_date'] . $dtstartendData['CalendarCompRtstartend']['start_time'], 0, 'YmdHis');
-		$eTime = CalendarTime::timezoneDate($dtstartendData['CalendarCompRtstartend']['end_date'] . $dtstartendData['CalendarCompRtstartend']['end_time'], 0, 'YmdHis');
+	public function setStartEndDateAndTime(Model &$model, $eventData, $first) {
+		$sTime = CalendarTime::timezoneDate($eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'], 0, 'YmdHis');
+		$eTime = CalendarTime::timezoneDate($eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'], 0, 'YmdHis');
 
 		//開始日付(00:00:00)と終了日付(00:00:00)の累積秒および、その「差分日数」を計算する。
 		$startTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), substr($sTime, 6, 2), substr($sTime, 0, 4));
@@ -120,10 +120,10 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * @param int $first first 最初かどうか。1:最初 0:最初でない
  * @param int $bymonthday bymonthday 毎月ｘ日のx日のこと
  * @param int $diffNum diffNum開始日と終了日の差分日数
- * @param array $dtstartendData dtstartendData配列データ
- * @return array array($dtstartendData, $startDateTime, $endDateTime)を返す。
+ * @param array $eventData eventData配列データ
+ * @return array array($eventData, $startDateTime, $endDateTime)を返す。
  */
-	public function setStartAndEndDateTimeEtc(Model &$model, $dtArray, $first, $bymonthday, $diffNum, $dtstartendData) {
+	public function setStartAndEndDateTimeEtc(Model &$model, $dtArray, $first, $bymonthday, $diffNum, $eventData) {
 		list($startDate, $startTime, $endDate, $endTime) = $dtArray;
 
 		$result = true;
@@ -133,12 +133,12 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 				continue;
 			}
 
-			$this->setDtStartendData($first, $currentMonth, $month, $startDate, $startTime, $endDate, $endTime, $diffNum, $dtstartendData);
+			$this->setDtStartendData($first, $currentMonth, $month, $startDate, $startTime, $endDate, $endTime, $diffNum, $eventData);
 
 			if (!empty($model->rrule['BYDAY']) && count($model->rrule['BYDAY']) > 0) {
-				$result = $this->insertYearlyByday($model, $planParams, $rruleData, $dtstartendData, $first);
+				$result = $this->insertYearlyByday($model, $planParams, $rruleData, $eventData, $first);
 			} else {
-				$result = $this->insertYearlyByMonthday($model, $planParams, $rruleData, $dtstartendData, $bymonthday, $first);
+				$result = $this->insertYearlyByMonthday($model, $planParams, $rruleData, $eventData, $bymonthday, $first);
 			}
 			if ($result === false) {
 				return false;
@@ -150,11 +150,11 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 			list($startDateTime, $endDateTime) = $result;
 		}
 
-		return array($dtstartendData, $startDateTime, $endDateTime);
+		return array($eventData, $startDateTime, $endDateTime);
 	}
 
 /**
- * dtstartendDataへのデータセット
+ * eventDataへのデータセット
  *
  * @param int $first first
  * @param int $currentMonth currentMonth
@@ -164,21 +164,21 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * @param string $endDate endDate
  * @param string $endTime endTime
  * @param int $diffNum diffNum
- * @param array &$dtstartendData dtstartendData
+ * @param array &$eventData eventData
  * @return void
  */
-	public function setDtStartendData($first, $currentMonth, $month, $startDate, $startTime, $endDate, $endTime, $diffNum, &$dtstartendData) {
+	public function setDtStartendData($first, $currentMonth, $month, $startDate, $startTime, $endDate, $endTime, $diffNum, &$eventData) {
 		if ($first && $currentMonth === $month) {
-			$dtstartendData['CalendarCompRtstartend']['start_date'] = $startDate;
-			$dtstartendData['CalendarCompRtstartend']['start_time'] = $startTime;
-			$dtstartendData['CalendarCompRtstartend']['end_date'] = $endDate;
-			$dtstartendData['CalendarCompRtstartend']['end_time'] = $endTime;
+			$eventData['CalendarEvent']['start_date'] = $startDate;
+			$eventData['CalendarEvent']['start_time'] = $startTime;
+			$eventData['CalendarEvent']['end_date'] = $endDate;
+			$eventData['CalendarEvent']['end_time'] = $endTime;
 		} else {
-			$dtstartendData['CalendarCompRtstartend']['start_date'] = substr($startDate, 0, 4) . sprintf('%02d', $month) . '01';
-			$dtstartendData['CalendarCompRtstartend']['start_time'] = $startTime;
+			$eventData['CalendarEvent']['start_date'] = substr($startDate, 0, 4) . sprintf('%02d', $month) . '01';
+			$eventData['CalendarEvent']['start_time'] = $startTime;
 			// end_dateにはstartDate + $diffNumの日付をセット(12/31の場合に翌年がセットされるため)
-			$dtstartendData['CalendarCompRtstartend']['end_date'] = substr($startDate, 0, 4) . sprintf('%02d', $month) . sprintf('%02d', 1 + $diffNum);
-			$dtstartendData['CalendarCompRtstartend']['end_time'] = $endTime;
+			$eventData['CalendarEvent']['end_date'] = substr($startDate, 0, 4) . sprintf('%02d', $month) . sprintf('%02d', 1 + $diffNum);
+			$eventData['CalendarEvent']['end_time'] = $endTime;
 		}
 	}
 
@@ -188,16 +188,16 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * @param Model &$model 実際のモデル名
  * @param array $planParams planParams
  * @param array $rruleData rruleData
- * @param array $dtstartendData dtstartendデータ(CalendarCompDtstartendのモデルデータ)
+ * @param array $eventData eventデータ(CalendarEventのモデルデータ)
  * @param int $bymonthday bymonthday
  * @param int $first 最初のデータかどうか 1:最初である  0:最初ではない
  * @return mixed boolean true:登録せず終了 false:失敗、array 登録成功: array(登録した開始年月日時分秒, 登録した終了年月日時分秒)
  */
-	public function insertYearlyByMonthday(Model &$model, $planParams, $rruleData, $dtstartendData, $bymonthday, $first) {
+	public function insertYearlyByMonthday(Model &$model, $planParams, $rruleData, $eventData, $bymonthday, $first) {
 		$model->rrule['INDEX']++;
 
 		//開始日付時刻の処理
-		$sTime = $dtstartendData['CalendarCompRtstartend']['start_date'] . $dtstartendData['CalendarCompRtstartend']['start_time'];
+		$sTime = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'];
 		$startTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), substr($sTime, 6, 2), substr($sTime, 0, 4));
 
 		//インターバル日数の計算
@@ -222,7 +222,7 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		}
 
 		//終了日付時刻の処理
-		$eTime = $dtstartendData['CalendarCompRtstartend']['end_date'] . $dtstartendData['CalendarCompRtstartend']['end_time'];
+		$eTime = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'];
 		$endTimestamp = mktime(0, 0, 0, substr($eTime, 4, 2), substr($eTime, 6, 2), substr($eTime, 0, 4));
 
 		//開始日と終了日の差分日数の計算
@@ -249,13 +249,13 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		$endDate = date('Ymd', $endTimestamp);
 		$endTime = date('His', $endTimestamp);
 
-		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $dtstartendData['CalendarCompRtstartend']['timezone_offset'])) {
+		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $eventData['CalendarEvent']['timezone_offset'])) {
 			//繰返しがとまったので、callから復帰する。
 			return true;
 		}
 
-		$rDtstartendData = $this->insert($model, $planParams, $rruleData, $dtstartendData, ($startDate . $startTime), ($endDate . $endTime));
-		if ($rDtstartendData['CalendarCompDtstartend']['id'] === null) {
+		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData, ($startDate . $startTime), ($endDate . $endTime));
+		if ($rEventData['CalendarEvent']['id'] === null) {
 			return false;
 		} else {
 			return array(($startDate . $startTime), ($endDate . $endTime));
@@ -268,11 +268,11 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * @param Model &$model 実際のモデル名
  * @param array $planParams planParams
  * @param array $rruleData rruleData
- * @param array $dtstartendData dtstartendデータ(CalendarCompDtstartendのモデルデータ)
+ * @param array $eventData eventデータ(CalendarEventのモデルデータ)
  * @param int $first 最初のデータかどうか 1:最初である  0:最初ではない
  * @return mixed boolean true:登録せず終了 false:失敗、array 登録成功: array(登録した開始年月日時分秒, 登録した終了年月日時分秒)
  */
-	public function insertYearlyByday(Model &$model, $planParams, $rruleData, $dtstartendData, $first = 0) {
+	public function insertYearlyByday(Model &$model, $planParams, $rruleData, $eventData, $first = 0) {
 		$model->rrule['INDEX']++;
 
 		//BYDAYは'2MO','3SA'といった形式である
@@ -281,8 +281,8 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		//よって、weekには、、最後２文字を取り除いた、第x月曜、第y土曜のx、yが取り出せる。
 		$week = intval(substr($model->rrule['BYDAY'][0], 0, -2));	//-2で最後２文字をけずる。
 
-		$sTime = $dtstartendData['CalendarCompRtstartend']['start_date'] . $dtstartendData['CalendarCompRtstartend']['start_time'];
-		$eTime = $dtstartendData['CalendarCompRtstartend']['end_date'] . $dtstartendData['CalendarCompRtstartend']['end_time'];
+		$sTime = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'];
+		$eTime = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'];
 
 		$timestamp = mktime(0, 0, 0, substr($sTime, 4, 2), 1, substr($sTime, 0, 4));	//開始日の同年同月1日のtimestamp
 
@@ -298,13 +298,13 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		$startDate = $startTime = $endDate = $endTime = '';
 		$this->setStartDateTiemAndEndDateTime($sTime, $eTime, $startDate, $startTime, $endDate, $endTime);
 
-		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $dtstartendData['CalendarCompRtstartend']['timezone_offset'])) {
+		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $eventData['CalendarEvent']['timezone_offset'])) {
 			//繰返しがとまったので、復帰する。
 			return true;
 		}
 
-		$rDtstartendData = $this->insert($model, $planParams, $rruleData, $dtstartendData, ($startDate . $startTime), ($endDate . $endTime));
-		if ($rDtstartendData['CalendarCompDtstartend']['id'] === null) {
+		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData, ($startDate . $startTime), ($endDate . $endTime));
+		if ($rEventData['CalendarEvent']['id'] === null) {
 			return false;
 		}
 

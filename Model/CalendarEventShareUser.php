@@ -1,8 +1,8 @@
 <?php
 /**
- * CalendarCompDtstartendShareUser Model
+ * CalendarEventShareUser Model
  *
- * @property CalendarCompDtstartend $CalendarCompDtstartend
+ * @property CalendarEvent $CalendarEvent
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author AllCreator Co., Ltd. <info@allcreator.net>
@@ -14,12 +14,12 @@
 App::uses('CalendarsAppModel', 'Calendars.Model');
 
 /**
- * CalendarCompDtStartendShareUser Model
+ * CalendarEventShareUser Model
  *
  * @author AllCreator Co., Ltd. <info@allcreator.net>
  * @package NetCommons\Calendars\Model
  */
-class CalendarCompDtstartendShareUser extends CalendarsAppModel {
+class CalendarEventShareUser extends CalendarsAppModel {
 
 /**
  * use behaviors
@@ -44,9 +44,9 @@ class CalendarCompDtstartendShareUser extends CalendarsAppModel {
  * @var array
  */
 	public $belongsTo = array(
-		'CalendarCompDtstardend' => array(
-			'className' => 'Calendars.CalendarCompDtstartend',
-			'foreignKey' => 'calendar_comp_dtstartend_id',
+		'CalendarEvent' => array(
+			'className' => 'Calendars.CalendarEvent',
+			'foreignKey' => 'calendar_event_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
@@ -72,7 +72,7 @@ class CalendarCompDtstartendShareUser extends CalendarsAppModel {
  */
 	public function beforeValidate($options = array()) {
 		$this->validate = Hash::merge($this->validate, array(
-			'calender_comp_dtstartend_id' => array(
+			'calender_event_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'required' => true,

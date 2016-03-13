@@ -20,6 +20,24 @@ App:uses('CalendarTime', 'Calendars.Utility');
 class CalendarSupport {
 
 /**
+ * generateIcalUid
+ *
+ * iCalendar仕様のUID生成
+ *
+ * @param string $startDate カレンダー開始日付
+ * @param string $startTime カレンダー開始時刻
+ * @return string iCalendar仕様のUIDを生成.
+ */
+	public static function generateIcalUid($startDate, $startTime) {
+		$domain = 'localhost';
+		if (preg_match("/(?:.+)(?:\/\/)([^\/]+)/", FULL_BASE_URL, $matches) === 1) {
+			$domain = $matches[1];
+		}
+		$iCalendarUid = $startDate . 'T' . $startTime . 'Z' . '-' . uniquid() . '@' . $domain;
+		return $iCalendarUid;
+	}
+
+/**
  * 繰返し可能かどうか
  *
  * @param array $rrule rrule配列

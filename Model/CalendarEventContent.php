@@ -1,6 +1,6 @@
 <?php
 /**
- * CalendarCompDtstartendContent Model
+ * CalendarEventContent Model
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author AllCreator Co., Ltd. <info@allcreator.net>
@@ -17,7 +17,7 @@ App::uses('CalendarsAppModel', 'Calendars.Model');
  * @author AllCreator Co., Ltd. <info@allcreator.net>
  * @package NetCommons\Calendars\Model
  */
-class CalendarCompDtstartendContent extends CalendarsAppModel {
+class CalendarEventContent extends CalendarsAppModel {
 
 /**
  * use behaviors
@@ -33,9 +33,9 @@ class CalendarCompDtstartendContent extends CalendarsAppModel {
  * @var array
  */
 	public $belongsTo = array(
-		'CalendarCompDtstartend' => array(
-			'className' => 'Calendars.CalendarCompDtstartend',
-			'foreignKey' => 'calendar_comp_dtstartend_id',
+		'CalendarEvent' => array(
+			'className' => 'Calendars.CalendarEvent',
+			'foreignKey' => 'calendar_event_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
@@ -91,18 +91,18 @@ class CalendarCompDtstartendContent extends CalendarsAppModel {
 					'required' => true,
 				),
 			),
-			'content_id' => array(
+			'content_key' => array(
 				'numeric' => array(
-					'rule' => array('numeric'),
-					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('calendars', 'content id')),
+					'rule' => array('notBlank'),
+					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('calendars', 'content key')),
 					'allowEmpty' => false,
 					'required' => true,
 				),
 			),
-			'calendar_comp_dtstartend_id' => array(
+			'calendar_event_id' => array(
 				'numeric' => array(
 					'rule' => array('numeric'),
-					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('calendars', 'calendar_comp_dtstartend id')),
+					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('calendars', 'calendar_event id')),
 					'allowEmpty' => false,
 					'required' => true,
 				),
@@ -112,4 +112,47 @@ class CalendarCompDtstartendContent extends CalendarsAppModel {
 		return parent::beforeValidate($options);
 	}
 
+/**
+ * saveLinkedData
+ *
+ * カレンダーイベントコンテンツ登録 
+ *
+ * @param array $rEventData イベントデータ
+ * @return mixed 成功時はModel::data、失敗時はfalse
+ * @throws InternalErrorException
+ */
+	public function saveLinkedData($rEventData) {
+		$data = false;
+		$this->begin();
+		try {
+			$options = array(
+				'conditions' => array(
+					$this->alias . '.model' => $rEventData[$this->alias]['model'],
+					$this->alias . '.content_key' => $rEventData[$this->alias]['content_key'],
+				)
+			);
+			$data = $this->find('first', $options);
+			if (! $data) {
+				//modelとcontent_key一致データなし。なので、insert
+				$data = $this->create();
+				$data[$this->alias]['model'] = $rEventData[$this->alias]['model'];
+				$data[$this->alias]['.content_key'] = $rEventData[$this->alias]['content_key'];
+				$data[$this->alias]['calendar_event_id'] = $rEventData['CalendarEvent']['id']; //これだけは親モデル
+			} else {
+				//modelとcontent_key一致データあり。なので、calendar_event_idを更新する。
+				$data[$this->alias]['calendar_event_id'] = $rEventData['CalendarEvent']['id']; //これだけは親モデル
+			}
+			if (! $this->save($data)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			$this->commit();
+		} catch (Exception $ex) {
+			//トランザクションRollback
+			$this->rollback();
+			//エラー出力
+			CakeLog::error($ex);
+			throw $ex;	//再throw
+		}
+		return $data;
+	}
 }

@@ -1,8 +1,6 @@
 <?php
 ?>
-<?php echo $this->NetCommonsHtml->script('/faqs/js/faqs.js'); ?>
-
-<?php echo $this->NetCommonsHtml->script('/calendars/js/calendars.js'); ?>
+<?php echo $this->element('Calendars.scripts'); ?>
 
 <article ng-controller="CalendarsDetailEdit" class="block-setting-body">
 <!--<article ng-controller="CalendarModalCtrl" class="block-setting-body">-->
@@ -29,7 +27,7 @@
 		<i><img style='width:1.8em; height:1.3em;' src='/calendars/img/svg/icon-weather3.svg' /></i>
 	</div>
 
-<?php echo $this->NetCommonsForm->input('CalendarCompDtstartend.title', array(
+<?php echo $this->NetCommonsForm->input('CalendarEvent.title', array(
 		'type' => 'text',
 		'label' => false,
 		//'required' => true,
@@ -57,16 +55,16 @@
 			'6' => __d('calendars', '全会員'),
 		);
 
-		echo $this->NetCommonsForm->label('CalendarCompDtstartend' . Inflector::camelize('room_id'), __d('calendars', '公開対象'));
+		echo $this->NetCommonsForm->label('CalendarEvent' . Inflector::camelize('room_id'), __d('calendars', '公開対象'));
 
-		//echo $this->NetCommonsForm->select('CalendarCompDtstartend.room_id', $options, array(
+		//echo $this->NetCommonsForm->select('CalendarEvent.room_id', $options, array(
 		//  'value' => __d('calendars', '開発部'),		//valueは初期値
 		//  'class' => 'form-control',
 		//  'empty' => false,
 		//	'required' => true,
 		//));
 
-		echo $this->NetCommonsForm->select('CalendarCompDtstartend.room_id', $options, array(
+		echo $this->NetCommonsForm->select('CalendarEvent.room_id', $options, array(
 			//'value' => __d('calendars', '開発部'),		//valueは初期値
 			//'selected' => $selectedIdx,
 			'class' => 'form-control',
@@ -110,7 +108,7 @@
 <div class="input-group">
 
 <?php
-	//'CalendarCompDtstartend'.Inflector::camelize('start_year'),
+	//'CalendarEvent'.Inflector::camelize('start_year'),
 
 	echo $this->element('NetCommons.datetimepicker');
 	$pickerOpt = str_replace('"', "'", json_encode(array(
@@ -122,7 +120,7 @@
 	$year = '2016';
 	$ngModel = 'start_year';
 
-	echo $this->NetCommonsForm->input('CalendarCompDtstartend.start_year',
+	echo $this->NetCommonsForm->input('CalendarEvent.start_year',
 	array(
 		'div' => false,
 		'label' => false,
@@ -182,7 +180,7 @@
 	$hour = '';
 
 	$ngModel = 'start_time';
-	echo $this->NetCommonsForm->input('CalendarCompDtstartend.start_time',
+	echo $this->NetCommonsForm->input('CalendarEvent.start_time',
 	array(
 		'div' => false,
 		'label' => false,
@@ -205,7 +203,7 @@
 
 <?php
 	$ngModel = 'end_time';
-	echo $this->NetCommonsForm->input('CalendarCompDtstartend.end_time',
+	echo $this->NetCommonsForm->input('CalendarEvent.end_time',
 	array(
 		'div' => false,
 		'label' => false,
@@ -268,9 +266,9 @@
 			'-1' => __d('calendars', '今すぐ'),
 		);
 
-		echo $this->NetCommonsForm->label('CalendarCompDtstartend' . Inflector::camelize('room_id'), __d('calendars', 'メール通知タイミング'));
+		echo $this->NetCommonsForm->label('CalendarEvent' . Inflector::camelize('room_id'), __d('calendars', 'メール通知タイミング'));
 
-		echo $this->NetCommonsForm->select('CalendarCompDtstartend.room_id', $options, array(
+		echo $this->NetCommonsForm->select('CalendarEvent.room_id', $options, array(
 			'value' => __d('calendars', '0分前'),		//valueは初期値
 			'class' => 'form-control',
 			'empty' => false,
@@ -285,7 +283,8 @@
 
 <div class="form-group" name="jumpDetailEntry">
 <div class="col-xs-12 col-sm-2 col-sm-offset-10">
-<div class='btn btn-success'>詳細な登録</div>
+
+<?php echo $this->CalendarPlan->makeDetailEditBtnHtml($vars); ?>
 
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->

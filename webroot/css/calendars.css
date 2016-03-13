@@ -1,4 +1,9 @@
-﻿/* カレンダー要素の非表示 */
+﻿/* カレンダー戻るボタン */
+.calendar-back-to-button {
+ margin-top: 1em;
+}
+
+/* カレンダー要素の非表示 */
 .calendar-hide {
  display: none;
 }

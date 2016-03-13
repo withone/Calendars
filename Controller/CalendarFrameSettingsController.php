@@ -48,13 +48,14 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 			//画面上部のタブ設定
 			'mainTabs' => array(
 				'frame_settings' => array('url' => array('controller' => 'calendar_frame_settings', 'action' => 'edit')),	//表示設定変更
-				'role_permissions' => array(
-					'url' => array('controller' => 'calendar_settings', 'action' => 'edit'),
-				),
-				'mail_setting' => array(		//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
-					'url' => array('controller' => 'calendar_mail_settings', 'action' => 'edit'),
-					'label' => 'mail_setting',
-				),
+				////暫定的に外す。
+				////'role_permissions' => array(
+				////	'url' => array('controller' => 'calendar_settings', 'action' => 'edit'),
+				////),
+				////'mail_setting' => array(		//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
+				////	'url' => array('controller' => 'calendar_mail_settings', 'action' => 'edit'),
+				////	'label' => 'mail_setting',
+				////),
 			),
 		),
 		'NetCommons.Permission' => array(

@@ -7,7 +7,7 @@
 <div class="clearfix"></div>
 
 
-<form>
+<!--<form>-->
 
 <?php echo $this->element('NetCommons.datetimepicker'); ?>
  
@@ -41,6 +41,6 @@
 
 <?php echo $this->element('Calendars.Calendars/change_style', array('frameId' => $frameId, 'languageId' => $languageId, 'vars' => $vars)); ?>
 
-</form>
+<!--</form>-->
 
 </article>

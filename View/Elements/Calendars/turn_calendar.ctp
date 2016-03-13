@@ -60,7 +60,7 @@
 			  </div>
 			  <div class="hidden-xs col-sm-4"  style="padding:5px;">
 	 			<li>
-					<label for="CalendarCompDtstartendTargetYear"><h4 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h4></label>
+					<label for="CalendarEventTargetYear"><h4 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h4></label>
 				</li>
 			  </div>
 			  <div class="col-xs-6 col-sm-4 calendar-pager-button">
@@ -74,7 +74,7 @@
 			</ul>
 		</div>
 		<div class="col-xs-12 visible-xs text-center">
-			<label for="CalendarCompDtstartendTargetYear"><h4 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h4></label>
+			<label for="CalendarEventTargetYear"><h4 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h4></label>
 		</div>
 	</div>
 
@@ -93,7 +93,7 @@
 				  </div>
 				  <div class="hidden-xs col-sm-6">
 					<li>
-						<label for="CalendarCompDtstartendTargetYear"><h2 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h2></label>
+						<label for="CalendarEventTargetYear"><h2 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h2></label>
 					</li>
 				  </div>
 				  <div class="col-xs-6 col-sm-3 calendar-pager-button">
@@ -108,7 +108,7 @@
 			</div>
 		
 			<div class="col-xs-12 visible-xs text-center" style="margin-top:5px">
-				<label for="CalendarCompDtstartendTargetYear"><h3 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h3></label>
+				<label for="CalendarEventTargetYear"><h3 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h3></label>
 			</div>
 		</div>
 
@@ -133,7 +133,7 @@
 		$marginTop = '15px';
 	}
 
-	echo $this->NetCommonsForm->input('CalendarCompDtstartend.target_year', array(
+	echo $this->NetCommonsForm->input('CalendarEvent.target_year', array(
 		'div' => false,
 		'label' => false,
 		'datetimepicker' => 'datetimepicker',

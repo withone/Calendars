@@ -39,16 +39,16 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
  * @param Model &$model 実際のモデル名
  * @param array $planParams planParams
  * @param array $rruleData rruleData
- * @param array $dtstartendData dtstartendデータ(CalendarCompDtstartendのモデルデータ)
+ * @param array $eventData eventデータ(CalendarEventのモデルデータ)
  * @param int $bymonthday bymonthday
  * @param int $first 最初のデータかどうか 1:最初である  0:最初ではない. 初期値は0
  * @return mixed boolean true:登録せず終了 false:失敗、array 登録成功: array(登録した開始年月日時分秒, 登録した終了年月日時分秒)
  */
-	public function insertMonthlyByMonthday(Model &$model, $planParams, $rruleData, $dtstartendData, $bymonthday, $first = 0) {
+	public function insertMonthlyByMonthday(Model &$model, $planParams, $rruleData, $eventData, $bymonthday, $first = 0) {
 		$model->rrule['INDEX']++;
 
 		//開始日付時刻の処理
-		$sTime = CalendarTime::timezoneDate($dtstartendData['CalendarCompRtstartend']['start_date'] . $dtstartendData['CalendarCompRtstartend']['start_time'], 0, 'YmdHis');
+		$sTime = CalendarTime::timezoneDate($eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'], 0, 'YmdHis');
 		$startTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), substr($sTime, 6, 2), substr($sTime, 0, 4));
 
 		//インターバル月数の計算
@@ -71,7 +71,7 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 		}
 
 		//終了日付時刻の処理
-		$eTime = CalendarTime::timezoneDate($dtstartendData['CalendarCompRtstartend']['end_date'] . $dtstartendData['CalendarCompRtstartend']['end_time'], 0, 'YmdHis');
+		$eTime = CalendarTime::timezoneDate($eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'], 0, 'YmdHis');
 		$endTimestamp = mktime(0, 0, 0, substr($eTime, 4, 2), substr($eTime, 6, 2), substr($eTime, 0, 4));
 
 		//開始日と終了日の差分日数の計算
@@ -88,17 +88,17 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 		$endDate = date('Ymd', $endTimestamp);
 		$endTime = date('His', $endTimestamp);
 
-		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $dtstartendData['CalendarCompRtstartend']['timezone_offset'])) {
+		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $eventData['CalendarEvent']['timezone_offset'])) {
 			//繰返しがとまったので、callから復帰する。
 			return true;
 		}
 
-		$rDtstartendData = $this->insert($model, $planParams, $rruleData, $dtstartendData, ($startDate . $startTime), ($endDate . $endTime));
-		if ($rDtstartendData['CalendarCompDtstartend']['id'] === null) {
+		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData, ($startDate . $startTime), ($endDate . $endTime));
+		if ($rEventData['CalendarEvent']['id'] === null) {
 			return false;
 		}
 
-		return $this->insertMonthlyByMonthday($model, $planParams, $rruleData, $rDtstartendData, $bymonthday, $first);
+		return $this->insertMonthlyByMonthday($model, $planParams, $rruleData, $rEventData, $bymonthday, $first);
 	}
 
 /**
@@ -107,58 +107,58 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
  * @param Model &$model 実際のモデル名
  * @param array $planParams planParams
  * @param array $rruleData rruleData
- * @param array $dtstartendData dtstartendデータ(CalendarCompDtstartendのモデルデータ)
+ * @param array $eventData eventデータ(CalendarEventのモデルデータ)
  * @param int $first 最初のデータかどうか 1:最初である  0:最初ではない
  * @return mixed boolean true:登録せず終了 false:失敗、array 登録成功: array(登録した開始年月日時分秒, 登録した終了年月日時分秒)
  */
-	public function insertMonthlyByDay(Model &$model, $planParams, $rruleData, $dtstartendData, $first = 0) {
+	public function insertMonthlyByDay(Model &$model, $planParams, $rruleData, $eventData, $first = 0) {
 		$model->rrule['INDEX']++;
 
-		$this->setStimeEtimeAndByday($model->rrule, $dtstartendData, $first, $sTime, $eTime, $byday);
+		$this->setStimeEtimeAndByday($model->rrule, $eventData, $first, $sTime, $eTime, $byday);
 
 		//call復帰条件のチェック
 		if ($first && $sTime >= $byday) {
 			//開始日(対象日？）が繰返しENDのb(第x週第y曜日の実日）を超したら、行き過ぎなので、INDEXをデクリメントして、自分を再帰callする。
 			$model->rrule['INDEX']--;
-			return $this->insertMonthlyByDay($model, $planParams, $rruleData, $dtstartendData, $first);
+			return $this->insertMonthlyByDay($model, $planParams, $rruleData, $eventData, $first);
 		}
 
 		$startDate = $startTime = $endDate = $endTime = '';
 		$this->setStartDateTiemAndEndDateTime($sTime, $eTime, $startDate, $startTime, $endDate, $endTime);
 
-		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $dtstartendData['CalendarCompRtstartend']['timezone_offset'])) {
+		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $eventData['CalendarEvent']['timezone_offset'])) {
 			//繰り返しがとまったので、復帰いたします。
 			return true;
 		}
 
-		$rDtstartendData = $this->insert($model, $planParams, $rruleData, $dtstartendData, ($startDate . $startTime), ($endDate . $endTime));
-		if ($rDtstartendData['CalendarCompDtstartend']['id'] === null) {
+		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData, ($startDate . $startTime), ($endDate . $endTime));
+		if ($rEventData['CalendarEvent']['id'] === null) {
 			return false;
 		}
 
-		return $this->insertMonthlyByDay($model, $planParams, $rruleData, $rDtstartendData, $first);
+		return $this->insertMonthlyByDay($model, $planParams, $rruleData, $rEventData, $first);
 	}
 
 /**
  * sTime,eTimeおよびbydayの設定
  *
  * @param array $rrule rrule配列
- * @param array $dtstartendData dtstartendData
+ * @param array $eventData eventData
  * @param int $first first 1:最初のデータ 0:最初のデータでない
  * @param string &$sTime sTime
  * @param string &$eTime eTime
  * @param string &$byday byday
  * @return void
  */
-	public function setStimeEtimeAndByday($rrule, $dtstartendData, $first, &$sTime, &$eTime, &$byday) {
+	public function setStimeEtimeAndByday($rrule, $eventData, $first, &$sTime, &$eTime, &$byday) {
 		//BYDAYは'2MO','3SA'といった形式である
 		//よって、wdayNumにはSUなら0, SAなら6とった値になる。
 		$wdayNum = array_search(substr($rrule['BYDAY'][0], -2), self::$calendarWdayArray);
 		//よって、weekには、、最後２文字を取り除いた、第x月曜、第y土曜のx、yが取り出せる。
 		$week = intval(substr($rrule['BYDAY'][0], 0, -2));
 
-		$sTime = CalendarTime::timezoneDate(($dtstartendData['CalendarCompDtstartend']['start_date'] . $dtstartendData['CalendarCompDtstartend']['start_time']), 0, 'YmdHis');
-		$eTime = CalendarTime::timezoneDate(($dtstartendData['CalendarCompDtstartend']['end_date'] . $dtstartendData['CalendarCompDtstartend']['end_time']), 0, 'YmdHis');
+		$sTime = CalendarTime::timezoneDate(($eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time']), 0, 'YmdHis');
+		$eTime = CalendarTime::timezoneDate(($eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time']), 0, 'YmdHis');
 
 		//開始日の同年インターバル月数考慮月1日のtimestamp
 		$timestamp = mktime(0, 0, 0, substr($sTime, 4, 2) + ($first ? 0 : $rrule['INTERVAL']), 1, substr($sTime, 0, 4));

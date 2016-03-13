@@ -31,9 +31,9 @@ class CalendarEntryBehavior extends CalendarAppBehavior {
  * @copyright Copyright 2015, NetCommons Project
  */
 	protected $_defaults = array(
-		//'calendarCompRruleModel' => 'Calendars.CalendarCompRrule',
+		//'calendarRruleModel' => 'Calendars.CalendarRrule',
 		//'fields' => array(
-		//	'rrule_id' => 'calendar_comp_rrule_id',
+		//	'rrule_id' => 'calendar_rrule_id',
 		//	),
 		);
 
@@ -115,17 +115,17 @@ class CalendarEntryBehavior extends CalendarAppBehavior {
 		$linkPluginOhterInfos = serialize($frameAndBlockInfo);
 		$this->log('DBG: linkPluginOhterInfos[' . $linkPluginOhterInfos . ']', LOG_DEBUG);
 
-		$this->loadDtstartendAndRruleModels($model);
+		$this->loadEventAndRruleModels($model);
 		$params = array(
 			'conditions' => array(
-				'CalendarCompDtstartend.link_plugin' => $linkPlugin,
-				//'CalendarCompDtstartend.link_plugin_model' => $linkPluginModel,
-				'CalendarCompDtstartend.link_key' => $linkPluginKey,
+				'CalendarEvent.link_plugin' => $linkPlugin,
+				//'CalendarEvent.link_plugin_model' => $linkPluginModel,
+				'CalendarEvent.link_key' => $linkPluginKey,
 			),
 			'recursive' => -1,	//belongTo, hasOneの１跨ぎの関係までとってくる。
 			'callbacks' => false
 		);
-		$count = $model->CalendarCompDtstartend->find('count', $params);
+		$count = $model->CalendarEvent->find('count', $params);
 		if ($count > 0) {
 			//既にlinkデータがあるので、update
 			$this->calendarEntryIndicator = 'update';

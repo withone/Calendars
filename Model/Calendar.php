@@ -54,8 +54,8 @@ class Calendar extends CalendarsAppModel {
  * @var array
  */
 	public $hasMany = array(
-		'CalendarCompRrule' => array(
-			'className' => 'Calendars.CalendarCompRrule',
+		'CalendarRrule' => array(
+			'className' => 'Calendars.CalendarRrule',
 			'foreignKey' => 'calendar_id',
 			'dependent' => true,
 			'conditions' => '',
@@ -93,8 +93,8 @@ class Calendar extends CalendarsAppModel {
 		$this->loadModels([
 			'Frame' => 'Frames.Frame',
 			'CalendarFrameSetting' => 'Calendars.CalendarFrameSetting',
-			'CalendarSetting' => 'Calendars.CalendarSetting',
-			'MailSetting' => 'Mails.MailSetting',
+			////'CalendarSetting' => 'Calendars.CalendarSetting',
+			////'MailSetting' => 'Mails.MailSetting',
 		]);
 	}
 
@@ -109,22 +109,22 @@ class Calendar extends CalendarsAppModel {
  */
 	public function beforeValidate($options = array()) {
 		$this->validate = Hash::merge($this->validate, array(
-			'block_id' => array(
+			'block_key' => array(
 				'rule1' => array(
-					'rule' => array('numeric'),
+					'rule' => array('notBlank'),
 					'message' => __d('net_commons', 'Invalid request'),
 					'required' => true,
 					'on' => 'update', // 新規の時はブロックIDがなかったりすることがあるので
 				),
 			),
-			'name' => array(
-				'notBlank' => array(
-					'rule' => array('notBlank'),
-					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('calendars', 'CALENDAR Name')),	//カレンダー名は人間で入れない。プログラムが挿入すること。
-					'allowEmpty' => false,
-					'required' => true,
-				),
-			),
+			//'name' => array(
+			//	'notBlank' => array(
+			//		'rule' => array('notBlank'),
+			//		'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('calendars', 'CALENDAR Name')),	//カレンダー名は人間で入れない。プログラムが挿入すること。
+			//		'allowEmpty' => false,
+			//		'required' => true,
+			//	),
+			//),
 			//key,language_id は、NetCommonsプラグインがafterSaveで差し込むので、ノーチェック
 		));
 
@@ -184,9 +184,10 @@ class Calendar extends CalendarsAppModel {
 			}
 
 			//権限設定
-			if (! $this->_saveSetting($block)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
+			//////
+			//////if (! $this->_saveSetting($block)) {
+			//////	throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			//////}
 
 			////コメント）メール設定は、上記とことなり「メール設定」タブ画面で、チェック＋決定した時はじめてレコード生成されるタイプと思われるので、以下の処理は抑止する。
 			////メール設定
@@ -228,18 +229,19 @@ class Calendar extends CalendarsAppModel {
  * @return mixed On success Model::$data if its not empty or true, false on failure
  */
 	protected function _saveMailSetting() {
-		$data = $this->_generateMailSettingData();
-		$this->MailSetting->set($data);
-		if (! $this->MailSetting->validates($data, false)) {
-			CakeLog::error(serialize($this->MailSetting->validationErrors));
-			return false;
-		}
-		$data = $this->MailSetting->save($data, false);
-		if (! $data) {
-			CakeLog::error(serialize($this->MailSetting->validationErrors));
-			return false;
-		}
-		return $data;
+		//$data = $this->_generateMailSettingData();
+		//$this->MailSetting->set($data);
+		//if (! $this->MailSetting->validates($data, false)) {
+		//	CakeLog::error(serialize($this->MailSetting->validationErrors));
+		//	return false;
+		//}
+		//$data = $this->MailSetting->save($data, false);
+		//if (! $data) {
+		//	CakeLog::error(serialize($this->MailSetting->validationErrors));
+		//	return false;
+		//}
+		//return $data;
+		return array();	//暫定
 	}
 
 /**
@@ -291,10 +293,11 @@ class Calendar extends CalendarsAppModel {
  * @return array 生成したデータ
  */
 	protected function _saveSetting($block) {
-		$blockSetting = $this->CalendarSetting->create();
-		$blockSetting['CalendarSetting']['block_key'] = $block['Block']['key'];
-		$blockSetting['CalendarSetting']['use_workflow'] = CalendarsComponent::CALENDAR_NOT_USE_WORKFLOW;
-		return $this->CalendarSetting->saveCalendarSetting($blockSetting);
+		////$blockSetting = $this->CalendarSetting->create();
+		////$blockSetting['CalendarSetting']['block_key'] = $block['Block']['key'];
+		////$blockSetting['CalendarSetting']['use_workflow'] = CalendarsComponent::CALENDAR_NOT_USE_WORKFLOW;
+		////return $this->CalendarSetting->saveCalendarSetting($blockSetting);
+		return array();	//暫定.
 	}
 
 /**

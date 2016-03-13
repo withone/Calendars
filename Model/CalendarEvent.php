@@ -1,10 +1,10 @@
 <?php
 /**
- * CalendarCompDtstartend Model
+ * CalendarEvent Model
  *
  * @property Room $Room
  * @property User $User
- * @property CalendarCompRrule $CalendarCompRrule
+ * @property CalendarRrule $CalendarRrule
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author AllCreator Co., Ltd. <info@allcreator.net>
@@ -16,12 +16,12 @@
 App::uses('CalendarsAppModel', 'Calendars.Model');
 
 /**
- * CalendarCompDtStartend Model
+ * CalendarEvent Model
  *
  * @author AllCreator Co., Ltd. <info@allcreator.net>
  * @package NetCommons\Calendars\Model
  */
-class CalendarCompDtstartend extends CalendarsAppModel {
+class CalendarEvent extends CalendarsAppModel {
 
 /**
  * use behaviors
@@ -46,9 +46,9 @@ class CalendarCompDtstartend extends CalendarsAppModel {
  * @var array
  */
 	public $belongsTo = array(
-		'CalendarCompRrule' => array(
-			'className' => 'Calendars.CalendarCompRrule',
-			'foreignKey' => 'calendar_comp_rrule_id',
+		'CalendarRrule' => array(
+			'className' => 'Calendars.CalendarRrule',
+			'foreignKey' => 'calendar_rrule_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
@@ -61,9 +61,9 @@ class CalendarCompDtstartend extends CalendarsAppModel {
  * @var array
  */
 	public $hasMany = array(
-		'CalendarCompDtstartendShareUser' => array(
-			'className' => 'CalendarCompDtstartendShareUser',
-			'foreignKey' => 'calendar_comp_dtstartend_id',
+		'CalendarEventShareUser' => array(
+			'className' => 'CalendarEventShareUser',
+			'foreignKey' => 'calendar_event_id',
 			'dependent' => true,
 			'conditions' => '',
 			'fields' => '',
@@ -73,7 +73,21 @@ class CalendarCompDtstartend extends CalendarsAppModel {
 			'exclusive' => '',
 			'finderQuery' => '',
 			'counterQuery' => ''
-		)
+		),
+		'CalendarEventContent' => array(
+			'className' => 'CalendarEventContent',
+			'foreignKey' => 'calendar_event_id',
+			'dependent' => true,
+			'conditions' => '',
+			'fields' => '',
+			'order' => array('id' => 'ASC'),
+			'limit' => '',
+			'offset' => '',
+			'exclusive' => '',
+			'finderQuery' => '',
+			'counterQuery' => ''
+		),
+
 	);
 
 /**
@@ -96,7 +110,7 @@ class CalendarCompDtstartend extends CalendarsAppModel {
  */
 	public function beforeValidate($options = array()) {
 		$this->validate = Hash::merge($this->validate, array(
-			'calendar_comp_rrule_id' => array(
+			'calendar_rrule_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'message' => __d('net_commons', 'Invalid request.'),

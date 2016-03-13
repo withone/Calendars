@@ -420,11 +420,25 @@ CalendarFrameSettingJS.changeIsSelectRoom = function(id, frameId) {
 var CalendarJS = {};  //専用空間
 
 $(function() {
-  $('.calendar-col-week').on('click', function(evt) {
+  var expr = '.calendar-col-week, .calendar-easy-edit,';
+  expr += ' .calendar-daily-disp, .calendar-detail-edit';
+  $(expr).on('click', function(evt) {
     window.location = $(evt.target).attr('data-url');
   });
-  $('.calendar-easy-edit').on('click', function(evt) {
-    window.location = $(evt.target).attr('data-url');
+  $('.calendar-plan-list').on('click', function(evt) {
+    var url = $(evt.target).attr('data-url');
+    if (url == undefined) {
+      url = $(evt.target).parents('td.calendar-plan-list').attr('data-url');
+    }
+    window.location = url;
+  });
+  $('.calendar-easy-edit-area').on('click', function(evt) {
+    var url = $(evt.target).attr('data-url');
+    if (url == undefined) {
+      var expr = 'div.calendar-easy-edit-area';
+      url = $(evt.target).parents(expr).attr('data-url');
+    }
+    window.location = url;
   });
 });
 

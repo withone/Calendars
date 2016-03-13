@@ -1,6 +1,6 @@
 <?php
 /**
- * CalendarCompRrule Model
+ * CalendarRrule Model
  *
  * @property Block $Block
  * @property Room $Room
@@ -15,12 +15,12 @@
 App::uses('CalendarsAppModel', 'Calendars.Model');
 
 /**
- * CalendarCompRrule Model
+ * CalendarRrule Model
  *
  * @author AllCreator Co., Ltd. <info@allcreator.net>
  * @package NetCommons\Calendars\Model
  */
-class CalendarCompRrule extends CalendarsAppModel {
+class CalendarRrule extends CalendarsAppModel {
 
 /**
  * use behaviors
@@ -38,7 +38,7 @@ class CalendarCompRrule extends CalendarsAppModel {
 		'Calendars.CalendarUpdatePlan', //Update
 		'Calendars.CalendarDeletePlan', //Delete
 		'Blocks.Block' => array(
-			'name' => 'CalendarCompRrule.name',						//nameの値がBlockモデルの名称として登録される。
+			'name' => 'CalendarRrule.name',						//nameの値がBlockモデルの名称として登録される。
 																	//
 			'loadModels' => array(									//Blockと紐づく（アソシエーションのある)
 																	//他のモデルがあれば、loadModelsで指定しておくと。
@@ -75,9 +75,9 @@ class CalendarCompRrule extends CalendarsAppModel {
  * @var array
  */
 	public $hasMany = array(
-		'CalendarCompDtstartend' => array(
-			'className' => 'CalendarCompDtstartend',
-			'foreignKey' => 'calendar_comp_rrule_id',
+		'CalendarEvent' => array(
+			'className' => 'CalendarEvent',
+			'foreignKey' => 'calendar_rrule_id',
 			'dependent' => true,
 			'conditions' => '',
 			'fields' => '',
@@ -112,8 +112,7 @@ class CalendarCompRrule extends CalendarsAppModel {
 		parent::__construct($id, $table, $ds);
 
 		$this->loadModels([
-			'CalendarCompRrule' => 'Calendars.CalendarCompRrule',
-			'CalendarSetting' => 'Calendars.CalendarSetting',
+			'CalendarRrule' => 'Calendars.CalendarRrule',
 		]);
 	}
 
@@ -128,7 +127,7 @@ class CalendarCompRrule extends CalendarsAppModel {
  */
 	public function beforeValidate($options = array()) {
 		$this->validate = Hash::merge($this->validate, array(
-			'block_id' => array(
+			'calendar_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'message' => __d('net_commons', 'Invalid request'),
@@ -136,13 +135,6 @@ class CalendarCompRrule extends CalendarsAppModel {
 				),
 			),
 			'room_id' => array(
-				'rule1' => array(
-					'rule' => array('numeric'),
-					'message' => __d('net_commons', 'Invalid request'),
-					'required' => true,
-				),
-			),
-			'language_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'message' => __d('net_commons', 'Invalid request'),
