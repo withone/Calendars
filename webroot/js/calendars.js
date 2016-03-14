@@ -325,6 +325,20 @@ NetCommonsApp.controller('CalendarModalCtrl', [
  */
 NetCommonsApp.controller('CalendarFrameSettings', [
   '$scope', function($scope) {
+    /**
+     * variables
+     *
+     * @type {Object.<string>}
+     */
+    var variables = {
+      CALENDAR_DISP_TYPE_SMALL_MONTHLY: '1',
+      CALENDAR_DISP_TYPE_LARGE_MONTHLY: '2',
+      CALENDAR_DISP_TYPE_WEEKLY: '3',
+      CALENDAR_DISP_TYPE_DAILY: '4',
+      CALENDAR_DISP_TYPE_TSCHEDULE: '5',
+      CALENDAR_DISP_TYPE_MSCHEDULE: '6'
+    };
+
     $scope.initialize = function(data) {
       $scope.data = angular.fromJson(data);
 
@@ -335,8 +349,9 @@ NetCommonsApp.controller('CalendarFrameSettings', [
 
       $scope.displayTypes = [];
 
+      $scope.setIsShowElement();
+
       angular.forEach($scope.data.displayTypeOptions, function(val, key, obj) {
-        //console.log('key[' + key + '] val[' + val + ']');
         $scope.displayTypes.push({
           label: val,
           value: key
@@ -344,8 +359,37 @@ NetCommonsApp.controller('CalendarFrameSettings', [
       });
     };
 
-    $scope.displayChange = function(frameId) {
-      console.log('change');
+    $scope.displayChange = function() {
+      $scope.setIsShowElement();
+    };
+    /**
+     * 各種選択要素を出してよいかどうか
+     */
+    $scope.setIsShowElement = function() {
+      var type = $scope.data.calendarFrameSetting.displayType;
+      if (type == variables.CALENDAR_DISP_TYPE_SMALL_MONTHLY ||
+          type == variables.CALENDAR_DISP_TYPE_LARGE_MONTHLY) {
+        $scope.isShowStartPos = false;
+        $scope.isShowDisplayCount = false;
+        $scope.isShowTimelineStart = false;
+      } else if (type == variables.CALENDAR_DISP_TYPE_WEEKLY) {
+        $scope.isShowStartPos = false;
+        $scope.isShowDisplayCount = true;
+        $scope.isShowTimelineStart = false;
+      } else if (type == variables.CALENDAR_DISP_TYPE_DAILY) {
+        $scope.isShowStartPos = false;
+        $scope.isShowDisplayCount = false;
+        $scope.isShowTimelineStart = true;
+      } else if (type == variables.CALENDAR_DISP_TYPE_TSCHEDULE ||
+          type == variables.CALENDAR_DISP_TYPE_MSCHEDULE) {
+        $scope.isShowStartPos = true;
+        $scope.isShowDisplayCount = true;
+        $scope.isShowTimelineStart = false;
+      } else {
+        $scope.isShowStartPos = true;
+        $scope.isShowDisplayCount = true;
+        $scope.isShowTimelineStart = true;
+      }
     };
   }
 ]);
@@ -354,69 +398,6 @@ NetCommonsApp.controller('CalendarFrameSettings', [
 /**
  * angularJSに依存しないJavaScriptプログラム(NonAngularJS)
  */
-var CalendarFrameSettingJS = {};  //専用空間
-
-
-/**
- * 表示方法の変更
- *
- * @param {string} id ID文字列
- * @param {string} frameId フレームID
- */
-CalendarFrameSettingJS.changeDispType = function(id, frameId) {
-  var jqObj = $('#' + id);
-  if (jqObj.attr('data-calendar-frame-id') != frameId) {
-    console.log('jqObj frameId[' + jqObj.attr('dataCalendarFrameId') +
-        '] and frameId[' + frameId + '] mismatch!');
-    return;
-  }
-
-  var display_type = $('#' + id + ' option:selected').attr('value');
-  if (display_type == CalendarsCommon.DISP_TYPE_SMALL_MONTHLY ||
-      display_type == CalendarsCommon.DISP_TYPE_LARGE_MONTHLY) {
-    $('div[name=kaishiIchi]').addClass('calendar-hide');
-    $('div[name=numOfDays]').addClass('calendar-hide');
-    $('div[name=startHourOfTimeline]').addClass('calendar-hide');
-  } else if (display_type == CalendarsCommon.DISP_TYPE_WEEKLY) {
-    $('div[name=kaishiIchi]').addClass('calendar-hide');
-    $('div[name=numOfDays]').removeClass('calendar-hide');
-    $('div[name=startHourOfTimeline]').addClass('calendar-hide');
-  } else if (display_type == CalendarsCommon.DISP_TYPE_DAILY) {
-    $('div[name=kaishiIchi]').addClass('calendar-hide');
-    $('div[name=numOfDays]').addClass('calendar-hide');
-    $('div[name=startHourOfTimeline]').removeClass('calendar-hide');
-  } else if (display_type == CalendarsCommon.DISP_TYPE_TSCHEDULE ||
-      display_type == CalendarsCommon.DISP_TYPE_MSCHEDULE) {
-    $('div[name=kaishiIchi]').removeClass('calendar-hide');
-    $('div[name=numOfDays]').removeClass('calendar-hide');
-    $('div[name=startHourOfTimeline]').addClass('calendar-hide');
-  }
-};
-
-
-/**
- * ルーム選択の変更
- *
- * @param {string} id ID文字列
- * @param {string} frameId フレームID
- */
-CalendarFrameSettingJS.changeIsSelectRoom = function(id, frameId) {
-  var jqObj = $('#' + id);
-  if (jqObj.attr('data-calendar-frame-id') != frameId) {
-    console.log('jqObj frameId[' + jqObj.attr('dataCalendarFrameId') +
-        '] and frameId[' + frameId + '] mismatch!');
-    return;
-  }
-
-  var checked = $('#' + id).prop('checked');
-  if (checked) {
-    $('div[name=roomSelect]').removeClass('calendar-hide');
-  } else {
-    $('div[name=roomSelect]').addClass('calendar-hide');
-  }
-};
-
-
 var CalendarJS = {};  //専用空間
 
 $(function() {
@@ -441,4 +422,3 @@ $(function() {
     window.location = url;
   });
 });
-

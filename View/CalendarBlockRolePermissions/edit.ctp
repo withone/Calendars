@@ -4,7 +4,7 @@
 
 <article class="block-setting-body">
 
-	<?php echo $this->BlockTabs->main(BlockTabsComponent::MAIN_TAB_BLOCK_INDEX); ?>
+	<?php echo $this->BlockTabs->main(BlockTabsComponent::MAIN_TAB_PERMISSION); ?>
 
 <div class="tab-content">
 	<!-- カレンダーにはBLOCK_TAB_SETTINGは無し -->
@@ -15,7 +15,7 @@
 
 		<?php echo $this->element('Blocks.edit_form', array(
 				'model' => 'CalendarSetting',
-				'callback' => 'Calendars.CalendarSettings/edit_form',
+				'callback' => 'Calendars.CalendarBlockRolePermissions/edit_form',
 				'cancelUrl' => NetCommonsUrl::backToIndexUrl('default_action'),
 			)); ?>
 

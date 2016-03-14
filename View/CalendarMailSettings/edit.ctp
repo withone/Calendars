@@ -4,7 +4,7 @@
 
 <article class="block-setting-body" ng-controller='CalendarsDetailEdit'>
 
-	<?php echo $this->BlockTabs->main(BlockTabsComponent::MAIN_TAB_BLOCK_INDEX); ?>
+	<?php echo $this->BlockTabs->main('mail_setting'); /* FUJI Blocksが提供するconst値に変更すること */ ?>
 
 <div class="tab-content">
 	<!-- カレンダーにはBLOCK_TAB_SETTINGは無し -->
