@@ -78,6 +78,37 @@
 		</div>
 	</div>
 
+<?php elseif ($vars['style'] === 'weekly'): /* weekly */ ?>
+  <div class="row">
+    <div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3 text-center calendar-weekly-year-pager">
+		<ul class="pager small">
+		  <div class="col-xs-6 col-sm-4 calendar-pager-button">
+			<li class="previous" title="<?php echo __d('calendars', '前年へ'); ?>">
+				<a href="<?php echo $prevYearDay; ?>"><span class="glyphicon glyphicon-backward"></span></a>
+			</li>
+			<li class="previous" title="<?php echo __d('calendars', '前月へ'); ?>">
+				<a href="<?php echo $prevMonthDay; ?>"><span class="glyphicon glyphicon-chevron-left"></span></a>
+			</li>
+		  </div>
+		  <div class="hidden-xs col-sm-4" style="padding:3px;">
+			<li>
+				<label for="CalendarCompDtstartendTargetYear"><h4 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h4></label>
+			</li>
+		  </div>
+		  <div class="col-xs-6 col-sm-4 calendar-pager-button">
+			<li class="next" title="<?php echo __d('calendars', '次年へ'); ?>">
+					<a href="<?php echo $nextYearDay; ?>"><span class="glyphicon glyphicon-forward"></span></a>
+			</li>
+			<li class="next" title="<?php echo __d('calendars', '次月へ'); ?>">
+				<a href="<?php echo $nextMonthDay; ?>"><span class="glyphicon glyphicon-chevron-right"></span></a>
+			</li>
+		  </div>
+		</ul>
+    </div>
+    <div class="col-xs-12 visible-xs text-center">
+		<label for="CalendarCompDtstartendTargetYear"><h4 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h4></label>
+    </div>
+  </div>
 <?php else: /* largemonthly */ ?>
 
 		<div class="row">
