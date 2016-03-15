@@ -2,114 +2,87 @@
 ?>
 <?php echo $this->element('Calendars.scripts'); ?>
 
-<article class="block-setting-body">
+<article ng-controller="CalendarsDetailEdit" class="block-setting-body">
 
 <div class="clearfix"></div>
 
 
 <form>
-<!-- <div class="panel panel-default"> -->
-<!-- <div class="panel-body"> -->
+
+<?php echo $this->element('NetCommons.datetimepicker'); ?>
 
 <?php
-	echo $this->element('NetCommons.datetimepicker');
+	echo $this->element('Calendars.Calendars/turn_calendar', array(
+		'frameId' => $frameId, 'languageId' => $languageId, 'vars' => $vars
+	));
 ?>
 
-<!-- 年月切り替え -->
-<!-- org
-<div class="row">
-	<div class="col-xs-6 col-xs-offset-3 text-center calendar-weekly-year-pager">
-		<ul class="pager small">
-			<li class="previous" title="<?php echo __d('calendars', '前年へ'); ?>"><a href="#"><span class="glyphicon glyphicon-backward"></span></a></li>
-			<li class="previous" title="<?php echo __d('calendars', '前月へ'); ?>"><a href="#"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
-			<li>
-				<label for="CalendarEventTargetYear"><h4 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h4></label>
-			</li>
-			<li class="next" title="<?php echo __d('calendars', '次年へ'); ?>"><a href="#"><span class="glyphicon glyphicon-forward"></span></a></li>
-			<li class="next" title="<?php echo __d('calendars', '次月へ'); ?>"><a href="#"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
-		</ul>
-	</div>
-</div>
- -->
-<!-- kumatest -->
 
-<div class="row">
-	<div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3 text-center calendar-weekly-year-pager">
-		<ul class="pager small">
-		  <div class="col-xs-6 col-sm-4 calendar-pager-button">
-			<li class="previous" title="<?php echo __d('calendars', '前年へ'); ?>"><a href="#"><span class="glyphicon glyphicon-backward"></span></a></li>
-			<li class="previous" title="<?php echo __d('calendars', '前月へ'); ?>"><a href="#"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
-		  </div>
-		  <div class="hidden-xs col-sm-4" style="padding:3px;">
-			<li>
-				<label for="CalendarEventTargetYear"><h4 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h4></label>
-			</li>
-		  </div>
-		  <div class="col-xs-6 col-sm-4 calendar-pager-button">
-			<li class="next" title="<?php echo __d('calendars', '次年へ'); ?>"><a href="#"><span class="glyphicon glyphicon-forward"></span></a></li>
-			<li class="next" title="<?php echo __d('calendars', '次月へ'); ?>"><a href="#"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
-		  </div>
-		</ul>
-	</div>
-	<div class="col-xs-12 visible-xs text-center">
-		<label for="CalendarEventTargetYear"><h4 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h4></label>
-	</div>
-</div>
+<!-- <div class="clearfix"></div> -->
 
 
-<div class="clearfix"></div>
-	<!-- <div class="col-xs-2 col-xs-offset-5 text-center"> -->
 <?php
-
-	$pickerOpt = str_replace('"', "'", json_encode(array(
-		'format' => 'YYYY-MM',
-		//'minDate' => 2001, //HolidaysAppController::HOLIDAYS_DATE_MIN,
-		//'maxDate' => 2033, //HolidaysAppController::HOLIDAYS_DATE_MAX,
-		'viewMode' => 'years',
-	)));
-
-	$year = '2016';
-	$ngModel = 'targetYear';
-
-	echo $this->NetCommonsForm->input('CalendarEvent.target_year',
-	array(
-		'div' => false,
-		'label' => false,
-		'datetimepicker' => 'datetimepicker',
-		'datetimepicker-options' => $pickerOpt,
-		'value' => (empty($year)) ? '' : intval($year),
-		'class' => '',
-		'ng-model' => $ngModel,
-		'ng-style' => 'myStyle',
-		'ng-init' => "myStyle={ marginTop: '5px', width: '0', height : '0',  color: '#fff', backgroundColor: '#fff', borderWidth: '0', borderStyle: 'solid', borderColor: '#fff' }; targetYear='2016-01'",
+	/* 前週 */
+	$prevtimestamp = mktime(0, 0, 0, $vars['month'], ($vars['day'] - 7 ), $vars['year']);
+	$prevYear = date('Y', $prevtimestamp);
+	$prevMonth = date('m', $prevtimestamp);
+	$prevDay = date('d', $prevtimestamp);
+	$prevWeekDay = NetCommonsUrl::actionUrl(array(
+		'controller' => 'calendars',
+		'action' => 'index',
+		'style' => $vars['style'],
+		'year' => sprintf("%04d", $prevYear),
+		'month' => sprintf("%02d", $prevMonth),
+		'day' => $prevDay,
+		'frame_id' => Current::read('Frame.id'),
 	));
 
+	/* 次週 */
+	$nexttimestamp = mktime(0, 0, 0, $vars['month'], ($vars['day'] + 7 ), $vars['year']);
+	$nextYear = date('Y', $nexttimestamp);
+	$nextMonth = date('m', $nexttimestamp);
+	$nextDay = date('d', $nexttimestamp);
+
+	$nextWeekDay = NetCommonsUrl::actionUrl(array(
+		'controller' => 'calendars',
+		'action' => 'index',
+		'style' => $vars['style'],
+		'year' => sprintf("%04d", $nextYear),
+		'month' => sprintf("%02d", $nextMonth),
+		'day' => $nextDay,
+		'frame_id' => Current::read('Frame.id'),
+	));
+
+	/* 第n週*/
+	$nWeek = floor($vars['day'] / 7) + 1;
+
+	/* 日（曜日） */
+	$day = array();
+	$wDay = array();
+	$i = 0;
+	for ($i = 0; $i < 7; $i++) {
+		$timestamp = mktime(0, 0, 0, $vars['month'], ($vars['day'] + $i ), $vars['year']);
+		$day[$i] = date('d', $timestamp);
+		$wDay[$i] = date('w', $timestamp);
+	}
+
+	/* 曜日 */
+	$week = array('(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)'); // kuma temp
+	//print_r($week);print_r($wDay);
 ?>
-	<!-- </div> --><!--col-xs-2おわり-->
 
-<div class="clearfix"></div>
-
-<!-- 月切り替え -->
-<!--
-<div class="row">
-	<div class="col-xs-4 col-xs-offset-4 text-center calendar-weekly-month-pager">
-		<ul class="pager small">
-  			<li class="previous"><a href="#"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
-  			<li><h4 class="calendar-inline">2016年1月</h4></li>
-  			<li class="next"><a href="#"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
-		</ul>
-	</div>
-</div>
-<div class="clearfix"></div>
--->
 
 <!-- 週切り替え -->
 <div class="row">
 	<div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3 text-center">
 		<ul class="pager">
-  			<li class="previous"><a href="#">前週</a></li>
-  			<li><h3 class="calendar-inline">第1週</h3></li>
-  			<li class="next"><a href="#">次週</a></li>
+  			<li class="previous" title="
+  				<?php echo __d('calendars', '前週へ'); ?>
+  			"><a href="<?php echo $prevWeekDay; ?>">前週</a></li>
+  			<li><h3 class="calendar-inline"><?php echo __d('calendars', '第') . $nWeek . __d('calendars', '週'); ?></h3></li>
+  			<li class="next" title="
+  				<?php echo __d('calendars', '次週へ'); ?>
+  			"><a href="<?php echo $nextWeekDay; ?>">次週</a></li>
 		</ul>
 	</div>
 </div>
@@ -122,16 +95,16 @@
 			<tbody>
 				<tr>
 					<td class='calendar-weekly-col-room-name-head'>&nbsp;</td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left text-danger calendar-day'>3(日)</span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'>4(月)</span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'>5(火)</span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'>6(水)</span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'>7(木)</span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'>8(金)</span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left text-primary calendar-day'>9(土)</span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
+					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left text-danger calendar-day'><?php echo $day[0] ?><?php echo $week[$wDay[0]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
+					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[1] ?><?php echo $week[$wDay[1]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
+					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[2] ?><?php echo $week[$wDay[2]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
+					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[3] ?><?php echo $week[$wDay[3]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
+					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[4] ?><?php echo $week[$wDay[4]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
+					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[5] ?><?php echo $week[$wDay[5]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
+					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left text-primary calendar-day'><?php echo $day[6] ?><?php echo $week[$wDay[6]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
 				</tr>
 
-<!-- publicroom -->
+				<!-- publicroom -->
 				<tr>
 					<td class='calendar-weekly-col-room-name calendar-tbl-td-pos'>
 <div class='row'>
