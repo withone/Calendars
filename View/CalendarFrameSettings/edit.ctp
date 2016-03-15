@@ -15,6 +15,7 @@ if (isset($this->data['CalendarFrameSetting'])) {
 	$camelizeData = NetCommonsAppController::camelizeKeyRecursive(array(
 		'frameId' => $this->request->data['Frame']['id'],
 		'calendarFrameSetting' => $this->request->data['CalendarFrameSetting'],
+		'calendarFrameSettingSelectRoom' => $this->request->data['CalendarFrameSettingSelectRoom'],
 		'displayTypeOptions' => $displayTypeOptions
 	));
 
@@ -29,7 +30,7 @@ if (isset($this->data['CalendarFrameSetting'])) {
 
 <article class="block-setting-body"
 	ng-controller="CalendarFrameSettings"
-	ng-init="initialize(<?php echo h(json_encode($camelizeData)); ?>)">
+	ng-init="initialize(<?php echo h(json_encode($camelizeData, JSON_FORCE_OBJECT)); ?>)">
 
 	<?php echo $this->BlockTabs->main(BlockTabsHelper::MAIN_TAB_FRAME_SETTING); ?>
 

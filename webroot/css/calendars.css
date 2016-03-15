@@ -455,3 +455,9 @@
 
 }
 
+/* カレンダーフレームセッティング */
+.calendar-panel-not-select>.panel-heading {
+	background-color: white;
+}
+
+

@@ -97,7 +97,7 @@ class CalendarFrameSetting extends CalendarsAppModel {
  */
 	public $hasMany = array(
 		'CalendarFrameSettingSelectRoom' => array(
-			'className' => 'CalendarFrameSettingSelectRoom',
+			'className' => 'Calendars.CalendarFrameSettingSelectRoom',
 			'foreignKey' => 'calendar_frame_setting_id',
 			'dependent' => true,
 			'conditions' => '',
@@ -178,6 +178,26 @@ class CalendarFrameSetting extends CalendarsAppModel {
 	}
 
 /**
+ * getSelectRooms
+ *
+ * @param int $settingId calendar frame setting id
+ * @return array select Rooms
+ */
+	public function getSelectRooms($settingId = null) {
+		if ($settingId === null) {
+			$setting = $this->find('first', array(
+				'conditions' => array(
+					'frame_key' => Current::read('Frame.key'),
+				)
+			));
+			$settingId = $setting['CalendarFrameSetting']['id'];
+		}
+		$this->CalendarFrameSettingSelectRoom = ClassRegistry::init('Calendars.CalendarFrameSettingSelectRoom', true);
+		$selectRooms = $this->CalendarFrameSettingSelectRoom->getSelectRooms($settingId);
+		return $selectRooms;
+	}
+
+/**
  * saveFrameSetting
  *
  * @param array $data save data
@@ -202,6 +222,19 @@ class CalendarFrameSetting extends CalendarsAppModel {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
+			if ($data['CalendarFrameSetting']['is_select_room']) {
+				//ルーム指定あり処理.
+				$this->CalendarFrameSettingSelectRoom = ClassRegistry::init('Calendars.CalendarFrameSettingSelectRoom');
+				if (! $this->CalendarFrameSettingSelectRoom->validateCalendarFrameSettingSelectRoom($data)) {
+					CakeLog::error(serialize($this->CalendarFrameSettingSelectRoom->validationErrors));
+
+					$this->rollback();
+					return false;
+				}
+				if (! $this->CalendarFrameSettingSelectRoom->saveCalendarFrameSettingSelectRoom($data)) {
+					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+				}
+			}
 			$this->commit();
 		} catch (Exception $ex) {
 			CakeLog::error($ex);
