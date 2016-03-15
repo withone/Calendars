@@ -344,6 +344,7 @@ NetCommonsApp.controller('CalendarFrameSettings', [
 
       //$scope.data.frameId;
       //$scope.data.calendarFrameSetting
+      //$scope.data.calendarFrameSettingSelectRoom
       //$scope.data.displayTypeOptions
       //が格納されている。
 
@@ -363,8 +364,8 @@ NetCommonsApp.controller('CalendarFrameSettings', [
       $scope.setIsShowElement();
     };
     /**
-     * 各種選択要素を出してよいかどうか
-     */
+    * 各種選択要素を出してよいかどうか
+    */
     $scope.setIsShowElement = function() {
       var type = $scope.data.calendarFrameSetting.displayType;
       if (type == variables.CALENDAR_DISP_TYPE_SMALL_MONTHLY ||
@@ -391,8 +392,7 @@ NetCommonsApp.controller('CalendarFrameSettings', [
         $scope.isShowTimelineStart = true;
       }
     };
-  }
-]);
+  }]);
 
 
 /**

@@ -32,86 +32,9 @@
 		<div name="roomSelect" ng-show="data.calendarFrameSetting.isSelectRoom">
 			<div class="panel-body">
 				<accordion close-others="true">
-					<?php echo $this->CalendarRoomSelect->roomSelector($spaces, $rooms); ?>
+					<small>参加させるルームは、ルーム名の前にあるマークを <span class="glyphicon glyphicon-eye-open"></span>  にしてください。</small>
+					<?php echo $this->CalendarRoomSelect->spaceSelector($spaces); ?>
 				</accordion>
-				<?php
-/*
-			if ($roomTreeList) {
-				foreach ($roomTreeList as $roomId => $tree) {
-				if (Hash::get($rooms, $roomId) && ! in_array((string)$roomId, Room::$spaceRooms, true)) {
-				$nest = substr_count($tree, Room::$treeParser);
-				print_r( $rooms[$roomId]);
-				echo $nest;
-				}}}
-				*/
-				?>
-				<small>参加させるルームは、ルーム名の前にあるマークを <span class="glyphicon glyphicon-eye-open"></span>  にしてください。</small>
-
-				<accordion close-others="oneAtATime"><!-- x1 -->
-
-					<accordion-group is-open="status.open">
-						<accordion-heading>
-							パブリックスペース<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-						</accordion-heading>
-						<ul class="list-group">
-							<li class="list-group-item">Cras justo odio</li>
-							<li class="list-group-item">Dapibus ac facilisis in
-								<ul class="list-group">
-									<li class="list-group-item">Cras justo odio</li>
-									<li class="list-group-item">Dapibus ac facilisis in</li>
-									<li class="list-group-item">Morbi leo risus</li>
-									<li class="list-group-item">Porta ac consectetur ac</li>
-									<li class="list-group-item">Vestibulum at eros</li>
-								</ul>
-							</li>
-							<li class="list-group-item">Morbi leo risus</li>
-							<li class="list-group-item">Porta ac consectetur ac</li>
-							<li class="list-group-item">Vestibulum at eros</li>
-						</ul>
-					</accordion-group>
-
-					<accordion-group is-open="status.open">
-						<accordion-heading>
-							グループスペース<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-						</accordion-heading>
-
-						<!-- -->
-
-						<accordion close-others="oneAtATime">
-
-							<accordion-group is-open="status.open">
-								<accordion-heading>
-									<span class="glyphicon glyphicon-eye-open"></span>ルームA<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-								</accordion-heading>
-							</accordion-group>
-
-							<accordion-group is-open="status.open">
-								<accordion-heading>
-									<span class="glyphicon glyphicon-eye-close"></span>ルームB<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-								</accordion-heading>
-
-							</accordion-group>
-
-						</accordion>
-					</accordion-group>
-
-					<div class="panel panel-default">
-						<div class="panel-heading">
-							<h4 class="panel-title">
-								プライベートルーム
-							</h4>
-						</div>
-					</div>
-					<div class="panel panel-default">
-						<div class="panel-heading">
-						<h4 class="panel-title">
-							全会員
-						</h4>
-						</div>
-					</div>
-				</accordion>
-
-				<!-- 表示しないルーム  <-> 表示するルーム -->
 			</div><!--panel-bodyおわり-->
 		</div><!--panelおわり-->
 

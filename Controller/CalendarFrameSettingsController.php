@@ -84,6 +84,7 @@ class CalendarFrameSettingsController extends CalendarsAppController {
  */
 	public $uses = array(
 		'Calendars.CalendarFrameSetting',
+		'Calendars.CalendarFrameSettingSelectRooms',
 		'Rooms.Room'
 	);
 
@@ -131,11 +132,6 @@ class CalendarFrameSettingsController extends CalendarsAppController {
  */
 	public function edit() {
 		if ($this->request->is('put') || $this->request->is('post')) {
-			//登録前処理
-			if ($this->request->data['CalendarFrameSetting']['is_select_room']) {
-				//ルーム指定あり処理. Modelで実装するかも。
-			}
-
 			//登録(PUT)処理
 			$data = $this->request->data;
 			$data['CalendarFrameSetting']['display_type'] = (int)$data['CalendarFrameSetting']['display_type'];
@@ -151,23 +147,31 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 		//	該当フレームキーのCalendarFrameSettingモデルデータが１件新規作成されています。
 		//	なので、ここでは、読むだけでＯＫ．
 		//
+		// 設定情報取り出し
 		$conditions = array('frame_key' => Current::read('Frame.key'));
-		$this->request->data = $this->CalendarFrameSetting->find('first', array(
-			'recursive' => (-1),
+		$setting = $this->CalendarFrameSetting->find('first', array(
+			'recursive' => -1,
 			'conditions' => $conditions,
 		));
+		$this->request->data['CalendarFrameSetting'] = $setting['CalendarFrameSetting'];
+		$settingId = $setting['CalendarFrameSetting']['id'];
+		$this->set('settingId', $settingId);
+
+		// 選択ルーム情報取り出し
+		$this->request->data['CalendarFrameSettingSelectRoom'] = $this->CalendarFrameSetting->getSelectRooms($settingId);
+
 		// 空間情報
 		$spaces = $this->Room->getSpaces();
 		// ルームツリー
 		$spaceIds = array(Space::PUBLIC_SPACE_ID, Space::ROOM_SPACE_ID);
 		foreach ($spaceIds as $spaceId) {
 			$rooms[$spaceId] = $this->_getRoom($spaceId);
-			//$roomTreeList[$spaceId] = $this->_getRoomTree($spaces[$spaceId]['Room']['id'], $rooms[$spaceId]);
+			$roomTreeList[$spaceId] = $this->_getRoomTree($spaces[$spaceId]['Room']['id'], $rooms[$spaceId]);
 		}
 		$this->set('spaceIds', array_merge(array_keys($spaces), array(Space::WHOLE_SITE_ID)));
 		$this->set('spaces', $spaces);
 		$this->set('rooms', $rooms);
-		//$this->set('roomTreeList', $roomTreeList);
+		$this->set('roomTreeList', $roomTreeList);
 		// フレーム情報
 		$this->request->data['Frame'] = Current::read('Frame');	//カレンダーではsaveAssociated()はつかわないので外す。
 		// カレンダー表示種別
@@ -180,8 +184,9 @@ class CalendarFrameSettingsController extends CalendarsAppController {
  * @return array
  */
 	protected function _getRoom($spaceId) {
-		$rooms = $this->Room->find('threaded', $this->Room->getReadableRoomsConditions($spaceId));
-		//$rooms = Hash::combine($rooms, '{n}.Room.id', '{n}');
+		//$rooms = $this->Room->find('threaded', $this->Room->getReadableRoomsConditions($spaceId));
+		$rooms = $this->Room->find('all', $this->Room->getReadableRoomsConditions(array('Room.space_id' => $spaceId)));
+		$rooms = Hash::combine($rooms, '{n}.Room.id', '{n}');
 		return $rooms;
 	}
 /**
@@ -194,7 +199,7 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 	protected function _getRoomTree($spaceRoomId, $rooms) {
 		// ルームTreeリスト取得
 		$roomTreeList = $this->Room->generateTreeList(
-			array('Room.id' => array_merge(array($spaceRoomId), array_keys($rooms))), null, null, Room::$treeParser);
+		array('Room.id' => array_merge(array($spaceRoomId), array_keys($rooms))), null, null, Room::$treeParser);
 		return $roomTreeList;
 	}
 

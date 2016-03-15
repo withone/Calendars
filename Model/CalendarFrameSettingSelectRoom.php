@@ -98,6 +98,92 @@ class CalendarFrameSettingSelectRoom extends CalendarsAppModel {
 
 		return parent::beforeValidate($options);
 	}
+/**
+ * getSelectRooms
+ *
+ * @param int $settingId frame setting id
+ * @return array select Rooms
+ */
+	public function getSelectRooms($settingId) {
+		$this->Room = ClassRegistry::init('Rooms.Room', true);
+		$selectRoom = $this->Room->find('all', array(
+			'fields' => array(
+				'Room.id',
+				'CalendarFrameSettingSelectRoom.room_id',
+				'CalendarFrameSettingSelectRoom.calendar_frame_setting_id'
+			),
+			'recursive' => -1,
+			'joins' => array(
+				array('table' => 'calendar_frame_setting_select_rooms',
+					'alias' => 'CalendarFrameSettingSelectRoom',
+					'type' => 'LEFT',
+					'conditions' => array(
+						'Room.id = CalendarFrameSettingSelectRoom.room_id',
+						'calendar_frame_setting_id' => $settingId,
+					)
+				)
+			),
+			'order' => array('Room.id ASC')
+		));
+		// 全会員のレコードは絶対抜けるので付け足す
+		$allMembers = $this->find('all', array(
+			'recursive' => -1,
+			'conditions' => array(
+				'room_id' => CalendarsComponent::CALENDAR_ALLMEMBERS,
+				'calendar_frame_setting_id' => $settingId,
+			)
+		));
+		if ($allMembers) {
+			$allMembersArray = array(CalendarsComponent::CALENDAR_ALLMEMBERS => CalendarsComponent::CALENDAR_ALLMEMBERS);
+		} else {
+			$allMembersArray = array(CalendarsComponent::CALENDAR_ALLMEMBERS => '');
+		}
+		$selectRoom = Hash::merge($allMembersArray, Hash::combine($selectRoom, '{n}.Room.id', '{n}.CalendarFrameSettingSelectRoom.room_id'));
+		return $selectRoom;
+	}
+
+/**
+ * validateFrameSettingSelectRoom
+ *
+ * @param array $data validate data
+ * @return bool
+ */
+	public function validateCalendarFrameSettingSelectRoom($data) {
+		foreach ($data['CalendarFrameSettingSelectRoom'] as $selectRoom) {
+			if ($selectRoom['room_id'] == '') {
+				continue;
+			}
+			$this->create();
+			$this->set($selectRoom);
+			if (! $this->validates()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+/**
+ * saveFrameSettingSelectRoom
+ *
+ * @param array $data save data
+ * @return mixed On success Model::$data if its not empty or true, false on failure
+ * @throws InternalErrorException
+ */
+	public function saveCalendarFrameSettingSelectRoom($data) {
+		$settingId = $data['CalendarFrameSetting']['id'];
+		// 全部消して
+		$this->deleteAll(array(
+			'calendar_frame_setting_id' => $settingId
+		), false);
+		// 入れ直し
+		$ret = array();
+		foreach ($data['CalendarFrameSettingSelectRoom'] as $selectRoom) {
+			$this->create();
+			$this->set($selectRoom);
+			$ret[] = $this->save($selectRoom, false);
+		}
+		return $ret;
+	}
 
 /**
  * Called after each successful save operation.
