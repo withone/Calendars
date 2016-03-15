@@ -56,13 +56,15 @@
 	/* 第n週*/
 	$nWeek = floor($vars['day'] / 7) + 1;
 
-	/* 日（曜日） */
-	$day = array();
+	/* 日（曜日）(指定日を開始日) */
+	$days = array();
 	$wDay = array();
 	$i = 0;
 	for ($i = 0; $i < 7; $i++) {
 		$timestamp = mktime(0, 0, 0, $vars['month'], ($vars['day'] + $i ), $vars['year']);
-		$day[$i] = date('d', $timestamp);
+		$years[$i] = date('Y', $timestamp);
+		$months[$i] = date('m', $timestamp);
+		$days[$i] = (int)date('d', $timestamp);
 		$wDay[$i] = date('w', $timestamp);
 	}
 
@@ -93,15 +95,18 @@
 
 		<table class='calendar-weekly-table'>
 			<tbody>
+				<!-- 日付（見出し） -->
 				<tr>
 					<td class='calendar-weekly-col-room-name-head'>&nbsp;</td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left text-danger calendar-day'><?php echo $day[0] ?><?php echo $week[$wDay[0]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[1] ?><?php echo $week[$wDay[1]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[2] ?><?php echo $week[$wDay[2]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[3] ?><?php echo $week[$wDay[3]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[4] ?><?php echo $week[$wDay[4]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[5] ?><?php echo $week[$wDay[5]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left text-primary calendar-day'><?php echo $day[6] ?><?php echo $week[$wDay[6]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
+					<?php for ($i = 0; $i < 7; $i++) : ?>
+						<td class='calendar-weekly-col-day-head'>
+									<?php $textColor = $this->CalendarMonthly->makeTextColor($years[$i], $months[$i], $days[$i], $vars['holidays'], $wDay[$i]); ?>
+								<span class='h4 pull-left calendar-day <?php echo $textColor ?>'>
+									<?php echo $days[$i] ?><?php echo $week[$wDay[$i]] ?>&nbsp;
+									<?php echo $this->CalendarMonthly->makeGlyphiconPlusWithUrl($years[$i], $months[$i], $days[$i]); ?>
+								</span>
+						</td>
+					<?php endfor; ?>
 				</tr>
 
 				<!-- publicroom -->
