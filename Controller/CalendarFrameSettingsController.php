@@ -10,6 +10,7 @@
  */
 
 App::uses('CalendarsAppController', 'Calendars.Controller');
+App::uses('CalendarsComponent', 'Calendars.Controller/Component');
 
 /**
  * CalendarFrameSettingsController
@@ -44,24 +45,10 @@ class CalendarFrameSettingsController extends CalendarsAppController {
  * @var array
  */
 	public $components = array(
-		'Blocks.BlockTabs' => array(
-			//画面上部のタブ設定
-			'mainTabs' => array(
-				'frame_settings' => array('url' => array('controller' => 'calendar_frame_settings', 'action' => 'edit')),	//表示設定変更
-				////暫定的に外す。
-				////'role_permissions' => array(
-				////	'url' => array('controller' => 'calendar_settings', 'action' => 'edit'),
-				////),
-				////'mail_setting' => array(		//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
-				////	'url' => array('controller' => 'calendar_mail_settings', 'action' => 'edit'),
-				////	'label' => 'mail_setting',
-				////),
-			),
-		),
 		'NetCommons.Permission' => array(
 			//アクセスの権限
 			'allow' => array(
-				'edit' => 'block_editable',
+				'edit' => 'page_editable',
 			),
 		),
 		'Paginator',
@@ -74,8 +61,22 @@ class CalendarFrameSettingsController extends CalendarsAppController {
  */
 	public $helpers = array(
 		//'Blocks.BlockForm',
+		'Blocks.BlockTabs' => array(
+			//画面上部のタブ設定
+			'mainTabs' => array(
+				'frame_settings' => array('url' => array('controller' => 'calendar_frame_settings', 'action' => 'edit')),	//表示設定変更
+				'role_permissions' => array(
+					'url' => array('controller' => 'calendar_block_role_permissions', 'action' => 'edit'),
+				),
+				'mail_setting' => array(		//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
+					'url' => array('controller' => 'calendar_mail_settings', 'action' => 'edit'),
+					'label' => 'mail_setting',
+				),
+			),
+		),
 		'NetCommons.NetCommonsForm',
 		//'NetCommons.Date',
+		'Calendars.CalendarRoomSelect',
 	);
 
 /**
@@ -83,7 +84,45 @@ class CalendarFrameSettingsController extends CalendarsAppController {
  */
 	public $uses = array(
 		'Calendars.CalendarFrameSetting',
+		'Rooms.Room'
 	);
+
+/**
+ * frame display type options
+ */
+	protected $_displayTypeOptions;
+
+/**
+ * Constructor. Binds the model's database table to the object.
+ *
+ * @param bool|int|string|array $id Set this ID for this model on startup,
+ * can also be an array of options, see above.
+ * @param string $table Name of database table to use.
+ * @param string $ds DataSource connection name.
+ * @see Model::__construct()
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
+	public function __construct($id = false, $table = null, $ds = null) {
+		parent::__construct($id, $table, $ds);
+		$this->_displayTypeOptions = array(
+			CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY => __d('calendars', '月表示（縮小）'),
+			CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY => __d('calendars', '月表示（拡大）'),
+			CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY => __d('calendars', '週表示'),
+			CalendarsComponent::CALENDAR_DISP_TYPE_DAILY => __d('calendars', '日表示'),
+			CalendarsComponent::CALENDAR_DISP_TYPE_TSCHEDULE => __d('calendars', 'スケジュール（時間順）'),
+			CalendarsComponent::CALENDAR_DISP_TYPE_MSCHEDULE => __d('calendars', 'スケジュール（会員順）')
+		);
+	}
+
+/**
+ * beforeFilter
+ *
+ * @return void
+ */
+	public function beforeFilter() {
+		parent::beforeFilter();
+		$this->Auth->deny('index');
+	}
 
 /**
  * edit
@@ -105,60 +144,58 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 				return;
 			}
 			$this->NetCommons->handleValidationError($this->CalendarFrameSetting->validationErrors);	//NC3用のvalidateErrorHandler.エラー時、非ajaxならSession->setFalsh()する.又は.(ajaxの時は)jsonを返す.
-		} else {
-			//指定したフレームキーのデータセット
-			//
-			//注）カレンダーはplugin配置(=フレーム生成)直後に、CalendarモデルのafterFrameSave()が呼ばれ、その中で、
-			//	該当フレームキーのCalendarFrameSettingモデルデータが１件新規作成されています。
-			//	なので、ここでは、読むだけでＯＫ．
-			//
-			$conditions = array('frame_key' => Current::read('Frame.key'));
-			$this->request->data = $this->CalendarFrameSetting->find('first', array(
-				'recursive' => (-1),
-				'conditions' => $conditions,
-			));
-			$this->request->data['Frame'] = Current::read('Frame');	//カレンダーではsaveAssociated()はつかわないので外す。
 		}
+		//指定したフレームキーのデータセット
+		//
+		//注）カレンダーはplugin配置(=フレーム生成)直後に、CalendarモデルのafterFrameSave()が呼ばれ、その中で、
+		//	該当フレームキーのCalendarFrameSettingモデルデータが１件新規作成されています。
+		//	なので、ここでは、読むだけでＯＫ．
+		//
+		$conditions = array('frame_key' => Current::read('Frame.key'));
+		$this->request->data = $this->CalendarFrameSetting->find('first', array(
+			'recursive' => (-1),
+			'conditions' => $conditions,
+		));
+		// 空間情報
+		$spaces = $this->Room->getSpaces();
+		// ルームツリー
+		$spaceIds = array(Space::PUBLIC_SPACE_ID, Space::ROOM_SPACE_ID);
+		foreach ($spaceIds as $spaceId) {
+			$rooms[$spaceId] = $this->_getRoom($spaceId);
+			//$roomTreeList[$spaceId] = $this->_getRoomTree($spaces[$spaceId]['Room']['id'], $rooms[$spaceId]);
+		}
+		$this->set('spaceIds', array_merge(array_keys($spaces), array(Space::WHOLE_SITE_ID)));
+		$this->set('spaces', $spaces);
+		$this->set('rooms', $rooms);
+		//$this->set('roomTreeList', $roomTreeList);
+		// フレーム情報
+		$this->request->data['Frame'] = Current::read('Frame');	//カレンダーではsaveAssociated()はつかわないので外す。
+		// カレンダー表示種別
+		$this->set('displayTypeOptions', $this->_displayTypeOptions);
 	}
-
 /**
- * index
- *
- * @return void
+ * _getRoom
+ * 
+ * @param int $spaceId space id
+ * @return array
  */
-	public function index() {
-		$this->set('addActionController', 'calendars');
-		$this->set('editActionController', 'calendars');
-
-		$this->Paginator->settings = array(
-			'CalendarCompRrule' => array(
-				'order' => array('Block.id' => 'desc'),
-				'conditions' => $this->CalendarCompRrule->getBlockConditions(),
-			)
-		);
-		$calendarCompRrules = $this->Paginator->paginate('CalendarCompRrule');
-		if (! $calendarCompRrules) {
-			//カレンダー(ブロック)設定の自動登録
-			//$this->CalendarSetting->saveAuto
-
-			//DBG: モジュール追加直後は、$calendarsが空なので、ここに入り、not_fount.ctpが表示されます。
-			$this->view = 'Blocks.Blocks/not_found';
-			return;
-
-			//MUST:
-			//カレンダー独自仕様：ここにはいったら、この空間に最初にカレンダーが配置されたので、
-			//この空間にblock配置すること。
-
-		} else {
-			//MUST:
-			//カレンダー独自仕様：データが１件はある。
-			//この空間だったら、そのblock_idを利用する。
-			//この空間外だった、あらたにblock_idを作成する。
-		}
-
-		$this->set('calendarCompRrules', $calendarCompRrules);
-
-		$this->request->data['Frame'] = Current::read('Frame');	//現在のフレーム情報をdataにセットする。
+	protected function _getRoom($spaceId) {
+		$rooms = $this->Room->find('threaded', $this->Room->getReadableRoomsConditions($spaceId));
+		//$rooms = Hash::combine($rooms, '{n}.Room.id', '{n}');
+		return $rooms;
+	}
+/**
+ * _getRoomTree
+ * 
+ * @param int $spaceRoomId room id which is space's
+ * @param array $rooms room information
+ * @return array
+ */
+	protected function _getRoomTree($spaceRoomId, $rooms) {
+		// ルームTreeリスト取得
+		$roomTreeList = $this->Room->generateTreeList(
+			array('Room.id' => array_merge(array($spaceRoomId), array_keys($rooms))), null, null, Room::$treeParser);
+		return $roomTreeList;
 	}
 
 /**

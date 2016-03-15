@@ -49,7 +49,7 @@ class CalendarMailSettingsController extends CalendarsAppController {
 			'mainTabs' => array(
 				'frame_settings' => array('url' => array('controller' => 'calendar_frame_settings', 'action' => 'edit')),	//表示設定変>更
 				'role_permissions' => array(
-					'url' => array('controller' => 'calendar_settings', 'action' => 'edit'),
+					'url' => array('controller' => 'calendar_block_role_permissions', 'action' => 'edit'),
 				),
 				'mail_setting' => array(		//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
 					'url' => array('controller' => 'calendar_mail_settings', 'action' => 'edit'),
@@ -96,18 +96,10 @@ class CalendarMailSettingsController extends CalendarsAppController {
  * @throws InternalErrorException 
  */
 	public function edit() {
-		$options = array(
-			'conditions' => array(
-				$this->MailSetting->alias . '.plugin_key' => 'calendars',
-				$this->MailSetting->alias . '.block_key' => Current::read('Block.key'),
-			),
-			'recursive' => (-1),
-		);
-
-		$data = $this->MailSetting->find('first', $options);
+		$data = $this->MailSetting->getMailSettingPlugin();
 		//CakeLog::debug('DBG: data[' . print_r($data, true));
 		if (! $data) {
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			$data = $this->MailSetting->createMailSetting();
 		}
 		$isMailSend = $data[$this->MailSetting->alias]['is_mail_send'];
 

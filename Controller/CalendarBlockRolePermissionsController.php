@@ -1,6 +1,6 @@
 <?php
 /**
- * CalendarSettings Controller
+ * CalendarBlockRolePermissions Controller
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author AllCreator Co., Ltd. <info@allcreator.net>
@@ -12,13 +12,13 @@
 App::uses('CalendarsAppController', 'Calendars.Controller');
 
 /**
- * CalendarSettingsController
+ * CalendarBlockRolePermissionsController
  *
  * @author Allcreator <info@allcreator.net>
  * @package NetCommons\Calendars\Controller
  */
 
-class CalendarSettingsController extends CalendarsAppController {
+class CalendarBlockRolePermissionsController extends CalendarsAppController {
 
 /**
  * layout
@@ -46,7 +46,7 @@ class CalendarSettingsController extends CalendarsAppController {
 			'mainTabs' => array(
 				'frame_settings' => array('url' => array('controller' => 'calendar_frame_settings', 'action' => 'edit')),
 				'role_permissions' => array(
-					'url' => array('controller' => 'calendar_settings', 'action' => 'edit'),
+					'url' => array('controller' => 'calendar_block_role_permissions', 'action' => 'edit'),
 				),
 				'mail_setting' => array(		//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
 					'url' => array('controller' => 'calendar_mail_settings', 'action' => 'edit'),
