@@ -96,12 +96,12 @@
 				<tr>
 					<td class='calendar-weekly-col-room-name-head'>&nbsp;</td>
 					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left text-danger calendar-day'><?php echo $day[0] ?><?php echo $week[$wDay[0]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[1] ?>(月)</span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[2] ?>(火)</span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[3] ?>(水)</span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[4] ?>(木)</span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[5] ?>(金)</span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left text-primary calendar-day'><?php echo $day[6] ?>(土)</span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
+					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[1] ?><?php echo $week[$wDay[1]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
+					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[2] ?><?php echo $week[$wDay[2]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
+					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[3] ?><?php echo $week[$wDay[3]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
+					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[4] ?><?php echo $week[$wDay[4]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
+					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[5] ?><?php echo $week[$wDay[5]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
+					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left text-primary calendar-day'><?php echo $day[6] ?><?php echo $week[$wDay[6]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
 				</tr>
 
 				<!-- publicroom -->
