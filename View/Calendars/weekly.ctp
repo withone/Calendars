@@ -4,7 +4,7 @@
 
 <article ng-controller="CalendarsDetailEdit" class="block-setting-body">
 
-<div class="clearfix"></div>
+<!-- <div class="clearfix"></div> -->
 
 
 <form>
@@ -54,7 +54,10 @@
 	));
 
 	/* 第n週*/
-	$nWeek = floor($vars['day'] / 7) + 1;
+	$weekTime = mktime(0, 0, 0, $vars['month'], 1, $vars['year']);
+	$nWeekDay = date('w', $weekTime);
+	$nWeek = (int)ceil(($vars['day'] + $nWeekDay) / 7);
+
 
 	/* 日（曜日）(指定日を開始日) */
 	$days = array();
@@ -70,7 +73,6 @@
 
 	/* 曜日 */
 	$week = array('(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)'); // kuma temp
-	//print_r($week);print_r($wDay);
 ?>
 
 
@@ -78,13 +80,13 @@
 <div class="row">
 	<div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3 text-center">
 		<ul class="pager">
-  			<li class="previous" title="
-  				<?php echo __d('calendars', '前週へ'); ?>
-  			"><a href="<?php echo $prevWeekDay; ?>">前週</a></li>
+  			<li class="previous" title="<?php echo __d('calendars', '前週へ'); ?>">
+  				<a href="<?php echo $prevWeekDay; ?>">前週</a>
+  			</li>
   			<li><h3 class="calendar-inline"><?php echo __d('calendars', '第') . $nWeek . __d('calendars', '週'); ?></h3></li>
-  			<li class="next" title="
-  				<?php echo __d('calendars', '次週へ'); ?>
-  			"><a href="<?php echo $nextWeekDay; ?>">次週</a></li>
+  			<li class="next" title="<?php echo __d('calendars', '次週へ'); ?>">
+  				<a href="<?php echo $nextWeekDay; ?>">次週</a>
+  			</li>
 		</ul>
 	</div>
 </div>
