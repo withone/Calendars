@@ -101,9 +101,10 @@
 				<tr>
 					<td class='calendar-weekly-col-room-name-head'>&nbsp;</td>
 					<?php for ($i = 0; $i < 7; $i++) : ?>
+						<?php $url = $this->CalendarMonthly->getCalendarDailyUrl($years[$i], $months[$i], $days[$i]); ?>
 						<td class='calendar-weekly-col-day-head'>
 									<?php $textColor = $this->CalendarMonthly->makeTextColor($years[$i], $months[$i], $days[$i], $vars['holidays'], $wDay[$i]); ?>
-								<span class='h4 pull-left calendar-day <?php echo $textColor ?>'>
+								<span class='h4 pull-left calendar-day calendar-daily-disp <?php echo $textColor ?>' data-url='<?php echo $url ?>'>
 									<?php echo $days[$i] ?><?php echo $week[$wDay[$i]] ?>&nbsp;
 									<?php echo $this->CalendarMonthly->makeGlyphiconPlusWithUrl($years[$i], $months[$i], $days[$i]); ?>
 								</span>
