@@ -5,7 +5,7 @@
 <article ng-controller="CalendarsDetailEdit" class="block-setting-body">
 
 <!-- <div class="clearfix"></div> -->
-
+<!-- 
 <?php
 	/* 前日 */
 	$prevtimestamp = mktime(0, 0, 0, $vars['month'], ($vars['day'] - 1 ), $vars['year']);
@@ -48,9 +48,10 @@
 	/* 文字色 */
 	$textColor = $this->CalendarMonthly->makeTextColor($vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $wDay);
 ?>
-
+-->
 
 <!-- 日切り替え -->
+<!--
 <div class="row">
 	<div class="col-xs-6 col-xs-offset-3 text-center">
 		<ul class="pager">
@@ -79,13 +80,14 @@
   		<span class='h3'><?php echo $vars['month'] . __d('calendars', '月') . $vars['day'] . __d('calendars', '日'); ?></span>
   		<br />
   		<span class='h5'><?php echo (($holidayTitle === '') ? '&nbsp;' : $holidayTitle); ?></span>
- </div>
+	</div>
 
 </div>
 
 <br />
-
+-->
 <?php echo $this->element('Calendars.Calendars/daily_tabs', array('active' => 'list', 'frameId' => $frameId, 'languageId' => $languageId)); ?>
+
 
 <div class="row"><!--全体枠-->
 	<div class="col-xs-12 text-center">
