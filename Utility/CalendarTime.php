@@ -18,6 +18,85 @@
 class CalendarTime {
 
 /**
+ * getHourColonMin
+ *
+ * "Y/m/d H:i:s"形式より"H:i"を抜き出す
+ *
+ * @param string $ymdHis "Y/m/d H:i:s"形式のDatetime文字列
+ * @return string "H:i"形式の文字列
+ */
+	public static function getHourColonMin($ymdHis) {
+		return substr($ymdHis, 11, 5);
+	}
+
+/**
+ * getNextDay
+ *
+ * 年月日の次日を取得する
+ *
+ * @param int $year 年
+ * @param int $month 月
+ * @param int $day 日
+ * @return array 次日の年と月と日を配列で返す。
+ */
+	public static function getNextDay($year, $month, $day) {
+		//mktimeのday引数の「その月の日数より大きい値は、翌月以降の該当する日を表す」仕様を応用して次日の年月日を求める。
+		list($yearOfNextDay, $monthOfNextDay, $nextDay) = explode('/', date('Y/m/d', mktime(0, 0, 0, $month, $day + 1, $year)));
+		return array($yearOfNextDay, $monthOfNextDay, $nextDay);
+	}
+
+/**
+ * getPrevMonth
+ *
+ * 年月の前月を取得する
+ *
+ * @param int $year 年
+ * @param int $month 月
+ * @return array 前月の年と月を配列で返す。
+ */
+	public static function getPrevMonth($year, $month) {
+		$yearOfPrevMonth = $year;
+		$prevMonth = $month - 1;
+		if ($month == 1) {
+			$yearOfPrevMonth = $year - 1;
+			$prevMonth = 12;
+		}
+		return array($yearOfPrevMonth, $prevMonth);
+	}
+
+/**
+ * getNextMonth
+ *
+ * 年月の次月を取得する
+ *
+ * @param int $year 年
+ * @param int $month 月
+ * @return array 次月の年と次月の月を配列で返す。
+ */
+	public static function getNextMonth($year, $month) {
+		$yearOfNextMonth = $year;
+		$nextMonth = $month + 1;
+		if ($month == 12) {
+			$yearOfNextMonth = $year + 1;
+			$nextMonth = 1;
+		}
+		return array($yearOfNextMonth, $nextMonth);
+	}
+
+/**
+ * dt2CalDt
+ *
+ * Y/m/d H:i:s形式からYmdHis形式に変換する
+ *
+ * @param string $datetime "Y/m/d H:i:s"形式の日付時刻
+ * @return string "YmdHis"形式の日付時刻
+ */
+	public static function dt2CalDt($datetime) {
+		return (substr($datetime, 0, 4) . substr($datetime, 5, 2) . substr($datetime, 8, 2) .
+			substr($datetime, 11, 2) . substr($datetime, 14, 2) . substr($datetime, 17, 2));
+	}
+
+/**
  * getWday
  *
  * 年月日から曜日(0-6)を返す

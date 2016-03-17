@@ -421,4 +421,12 @@ $(function() {
     }
     window.location = url;
   });
+  $('.calendar-plan-show').on('click', function(evt) {
+    var url = $(evt.target).attr('data-url');
+    if (url == undefined) {
+      var expr = 'p.calendar-plan-show';
+      url = $(evt.target).parents(expr).attr('data-url');
+    }
+    window.location = url;
+  });
 });

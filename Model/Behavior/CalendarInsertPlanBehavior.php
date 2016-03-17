@@ -105,8 +105,11 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  */
 	public function arrangeData(&$planParams) {
-		if (!isset($planParams['timezone_offset'])) { //timezone_offsetがなければ、カレンダーのセッションから取得する。
-			$planParams['timezone_offset'] = CakeSession::read('Calendars.timezone_offset');
+		if (!isset($planParams['timezone_offset'])) {
+			//NC2仕様: timezone_offsetがなければ、カレンダーのセッションから取得する。
+			//->
+			//NC3仕様: timezone_offsetがなければ、0.0(UTC)とする。
+			$planParams['timezone_offset'] = 0.0;
 		}
 
 		if (!isset($planParams['start_date']) && !isset($planParams['start_time'])) { //開始日付と開始時刻は必須
