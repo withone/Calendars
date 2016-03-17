@@ -4,7 +4,7 @@
 
 <article ng-controller="CalendarsDetailEdit" class="block-setting-body">
 
-<div class="clearfix"></div>
+<!-- <div class="clearfix"></div> -->
 
 
 <form>
@@ -54,21 +54,25 @@
 	));
 
 	/* 第n週*/
-	$nWeek = floor($vars['day'] / 7) + 1;
+	$weekTime = mktime(0, 0, 0, $vars['month'], 1, $vars['year']);
+	$nWeekDay = date('w', $weekTime);
+	$nWeek = (int)ceil(($vars['day'] + $nWeekDay) / 7);
 
-	/* 日（曜日） */
-	$day = array();
+
+	/* 日（曜日）(指定日を開始日) */
+	$days = array();
 	$wDay = array();
 	$i = 0;
 	for ($i = 0; $i < 7; $i++) {
 		$timestamp = mktime(0, 0, 0, $vars['month'], ($vars['day'] + $i ), $vars['year']);
-		$day[$i] = date('d', $timestamp);
+		$years[$i] = date('Y', $timestamp);
+		$months[$i] = date('m', $timestamp);
+		$days[$i] = (int)date('d', $timestamp);
 		$wDay[$i] = date('w', $timestamp);
 	}
 
 	/* 曜日 */
 	$week = array('(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)'); // kuma temp
-	//print_r($week);print_r($wDay);
 ?>
 
 
@@ -76,13 +80,13 @@
 <div class="row">
 	<div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3 text-center">
 		<ul class="pager">
-  			<li class="previous" title="
-  				<?php echo __d('calendars', '前週へ'); ?>
-  			"><a href="<?php echo $prevWeekDay; ?>">前週</a></li>
+  			<li class="previous" title="<?php echo __d('calendars', '前週へ'); ?>">
+  				<a href="<?php echo $prevWeekDay; ?>">前週</a>
+  			</li>
   			<li><h3 class="calendar-inline"><?php echo __d('calendars', '第') . $nWeek . __d('calendars', '週'); ?></h3></li>
-  			<li class="next" title="
-  				<?php echo __d('calendars', '次週へ'); ?>
-  			"><a href="<?php echo $nextWeekDay; ?>">次週</a></li>
+  			<li class="next" title="<?php echo __d('calendars', '次週へ'); ?>">
+  				<a href="<?php echo $nextWeekDay; ?>">次週</a>
+  			</li>
 		</ul>
 	</div>
 </div>
@@ -93,15 +97,18 @@
 
 		<table class='calendar-weekly-table'>
 			<tbody>
+				<!-- 日付（見出し） -->
 				<tr>
 					<td class='calendar-weekly-col-room-name-head'>&nbsp;</td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left text-danger calendar-day'><?php echo $day[0] ?><?php echo $week[$wDay[0]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[1] ?><?php echo $week[$wDay[1]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[2] ?><?php echo $week[$wDay[2]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[3] ?><?php echo $week[$wDay[3]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[4] ?><?php echo $week[$wDay[4]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left calendar-day'><?php echo $day[5] ?><?php echo $week[$wDay[5]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
-					<td class='calendar-weekly-col-day-head'><p class='h4'><span class='pull-left text-primary calendar-day'><?php echo $day[6] ?><?php echo $week[$wDay[6]] ?></span><small><span class='glyphicon glyphicon-plus'></span></small></p></td>
+					<?php for ($i = 0; $i < 7; $i++) : ?>
+						<td class='calendar-weekly-col-day-head'>
+									<?php $textColor = $this->CalendarMonthly->makeTextColor($years[$i], $months[$i], $days[$i], $vars['holidays'], $wDay[$i]); ?>
+								<span class='h4 pull-left calendar-day <?php echo $textColor ?>'>
+									<?php echo $days[$i] ?><?php echo $week[$wDay[$i]] ?>&nbsp;
+									<?php echo $this->CalendarMonthly->makeGlyphiconPlusWithUrl($years[$i], $months[$i], $days[$i]); ?>
+								</span>
+						</td>
+					<?php endfor; ?>
 				</tr>
 
 				<!-- publicroom -->

@@ -2,56 +2,92 @@
 ?>
 <?php echo $this->element('Calendars.scripts'); ?>
 
-<article class="block-setting-body">
+<article ng-controller="CalendarsDetailEdit" class="block-setting-body">
 
-<div class="clearfix"></div>
+<!-- <div class="clearfix"></div> -->
+<!-- 
+<?php
+	/* 前日 */
+	$prevtimestamp = mktime(0, 0, 0, $vars['month'], ($vars['day'] - 1 ), $vars['year']);
+	$prevYear = date('Y', $prevtimestamp);
+	$prevMonth = date('m', $prevtimestamp);
+	$prevDay = date('d', $prevtimestamp);
+	$prevDayLink = NetCommonsUrl::actionUrl(array(
+		'controller' => 'calendars',
+		'action' => 'index',
+		'style' => $vars['style'],
+		'year' => sprintf("%04d", $prevYear),
+		'month' => sprintf("%02d", $prevMonth),
+		'day' => $prevDay,
+		'frame_id' => Current::read('Frame.id'),
+	));
+
+	/* 翌日 */
+	$nexttimestamp = mktime(0, 0, 0, $vars['month'], ($vars['day'] + 1 ), $vars['year']);
+	$nextYear = date('Y', $nexttimestamp);
+	$nextMonth = date('m', $nexttimestamp);
+	$nextDay = date('d', $nexttimestamp);
+	$nextDayLink = NetCommonsUrl::actionUrl(array(
+		'controller' => 'calendars',
+		'action' => 'index',
+		'style' => $vars['style'],
+		'year' => sprintf("%04d", $nextYear),
+		'month' => sprintf("%02d", $nextMonth),
+		'day' => $nextDay,
+		'frame_id' => Current::read('Frame.id'),
+	));
 
 
+	/* 当日 */
+	$timestamp = mktime(0, 0, 0, $vars['month'], $vars['day'], $vars['year']);
+	$wDay = date('w', $timestamp);
 
+	/* 祝日タイトル */
+	$holidayTitle = $this->CalendarMonthly->getHolidayTitle($vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $wDay);
 
-<!-- 週切り替え -->
-<!--
-<div class="row">
-	<div class="col-xs-4 col-xs-offset-4 text-center calendar-weekly-month-pager">
-		<ul class="pager small">
-  			<li class="previous"><a href="#"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
-  			<li><h4 class="calendar-inline">第1週</h4></li>
-  			<li class="next"><a href="#"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
-		</ul>
-	</div>
-</div>
-<div class="clearfix"></div>
+	/* 文字色 */
+	$textColor = $this->CalendarMonthly->makeTextColor($vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $wDay);
+?>
 -->
+
 <!-- 日切り替え -->
+<!--
 <div class="row">
 	<div class="col-xs-6 col-xs-offset-3 text-center">
 		<ul class="pager">
-  			<li class="previous"><a href="#"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
+  			<li class="previous" title="<?php echo __d('calendars', '前日へ'); ?>">
+  				<a href="<?php echo $prevDayLink; ?>">
+  				<span class="glyphicon glyphicon-chevron-left"></span></a>
+  			</li>
   			<li>
-   			<div class='hidden-xs calendar-inline text-danger'>
-  			<span class='h5'>2016年</span>
-  			<span class='h3'>1月11日</span>
-  			<span class='h5'>成人の日</span></div>
+   			<div class='hidden-xs calendar-inline <?php echo $textColor ?>'>
+  			<span class='h5'><?php echo $vars['year'] . __d('calendars', '年'); ?></span>
+  			<span class='h3'><?php echo $vars['month'] . __d('calendars', '月') . $vars['day'] . __d('calendars', '日'); ?></span>
+  			<span class='h5'><?php echo (($holidayTitle === '') ? '&nbsp;' : $holidayTitle); ?></span></div>
   			</li>
   			<br class="visible-xs" />
-  			<li class="next"><a href="#"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+  			<li class="next" title="<?php echo __d('calendars', '翌日へ'); ?>">
+  				<a href="<?php echo $nextDayLink; ?>">
+  				<span class="glyphicon glyphicon-chevron-right"></span></a>
+  			</li>
 		</ul>
 	</div>
 
-	<div class='col-xs-12 visible-xs text-danger text-center'>
-  		<span class='h5'>2016年</span>
+	<div class='col-xs-12 visible-xs text-center <?php echo $textColor ?>'>
+  		<span class='h5'><?php echo $vars['year'] . __d('calendars', '年'); ?></span>
   		<br />
   		<div style="margin-top:5px;"></div>
-  		<span class='h3'>1月11日</span>
+  		<span class='h3'><?php echo $vars['month'] . __d('calendars', '月') . $vars['day'] . __d('calendars', '日'); ?></span>
   		<br />
-  		<span class='h5'>成人の日</span>
- </div>
+  		<span class='h5'><?php echo (($holidayTitle === '') ? '&nbsp;' : $holidayTitle); ?></span>
+	</div>
 
 </div>
 
 <br />
-
+-->
 <?php echo $this->element('Calendars.Calendars/daily_tabs', array('active' => 'list', 'frameId' => $frameId, 'languageId' => $languageId)); ?>
+
 
 <div class="row"><!--全体枠-->
 	<div class="col-xs-12 text-center">

@@ -8,20 +8,8 @@
 
 
 <form>
-<!-- 週切り替え -->
-<!--
-<div class="row">
-	<div class="col-xs-4 col-xs-offset-4 text-center calendar-weekly-month-pager">
-		<ul class="pager small">
-  			<li class="previous"><a href="#"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
-  			<li><h4 class="calendar-inline">第1週</h4></li>
-  			<li class="next"><a href="#"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
-		</ul>
-	</div>
-</div>
-<div class="clearfix"></div>
--->
 <!-- 日切り替え -->
+<!--
 <div class="row">
 	<div class="col-xs-6 col-xs-offset-3 text-center">
 		<ul class="pager">
@@ -51,8 +39,12 @@
 </div>
 
 <br />
+-->
+
 
 <?php echo $this->element('Calendars.Calendars/daily_tabs', array('active' => 'timeline', 'frameId' => $frameId, 'languageId' => $languageId)); ?>
+
+
 
 <div class="row"><!--全体枠-->
 	<div class="col-xs-12 text-center">
