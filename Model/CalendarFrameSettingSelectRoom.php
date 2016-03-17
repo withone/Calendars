@@ -125,20 +125,7 @@ class CalendarFrameSettingSelectRoom extends CalendarsAppModel {
 			),
 			'order' => array('Room.id ASC')
 		));
-		// 全会員のレコードは絶対抜けるので付け足す
-		$allMembers = $this->find('all', array(
-			'recursive' => -1,
-			'conditions' => array(
-				'room_id' => CalendarsComponent::CALENDAR_ALLMEMBERS,
-				'calendar_frame_setting_id' => $settingId,
-			)
-		));
-		if ($allMembers) {
-			$allMembersArray = array(CalendarsComponent::CALENDAR_ALLMEMBERS => CalendarsComponent::CALENDAR_ALLMEMBERS);
-		} else {
-			$allMembersArray = array(CalendarsComponent::CALENDAR_ALLMEMBERS => '');
-		}
-		$selectRoom = Hash::merge($allMembersArray, Hash::combine($selectRoom, '{n}.Room.id', '{n}.CalendarFrameSettingSelectRoom.room_id'));
+		$selectRoom = Hash::combine($selectRoom, '{n}.Room.id', '{n}.CalendarFrameSettingSelectRoom.room_id');
 		return $selectRoom;
 	}
 

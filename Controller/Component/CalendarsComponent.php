@@ -76,13 +76,6 @@ class CalendarsComponent extends Component {
 	const	CALENDAR_NOT_USE_WORKFLOW = '0';				//使わない
 
 /**
- * カレンダー全会員
- *
- * @var int
- */
-	const	CALENDAR_ALLMEMBERS = '0';					//全会員
-
-/**
  * カレンダーブロックタブ名
  *
  * @var string

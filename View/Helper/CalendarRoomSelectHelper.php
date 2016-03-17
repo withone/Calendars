@@ -51,7 +51,7 @@ class CalendarRoomSelectHelper extends AppHelper {
 			}
 		}
 		// 全会員
-		$html .= $this->_getSpaceListElm(__d('calendars', '全会員'), array('Room' => array('id' => 0)));
+		$html .= $this->_getSpaceListElm(__d('calendars', '全会員'), array('Room' => array('id' => Room::ROOM_PARENT_ID)));
 		return $html;
 	}
 

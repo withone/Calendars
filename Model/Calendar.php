@@ -41,7 +41,7 @@ class Calendar extends CalendarsAppModel {
 	public $belongsTo = array(
 		'Block' => array(
 			'className' => 'Blocks.Block',
-			'foreignKey' => 'block_id',
+			'foreignKey' => 'block_key',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
@@ -184,10 +184,9 @@ class Calendar extends CalendarsAppModel {
 			}
 
 			//権限設定
-			//////
-			//////if (! $this->_saveSetting($block)) {
-			//////	throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			//////}
+			if (! $this->_saveCalendar($block)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
 
 			////コメント）メール設定は、上記とことなり「メール設定」タブ画面で、チェック＋決定した時はじめてレコード生成されるタイプと思われるので、以下の処理は抑止する。
 			////メール設定
@@ -285,19 +284,29 @@ class Calendar extends CalendarsAppModel {
 	}
 
 /**
- * _saveSetting
+ * _saveCalendar
  *
  * 権限設定のデータの登録
  *
  * @param array $block ブロック
  * @return array 生成したデータ
  */
-	protected function _saveSetting($block) {
-		////$blockSetting = $this->CalendarSetting->create();
-		////$blockSetting['CalendarSetting']['block_key'] = $block['Block']['key'];
-		////$blockSetting['CalendarSetting']['use_workflow'] = CalendarsComponent::CALENDAR_NOT_USE_WORKFLOW;
-		////return $this->CalendarSetting->saveCalendarSetting($blockSetting);
-		return array();	//暫定.
+	protected function _saveCalendar($block) {
+		// 今現在ブロックに対応したカレンダーがあるか
+		$calendar = $this->find('first', array(
+			'conditions' => array(
+				'block_key' => $block['Block']['key']
+			)
+		));
+		// ない場合は作成する
+		if (! $calendar) {
+			$this->create();
+			$calendar = $this->save(array(
+				'block_key' => $block['Block']['key'],
+				'use_workflow' => true
+			));
+		}
+		return $calendar;
 	}
 
 /**
