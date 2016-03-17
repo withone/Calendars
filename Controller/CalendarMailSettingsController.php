@@ -44,19 +44,6 @@ class CalendarMailSettingsController extends CalendarsAppController {
  * @var array
  */
 	public $components = array(
-		'Blocks.BlockTabs' => array(
-			//画面上部のタブ設定
-			'mainTabs' => array(
-				'frame_settings' => array('url' => array('controller' => 'calendar_frame_settings', 'action' => 'edit')),	//表示設定変>更
-				'role_permissions' => array(
-					'url' => array('controller' => 'calendar_block_role_permissions', 'action' => 'edit'),
-				),
-				'mail_setting' => array(		//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
-					'url' => array('controller' => 'calendar_mail_settings', 'action' => 'edit'),
-					'label' => 'mail_setting',
-				),
-			),
-		),
 		'NetCommons.Permission' => array(
 			//アクセスの権限
 			'allow' => array(
@@ -64,6 +51,7 @@ class CalendarMailSettingsController extends CalendarsAppController {
 				//'edit' => null,
 			),
 		),
+		'Workflow.Workflow',
 		'Paginator',
 	);
 
@@ -84,6 +72,19 @@ class CalendarMailSettingsController extends CalendarsAppController {
 	public $helpers = array(
 		//'Blocks.BlockForm',
 		'NetCommons.NetCommonsForm',
+		'Blocks.BlockRolePermissionForm',
+		'Blocks.BlockTabs' => array(
+			//画面上部のタブ設定
+			'mainTabs' => array(
+				'frame_settings' => array('url' => array('controller' => 'calendar_frame_settings', 'action' => 'edit')),	//表示設定変>更
+				'role_permissions' => array(
+					'url' => array('controller' => 'calendar_block_role_permissions', 'action' => 'edit'),
+				),
+				'mail_settings' => array(		//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
+					'url' => array('controller' => 'calendar_mail_settings', 'action' => 'edit'),
+				),
+			),
+		),
 		//'NetCommons.Date',
 	);
 
@@ -101,29 +102,16 @@ class CalendarMailSettingsController extends CalendarsAppController {
 		if (! $data) {
 			$data = $this->MailSetting->createMailSetting();
 		}
-		$isMailSend = $data[$this->MailSetting->alias]['is_mail_send'];
 
-		$this->set('isMailSend', $isMailSend);
+		$permissions = $this->Workflow->getBlockRolePermissions(
+			array('mail_content_receivable')
+		);
+		$this->set('roles', $permissions['Roles']);
+
+		$mailBodyPopoverMsg = '<div>FUJI置き換えワードの内容をどのように決めればよいか</div>';
+		$this->set('mailBodyPopoverMessage', $mailBodyPopoverMsg);
+
+		$this->request->data['BlockRolePermission'] = $permissions['BlockRolePermissions'];
+		$this->request->data['Frame'] = Current::read('Frame');
 	}
-
-/**
- * beforeRender
- *
- * レンダリング前処理
- *
- * @return void
- */
-	public function beforeRender() {
-		//BlocksのmainTabコンポーネント・ヘルパーにメール設定が追加されるまので、暫定措置
-		//
-		if (isset($this->viewVars['settingTabs']['mail_setting']['url']['action'])) {
-			$this->viewVars['settingTabs']['mail_setting']['url']['action'] = 'edit?frame_id=' . Current::read('Frame.id');
-		}
-		if (isset($this->viewVars['settingTabs']['mail_setting']['label'])) {
-			$this->viewVars['settingTabs']['mail_setting']['label'] = __d('Calendars', 'メール設定');
-		}
-
-		parent::beforeRender();
-	}
-
 }

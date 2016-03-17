@@ -28,36 +28,50 @@ class CalendarBlockRolePermissionsController extends CalendarsAppController {
 	public $layout = 'NetCommons.setting';
 
 /**
+ * use components
+ *
+ * @var array
+ */
+	public $components = array(
+		'NetCommons.Permission' => array(
+			'allow' => array( 'edit' => 'block_editable' ),
+		),
+		'Paginator',
+	);
+
+/**
+ * use uses
+ *
+ * @var array
+ */
+	public $uses = array(
+		'Rooms.Room',
+		'Calendars.Calendar',
+		'Calendars.CalendarPermission',
+	);
+
+/**
  * use helpers
  *
  * @var array
  */
 	public $helpers = array(
 		'NetCommons.NetCommonsForm',
-	);
-
-/**
- * use components
- *
- * @var array
- */
-	public $components = array(
+		'Rooms.Rooms',
+		'Blocks.BlockRolePermissionForm',
 		'Blocks.BlockTabs' => array(
+			//画面上部のタブ設定
 			'mainTabs' => array(
-				'frame_settings' => array('url' => array('controller' => 'calendar_frame_settings', 'action' => 'edit')),
+				'frame_settings' => array('url' => array('controller' => 'calendar_frame_settings', 'action' => 'edit')),	//表示設定変更
 				'role_permissions' => array(
 					'url' => array('controller' => 'calendar_block_role_permissions', 'action' => 'edit'),
 				),
-				'mail_setting' => array(		//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
+				'mail_settings' => array(		//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
 					'url' => array('controller' => 'calendar_mail_settings', 'action' => 'edit'),
-					'label' => 'mail_setting',
 				),
 			),
 		),
-		'NetCommons.Permission' => array(
-			'allow' => array( 'edit' => 'block_editable' ),
-		),
-		'Paginator',
+		'Calendars.CalendarPermission',
 	);
 
 /**
@@ -68,26 +82,29 @@ class CalendarBlockRolePermissionsController extends CalendarsAppController {
  * @return void
  */
 	public function edit() {
-		//処理をここに書く
-	}
-
-/**
- * beforeRender
- *
- * 権限管理のレンダリング前処理
- *
- * @return void
- */
-	public function beforeRender() {
-		//BlocksのmainTabコンポーネント・ヘルパーにメール設定が追加されるまので、暫定措置
-		//
-		if (isset($this->viewVars['settingTabs']['mail_setting']['url']['action'])) {
-			$this->viewVars['settingTabs']['mail_setting']['url']['action'] = 'edit?frame_id=' . Current::read('Frame.id');
-		}
-		if (isset($this->viewVars['settingTabs']['mail_setting']['label'])) {
-			$this->viewVars['settingTabs']['mail_setting']['label'] = __d('Calendars', 'メール設定');
+		if ($this->request->is('post')) {
+			// Post
 		}
 
-		parent::beforeRender();
+		// ルーム一覧＋それぞれのカレンダー情報取り出し
+		// 空間情報
+		$spaces = $this->Room->getSpaces();
+		//var_dump($spaces);
+		$this->set('spaces', $spaces);
+
+		// カレンダー＋ブロック+ルーム
+		$rooms = $this->CalendarPermission->getCalendarRoomBlocks($this->Workflow);
+		$this->set('roomBlocks', $rooms);
+		$this->request->data = $rooms;
+
+		// ルームツリー
+		foreach ($rooms as $spaceId => $room) {
+			$roomTree[$spaceId] = $this->Room->formatTreeList($room, array(
+				'keyPath' => '{n}.Room.id',
+				'valuePath' => '{n}.RoomsLanguage.name',
+				'spacer' => Room::$treeParser
+			));
+		}
+		$this->set('roomTree', $roomTree);
 	}
 }

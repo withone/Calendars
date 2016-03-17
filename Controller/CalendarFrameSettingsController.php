@@ -68,9 +68,8 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 				'role_permissions' => array(
 					'url' => array('controller' => 'calendar_block_role_permissions', 'action' => 'edit'),
 				),
-				'mail_setting' => array(		//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
+				'mail_settings' => array(		//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
 					'url' => array('controller' => 'calendar_mail_settings', 'action' => 'edit'),
-					'label' => 'mail_setting',
 				),
 			),
 		),
@@ -168,7 +167,6 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 			$rooms[$spaceId] = $this->_getRoom($spaceId);
 			$roomTreeList[$spaceId] = $this->_getRoomTree($spaces[$spaceId]['Room']['id'], $rooms[$spaceId]);
 		}
-		$this->set('spaceIds', array_merge(array_keys($spaces), array(Space::WHOLE_SITE_ID)));
 		$this->set('spaces', $spaces);
 		$this->set('rooms', $rooms);
 		$this->set('roomTreeList', $roomTreeList);
@@ -201,25 +199,5 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 		$roomTreeList = $this->Room->generateTreeList(
 		array('Room.id' => array_merge(array($spaceRoomId), array_keys($rooms))), null, null, Room::$treeParser);
 		return $roomTreeList;
-	}
-
-/**
- * beforeRender
- * 
- * レンダリング前処理
- *
- * @return void
- */
-	public function beforeRender() {
-		//BlocksのmainTabコンポーネント・ヘルパーにメール設定が追加されるまので、暫定措置
-		//
-		if (isset($this->viewVars['settingTabs']['mail_setting']['url']['action'])) {
-			$this->viewVars['settingTabs']['mail_setting']['url']['action'] = 'edit?frame_id=' . Current::read('Frame.id');
-		}
-		if (isset($this->viewVars['settingTabs']['mail_setting']['label'])) {
-			$this->viewVars['settingTabs']['mail_setting']['label'] = __d('Calendars', 'メール設定');
-		}
-
-		parent::beforeRender();
 	}
 }
