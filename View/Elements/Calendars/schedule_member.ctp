@@ -16,61 +16,108 @@
 
 <div class="row"><!--全体枠-->
 
+				<!-- 予定の内容 -->
+				<?php
+					echo $this->CalendarSchedule->makeMemberBodyHtml($vars);
+				?>
+
+
+
 <!-- today -->
 	<div class="col-sm-12 text-center">
 		<div class='row'>
 			<div class='col-xs-12'>
 				<p data-openclose-stat='open' data-pos='1' class='calendar-schedule-disp calendar-plan-clickable text-left calendar-schedule-row-title'>
-				<span class='h4'><span data-pos='1' class="glyphicon glyphicon-chevron-down schedule-openclose"></span><span>今日</span><span style='margin-left: 0.5em'>(3)</span></span>
+					<span class='h4'>
+						<span data-pos='1' class="glyphicon glyphicon-chevron-down schedule-openclose"></span>
+						<span>今日</span>
+						<span style='margin-left: 0.5em'>(3)</span>
+					</span>
 				</p>
 			</div>
 			<div class='clearfix'></div>
 		</div>
 
+		<div class='row calendar-schedule-row' data-pos='1'>
+			<div class='col-xs-12 col-sm-3'>
+				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'>
+					<span class='text-success'>山田太郎</span>
+				</p>
+			</div>
+			<div class='col-xs-12 col-sm-9'>
+				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'>
+					<span class='calendar-plan-mark calendar-plan-mark-public'></span>
+					<span>会社HPメンテナンス</span>
+				</p>
+			</div>
+			<div class='clearfix'></div>
+		</div>
+		<div class='row calendar-schedule-row' data-pos='1'>
+			<div class='col-xs-12 col-sm-3'>
+				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'>
+					<span class='text-success sr-only'>山田太郎</span>
+				</p>
+			</div>
+			<div class='col-xs-12 col-sm-9'>
+				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'>
+					<span class='pull-left'>
+						<small class='calendar-daily-nontimeline-periodtime-deco'>09:30-12:00</small>
+					</span>
+					<span class='calendar-plan-mark calendar-plan-mark-group'></span>
+					<span class='label label-warning'>承認待ち</span>
+					<span>開発部定例会議</span>
+				</p>
+			</div>
+			<div class='clearfix'></div>
+		</div>
 
 		<div class='row calendar-schedule-row' data-pos='1'>
 			<div class='col-xs-12 col-sm-3'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'><span class='text-success'>山田太郎</span></p>
+				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'>
+					<span class='text-success'>ジョン・F・ケネディ</span>
+				</p>
 			</div>
 			<div class='col-xs-12 col-sm-9'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'><span class='calendar-plan-mark calendar-plan-mark-public'></span><span>会社HPメンテナンス</span></p>
-			</div>
-			<div class='clearfix'></div>
-		</div>
-		<div class='row calendar-schedule-row' data-pos='1'>
-			<div class='col-xs-12 col-sm-3'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'><span class='text-success sr-only'>山田太郎</span></p>
-			</div>
-			<div class='col-xs-12 col-sm-9'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'><span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>09:30-12:00</small></span><span class='calendar-plan-mark calendar-plan-mark-group'></span><span class='label label-warning'>承認待ち</span><span>開発部定例会議</span></p>
+				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'>
+					<span class='pull-left'>
+						<small class='calendar-daily-nontimeline-periodtime-deco'>08:00-09:00</small>
+					</span>
+					<span class='calendar-plan-mark calendar-plan-mark-group'></span>
+					<span>演説の練習</span>
+				</p>
 			</div>
 			<div class='clearfix'></div>
 		</div>
 
 		<div class='row calendar-schedule-row' data-pos='1'>
 			<div class='col-xs-12 col-sm-3'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'><span class='text-success'>ジョン・F・ケネディ</span></p>
+				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'>
+					<span class='text-success sr-only'>山田太郎</span>
+				</p>
 			</div>
 			<div class='col-xs-12 col-sm-9'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'><span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>08:00-09:00</small></span><span class='calendar-plan-mark calendar-plan-mark-group'></span><span>演説の練習</span></p>
+				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'>
+					<span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>13:00-15:00</small></span>
+					<span class='calendar-plan-mark calendar-plan-mark-group'></span>
+					<span class='label label-warning'>承認待ち</span>
+					<span>社内発表会</span>
+				</p>
 			</div>
 			<div class='clearfix'></div>
 		</div>
 		<div class='row calendar-schedule-row' data-pos='1'>
 			<div class='col-xs-12 col-sm-3'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'><span class='text-success sr-only'>山田太郎</span></p>
+				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'>
+					<span class='text-success sr-only'>山田太郎</span>
+				</p>
 			</div>
 			<div class='col-xs-12 col-sm-9'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'><span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>13:00-15:00</small></span><span class='calendar-plan-mark calendar-plan-mark-group'></span><span class='label label-warning'>承認待ち</span><span>社内発表会</span></p>
-			</div>
-			<div class='clearfix'></div>
-		</div>
-		<div class='row calendar-schedule-row' data-pos='1'>
-			<div class='col-xs-12 col-sm-3'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'><span class='text-success sr-only'>山田太郎</span></p>
-			</div>
-			<div class='col-xs-12 col-sm-9'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'><span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>17:00-18:00</small></span><span class='calendar-plan-mark calendar-plan-mark-group'></span><span class='label label-warning'>承認待ち</span><span>社内成績発表</span></p>
+				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'>
+					<span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>17:00-18:00</small></span>
+					<span class='calendar-plan-mark calendar-plan-mark-group'></span>
+					<span class='label label-warning'>承認待ち</span>
+					<span>社内成績発表</span>
+				</p>
 			</div>
 			<div class='clearfix'></div>
 		</div>

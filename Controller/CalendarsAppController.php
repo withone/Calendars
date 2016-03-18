@@ -111,11 +111,31 @@ class CalendarsAppController extends AppController {
 		}
 
 		$vars['mInfo'] = CalendarTime::getMonthlyInfo($vars['year'], $vars['month']);	//月カレンダー情報
+		//前月・当月・次月の祝日情報を取り出す。
 		$vars['holidays'] = $this->Holiday->getHoliday(
 			sprintf("%04d-%02d-%02d",
 				$vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], 1),
 			sprintf("%04d-%02d-%02d",
 				$vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $vars['mInfo']['daysInNextMonth'])
 		);
+
+		//前月1日00:00:00以後
+		$dtstart = CalendarTime::dt2CalDt(
+			$nctm->toServerDatetime(sprintf(
+				"%04d-%02d-%02d 00:00:00", $vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], 1)));
+		//次次月1日00:00:00含まずより前(＝次月末日23:59:59含みより前)
+		list($yearOfNextNextMonth, $nextNextMonth) = CalendarTime::getNextMonth($vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth']);
+		$dtend = CalendarTime::dt2CalDt(
+			$nctm->toServerDatetime(sprintf(
+				"%04d/%02d/%02d 00:00:00", $yearOfNextNextMonth, $nextNextMonth, 1 )));
+		//前月・当月・次月の予定情報を取り出す。
+		$planParams = array(
+			//'room_id'の取捨選択は、View側でする。
+			'language_id ' => Current::read('Language.id'),
+			'dtstart' => $dtstart,
+			'dtend' => $dtend,
+		);
+		$vars['plans'] = $this->CalendarEvent->getPlans($planParams);
+		//CakeLog::debug("DBGDBG: vars_plans[" . print_r($vars['plans'], true) . "]");
 	}
 }

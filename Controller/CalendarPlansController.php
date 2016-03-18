@@ -48,7 +48,7 @@ class CalendarPlansController extends CalendarsAppController {
 			//アクセスの権限
 			'allow' => array(
 				'edit' => 'content_creatable',	//indexとviewは祖先基底クラスNetCommonsAppControllerで許可済
-				'daylist' => 'content_readable', //null,				//content_readableは全員に与えられているときいているので、チェック省略
+				'daylist,show' => 'content_readable', //null,		//content_readableは全員に与えられているときいているので、チェック省略
 			),
 		),
 		'Paginator',
@@ -82,7 +82,22 @@ class CalendarPlansController extends CalendarsAppController {
 			return false;
 		}
 
-		$this->Auth->allow('daylist');
+		$this->Auth->allow('daylist', 'show');
+	}
+
+/**
+ * show
+ *
+ * @return void
+ */
+	public function show() {
+		$vars = array();
+		$ctpName = $this->getCtpAndVarsForShow($vars);
+		$frameId = Current::read('Frame.id');
+		$languageId = Current::read('Language.id');
+		$isRepeat = true;	//暫定
+		$this->set(compact('frameId', 'languageId', 'isRepeat', 'vars'));
+		$this->render($ctpName);
 	}
 
 /**
@@ -120,6 +135,21 @@ class CalendarPlansController extends CalendarsAppController {
 	}
 
 /**
+ * getCtpAndVarsForShow
+ *
+ * 個別予定表示用のCtp名および予定情報の取得
+ *
+ * @param array &$vars カレンダー情報
+ * @return string ctpName
+ * @throws InternalErrorException
+ */
+	public function getCtpAndVarsForShow(&$vars) {
+		$this->setCalendarCommonVars($vars);
+		$ctpName = 'show';
+		return $ctpName;
+	}
+
+/**
  * getCtpAndVarsForList
  *
  * 予定一覧用のCtp名および予定情報の取得
@@ -133,6 +163,7 @@ class CalendarPlansController extends CalendarsAppController {
 		$ctpName = 'daylist';
 		return $ctpName;
 	}
+
 /**
  * getCtpAndVarsForEdit
  *

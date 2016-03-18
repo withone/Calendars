@@ -14,6 +14,7 @@
 		'controller' => 'calendars',
 		'action' => 'index',
 		'style' => $vars['style'],
+		'tab' => $vars['tab'],
 		'year' => sprintf("%04d", $prevYear),
 		'month' => sprintf("%02d", $prevMonth),
 		'day' => $prevDay,
@@ -29,6 +30,7 @@
 		'controller' => 'calendars',
 		'action' => 'index',
 		'style' => $vars['style'],
+		'tab' => $vars['tab'],
 		'year' => sprintf("%04d", $nextYear),
 		'month' => sprintf("%02d", $nextMonth),
 		'day' => $nextDay,
@@ -41,10 +43,10 @@
 	$wDay = date('w', $timestamp);
 
 	/* 祝日タイトル */
-	$holidayTitle = $this->CalendarMonthly->getHolidayTitle($vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $wDay);
+	$holidayTitle = $this->CalendarCommon->getHolidayTitle($vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $wDay);
 
 	/* 文字色 */
-	$textColor = $this->CalendarMonthly->makeTextColor($vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $wDay);
+	$textColor = $this->CalendarCommon->makeTextColor($vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $wDay);
 ?>
 
 

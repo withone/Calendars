@@ -38,6 +38,7 @@ class CalendarEvent extends CalendarsAppModel {
 		'Calendars.CalendarInsertPlan',	//Insert用
 		'Calendars.CalendarUpdatePlan',	//Update用
 		'Calendars.CalendarDeletePlan',	//Delete用
+		'Calendars.CalendarSearchPlan',	//Search用
 	);
 
 /**

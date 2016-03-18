@@ -36,6 +36,7 @@ class CalendarsController extends CalendarsAppController {
 		'Calendars.CalendarEventShareUser',
 		'Calendars.CalendarFrameSettingSelectRoom',
 		'Holidays.Holiday',
+		'Rooms.Room',
 	);
 
 /**
@@ -134,6 +135,23 @@ class CalendarsController extends CalendarsAppController {
  */
 	public function getMonthlyVars($vars) {
 		$this->setCalendarCommonVars($vars);
+
+		/* 藤原さんのソースとマージした後、以下のソースを有効化すること。
+		//設定情報の取り出し
+		$settingInfo = $this->CalendarFrameSetting->find('first', array(
+			'conditions' => array( 'frame_key' => Current::read('Frame.id')),
+			'recursive' => -1,
+		));
+		//表示方法設定で指定した選択ルーム群を取り出す
+		//なお選択したルーム群＋全会員(room_id = CalendarsComponent::CALENDAR_ALLMEMBERS)も含まれている。
+		$vars['selectRooms'] = $this->CalendarFrameSetting->getSelectRooms($settingInfo['CalendarFrameSetting']['id']);
+		*/
+		$vars['selectRooms'] = array();	//マージ前の暫定
+		$vars['parentIdType'] = array(
+			'public' => Room::PUBLIC_PARENT_ID,	//公開
+			'private' => Room::PRIVATE_PARENT_ID,	//プライベート
+			'member' => Room::ROOM_PARENT_ID,	//全会員
+		);
 		return $vars;
 	}
 

@@ -8,6 +8,8 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 App::uses('AppHelper', 'View/Helper');
+App::uses('WorkflowComponent', 'Workflow.Controller/Component');
+
 /**
  * Calendar monthy Helper
  *
@@ -24,66 +26,125 @@ class CalendarMonthlyHelper extends AppHelper {
 	public $helpers = array(
 		'NetCommonsForm',
 		'NetCommonsHtml',
-		'Form'
+		'Form',
+		'Calendars.CalendarUrl',
+		'Calendars.CalendarCommon',
 	);
 
 /**
- * makeEasyEditUrl
+ * _getPlanIfMatchThisDay
  *
- * 簡易編集画面URL生成
+ * この日に該当する予定ならばそれを返す
  *
- * @param int $year 年
- * @param int $month 月
- * @param int $day 日
- * @return string Url
+ * @param array $plan 予定データ
+ * @param string $beginOfDay この日のはじまり(日付時刻/YmdHis(YYYYMMDDhhmmss)形式)
+ * @param string $endOfDay この日のおわり(日付時刻/YmdHis(YYYYMMDDhhmmss)形式)
+ * @param string $fromTimeOfDay この予定の開始時刻(HH:MM形式)
+ * @param string $toTimeOfDay この予定の終了時刻(HH:MM形式)
+ * @param object &$nctm NetCommonsTimeオブジェクトへの参照
+ * @return mixed 該当するなら、拡張予定データを返す。該当しないならfalseを返す。
  */
-	public function makeEasyEditUrl($year, $month, $day) {
-		$url = NetCommonsUrl::actionUrl(array(
-			'controller' => 'calendar_plans',
-			'action' => 'edit',
-			'style' => 'easy',
-			'year' => $year,
-			'month' => $month,
-			'day' => $day,
-			'frame_id' => Current::read('Frame.id'),
-		));
-		return $url;
+	protected function _getPlanIfMatchThisDay($plan, $beginOfDay, $endOfDay, $fromTimeOfDay, $toTimeOfDay, &$nctm) {
+		//begin-end, dtstart-dtendともに、以上-未満であることに注意すること。
+		if ($beginOfDay <= $plan['CalendarEvent']['dtstart'] && $plan['CalendarEvent']['dtstart'] < $endOfDay) {
+			//予定の開始日時が、この日に含まれる時
+			$plan['CalendarEvent']['fromTime'] = CalendarTime::getHourColonMin($nctm->toUserDatetime($plan['CalendarEvent']['dtstart']));
+			$plan['CalendarEvent']['toTime'] = CalendarTime::getHourColonMin(
+				$nctm->toUserDatetime((($plan['CalendarEvent']['dtend'] <= $endOfDay) ? $plan['CalendarEvent']['dtend'] : $endOfDay)));
+			return $plan;
+		}
+		if ($beginOfDay < $plan['CalendarEvent']['dtend'] && $plan['CalendarEvent']['dtend'] <= $endOfDay) {
+			//予定の終了日時が、この日に含まれる時
+			$plan['CalendarEvent']['fromTime'] = CalendarTime::getHourColonMin(
+				$nctm->toUserDatetime((($beginOfDay <= $plan['CalendarEvent']['dtstart']) ? $plan['CalendarEvent']['dtstart'] : $beginOfDay)));
+			$plan['CalendarEvent']['toTime'] = CalendarTime::getHourColonMin($nctm->toUserDatetime($plan['CalendarEvent']['dtend']));
+			return $plan;
+		}
+		if ($plan['CalendarEvent']['dtstart'] <= $beginOfDay && $endOfDay <= $plan['CalendarEvent']['dtend']) {
+			//この日が、予定の期間(開始日時-終了日時)に包含される時
+			$plan['CalendarEvent']['fromTime'] = $fromTimeOfDay;
+			$plan['CalendarEvent']['toTime'] = $toTimeOfDay;
+			return $plan;
+		}
+		return false;
 	}
 
 /**
- * makePlanSummariesHtml
+ * _makePlanSummariesHtml
  *
  * 予定概要群html生成
  *
+ * @param array &$vars カレンダー情報
+ * @param object &$nctm NetCommonsTimeオブジェクトへの参照
  * @param int $year 年
  * @param int $month 月
  * @param int $day 日
  * @return string HTML
  */
-	public function makePlanSummariesHtml($year, $month, $day) {
-		//仕様
-		//予定が１件以上あるとき）
-		// 3row(時刻。任意. 略称 T)、4row(予定サマリ。必須. 略称 S)。 正規表現風に規則を書くなら右記。 ((T)?S)*
-		////<!-- 3row -->
-		//<div class='row'>
-		//	<div class='col-xs-12'>
-		//		<p><span class='pull-left'><small>00:00-24:00</small></span></p>
-		//	</div>
-		//	<div class='clearfix'></div>
-		//</div>
-		//<!-- 4row -->
-		//<div class='row'>
-		//	<div class='col-xs-12'>
-		//		<p class='calendar-plan-clickable text-left'><span class='calendar-plan-mark calendar-plan-mark-public'></span><span class='label label-warning'>承認待ち</span><span>年賀のご挨拶</span></p>
-		//	</div>
-		//	<div class='clearfix'></div>
-		//</div>
-		//
-		//予定が０件のとき）
-		//空文字
+	protected function _makePlanSummariesHtml(&$vars, &$nctm, $year, $month, $day) {
+		$beginOfDay = CalendarTime::dt2CalDt($nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00", $year, $month, $day)));
+		list($yearOfNextDay, $monthOfNextDay, $nextDay) = CalendarTime::getNextDay($year, $month, $day);
+		$endOfDay = CalendarTime::dt2CalDt(
+			$nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00", $yearOfNextDay, $monthOfNextDay, $nextDay)));
 
-		//暫定
-		return '';
+		$plansOfDay = array();
+		$fromTimeOfDay = CalendarTime::getHourColonMin($nctm->toUserDatetime($beginOfDay));
+		$toTimeOfDay = CalendarTime::getHourColonMin($nctm->toUserDatetime($endOfDay));
+
+		foreach ($vars['plans'] as $plan) {
+			$thisDayPlan = $this->_getPlanIfMatchThisDay($plan, $beginOfDay, $endOfDay, $fromTimeOfDay, $toTimeOfDay, $nctm);
+			if ($thisDayPlan) {
+				$plansOfDay[] = $thisDayPlan;
+				continue;
+			}
+		}
+		return $this->getPlanSummariesHtml($vars, $year, $month, $day, $fromTimeOfDay, $toTimeOfDay, $plansOfDay);
+	}
+
+/**
+ * getPlanSummariesHtml
+ *
+ * 予定概要群html取得
+ *
+ * @param array &$vars カレンダー情報
+ * @param int $year 年
+ * @param int $month 月
+ * @param int $day 日
+ * @param string $fromTime この日の１日のスタート時刻
+ * @param string $toTime この日の１日のエンド時刻
+ * @param array $plans この日の予定群
+ * @return string HTML
+ */
+	public function getPlanSummariesHtml(&$vars, $year, $month, $day, $fromTime, $toTime, $plans) {
+		$html = '';
+		foreach ($plans as $plan) {
+			//仕様
+			//予定が１件以上あるとき）
+			// 3row(時刻。任意. 略称 T)、4row(予定サマリ。必須. 略称 S)。 正規表現風に規則を書くなら右記。 ((T)?S)*
+			if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
+				////<!-- 3row -->
+				$html .= "<div class='row'>";
+				$html .= "<div class='col-xs-12'>";
+				$html .= "<p><span class='pull-left'><small>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small></span></p>';
+				$html .= '</div>';
+				$html .= "<div class='clearfix'></div>";
+				$html .= '</div>';
+			}
+			//<!-- 4row -->
+			$html .= "<div class='row'>";
+			$html .= "<div class='col-xs-12'>";
+			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
+			$html .= "<p class='calendar-plan-clickable text-left calendar-plan-show' data-url='" . $url . "'>";
+			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
+			$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
+			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
+			$html .= '<span> ' . h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...')) . '</span>';
+			$html .= '</p>';
+			$html .= '</div>';
+			$html .= "<div class='clearfix'></div>";
+			$html .= '</div>';
+		}
+		return $html;
 	}
 
 /**
@@ -102,59 +163,7 @@ class CalendarMonthlyHelper extends AppHelper {
 	}
 
 /**
- * getHolidayTitle
- *
- * 祝日タイトル取得
- *
- * @param int $year 年
- * @param int $month 月
- * @param int $day 日
- * @param array $holidays 祝日配列
- * @param int $cnt 月カレンダーの最初のマス目からの累積カウント
- * @return string 祝日タイトル文字列. 祝日でないときは空文字''を返す。
- */
-	public function getHolidayTitle($year, $month, $day, $holidays, $cnt) {
-		$holidayTitle = '';
-		$ymd = sprintf("%04d-%02d-%02d", $year, $month, $day);
-		$hday = Hash::extract($holidays, '{n}.Holiday[holiday=' . $ymd . '].title');
-		if (count($hday) === 1) {
-			$holidayTitle = $hday[0];	//祝日タイトル
-		}
-		return $holidayTitle;
-	}
-
-/**
- * makeTextColor
- *
- * 日付別テキスト色生成
- *
- * @param int $year 年
- * @param int $month 月
- * @param int $day 日
- * @param array $holidays 祝日配列
- * @param int $cnt 月カレンダーの最初のマス目からの累積カウント
- * @return string bootstrapのtextカラー指定j
- */
-	public function makeTextColor($year, $month, $day, $holidays, $cnt) {
-		$ymd = sprintf("%04d-%02d-%02d", $year, $month, $day);
-		$hday = Hash::extract($holidays, '{n}.Holiday[holiday=' . $ymd . '].holiday');
-		if (count($hday) === 1) {
-			return 'text-danger';	//祝日
-		}
-
-		//祝日ではないので、通常ルール適用
-		$textColor = '';
-		$mod = $cnt % 7;
-		if ($mod === 0) { //日曜
-			$textColor = 'text-danger';
-		} elseif ($mod === 6) { //土曜
-			$textColor = 'text-info';
-		}
-		return $textColor;
-	}
-
-/**
- * makeStartTr
+ * _makeStartTr
  *
  * 条件付TR開始タグ挿入
  *
@@ -163,7 +172,7 @@ class CalendarMonthlyHelper extends AppHelper {
  * @param int &$week 週数 (0オリジン)
  * @return string HTML 
  */
-	public function makeStartTr($cnt, $vars, &$week) {
+	protected function _makeStartTr($cnt, $vars, &$week) {
 		$html = '';
 		if ($cnt % 7 === 0) {
 			//週の先頭
@@ -188,14 +197,14 @@ class CalendarMonthlyHelper extends AppHelper {
 	}
 
 /**
- * makeEndTr
+ * _makeEndTr
  *
  * 条件付TR終了タグ挿入
  *
  * @param int $cnt 月カレンダー開始日からの累積日数(0オリジン)
  * @return string HTML
  */
-	public function makeEndTr($cnt) {
+	protected function _makeEndTr($cnt) {
 		return ($cnt % 7 === 6) ? '</tr>' : '';
 	}
 
@@ -215,35 +224,35 @@ class CalendarMonthlyHelper extends AppHelper {
 		//初週の前月部 処理
 		for ($idx = 0; $idx < $vars['mInfo']['wdayOf1stDay']; ++$idx) {
 
-			$html .= $this->makeStartTr($cnt, $vars, $week);
+			$html .= $this->_makeStartTr($cnt, $vars, $week);
 
 			$day = $vars['mInfo']['daysInPrevMonth'] - $vars['mInfo']['wdayOf1stDay'] + ($idx + 1);
-			$url = $this->getPlanListUrl('prevMonth', $vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day, $vars);
+			$url = $this->CalendarUrl->getPlanListUrl('prevMonth', $vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day, $vars);
 			$html .= "<td class='calendar-col-small-day calendar-out-of-range calendar-plan-list' data-url='" . $url . "'><div><span class='text-center text-muted'>";
 			$html .= $day;
 			$html .= '</span></div>';
 			$html .= $this->makePlansHtml($vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day);
 			$html .= '</td>';
 
-			$html .= $this->makeEndTr($cnt);
+			$html .= $this->_makeEndTr($cnt);
 
 			++$cnt;
 		}
 
 		for ($day = 1; $day <= $vars['mInfo']['daysInMonth']; ++$day) {
 
-			$html .= $this->makeStartTr($cnt, $vars, $week);
+			$html .= $this->_makeStartTr($cnt, $vars, $week);
 
-			$textColor = $this->makeTextColor($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
+			$textColor = $this->CalendarCommon->makeTextColor($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
 
-			$url = $this->getPlanListUrl('thisMonth', $vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars);
+			$url = $this->CalendarUrl->getPlanListUrl('thisMonth', $vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars);
 			$html .= "<td class='calendar-col-small-day calendar-plan-list' data-url='" . $url . "'><div><span class='text-center {$textColor}'>";
 			$html .= $day;
 			$html .= '</span></div>';
 			$html .= $this->makePlansHtml($vars['mInfo']['year'], $vars['mInfo']['month'], $day);
 			$html .= '</td>';
 
-			$html .= $this->makeEndTr($cnt);
+			$html .= $this->_makeEndTr($cnt);
 
 			++$cnt;
 		}
@@ -251,79 +260,21 @@ class CalendarMonthlyHelper extends AppHelper {
 		//最終週の次月部 処理
 		for ($idx = $vars['mInfo']['wdayOfLastDay'], $day = 1; $idx < 6; ++$idx, ++$day) {
 
-			$html .= $this->makeStartTr($cnt, $vars, $week);
+			$html .= $this->_makeStartTr($cnt, $vars, $week);
 
-			$url = $this->getPlanListUrl('nextMonth', $vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $day, $vars);
+			$url = $this->CalendarUrl->getPlanListUrl('nextMonth', $vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $day, $vars);
 			$html .= "<td class='calendar-col-small-day calendar-out-of-range calendar-plan-list' data-url='" . $url . "'><div><span class='text-center text-muted'>";
 			$html .= $day;
 			$html .= '</span></div>';
 			$html .= $this->makePlansHtml($vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $day);
 			$html .= '</td>';
 
-			$html .= $this->makeEndTr($cnt);
+			$html .= $this->_makeEndTr($cnt);
 
 			++$cnt;
 		}
 
 		return $html;
-	}
-
-/**
- * getCalendarDailyUrl
- *
- * カレンダー日次URL取得
- *
- * @param int $year 年
- * @param int $month 月
- * @param int $day 日
- * @return string URL
- */
-	public function getCalendarDailyUrl($year, $month, $day) {
-		$url = NetCommonsUrl::actionUrl(array(
-			'controller' => 'calendars',
-			'action' => 'index',
-			'style' => 'daily',
-			'tab' => 'list',
-			'year' => $year,
-			'month' => $month,
-			'day' => $day,
-			'frame_id' => Current::read('Frame.id'),
-		));
-		return $url;
-	}
-
-/**
- * getPlanListUrl
- *
- * 予定一覧表示Url取得
- *
- * @param string $place 場所(prevMonth|thisMonth|nextMonth)
- * @param int $year 年
- * @param int $month 月
- * @param int $day 日
- * @param array $vars カレンダー情報
- * @return string URL
- */
-	public function getPlanListUrl($place, $year, $month, $day, $vars) {
-		if ($place === 'thisMonth') {
-			$backYear = $year;
-			$backMonth = $month;
-		} else {	//nextMont またはprevMonthの時は、中央年月をセット
-			$backYear = $vars['mInfo']['year'];
-			$backMonth = $vars['mInfo']['month'];
-		}
-
-		$url = NetCommonsUrl::actionUrl(array(
-			'controller' => 'calendar_plans',
-			'action' => 'daylist',
-			'year' => $year,
-			'month' => $month,
-			'day' => $day,
-			'back_year' => $backYear,
-			'back_month' => $backMonth,
-			'frame_id' => Current::read('Frame.id'),
-		));
-		return $url;
 	}
 
 /**
@@ -339,19 +290,20 @@ class CalendarMonthlyHelper extends AppHelper {
 	public function makeGlyphiconPlusWithUrl($year, $month, $day) {
 		$html = '';
 		if (Current::permission('content_creatable')) {
-			$url = $this->makeEasyEditUrl($year, $month, $day);
+			$url = $this->CalendarUrl->makeEasyEditUrl($year, $month, $day);
 			$html .= "<small><span class='pull-right glyphicon glyphicon-plus calendar-easy-edit' data-url='" . $url . "'></span></small>";
 		}
 		return $html;
 	}
 
 /**
- * doPrevNextMonthPart
+ * _doPrevNextMonthPart
  *
  * 初週前月部または最終週次月部の生成
  *
+ * @param object &$nctm  NetCommonsTimeオブジェクトの参照
  * @param array $type  'prev' or 'next'
- * @param array &$vars  vars
+ * @param array &$vars  カレンダー情報
  * @param string &$html  html
  * @param int &$cnt  cnt
  * @param int &$week  week
@@ -360,7 +312,7 @@ class CalendarMonthlyHelper extends AppHelper {
  * @param string &$holidayTitle  holidayTitle
  * @return void
  */
-	public function doPrevNextMonthPart($type, &$vars, &$html, &$cnt, &$week, &$idx, &$day, &$holidayTitle) {
+	protected function _doPrevNextMonthPart(&$nctm, $type, &$vars, &$html, &$cnt, &$week, &$idx, &$day, &$holidayTitle) {
 		if ($type === 'prev') {
 			$year = $vars['mInfo']['yearOfPrevMonth'];
 			$month = $vars['mInfo']['prevMonth'];
@@ -368,7 +320,7 @@ class CalendarMonthlyHelper extends AppHelper {
 			$year = $vars['mInfo']['yearOfNextMonth'];
 			$month = $vars['mInfo']['nextMonth'];
 		}
-		$url = $this->getCalendarDailyUrl($year, $month, $day);
+		$url = $this->CalendarUrl->getCalendarDailyUrl($year, $month, $day);
 
 		//<!-- 1row --> 日付と予定追加glyph
 		$html .= "<div class='row'>";
@@ -389,7 +341,7 @@ class CalendarMonthlyHelper extends AppHelper {
 		$html .= "<div class='clearfix'></div>";
 		$html .= '</div>';
 		//予定概要群
-		$html .= $this->makePlanSummariesHtml($vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day);
+		$html .= $this->_makePlanSummariesHtml($vars, $nctm, $vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day);
 		$html .= '</td>';
 	}
 
@@ -405,30 +357,31 @@ class CalendarMonthlyHelper extends AppHelper {
 		$html = '';
 		$cnt = 0;
 		$week = 0;
+		$nctm = new NetCommonsTime();
 
 		//初週の前月部
 		for ($idx = 0; $idx < $vars['mInfo']['wdayOf1stDay']; ++$idx) {
-			$html .= $this->makeStartTr($cnt, $vars, $week);
+			$html .= $this->_makeStartTr($cnt, $vars, $week);
 
 			$html .= "<td class='calendar-col-day calendar-tbl-td-pos calendar-out-of-range'>";
 			$day = $vars['mInfo']['daysInPrevMonth'] - $vars['mInfo']['wdayOf1stDay'] + ($idx + 1);
-			$holidayTitle = $this->getHolidayTitle($vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day, $vars['holidays'], $cnt);
-			$this->doPrevNextMonthPart('prev', $vars, $html, $cnt, $week, $idx, $day, $holidayTitle); //生成結果等は、参照で返す.
+			$holidayTitle = $this->CalendarCommon->getHolidayTitle($vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day, $vars['holidays'], $cnt);
+			$this->_doPrevNextMonthPart($nctm, 'prev', $vars, $html, $cnt, $week, $idx, $day, $holidayTitle); //生成結果等は、参照で返す.
 
-			$html .= $this->makeEndTr($cnt);
+			$html .= $this->_makeEndTr($cnt);
 
 			++$cnt;
 		}
 
 		//当月部
 		for ($day = 1; $day <= $vars['mInfo']['daysInMonth']; ++$day) {
-			$url = $this->getCalendarDailyUrl($vars['mInfo']['year'], $vars['mInfo']['month'], $day);
+			$url = $this->CalendarUrl->getCalendarDailyUrl($vars['mInfo']['year'], $vars['mInfo']['month'], $day);
 
-			$html .= $this->makeStartTr($cnt, $vars, $week);
+			$html .= $this->_makeStartTr($cnt, $vars, $week);
 
 			$html .= "<td class='calendar-col-day calendar-tbl-td-pos'>";
-			$holidayTitle = $this->getHolidayTitle($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
-			$textColor = $this->makeTextColor($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
+			$holidayTitle = $this->CalendarCommon->getHolidayTitle($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
+			$textColor = $this->CalendarCommon->makeTextColor($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
 			//<!-- 1row --> 日付と予定追加glyph
 			$html .= "<div class='row'>";
 			$html .= "<div class='col-xs-12'>";
@@ -448,10 +401,10 @@ class CalendarMonthlyHelper extends AppHelper {
 			$html .= "<div class='clearfix'></div>";
 			$html .= '</div>';
 			//予定概要群
-			$html .= $this->makePlanSummariesHtml($vars['mInfo']['year'], $vars['mInfo']['month'], $day);
+			$html .= $this->_makePlanSummariesHtml($vars, $nctm, $vars['mInfo']['year'], $vars['mInfo']['month'], $day);
 			$html .= '</td>';
 
-			$html .= $this->makeEndTr($cnt);
+			$html .= $this->_makeEndTr($cnt);
 
 			++$cnt;
 		}
@@ -459,18 +412,17 @@ class CalendarMonthlyHelper extends AppHelper {
 		//最終週の次月部
 		for ($idx = $vars['mInfo']['wdayOfLastDay'], $day = 1; $idx < 6; ++$idx, ++$day) {
 
-			$html .= $this->makeStartTr($cnt, $vars, $week);
+			$html .= $this->_makeStartTr($cnt, $vars, $week);
 
 			$html .= "<td class='calendar-col-day calendar-tbl-td-pos calendar-out-of-range'>";
-			$holidayTitle = $this->getHolidayTitle($vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $day, $vars['holidays'], $cnt);
-			$this->doPrevNextMonthPart('next', $vars, $html, $cnt, $week, $idx, $day, $holidayTitle); //生成結果等は、参照で返す.
+			$holidayTitle = $this->CalendarCommon->getHolidayTitle($vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $day, $vars['holidays'], $cnt);
+			$this->_doPrevNextMonthPart($nctm, 'next', $vars, $html, $cnt, $week, $idx, $day, $holidayTitle); //生成結果等は、参照で返す.
 
-			$html .= $this->makeEndTr($cnt);
+			$html .= $this->_makeEndTr($cnt);
 
 			++$cnt;
 		}
 
 		return $html;
 	}
-
 }
