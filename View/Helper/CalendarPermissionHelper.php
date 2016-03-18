@@ -62,10 +62,13 @@ class CalendarPermissionHelper extends AppHelper {
  * @return string
  */
 	public function getPermissionCells($spaceId, $roomBlock) {
+		if (! $this->__canEditBlockRolePermission($roomBlock)) {
+			return '<td colspan="' . $this->_View->viewVars['defaultRoleCount'] . '"></td>';
+		}
 		$permission = 'content_creatable';
-		$fieldName = $spaceId . '.' . $roomBlock['Room']['id'] . '.BlockRolePermissions.content_creatable';
+		$fieldName = $spaceId . '.' . $roomBlock['Room']['id'] . '.BlockRolePermission.content_creatable';
 		$html = '';
-		foreach ($roomBlock['BlockRolePermissions']['content_creatable'] as $roleKey => $role) {
+		foreach ($roomBlock['BlockRolePermission']['content_creatable'] as $roleKey => $role) {
 			if (! $role['value'] && $role['fixed']) {
 				continue;
 			}
@@ -97,6 +100,9 @@ class CalendarPermissionHelper extends AppHelper {
  * @return string
  */
 	public function getUseWorkflowCells($spaceId, $roomBlock) {
+		if (! $this->__canEditBlockRolePermission($roomBlock)) {
+			return '<td></td>';
+		}
 		$roomId = $roomBlock['Room']['id'];
 		$fieldNameBase = $spaceId . '.' . $roomId . '.Calendar.';
 		$html = '<td class="text-center">';
@@ -107,5 +113,18 @@ class CalendarPermissionHelper extends AppHelper {
 		$html .= $this->NetCommonsForm->checkbox($fieldNameBase . 'use_workflow', $options);
 		$html .= '</td>';
 		return $html;
+	}
+/**
+ * __canEditBlockRolePermission
+ *
+ * @param array $roomBlock room block permission information
+ * @return string
+ */
+	private function __canEditBlockRolePermission($roomBlock) {
+		$roomRoleKey = $roomBlock['RolesRoom']['role_key'];
+		if (! $roomBlock['BlockRolePermission']['block_permission_editable'][$roomRoleKey]['value']) {
+			return false;
+		}
+		return true;
 	}
 }

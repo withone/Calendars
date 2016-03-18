@@ -27,6 +27,7 @@
 <?php
 	/* 全会員 */
 	echo $this->CalendarPermission->getSpaceSelectTabStart();
+	echo $this->element('Calendars.CalendarBlockRolePermissions/permission_all_members');
 	echo $this->CalendarPermission->getSpaceSelectTabEnd();
 ?>
 </tabset>

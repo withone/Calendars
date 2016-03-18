@@ -83,19 +83,29 @@ class CalendarBlockRolePermissionsController extends CalendarsAppController {
  */
 	public function edit() {
 		if ($this->request->is('post')) {
-			// Post
+			if ($this->CalendarPermission->savePermission($this->request->data)) {
+				$this->NetCommons->setFlashNotification(__d('net_commons', 'Successfully saved.'), array(
+					'class' => 'success',
+				));
+				$this->redirect(NetCommonsUrl::backToIndexUrl('default_setting_action'));
+				return;
+			}
+			$this->NetCommons->handleValidationError($this->CalendarPermission->validationErrors);
 		}
-
 		// ルーム一覧＋それぞれのカレンダー情報取り出し
 		// 空間情報
 		$spaces = $this->Room->getSpaces();
-		//var_dump($spaces);
 		$this->set('spaces', $spaces);
 
+		// デフォルトロール
+		$defaultRoles = $this->CalendarPermission->getDefaultRoles();
+		$this->set('defaultRoles', $defaultRoles);
+		$this->set('defaultRoleCount', count($defaultRoles));
+
 		// カレンダー＋ブロック+ルーム
+		// ただし全会員を除く
 		$rooms = $this->CalendarPermission->getCalendarRoomBlocks($this->Workflow);
 		$this->set('roomBlocks', $rooms);
-		$this->request->data = $rooms;
 
 		// ルームツリー
 		foreach ($rooms as $spaceId => $room) {
@@ -106,5 +116,16 @@ class CalendarBlockRolePermissionsController extends CalendarsAppController {
 			));
 		}
 		$this->set('roomTree', $roomTree);
+
+		// ツリー情報の作成も終わったので
+		// 全会員ルーム情報取得
+		$allMemberRoom = $this->CalendarPermission->getCalendarAllMemberRoomBlocks($this->Workflow);
+		$this->set('allMemberRoomBlocks', $allMemberRoom);
+		// 全会員ルーム情報もマージしてしまう
+		$rooms = Hash::merge($rooms, $allMemberRoom);
+
+		if (! $this->request->is('post')) {
+			$this->request->data = $rooms;
+		}
 	}
 }

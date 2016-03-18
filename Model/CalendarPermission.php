@@ -30,6 +30,13 @@ class CalendarPermission extends CalendarsAppModel {
 	public $useTable = 'calendars';
 
 /**
+ * alias
+ *
+ * @var string
+ */
+	public $alias = 'Calendar';
+
+/**
  * use behaviors
  *
  * @var array
@@ -80,26 +87,61 @@ class CalendarPermission extends CalendarsAppModel {
 		$this->Room = ClassRegistry::init('Rooms.Room', true);
 		$spaceIds = array(Space::PUBLIC_SPACE_ID, Space::ROOM_SPACE_ID);
 		$rooms = array();
+
+		// 空間ごとに処理
 		foreach ($spaceIds as $spaceId) {
-			$conditions = $this->_getCalendarConditions($spaceId);
+
+			// 読み取り可能なルームを取得
+			$readableRoom = $this->Room->find('all',
+				$this->Room->getReadableRoomsConditions(array('Room.space_id' => $spaceId)));
+			$readableRoomIds = Hash::combine($readableRoom, '{n}.Room.id', '{n}.Room.id');
+			$readableRoom = Hash::combine($readableRoom, '{n}.Room.id', '{n}');
+
+			// 読み取り可能ルームIDをもとに条件取得
+			$conditions = $this->_getCalendarConditions($readableRoomIds);
+
+			// ルーム+ブロック情報取得
 			$roomsBlocks = $this->Room->find('all', $conditions);
-			$this->getPermission($workflow, $roomsBlocks);
+
+			// 取得したルーム＋ブロック情報にさらにパーミッション情報を追加でセット
+			$this->setPermission($workflow, $roomsBlocks, $readableRoom);
 			$rooms[$spaceId] = Hash::combine($roomsBlocks, '{n}.Room.id', '{n}');
 		}
 		return $rooms;
+	}
+/**
+ * getCalendarAllMemberRoomBlocks
+ *
+ * 全会員ルームと、そこに配置されるべきブロック、カレンダーを取り出す
+ *
+ * @param Component $workflow workflow component
+ * @return array
+ */
+	public function getCalendarAllMemberRoomBlocks($workflow) {
+		// 読み取り可能なルームを取得
+		$condition = $this->Room->getReadableRoomsConditions();
+		$condition['conditions'] = array('Room.id' => Room::ROOM_PARENT_ID);
+		$roomBase = $this->Room->find('all', $condition);
+		$roomBase = Hash::combine($roomBase, '{n}.Room.id', '{n}');
+
+		$conditions = $this->_getCalendarConditions(array(Room::ROOM_PARENT_ID));
+		// ルーム+ブロック情報取得
+		$roomsBlocks = $this->Room->find('all', $conditions);
+		$roomsBlocks = Hash::combine($roomsBlocks, '{n}.Room.id', '{n}');
+
+		// 取得したルーム＋ブロック情報にさらにパーミッション情報を追加でセット
+		$this->setPermission($workflow, $roomsBlocks, $roomBase);
+		return array(Space::ROOM_SPACE_ID => $roomsBlocks);
 	}
 /**
  * _getCalendarConditions
  *
  * 現在存在する全てのルームと、そこに配置されるべきブロック、カレンダーを取り出すためのfindのoption作成
  *
- * @param int $spaceId space id
+ * @param array $readableRoomIds readable room id
  * @return array
  */
-	protected function _getCalendarConditions($spaceId) {
-		$readableRoom = $this->Room->find('all',
-			$this->Room->getReadableRoomsConditions(array('Room.space_id' => $spaceId)));
-		$readableRoomIds = Hash::combine($readableRoom, '{n}.Room.id', '{n}.Room.id');
+	protected function _getCalendarConditions($readableRoomIds) {
 		return array(
 			'fields' => array(
 				'Room.*',
@@ -137,31 +179,129 @@ class CalendarPermission extends CalendarsAppModel {
 			'conditions' => array(
 				'Room.id' => $readableRoomIds
 			),
+			'order' => array(
+				'Room.lft asc'
+			)
 		);
 	}
 /**
- * getPermission
+ * setPermission
  *
  * 指定されたルーム、ブロックに相当する権限設定情報を取り出す
  * 
  * @param object $workflow workflow component
  * @param array &$roomBlocks ルーム、ブロック、情報
+ * @param array $readableRoom アクセス可能ルームリスト（ルームでのRole情報が見られる
  * @return array
  */
-	public function getPermission($workflow, &$roomBlocks) {
-		$nowBlockKey = Current::read('Block.key');
-		$nowRoomId = Current::read('Room.id');
+	public function setPermission($workflow, &$roomBlocks, $readableRoom) {
 		foreach ($roomBlocks as &$roomBlock) {
-			Current::$current['Block']['key'] = $roomBlock['Block']['key'];
-			Current::$current['Room']['id'] = $roomBlock['Room']['id'];
 			$permissions = $workflow->getBlockRolePermissions(
-				array('content_creatable', 'content_publishable')
+				array('content_creatable', 'block_permission_editable'),
+				$roomBlock['Room']['id'],
+				$roomBlock['Block']['key']
 			);
 			if ($permissions) {
-				$roomBlock = Hash::merge($roomBlock, $permissions);
+				$roomBlock['BlockRolePermission'] = $permissions['BlockRolePermissions'];
+				//$roomBlock['Roles'] = $permissions['Roles'];
+			}
+			if (isset($readableRoom[$roomBlock['Room']['id']]['RolesRoom'])) {
+				$roomBlock['RolesRoom'] = $readableRoom[$roomBlock['Room']['id']]['RolesRoom'];
 			}
 		}
-		Current::$current['Block']['key'] = $nowBlockKey;
-		Current::$current['Room']['id'] = $nowRoomId;
+	}
+/**
+ * getDefaultRoles
+ *
+ * デフォルトの権限を返す
+ *
+ * @return array
+ */
+	public function getDefaultRoles() {
+		$this->DefaultRolePermission = ClassRegistry::init('Roles.DefaultRolePermission', true);
+		$roles = $this->DefaultRolePermission->find('all', array(
+			'fields' => array(
+				'DefaultRolePermission.*',
+				'Role.*',
+			),
+			'joins' => array(
+				array('table' => 'roles',
+					'alias' => 'Role',
+					'type' => 'LEFT',
+					'conditions' => array(
+						'DefaultRolePermission.role_key = Role.key',
+						'Role.language_id' => Current::read('Language.id')
+					)
+				),
+			),
+			'conditions' => array(
+				'DefaultRolePermission.permission' => 'content_creatable',
+				'OR' => array(
+					array(
+						'DefaultRolePermission.fixed' => false
+					),
+					array(
+						'DefaultRolePermission.value' => true
+					),
+				)
+			)
+		));
+		return $roles;
+	}
+/**
+ * savePermission
+ *
+ * 権限設定を登録
+ *
+ * @param array $data 保存データ
+ * @return array
+ * @throws InternalErrorException
+ */
+	public function savePermission($data) {
+		$this->Block = ClassRegistry::init('Blocks.Block', true);
+
+		//トランザクションBegin
+		$this->begin();
+
+		try {
+			foreach ($data as $spaceId => $rooms) {
+				if (! is_numeric($spaceId)) {
+					continue;
+				}
+				foreach ($rooms as $roomId => $room) {
+					// Calendar.idが空っぽ
+					if (empty($room['Calendar']['id'])) {
+						// その場合はブロック未作成なので前もってブロック&Calendar作る
+						$block = $this->Block->save(array(
+							'room_id' => $roomId,
+							'language_id' => Current::read('Language.id'),
+							'plugin_key' => 'calendars',
+						));
+						// そのブロックキーを設定して
+						foreach ($room['BlockRolePermissions']['content_creatable'] as &$perm) {
+							$perm['block_key'] = $block['key'];
+						}
+					}
+					// 保存する
+					$this->create();
+					$this->set($room);
+					if (! $this->validates()) {
+						$this->rollback();
+						return false;
+					}
+					if (! $this->save($room, false)) {
+						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+					}
+				}
+			}
+			//トランザクションCommit
+			$this->commit();
+
+		} catch (Exception $ex) {
+			//トランザクションRollback
+			$this->rollback($ex);
+			return false;
+		}
+		return true;
 	}
 }
