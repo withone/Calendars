@@ -62,4 +62,43 @@ class CalendarScheduleHelper extends AppHelper {
 		return $html;
 	}
 
+/**
+ * makeDayTitleHtml
+ *
+ * スケジュール(日付タイトル)html生成
+ *
+ * @param array $vars コントローラーからの情報
+ * @param int $dayCount n日目
+ * @return string HTML
+ */
+	public function makeDayTitleHtml($vars, $dayCount) {
+		/* 曜日 */
+		$week = array('(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)'); // kuma temp
+
+		//dayCount後の日付
+		list($yearAfterDay, $monthAfterDay, $afterDay) = CalendarTime::getNextDay($vars['year'], $vars['month'], ($vars['day'] + $dayCount - 1));
+		$wDay = CalendarTime::getWday($yearAfterDay, $monthAfterDay, $afterDay);
+		$textColor = $this->CalendarCommon->makeTextColor($yearAfterDay, $monthAfterDay, $afterDay, $vars['holidays'], $wDay);
+		$monthAfterDay = (int)$monthAfterDay;
+		$afterDay = (int)$afterDay;
+
+		$html = '';
+		$html .= "<div class='row'><div class='col-xs-12'>";
+		$html .= "<p data-openclose-stat='open' data-pos='{$dayCount}' class='calendar-schedule-disp calendar-plan-clickable text-left calendar-schedule-row-title'>";
+		$html .= "<span class='h4'><span data-pos='{$dayCount}' class='glyphicon glyphicon-chevron-down schedule-openclose'></span>";
+
+		if ($dayCount == 1) { // 今日
+			$html .= "<span>" . __d('calendars', '今日') . "</span>";
+		} elseif ($dayCount == 2) { // 明日
+			$html .= "<span>" . __d('calendars', '明日') . "</span>";
+		} else { //3日目以降
+			$html .= "<span class='{$textColor}'>{$monthAfterDay}月{$afterDay}日{$week[$wDay]}</span>";
+		}
+
+		$html .= "<span style='margin-left: 0.5em'>(3)</span>"; //pending 予定数
+		$html .= "</span></p></div><div class='clearfix'></div></div>";
+
+		return $html;
+	}
+
 }
