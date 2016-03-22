@@ -25,7 +25,10 @@ class CalendarPlanHelper extends AppHelper {
 		'NetCommonsForm',
 		'NetCommonsHtml',
 		'Form',
+		'NetCommons.Button',
 		'Calendars.CalendarMonthly',
+		'Calendars.CalendarCommon',
+		'Calendars.CalendarUrl',
 	);
 
 /**
@@ -156,7 +159,7 @@ class CalendarPlanHelper extends AppHelper {
 		$html = '';
 		$html .= "<div class='row'>";
 		$wDay = CalendarTime::getWday($vars['year'], $vars['month'], $vars['day']);
-		$textColor = $this->CalendarMonthly->makeTextColor($vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $wDay);
+		$textColor = $this->CalendarCommon->makeTextColor($vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $wDay);
 		$html .= "<div class='col-xs-6 col-xs-offset-3 text-center'>";
 		$html .= "<div class='calendar-inline {$textColor}'>";
 		$html .= "<span class='h5'>" . h($vars['year']) . __d('calendars', '年') . "</span>";
@@ -164,7 +167,7 @@ class CalendarPlanHelper extends AppHelper {
 		$html .= "<span class='h3'>" . h($vars['month']) . __d('calendars', '月') . h($vars['day']) . __d('calendars', '日') . '</span>';
 		$html .= "<br class='visible-xs' />";
 
-		$holidayTitle = $this->CalendarMonthly->getHolidayTitle($vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $wDay);
+		$holidayTitle = $this->CalendarCommon->getHolidayTitle($vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $wDay);
 		$html .= "<span class='h5'>" . h($holidayTitle) . "</span></div>";
 		$html .= '</div>';
 		$html .= '</div>';
@@ -180,18 +183,50 @@ class CalendarPlanHelper extends AppHelper {
  * @param int $year 年
  * @param int $month 月
  * @param int $day 日
+ * @param array &$vars カレンダー情報
  * @return string HTML
  */
-	public function makePlanListGlyphiconPlusWithUrl($year, $month, $day) {
+	public function makePlanListGlyphiconPlusWithUrl($year, $month, $day, &$vars) {
 		$html = '';
 		if (Current::permission('content_creatable')) {
-			$url = $this->CalendarMonthly->makeEasyEditUrl($year, $month, $day);
+			$url = $this->CalendarUrl->makeEasyEditUrl($year, $month, $day, $vars);
 			$html .= "<div class='row' style='margin-top: 0.5em'>";
 			$html .= "<div class='col-xs-12 text-right'>";
 			$html .= "<div class='btn btn-default calendar-easy-edit-area' data-url='" . $url . "'><span class='glyphicon glyphicon-plus'></span></div>";
 			$html .= '</div>';
 			$html .= '</div>';
 		}
+		return $html;
+	}
+
+/**
+ * makeEasyEditButtonHtml
+ *
+ * 簡易編集ボタンHTML生成
+ *
+ * @param array $vars カレンダー情報
+ * @return string HTML
+ */
+	public function makeEasyEditButtonHtml($vars) {
+		$options = array(
+			'controller' => 'calendars',
+			'action' => 'index',
+			'year' => $vars['year'],
+			'month' => $vars['month'],
+			'frame_id' => Current::read('Frame.id'),
+		);
+		if (isset($vars['return_style'])) {
+			$options['style'] = $vars['return_style'];	//cancel時の戻り先としてstyleを指定する。
+		}
+		if (isset($vars['return_sort'])) {
+			$options['sort'] = $vars['return_sort'];	//cancel時の戻り先としてsortオプションがあればそれもセットで指定する.
+		}
+		$cancelUrl = NetCommonsUrl::actionUrl($options);
+		$cancelOptions = array();
+		$saveTempOptions = array();
+		$saveOptions = array();
+
+		$html = $this->Button->cancelAndSaveAndSaveTemp($cancelUrl, $cancelOptions, $saveTempOptions, $saveOptions);
 		return $html;
 	}
 }

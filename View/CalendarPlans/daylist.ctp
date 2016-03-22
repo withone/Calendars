@@ -15,7 +15,7 @@
 
 <?php echo $this->CalendarPlan->makePlanListBodyHtml($vars); ?>
 
-<?php echo $this->CalendarPlan->makePlanListGlyphiconPlusWithUrl($vars['year'], $vars['month'], $vars['day']); ?>
+<?php echo $this->CalendarPlan->makePlanListGlyphiconPlusWithUrl($vars['year'], $vars['month'], $vars['day'], $vars); ?>
 
 <div class="text-center calendar-back-to-button">
 <?php

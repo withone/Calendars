@@ -63,19 +63,16 @@ class CalendarsAppController extends AppController {
 	}
 
 /**
- * setCalendarCommonVars
+ * setDateTimeVars
  *
- * カレンダー用共通変数設定
+ * 日付時刻変数設定
  *
  * @param array &$vars カレンダー用共通変数
+ * @param object &$nctm NetCommonsTimeオブジェクト
  * @return void
  */
-	public function setCalendarCommonVars(&$vars) {
-		$this->setCalendarCommonCurrent($vars);
-		$vars['CalendarFrameSetting'] = Current::read('CalendarFrameSetting');
-
+	public function setDateTimeVars(&$vars, &$nctm) {
 		//現在のユーザTZ「考慮済」年月日時分秒を取得
-		$nctm = new NetCommonsTime();
 		$userNowYmdHis = $nctm->toUserDatetime('now');
 		$userNowArray = CalendarTime::transFromYmdHisToArray($userNowYmdHis);
 
@@ -97,19 +94,61 @@ class CalendarsAppController extends AppController {
 			//$vars['day'] = intval($userNowArray['day']);
 			$vars['day'] = 1;	//月末日は月によって替わるので、すべての月でかならず存在する日(つまり一日）にする。
 		}
+	}
 
+/**
+ * setReturnVars
+ *
+ * 戻り先変数設定
+ *
+ * @param array &$vars カレンダー用共通変数
+ * @return void
+ */
+	public function setReturnVars(&$vars) {
 		if (isset($this->request->params['named']['back_year'])) {
 			$vars['back_year'] = intval($this->request->params['named']['back_year']);
 		} else { //省略時は、$vars['year']と一致させておく。
 			$vars['back_year'] = $vars['year'];
 		}
 
+		//戻り月
 		if (isset($this->request->params['named']['back_month'])) {
 			$vars['back_month'] = intval($this->request->params['named']['back_month']);
 		} else { //省略時は、$vars['month']と一致させておく。
 			$vars['back_month'] = $vars['month'];
 		}
 
+		//戻りsytlと戻りsort
+		if (isset($this->request->params['named']) && isset($this->request->params['named']['return_style'])) {
+			$vars['return_style'] = $this->request->params['named']['return_style'];
+		}	//無いケースもある
+
+		if (isset($this->request->params['named']) && isset($this->request->params['named']['return_sort'])) {
+			$vars['return_sort'] = $this->request->params['named']['return_sort'];
+		}	//無いケースもある
+	}
+
+/**
+ * setCalendarCommonVars
+ *
+ * カレンダー用共通変数設定
+ *
+ * @param array &$vars カレンダー用共通変数
+ * @return void
+ */
+	public function setCalendarCommonVars(&$vars) {
+		$this->setCalendarCommonCurrent($vars);
+		$vars['CalendarFrameSetting'] = Current::read('CalendarFrameSetting');
+
+		$nctm = new NetCommonsTime();
+
+		//日付時刻変数を設定する
+		$this->setDateTimeVars($vars, $nctm);
+
+		//戻り先変数を設定する
+		$this->setReturnVars($vars);
+
+		//mInfo情報
 		$vars['mInfo'] = CalendarTime::getMonthlyInfo($vars['year'], $vars['month']);	//月カレンダー情報
 		//前月・当月・次月の祝日情報を取り出す。
 		$vars['holidays'] = $this->Holiday->getHoliday(
@@ -131,7 +170,7 @@ class CalendarsAppController extends AppController {
 		//前月・当月・次月の予定情報を取り出す。
 		$planParams = array(
 			//'room_id'の取捨選択は、View側でする。
-			'language_id ' => Current::read('Language.id'),
+			'language_id ' => Current::read('Language.id'),	//ここで言語を限定している。
 			'dtstart' => $dtstart,
 			'dtend' => $dtend,
 		);

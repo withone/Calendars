@@ -76,6 +76,22 @@ class CalendarsComponent extends Component {
 	const	CALENDAR_NOT_USE_WORKFLOW = '0';				//使わない
 
 /**
+ * カレンダーコンテンツ長さ
+ *
+ * @var int
+ */
+	const	CALENDAR_VALIDATOR_TITLE_LEN = 100;
+	const	CALENDAR_VALIDATOR_TEXTAREA_LEN = 60000;
+	const	CALENDAR_VALIDATOR_GENERAL_VCHAR_LEN = 255;
+
+/**
+ * メール通知タイミング
+ *
+ * @var int
+ */
+	const	CALENDAR_DEFAULT_MAIL_SEND_TIME = 60;	//メール通知タイミング初期値(60分前=1時間前)
+
+/**
  * カレンダータイムゾーン情報
  *
  * @var array

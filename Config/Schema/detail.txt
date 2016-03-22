@@ -1,0 +1,54 @@
+	public $_schema = array(
+		'calendar_rrule_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+
+		//件名
+		'title' => array('type' => 'string', 'null' => false, 'default' => null),
+		'title_icon' => array('type' => 'string', 'null' => false, 'default' => null),
+
+		//公開対象
+		'room_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+
+		//予定時間の設定
+		//'is_allday' => array('type' => 'boolean', 'null' => true, 'default' => '1'),
+		'is_enabletime' => array('type' => 'boolean', 'null' => true, 'default' => '1'),
+		'start_datetime' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 19),
+		'end_datetime' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 19),
+
+		//タイムゾーン
+		'timezone_offset' => array('type' => 'float', 'null' => false, 'default' => '0.0', 'length' => '3,1', 'unsigned' => false),
+
+		//場所
+		'location' => array('type' => 'string', 'null' => false, 'default' => null),
+
+		//連絡先
+		'contact' => array('type' => 'string', 'null' => false, 'default' => null),
+
+		//詳細
+		'description' => array('type' => 'text', 'null' => true, 'default' => null),
+
+		//予定を繰り返す
+		'is_repeat' => array('type' => 'boolean', 'null' => true, 'default' => '0'),
+
+		//期間単位の選択
+		'select_period_type' => array('type' => 'integer', 'null' => true, 'default' => '0', 'unsigned' => false),
+
+		//daily
+
+
+	public $calendar_rrules = array(
+		'calendar_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+		'key' => array('type' => 'string', 'null' => false, 'default' => null,
+		'name' => array('type' => 'string', 'null' => false, 'default' => null,
+		'rrule' => array('type' => 'text', 'null' => true, 'default' => null, 
+		'icalendar_uid' => array('type' => 'string', 'null' => false, 'default' => null,
+		'icalendar_comp_name' => array('type' => 'string', 'null' => false, 'default' => null,
+		'room_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false,
+		'language_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false,
+		'status' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 4, 'unsigned' => false,
+		'is_active' => array('type' => 'boolean', 'null' => false, 'default' => '0',
+		'is_latest' => array('type' => 'boolean', 'null' => false, 'default' => '0',
+		'created_user' => array('type' => 'integer', 'null' => true, 'default' => '0', 'unsigned' => false,
+		'created' => array('type' => 'datetime', 'null' => true, 'default' => null,
+		'modified_user' => array('type' => 'integer', 'null' => true, 'default' => '0', 'unsigned' => false,
+		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null,
+

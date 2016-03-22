@@ -62,10 +62,11 @@ class CalendarUrlHelper extends AppHelper {
  * @param int $year 年
  * @param int $month 月
  * @param int $day 日
+ * @param array &$vars カレンダー情報
  * @return string Url
  */
-	public function makeEasyEditUrl($year, $month, $day) {
-		$url = NetCommonsUrl::actionUrl(array(
+	public function makeEasyEditUrl($year, $month, $day, &$vars) {
+		$options = array(
 			'controller' => 'calendar_plans',
 			'action' => 'edit',
 			'style' => 'easy',
@@ -73,7 +74,14 @@ class CalendarUrlHelper extends AppHelper {
 			'month' => $month,
 			'day' => $day,
 			'frame_id' => Current::read('Frame.id'),
-		));
+		);
+		if (isset($vars['return_style'])) {
+			$options['return_style'] = $vars['return_style'];
+		}
+		if (isset($vars['return_sort'])) {
+			$options['return_sort'] = $vars['return_sort'];
+		}
+		$url = NetCommonsUrl::actionUrl($options);
 		return $url;
 	}
 
@@ -121,8 +129,7 @@ class CalendarUrlHelper extends AppHelper {
 			$backYear = $vars['mInfo']['year'];
 			$backMonth = $vars['mInfo']['month'];
 		}
-
-		$url = NetCommonsUrl::actionUrl(array(
+		$options = array(
 			'controller' => 'calendar_plans',
 			'action' => 'daylist',
 			'year' => $year,
@@ -131,7 +138,9 @@ class CalendarUrlHelper extends AppHelper {
 			'back_year' => $backYear,
 			'back_month' => $backMonth,
 			'frame_id' => Current::read('Frame.id'),
-		));
+		);
+		$options['return_style'] = 'smallmonthly';	//ここは固定的にカレンダー月（縮小）が戻り先となる。
+		$url = NetCommonsUrl::actionUrl($options);
 		return $url;
 	}
 }

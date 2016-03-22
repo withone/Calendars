@@ -27,8 +27,8 @@ class CalendarMonthlyHelper extends AppHelper {
 		'NetCommonsForm',
 		'NetCommonsHtml',
 		'Form',
-		'Calendars.CalendarUrl',
 		'Calendars.CalendarCommon',
+		'Calendars.CalendarUrl',
 	);
 
 /**
@@ -285,12 +285,13 @@ class CalendarMonthlyHelper extends AppHelper {
  * @param int $year 年
  * @param int $month 月
  * @param int $day 日
+ * @param arrya &$vars カレンダー情報
  * @return string HTML
  */
-	public function makeGlyphiconPlusWithUrl($year, $month, $day) {
+	public function makeGlyphiconPlusWithUrl($year, $month, $day, &$vars) {
 		$html = '';
 		if (Current::permission('content_creatable')) {
-			$url = $this->CalendarUrl->makeEasyEditUrl($year, $month, $day);
+			$url = $this->CalendarUrl->makeEasyEditUrl($year, $month, $day, $vars);
 			$html .= "<small><span class='pull-right glyphicon glyphicon-plus calendar-easy-edit' data-url='" . $url . "'></span></small>";
 		}
 		return $html;
@@ -328,7 +329,7 @@ class CalendarMonthlyHelper extends AppHelper {
 		$html .= "<p class='h4'>";
 		$html .= "<span class='pull-left text-muted calendar-day calendar-daily-disp' data-url='" . $url . "'>" . $day . '</span>';
 		$html .= "<span class='pull-left text-muted visible-xs'><small>(" . __d('calendars', '日') . ')</small></span>';
-		$html .= $this->makeGlyphiconPlusWithUrl($year, $month, $day);
+		$html .= $this->makeGlyphiconPlusWithUrl($year, $month, $day, $vars);
 		$html .= '</p>';
 		$html .= '</div>';
 		$html .= "<div class='clearfix'></div>";
@@ -388,7 +389,7 @@ class CalendarMonthlyHelper extends AppHelper {
 			$html .= "<p class='h4'>";
 			$html .= "<span class='pull-left calendar-day calendar-daily-disp {$textColor}' data-url='" . $url . "'>" . $day . '</span>';
 			$html .= "<span class='pull-left text-muted visible-xs'><small>(" . __d('calendars', '日') . ')</small></span>';
-			$html .= $this->makeGlyphiconPlusWithUrl($vars['mInfo']['year'], $vars['mInfo']['month'], $day);
+			$html .= $this->makeGlyphiconPlusWithUrl($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars);
 			$html .= '</p>';
 			$html .= '</div>';
 			$html .= "<div class='clearfix'></div>";

@@ -1,61 +1,43 @@
 <?php
-?>
-<?php echo $this->element('Calendars.scripts'); ?>
+//'frameId' => $frameId, 'languageId' => $languageId, 'vars' => $vars
+//		'frameSettingId' => $frameSettingId, 'spaces' => $spaces, 'rooms' => $rooms, 'roomTreeList' => $roomTreeList);
 
-<article ng-controller="CalendarsDetailEdit" class="block-setting-body">
-<!--<article ng-controller="CalendarModalCtrl" class="block-setting-body">-->
+		$myself = '5'; //自分自身の時、グループ共有が有効になる。
 
+		$selectedIdx = 2;	//ここでは、idx=2 つまり　デザインチームを初期値とする。
 
-<article class="block-setting-body">
-
-
-<div class='h3'><?php echo __d('calendars', 'カレンダー'); ?></div>
-<div class="panel panel-default">
-<?php
-	$options = array(
-		'type' => 'post',
-		'url' => NetCommonsUrl::actionUrl(array('plugin' => 'calendars', 'controller' => 'calendar_plans', 'action' => 'add')),
-		'inputDefaults' => array(
-			'label' => false,	//以降のinput要素のlabelをデフォルト抑止。必要なら各inputで明示指定する。
-			'div' => false,	//以降のinput要素のdivをデフォルト抑止。必要なら各inputで明示指定する。
-		),
-		'class' => 'form-horizontal',
-	);
-	echo $this->NetCommonsForm->create(false, $options);	//<!-- <form class="form-horizontal"> --> <!-- これで<div class-"form-group row"のrowを省略できる -->
-
-	echo $this->NetCommonsForm->hidden('Block.id');
-	echo $this->NetCommonsForm->hidden('Block.key');
-	echo $this->NetCommonsForm->hidden('Frame.id');
-	echo $this->NetCommonsForm->hidden('Frame.key');
-?>
-
-<div class="panel-body">
-
-<div class="form-group" name="inputTitle">
-<div class="col-sm-10 col-sm-offset-1">
-
-	<label><?php echo __d('calendars', '件名') . $this->element('NetCommons.required'); ?></label>
-<!-- <div class="input-group"> -->
-<?php
-	//inputWithTitleIcon()の第１引数がfieldName, 第２引数が$titleIconFieldName（unlockField対象).
-	echo $this->TitleIcon->inputWithTitleIcon('title', 'Plan.title_icon',
-		array('label' => false,
-			'ng-model' => 'calendars.plan.title',
-			'div' => false,
-	));
-?>
-<!-- <i><img style='width:1.8em; height:1.3em;' src='/calendars/img/svg/icon-weather3.svg' /></i> -->
-
-<!-- </div> --><!-- input-groupおわり -->
-
-</div><!-- col-sm-10おわり -->
-</div><!-- form-groupおわり-->
+		q
 
 
-<div class="form-group" name="selectRoomForOpen">
-<div class="col-sm-10 col-sm-offset-1">
-<?php
-	echo $this->CalendarExposeTarget->makeSelectExposeTargetHtmlForEasyEdit($frameId, $languageId, $vars, $frameSetting, $exposeRoomOptions, $myself);
+		$options = array(
+			'1' => __d('calendars', 'パブリックスペース'),
+			'2' => __d('calendars', '開発部'),
+			'3' => __d('calendars', 'デザインチーム'),
+			'4' => __d('calendars', 'プログラマーチーム'),
+			$myself => __d('calendars', '自分自身'),
+			'6' => __d('calendars', '全会員'),
+		);
+
+		echo $this->NetCommonsForm->label('CalendarEvent' . Inflector::camelize('room_id'), __d('calendars', '公開対象'));
+
+		//echo $this->NetCommonsForm->select('CalendarEvent.room_id', $options, array(
+		//  'value' => __d('calendars', '開発部'),		//valueは初期値
+		//  'class' => 'form-control',
+		//  'empty' => false,
+		//	'required' => true,
+		//));
+
+		echo $this->NetCommonsForm->select('CalendarEvent.room_id', $options, array(
+			//'value' => __d('calendars', '開発部'),		//valueは初期値
+			//'selected' => $selectedIdx,
+			'class' => 'form-control',
+			'empty' => false,
+			'required' => true,
+			'ng-model' => "exposeRoomArray[" . $frameId . "]",
+			'ng-change' => "changeRoom(" . $myself . "," . $frameId . ")",
+			//'ng-init' => "exposeRoomArray[" . $frameId . "]=3",
+		));
+
 ?>
 
 </div><!-- col-sm-10おわり -->
@@ -71,12 +53,7 @@
 				$usersJson[] = $this->UserSearch->convertUserArrayByUserSelection($groupUser, 'User');
 			}
 		}
-		echo $this->element('Groups.select', array(
-			'title' => __d('calendars', '予定を共有する人を選択してください'),
-			//'pluginModel'キーを省略すると、Groupプラグインの'GroupsUser'モデルがpluginModelとして内部指定されるようだ。
-			'selectUsers' => (isset($this->request->data['selectUsers'])) ? $this->request->data['selectUsers'] : null,
-			'roomId' => Room::ROOM_PARENT_ID, //全会員を表すID(roomId)を指定する。
-		));
+		echo $this->element('Groups.select', array('title' => '予定を共有する人を選択してください'));
 ?>
 
 </div><!-- col-sm-10おわり -->
@@ -88,7 +65,7 @@
 <div class="form-group" name="inputStartYmd">
 <div class="col-sm-10 col-sm-offset-1">
 	<label>
-		<?php echo __d('calendars', '予定（年月日）') . $this->element('NetCommons.required');	?>
+		<?php echo __d('calendars', '予定（年月日）');	?>
 	</label>
 
 <div class="input-group">
@@ -96,35 +73,24 @@
 <?php
 	//'CalendarEvent'.Inflector::camelize('start_year'),
 
-	//現在日付時刻(Y/m/d H:i:s形式)からの直近１時間の日付時刻(from,to)を取得
-	//
-	$nctm = new NetCommonsTime();
-	$userNowYdmHis = $nctm->toUserDatetime('now');
-	$userNowHi = CalendarTime::getHourColonMin($userNowYdmHis);
-	$ymdHis = sprintf("%04d-%02d-%02d %s", $vars['year'], $vars['month'], $vars['day'], $userNowHi);
-	list($ymdOfLastHour, $fromHiOfLastHour, $toHiOfLastHour) = CalendarTime::geTheTimeInTheLastHour($ymdHis);
-
-	App::uses('HolidaysAppController', 'Holidays.Controller');
-
-	//echo $this->element('NetCommons.datetimepicker');
+	echo $this->element('NetCommons.datetimepicker');
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD',
-		'minDate' => HolidaysAppController::HOLIDAYS_DATE_MIN,
-		'maxDate' => HolidaysAppController::HOLIDAYS_DATE_MAX,
-		//'defaultDate' => '2013-11-1',
+		//'minDate' => 2001, //HolidaysAppController::HOLIDAYS_DATE_MIN,
+		//'maxDate' => 2033, //HolidaysAppController::HOLIDAYS_DATE_MAX,
 	)));
 
-	//$year = '2016';
+	$year = '2016';
 	$ngModel = 'start_year';
 
-	echo $this->NetCommonsForm->input('CalendarEvent.start_year', array(
+	echo $this->NetCommonsForm->input('CalendarEvent.start_year',
+	array(
 		'div' => false,
 		'label' => false,
 		'datetimepicker' => 'datetimepicker',
 		'datetimepicker-options' => $pickerOpt,
-		//'value' => (empty($year)) ? '' : intval($year),
+		'value' => (empty($year)) ? '' : intval($year),
 		'ng-model' => $ngModel,
-		'ng-init' => sprintf("%s = '%s'", $ngModel, $ymdOfLastHour),
 	));
 ?>
 	<div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
@@ -177,14 +143,14 @@
 	$hour = '';
 
 	$ngModel = 'start_time';
-	echo $this->NetCommonsForm->input('CalendarEvent.start_time', array(
+	echo $this->NetCommonsForm->input('CalendarEvent.start_time',
+	array(
 		'div' => false,
 		'label' => false,
 		'datetimepicker' => 'datetimepicker',
 		'datetimepicker-options' => $pickerOpt,
 		'value' => (empty($hour)) ? '' : intval($hour),
 		'ng-model' => $ngModel,
-		'ng-init' => sprintf("%s = '%s'", $ngModel, $fromHiOfLastHour),
 	));
 ?>
 	<div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
@@ -200,14 +166,14 @@
 
 <?php
 	$ngModel = 'end_time';
-	echo $this->NetCommonsForm->input('CalendarEvent.end_time', array(
+	echo $this->NetCommonsForm->input('CalendarEvent.end_time',
+	array(
 		'div' => false,
 		'label' => false,
 		'datetimepicker' => 'datetimepicker',
 		'datetimepicker-options' => $pickerOpt,
 		'value' => (empty($hour)) ? '' : intval($hour),
 		'ng-model' => $ngModel,
-		'ng-init' => sprintf("%s = '%s'", $ngModel, $toHiOfLastHour),
 	));
 ?>
 	<div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
@@ -244,9 +210,29 @@
 <div class="form-group calendar-mail-notice_<?php echo $frameId ?>" name="selectMailTime" style="display: none">
 <div class="col-sm-10 col-sm-offset-1">
 <?php
+		$options = array(
+			'0' => __d('calendars', '0分前'),
+			'5' => __d('calendars', '5分前'),
+			'10' => __d('calendars', '10分前'),
+			'15' => __d('calendars', '15分前'),
+			'20' => __d('calendars', '20分前'),
+			'25' => __d('calendars', '25分前'),
+			'30' => __d('calendars', '30分前'),
+			'45' => __d('calendars', '45分前'),
+			'60' => __d('calendars', '1時間前'),
+			'120' => __d('calendars', '2時間前'),
+			'180' => __d('calendars', '3時間前'),
+			'720' => __d('calendars', '12時間前'),
+			'1440' => __d('calendars', '24時間前'),
+			'2880' => __d('calendars', '2日前'),
+			'8540' => __d('calendars', '1週間前'),
+			'-1' => __d('calendars', '今すぐ'),
+		);
+
 		echo $this->NetCommonsForm->label('CalendarEvent' . Inflector::camelize('room_id'), __d('calendars', 'メール通知タイミング'));
-		echo $this->NetCommonsForm->select('CalendarEvent.room_id', $emailOptions, array(
-			'value' => CalendarsComponent::CALENDAR_DEFAULT_MAIL_SEND_TIME,	//valueは初期値
+
+		echo $this->NetCommonsForm->select('CalendarEvent.room_id', $options, array(
+			'value' => __d('calendars', '0分前'),		//valueは初期値
 			'class' => 'form-control',
 			'empty' => false,
 			'required' => true,
@@ -360,6 +346,10 @@ mock.fnc2 =  function(evt) {
 for(var i=0; i < mock.elms2.length; ++i) {
 	mock.elms2[i].addEventListener('change', mock.fnc2 );
 }
+
+
+
+
 
 </script>
 

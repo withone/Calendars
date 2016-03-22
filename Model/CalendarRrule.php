@@ -141,6 +141,12 @@ class CalendarRrule extends CalendarsAppModel {
 					'required' => true,
 				),
 			),
+			'language_id' => array(
+				'rule1' => array(
+					'rule' => array('numeric'),
+					'message' => __d('net_commons', 'Invalid request.'),
+				),
+			),
 			'status' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),

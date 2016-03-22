@@ -27,8 +27,11 @@ class CalendarValidateBehavior extends ModelBehavior {
  * @return bool
  */
 	public function checkYyyymmdd(Model &$model, $check) {
+		$value = array_values($check);
+		$value = $value[0];
+
 		$pattern = "/^([0-9]{4})([0-9]{2})([0-9]{2})$/";
-		if (!preg_match($pattern, $check)) {
+		if (!preg_match($pattern, $value)) {
 			return false;
 		}
 		return true;
@@ -42,8 +45,11 @@ class CalendarValidateBehavior extends ModelBehavior {
  * @return bool
  */
 	public function checkYmd(&$model, $check) {
+		$value = array_values($check);
+		$value = $value[0];
+
 		$pattern = "/^([0-9]{4})([0-9]{2})([0-9]{2})$/";
-		if (!preg_match($pattern, $check)) {
+		if (!preg_match($pattern, $value)) {
 			return false;
 		}
 		return true;
@@ -57,8 +63,11 @@ class CalendarValidateBehavior extends ModelBehavior {
  * @return bool
  */
 	public function checkHis(&$model, $check) {
+		$value = array_values($check);
+		$value = $value[0];
+
 		$pattern = "/^([0-9]{2})([0-9]{2})([0-9]{2})$/";
-		if (!preg_match($pattern, $check)) {
+		if (!preg_match($pattern, $value)) {
 			return false;
 		}
 		return true;
@@ -68,11 +77,14 @@ class CalendarValidateBehavior extends ModelBehavior {
  * Checks  date MaxMin
  *
  * @param object &$model use model
- * @param string $Ymd check date string
+ * @param array $check 入力配列. Ymd date stringを値にもつ。
  * @param string $edge 'start' or 'end'
  * @return bool
  */
-	public function checkMaxMinDate(&$model, $Ymd, $edge) {
+	public function checkMaxMinDate(&$model, $check, $edge) {
+		$value = array_values($check);
+		$Ymd = $value[0];
+
 		if ((strlen($Ymd)) !== 8) {
 			return false;
 		}
@@ -96,12 +108,12 @@ class CalendarValidateBehavior extends ModelBehavior {
  * @return bool
  */
 	public function checkReverseDate(&$model) {
-		if (strlen($model->data[$this->alias]['start_date']) !== 8 ||
-			strlen($model->data[$this->alias]['end_date']) !== 8) {
+		if (strlen($model->data[$model->alias]['start_date']) !== 8 ||
+			strlen($model->data[$model->alias]['end_date']) !== 8) {
 			return false;
 		}
 
-		if ($model->data[$this->alias]['start_date'] > $model->data[$this->alias]['end_date']) {
+		if ($model->data[$model->alias]['start_date'] > $model->data[$model->alias]['end_date']) {
 			return false;
 		}
 		return true;

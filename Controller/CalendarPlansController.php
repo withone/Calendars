@@ -36,6 +36,8 @@ class CalendarPlansController extends CalendarsAppController {
 		'Calendars.CalendarFrameSettingSelectRoom',
 		'Calendars.CalendarSetting',
 		'Holidays.Holiday',
+		'Rooms.Room',
+		'Calendars.CalendarActionPlan',	//予定CRUDaction専用
 	);
 
 /**
@@ -65,8 +67,12 @@ class CalendarPlansController extends CalendarsAppController {
 		'NetCommons.Date',
 		'NetCommons.DisplayNumber',
 		'NetCommons.Button',
+		'NetCommons.TitleIcon',
+		'Calendars.CalendarUrl',
+		'Calendars.CalendarCommon',
 		'Calendars.CalendarMonthly',
 		'Calendars.CalendarPlan',
+		'Calendars.CalendarExposeTarget',
 	);
 
 /**
@@ -120,17 +126,33 @@ class CalendarPlansController extends CalendarsAppController {
  * @return void
  */
 	public function edit() {
+		//表示用の設定
 		$ctpName = '';
 		$vars = array();
 		if (isset($this->request->params['named']) && isset($this->request->params['named']['style'])) {
 			$style = $this->request->params['named']['style'];
 		}
-
 		$ctpName = $this->getCtpAndVarsForEdit($style, $vars);
+
+		//表示方法設定情報を取り出し、requestのdataに格納する。
+		$frameSetting = $this->CalendarFrameSetting->find('first', array(
+			'recursive' => 1,	//hasManyでCalendarFrameSettingSelectRoomのデータも取り出す。
+			'conditions' => array('frame_key' => Current::read('Frame.key')),
+		));
+		$frameSettingId = $frameSetting['CalendarFrameSetting']['id'];
+		//$this->request->data['CalendarFrameSetting'] = $frameSetting['CalendarFrameSetting'];
+
+		$this->request->data['CalendarFrameSettingSelectRoom'] = $this->CalendarFrameSetting->getSelectRooms($frameSettingId);
+
+		//公開対象一覧のoptions配列と、自分自身のroom_idを取得
+		list($exposeRoomOptions, $myself) = $this->CalendarActionPlan->getExposeRoomOptions($frameSetting);
+
+		//eメール通知の選択options配列を取得
+		$emailOptions = $this->CalendarActionPlan->getNoticeEmailOption();
 
 		$frameId = Current::read('Frame.id');
 		$languageId = Current::read('Language.id');
-		$this->set(compact('frameId', 'languageId', 'vars'));
+		$this->set(compact('frameId', 'languageId', 'vars', 'frameSetting', 'exposeRoomOptions', 'myself', 'emailOptions'));
 		$this->render($ctpName);
 	}
 
@@ -175,25 +197,11 @@ class CalendarPlansController extends CalendarsAppController {
  * @throws InternalErrorException
  */
 	public function getCtpAndVarsForEdit($style, &$vars) {
+		$this->setCalendarCommonVars($vars);
 		if ($style === 'easy') {
 			$ctpName = 'easy_edit';
 		} else {
 			$ctpName = 'detail_edit';
-		}
-		if (isset($this->request->params['named']) && isset($this->request->params['named']['year'])) {
-			$vars['year'] = $this->request->params['named']['year'];
-		} else {
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-		if (isset($this->request->params['named']) && isset($this->request->params['named']['month'])) {
-			$vars['month'] = $this->request->params['named']['month'];
-		} else {
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-		if (isset($this->request->params['named']) && isset($this->request->params['named']['day'])) {
-			$vars['day'] = $this->request->params['named']['day'];
-		} else {
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 		return $ctpName;
 	}
