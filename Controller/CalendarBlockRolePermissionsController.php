@@ -122,8 +122,7 @@ class CalendarBlockRolePermissionsController extends CalendarsAppController {
 		$allMemberRoom = $this->CalendarPermission->getCalendarAllMemberRoomBlocks($this->Workflow);
 		$this->set('allMemberRoomBlocks', $allMemberRoom);
 		// 全会員ルーム情報もマージしてしまう
-		$rooms = Hash::merge($rooms, $allMemberRoom);
-
+		$rooms = Hash::mergeDiff($rooms, $allMemberRoom);
 		if (! $this->request->is('post')) {
 			$this->request->data = $rooms;
 		}

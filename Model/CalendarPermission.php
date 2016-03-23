@@ -196,10 +196,14 @@ class CalendarPermission extends CalendarsAppModel {
  */
 	public function setPermission($workflow, &$roomBlocks, $readableRoom) {
 		foreach ($roomBlocks as &$roomBlock) {
+			$blockKey = $roomBlock['Block']['key'];
+			if (! isset($roomBlock['Block']['key'])) {
+				$blockKey = '';
+			}
 			$permissions = $workflow->getBlockRolePermissions(
 				array('content_creatable', 'block_permission_editable'),
 				$roomBlock['Room']['id'],
-				$roomBlock['Block']['key']
+				$blockKey
 			);
 			if ($permissions) {
 				$roomBlock['BlockRolePermission'] = $permissions['BlockRolePermissions'];
@@ -272,15 +276,12 @@ class CalendarPermission extends CalendarsAppModel {
 					// Calendar.idが空っぽ
 					if (empty($room['Calendar']['id'])) {
 						// その場合はブロック未作成なので前もってブロック&Calendar作る
-						$block = $this->Block->save(array(
-							'room_id' => $roomId,
-							'language_id' => Current::read('Language.id'),
-							'plugin_key' => 'calendars',
-						));
+						$block = $this->_saveBlock($roomId);
 						// そのブロックキーを設定して
-						foreach ($room['BlockRolePermissions']['content_creatable'] as &$perm) {
-							$perm['block_key'] = $block['key'];
+						foreach ($room['BlockRolePermission']['content_creatable'] as &$perm) {
+							$perm['block_key'] = $block['Block']['key'];
 						}
+						$room['Calendar']['block_key'] = $block['Block']['key'];
 					}
 					// 保存する
 					$this->create();
@@ -303,5 +304,32 @@ class CalendarPermission extends CalendarsAppModel {
 			return false;
 		}
 		return true;
+	}
+/**
+ * _saveBlock
+ *
+ * ブロックを登録（すでにある場合は取得）
+ *
+ * @param int $roomId ルームID
+ * @return array
+ */
+	protected function _saveBlock($roomId) {
+		$block = $this->Block->find('first', array(
+			'conditions' => array(
+				'room_id' => $roomId,
+				'language_id' => Current::read('Language.id'),
+				'plugin_key' => 'calendars',
+			),
+			'recursive' => -1
+		));
+		if ($block) {
+			return $block;
+		}
+		$block = $this->Block->save(array(
+			'room_id' => $roomId,
+			'language_id' => Current::read('Language.id'),
+			'plugin_key' => 'calendars',
+		));
+		return $block;
 	}
 }
