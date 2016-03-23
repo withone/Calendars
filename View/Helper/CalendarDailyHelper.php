@@ -82,26 +82,9 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
  */
 	public function makeDailyListBodyHtml($vars) {
 		$html = '';
-		//$planNum = 5;
-		//$day = 1;
 		$nctm = new NetCommonsTime();
 
 		$html .= $this->_makePlanSummariesHtml($vars, $nctm, $vars['year'], $vars['month'], $vars['day']);
-
-		//予定数分繰り返す
-		/* ダミー
-		for ($idx = 0; $idx < $planNum; $idx++) {
-			$html .= "<tr><td class='calendar-daily-nontimeline-col-plan'><div class='row'><div class='col-xs-12'>"; //１プランの開始
-			$html .= "<p class='calendar-plan-clickable text-left calendar-daily-nontimeline-plan'>";
-
-			$html .= "<span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>09:30-12:00</small></span>";
-			$html .= "<span class='calendar-plan-mark calendar-plan-mark-group'></span>";
-			$html .= "<span>港区成人式参列</span>";
-
-			$html .= "</p>";
-			$html .= "</div></div></td></tr>";
-		}
-		*/
 
 		return $html;
 	}
