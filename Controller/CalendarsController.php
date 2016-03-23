@@ -238,6 +238,13 @@ class CalendarsController extends CalendarsAppController {
 		} else {
 			$vars = $this->getDailyListVars($vars);
 		}
+
+		$vars['selectRooms'] = array();	//マージ前の暫定
+		$vars['parentIdType'] = array(
+			'public' => Room::PUBLIC_PARENT_ID,	//公開
+			'private' => Room::PRIVATE_PARENT_ID,	//プライベート
+			'member' => Room::ROOM_PARENT_ID,	//全会員
+		);
 		return $vars;
 	}
 

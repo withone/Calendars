@@ -106,7 +106,7 @@
 									<?php $textColor = $this->CalendarCommon->makeTextColor($years[$i], $months[$i], $days[$i], $vars['holidays'], $wDay[$i]); ?>
 								<span class='h4 pull-left calendar-day calendar-daily-disp <?php echo $textColor ?>' data-url='<?php echo $url ?>'>
 									<?php echo $days[$i] ?><?php echo $week[$wDay[$i]] ?>&nbsp;
-									<?php echo $this->CalendarMonthly->makeGlyphiconPlusWithUrl($years[$i], $months[$i], $days[$i]); ?>
+									<?php echo $this->CalendarMonthly->makeGlyphiconPlusWithUrl($years[$i], $months[$i], $days[$i], $vars); ?>
 								</span>
 						</td>
 					<?php endfor; ?>

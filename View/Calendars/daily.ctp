@@ -1,9 +1,10 @@
 <?php echo $this->element('Calendars.scripts'); ?>
 
+<!--
 <article ng-controller="CalendarsDetailEdit" class="block-setting-body">
+-->
 
 <!-- <div class="clearfix"></div> -->
-
 <?php
 	/* 前日 */
 	$prevtimestamp = mktime(0, 0, 0, $vars['month'], ($vars['day'] - 1 ), $vars['year']);
@@ -87,7 +88,7 @@
 
 <!-- <?php echo $this->element('Calendars.Calendars/daily_tabs', array('active' => 'list', 'frameId' => $frameId, 'languageId' => $languageId)); ?> -->
 
-</article>
+
 
 
 <?php
@@ -96,4 +97,3 @@
 	} else {
 		echo $this->element('Calendars.Calendars/daily_list', array('frameId' => $frameId, 'languageId' => $languageId, 'vars' => $vars));
 	}
-
