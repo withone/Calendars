@@ -9,7 +9,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-App::uses('CalendarsAppController', 'Calendars.Controller');
+App::uses('MailSettingsController', 'Mails.Controller');
 
 /**
  * CalendarMailSettingsController
@@ -18,51 +18,7 @@ App::uses('CalendarsAppController', 'Calendars.Controller');
  * @package NetCommons\Calendars\Controller
  */
 
-class CalendarMailSettingsController extends CalendarsAppController {
-
-/**
- * layout
- *
- * @var array
- */
-	public $layout = 'NetCommons.setting';	//PageLayoutHelperのafterRender()の中で利用。
-											//
-											//$layoutに'NetCommons.setting'があると
-											//「Frame設定も含めたコンテンツElement」として
-											//ng-controller='FrameSettingsController'属性
-											//ng-init=initialize(Frame情報)属性が付与される。
-											//
-											//'NetCommons.setting'がないと、普通の
-											//「コンテンツElement」として扱われる。
-											//
-											//ちなみに、使用されるLayoutは、Pages.default
-											//
-
-/**
- * use components
- *
- * @var array
- */
-	public $components = array(
-		'NetCommons.Permission' => array(
-			//アクセスの権限
-			'allow' => array(
-				'edit' => 'block_editable',
-				//'edit' => null,
-			),
-		),
-		'Workflow.Workflow',
-		'Paginator',
-	);
-
-/**
- * use uses
- *
- * @var array
- */
-	public $uses = array(
-		'Mails.MailSetting',
-	);
+class CalendarMailSettingsController extends MailSettingsController {
 
 /**
  * use helpers
@@ -70,8 +26,6 @@ class CalendarMailSettingsController extends CalendarsAppController {
  * @var array
  */
 	public $helpers = array(
-		//'Blocks.BlockForm',
-		'NetCommons.NetCommonsForm',
 		'Blocks.BlockRolePermissionForm',
 		'Blocks.BlockTabs' => array(
 			//画面上部のタブ設定
@@ -85,33 +39,5 @@ class CalendarMailSettingsController extends CalendarsAppController {
 				),
 			),
 		),
-		//'NetCommons.Date',
 	);
-
-/**
- * index
- *
- * インデックス
- *
- * @return void
- * @throws InternalErrorException 
- */
-	public function edit() {
-		$data = $this->MailSetting->getMailSettingPlugin();
-		//CakeLog::debug('DBG: data[' . print_r($data, true));
-		if (! $data) {
-			$data = $this->MailSetting->createMailSetting();
-		}
-
-		$permissions = $this->Workflow->getBlockRolePermissions(
-			array('mail_content_receivable')
-		);
-		$this->set('roles', $permissions['Roles']);
-
-		$mailBodyPopoverMsg = '<div>FUJI置き換えワードの内容をどのように決めればよいか</div>';
-		$this->set('mailBodyPopoverMessage', $mailBodyPopoverMsg);
-
-		$this->request->data['BlockRolePermission'] = $permissions['BlockRolePermissions'];
-		$this->request->data['Frame'] = Current::read('Frame');
-	}
 }
