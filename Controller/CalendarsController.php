@@ -35,6 +35,7 @@ class CalendarsController extends CalendarsAppController {
 		'Calendars.Calendar',
 		'Calendars.CalendarEventShareUser',
 		'Calendars.CalendarFrameSettingSelectRoom',
+		'Calendars.CalendarActionPlan',	//予定CRUDaction専用
 		'Holidays.Holiday',
 		'Rooms.Room',
 	);
@@ -165,6 +166,26 @@ class CalendarsController extends CalendarsAppController {
  */
 	public function getWeeklyVars($vars) {
 		$this->setCalendarCommonVars($vars);
+
+		//表示方法設定情報を取り出し、requestのdataに格納する。
+		$frameSetting = $this->CalendarFrameSetting->find('first', array(
+			'recursive' => 1,	//hasManyでCalendarFrameSettingSelectRoomのデータも取り出す。
+			'conditions' => array('frame_key' => Current::read('Frame.key')),
+		));
+
+		//公開対象一覧のoptions配列と、自分自身のroom_idを取得
+		list($exposeRoomOptions, $myself) = $this->CalendarActionPlan->getExposeRoomOptions($frameSetting);
+		$vars['exposeRoomOptions'] = $exposeRoomOptions;
+		$vars['myself'] = $myself;
+		//$this->set(compact('exposeRoomOptions'));
+
+		$vars['selectRooms'] = array();	//マージ前の暫定
+		$vars['parentIdType'] = array(
+			'public' => Room::PUBLIC_PARENT_ID,	//公開
+			'private' => Room::PRIVATE_PARENT_ID,	//プライベート
+			'member' => Room::ROOM_PARENT_ID,	//全会員
+		);
+
 		return $vars;
 	}
 
@@ -245,6 +266,7 @@ class CalendarsController extends CalendarsAppController {
 			'private' => Room::PRIVATE_PARENT_ID,	//プライベート
 			'member' => Room::ROOM_PARENT_ID,	//全会員
 		);
+
 		return $vars;
 	}
 
