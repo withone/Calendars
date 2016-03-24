@@ -110,7 +110,9 @@ class CalendarRoomSelectHelper extends AppHelper {
 		$ngClassForIcon = $this->__getNgClass($roomId, 'glyphicon-eye-open', 'glyphicon-eye-close', array('glyphicon'));
 		$ngClassForBtn = $this->__getNgClass($roomId, 'active', '', array('btn', 'btn-default', 'btn-xs'));
 
-		$html = '<div class="btn-group" data-toggle="buttons">';
+		$html = '';
+		// トグルボタンにしたいがこれをやるとng-modelが機能しなくなる....FUJI
+		//$html = '<div class="btn-group" data-toggle="buttons">';
 		$html .= $this->NetCommonsForm->hidden('CalendarFrameSettingSelectRoom.' . $roomId . '.room_id', array('value' => ''));
 		$html .= '<label ' . $ngClassForBtn . '>';
 		$html .= '<i ' . $ngClassForIcon . '></i>';
@@ -119,14 +121,15 @@ class CalendarRoomSelectHelper extends AppHelper {
 			'label' => false,
 			'hiddenField' => false,
 			'ng-model' => $ngModel,
-			'ng-true-value' => '\'' . $roomId . '\'',
-			'ng-false-value' => '\'\'',
+			'ng-true-value' => "'" . $roomId . "'",
+			'ng-false-value' => "''",
 			'value' => $roomId,
 		));
 		$html .= '</label>';
+
 		$html .= $this->NetCommonsForm->hidden('CalendarFrameSettingSelectRoom.' . $roomId . '.calendar_frame_setting_id', array('value' => $settingId));
-		$html .= '</div>';
-		$html .= "{{" . $ngModel . "}}";
+		// トグルボタンにしたいがこれをやるとng-modelが機能しなくなる....FUJI
+		//$html .= '</div>';
 		return $html;
 	}
 
@@ -139,11 +142,11 @@ class CalendarRoomSelectHelper extends AppHelper {
  * @return string
  */
 	private function __getNgModelName($roomId) {
-		return 'data.calendarFrameSettingSelectRoom[\'' . $roomId . '\']';
+		return 'data.calendarFrameSettingSelectRoom[' . $roomId . ']';
 	}
 
 /**
- * __getNgModelName
+ * __getNgClass
  *
  * ルーム選択のためのng-class設定文字列を返す
  *

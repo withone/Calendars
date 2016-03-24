@@ -341,12 +341,11 @@ NetCommonsApp.controller('CalendarFrameSettings', [
 
     $scope.initialize = function(data) {
       $scope.data = angular.fromJson(data);
-
       //$scope.data.frameId;
       //$scope.data.calendarFrameSetting
       //$scope.data.calendarFrameSettingSelectRoom
       //$scope.data.displayTypeOptions
-      //が格納されている。
+      //が格納される。
 
       $scope.displayTypes = [];
 

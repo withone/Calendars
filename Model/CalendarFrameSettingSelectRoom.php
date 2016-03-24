@@ -158,16 +158,26 @@ class CalendarFrameSettingSelectRoom extends CalendarsAppModel {
  */
 	public function saveCalendarFrameSettingSelectRoom($data) {
 		$settingId = $data['CalendarFrameSetting']['id'];
-		// 全部消して
-		$this->deleteAll(array(
-			'calendar_frame_setting_id' => $settingId
-		), false);
-		// 入れ直し
 		$ret = array();
-		foreach ($data['CalendarFrameSettingSelectRoom'] as $selectRoom) {
-			$this->create();
-			$this->set($selectRoom);
-			$ret[] = $this->save($selectRoom, false);
+		foreach ($data['CalendarFrameSettingSelectRoom'] as $roomId => $selectRoom) {
+			$condition = array(
+				'CalendarFrameSettingSelectRoom.calendar_frame_setting_id' => $settingId,
+				'CalendarFrameSettingSelectRoom.room_id' => $roomId,
+			);
+			$orgData = $this->find('first', array(
+				'conditions' => $condition
+			));
+			if (empty($selectRoom['room_id'])) {
+				$this->deleteAll($condition, false);
+			} else {
+				if (! $orgData) {
+					$this->create();
+					$this->set($selectRoom);
+					$ret[] = $this->save($selectRoom, false);
+				} else {
+					$ret[] = $orgData;
+				}
+			}
 		}
 		return $ret;
 	}
