@@ -124,6 +124,7 @@ class CalendarRoomSelectHelper extends AppHelper {
 			'ng-true-value' => "'" . $roomId . "'",
 			'ng-false-value' => "''",
 			'value' => $roomId,
+			'class' => 'nc-checkbox-toggle-btn',
 		));
 		$html .= '</label>';
 
