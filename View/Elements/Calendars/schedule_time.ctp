@@ -16,14 +16,24 @@
 
 <div class="row"><!--全体枠-->
 
+				<!-- 予定の内容 -->
+				<?php
+					echo $this->CalendarSchedule->makeTimeBodyHtml($vars);
+				?>
+
+
+
+
+
+
 <!-- today -->
+<!--
 	<div class="col-sm-12 text-center">
 
 		<?php
 			// 予定の日付タイトル
-			echo $this->CalendarSchedule->makeDayTitleHtml($vars, 1);
+			//echo $this->CalendarSchedule->makeDayTitleHtml($vars, 1);
 		?>
-<!-- original
 		<div class='row'>
 			<div class='col-xs-12'>
 				<p data-openclose-stat='open' data-pos='1' class='calendar-schedule-disp calendar-plan-clickable text-left calendar-schedule-row-title'>
@@ -32,7 +42,6 @@
 			</div>
 			<div class='clearfix'></div>
 		</div>
--->
 
 		<div class='row calendar-schedule-row' data-pos='1'>
 			<div class='col-xs-12 col-sm-9'>
@@ -64,17 +73,17 @@
 			<div class='clearfix'></div>
 		</div>
 	</div>
-
+-->
 
 <!-- tomorrow -->
+<!--
 	<div class="col-sm-12 text-center">
 
 		<?php
 			// 予定の日付タイトル
-			echo $this->CalendarSchedule->makeDayTitleHtml($vars, 2);
+			//echo $this->CalendarSchedule->makeDayTitleHtml($vars, 2);
 		?>
 
-<!-- original
 		<div class='row'>
 			<div class='col-xs-12'>
 				<p data-openclose-stat='open' data-pos='2' class='calendar-schedule-disp calendar-plan-clickable text-left calendar-schedule-row-title'>
@@ -83,7 +92,6 @@
 			</div>
 			<div class='clearfix'></div>
 		</div>
--->
 
 		<div class='row calendar-schedule-row'  data-pos='2'>
 			<div class='col-xs-12 col-sm-9'>
@@ -97,7 +105,12 @@
 		
 		<div class='row calendar-schedule-row'  data-pos='2'>
 			<div class='col-xs-12 col-sm-9'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan'><span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>19:00-21:00</small></span><span class='calendar-plan-mark calendar-plan-mark-group'></span><span>佐藤さん送別会</span></p>
+				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan'>
+				<span class='pull-left'>
+				<small class='calendar-daily-nontimeline-periodtime-deco'>
+				19:00-21:00
+				</small></span>
+				<span class='calendar-plan-mark calendar-plan-mark-group'></span><span>佐藤さん送別会</span></p>
 			</div>
 			<div class='col-xs-12 col-sm-3'>
 				<p class='calendar-plan-clickable text-left calendar-schedule-row-member-t'><span class='text-success'>徳川家康</span></p>
@@ -116,16 +129,17 @@
 		</div>
 
 	</div>
-
+-->
 
 <!-- 3dayslater -->
+<!--
 	<div class="col-sm-12 text-center">
 
 		<?php
 			// 予定の日付タイトル
-			echo $this->CalendarSchedule->makeDayTitleHtml($vars, 3);
+			//echo $this->CalendarSchedule->makeDayTitleHtml($vars, 3);
 		?>
-
+-->
 <!--
 		<div class='row'>
 			<div class='col-xs-12'>
@@ -137,7 +151,7 @@
 		</div>
 -->
 
-
+<!--
 		<div class='row calendar-schedule-row'  data-pos='3'>
 			<div class='col-xs-12 col-sm-9'>
 				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan'><span class='calendar-plan-mark calendar-plan-mark-private'></span><span class="glyphicon glyphicon-share"><span>ホットヨガ教室（夜の部）下見</span></p>
@@ -149,15 +163,16 @@
 		</div>
 		
 	</div>
-
+-->
 <!-- 4dayslater -->
+<!--
 	<div class="col-sm-12 text-center">
 
 		<?php
 			// 予定の日付タイトル
-			echo $this->CalendarSchedule->makeDayTitleHtml($vars, 4);
+			//echo $this->CalendarSchedule->makeDayTitleHtml($vars, 4);
 		?>
-
+-->
 <!--
 		<div class='row'>
 			<div class='col-xs-12'>
@@ -168,7 +183,7 @@
 			<div class='clearfix'></div>
 		</div>
 -->
-
+<!--
 		<div class='row calendar-schedule-row'  data-pos='4'>
 			<div class='col-xs-12'>
 				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan'><span>予定はありません</span></p>
@@ -177,16 +192,16 @@
 		</div>
 
 	</div>
-
+-->
 <!-- 5dayslater -->
+<!--
 	<div class="col-sm-12 text-center">
 
 		<?php
 			// 予定の日付タイトル
-			echo $this->CalendarSchedule->makeDayTitleHtml($vars, 5);
+			//echo $this->CalendarSchedule->makeDayTitleHtml($vars, 5);
 		?>
 
-<!--
 		<div class='row'>
 			<div class='col-xs-12'>
 				<p data-openclose-stat='open' data-pos='5' class='calendar-schedule-disp calendar-plan-clickable text-left calendar-schedule-row-title'>
@@ -196,7 +211,7 @@
 			<div class='clearfix'></div>
 		</div>
 -->
-
+<!--
 		<div class='row calendar-schedule-row'  data-pos='5'>
 			<div class='col-xs-12'>
 				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan'><span>予定はありません</span></p>
@@ -205,7 +220,7 @@
 		</div>
 	</div>
 
-</div><!--全体枠END-->
+</div>--><!--全体枠END-->
 
 <!-- 形式切り替えと追加 (下部) -->
 <?php echo $this->element('Calendars.Calendars/change_sort', array('currentSort' => 'time', 'menuPosition' => 'bottom')); ?>

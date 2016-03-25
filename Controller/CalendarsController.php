@@ -262,6 +262,26 @@ class CalendarsController extends CalendarsAppController {
 	public function getTimeScheduleVars($vars) {
 		$this->setCalendarCommonVars($vars);
 		$vars['sort'] = 'time';
+
+		$vars['selectRooms'] = array();	//マージ前の暫定
+		$vars['parentIdType'] = array(
+			'public' => Room::PUBLIC_PARENT_ID,	//公開
+			'private' => Room::PRIVATE_PARENT_ID,	//プライベート
+			'member' => Room::ROOM_PARENT_ID,	//全会員
+		);
+
+		//表示方法設定情報を取り出し
+		$frameSetting = $this->CalendarFrameSetting->find('first', array(
+			'recursive' => 1,	//hasManyでCalendarFrameSettingSelectRoomのデータも取り出す。
+			'conditions' => array('frame_key' => Current::read('Frame.key')),
+		));
+
+		//開始位置（今日/前日）
+		$vars['start_pos'] = $frameSetting['CalendarFrameSetting']['start_pos'];
+
+		//表示日数（n日分）
+		$vars['display_count'] = $frameSetting['CalendarFrameSetting']['display_count'];
+
 		return $vars;
 	}
 

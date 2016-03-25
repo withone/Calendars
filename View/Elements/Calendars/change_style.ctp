@@ -1,10 +1,10 @@
 <?php if ($vars['style'] === 'smallmonthly'): ?>
 	<div class="row" style="margin-top: 0.5em">
 	<div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3 text-right">
-<?php elseif ($vars['style'] === 'largemonthly' || $vars['style'] === 'weekly'): ?>
+	<?php elseif ($vars['style'] === 'largemonthly' || $vars['style'] === 'weekly'): ?>
 		<div class="row" style="margin-top: 1.5em">
 		<div class="col-xs-12 text-right">
-<?php elseif ($vars['style'] === 'daily'): ?>
+	<?php elseif ($vars['style'] === 'daily'): ?>
 		<div class="row" style="margin-top: 0.5em">
     	<div class="col-xs-12 text-right">
 <?php endif; ?>
