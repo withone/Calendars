@@ -92,7 +92,6 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		foreach ($rooms as $room) {
 			$cnt++;
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $cnt);
-
 			$html .= "<tr><div class='row'>"; //1行の開始
 			//ルーム名
 			$html .= "<td class='calendar-weekly-col-room-name calendar-tbl-td-pos'>";
@@ -100,8 +99,10 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 			$html .= "<p class='calendar-plan-clickable text-left'><span class='calendar-plan-mark {$calendarPlanMark}'></span>";
 			$html .= '<span> ' . $room . '</span>';
 			$html .= "</div><div class='clearfix'></div></div></td>";
-			$vars['currentRoomId'] = $cnt;
-
+			$roomID = array_keys($rooms, $room);
+			$vars['currentRoomId'] = $roomID[0];//$cnt;
+			//print_r('CURRENTROOM');
+			//print_r($vars['currentRoomId']);
 			//予定（7日分繰り返し）
 			for ($nDay = 0; $nDay < 7; $nDay++) {
 				if ($nDay === 0) { //前日+1日

@@ -24,11 +24,14 @@
 
 
 <!-- today -->
+<!--
 	<div class="col-sm-12 text-center">
+-->
 		<!-- 予定の内容 -->
+<!--
 		<?php
 			// 予定の日付タイトル
-		//	echo $this->CalendarSchedule->makeDayTitleHtml($vars, 1);
+			echo $this->CalendarSchedule->makeDayTitleHtml($vars, 1);
 		?>
 
 		<div class='row calendar-schedule-row' data-pos='1'>
@@ -116,10 +119,10 @@
 		</div>
 
 	</div>
-
+-->
 
 <!-- tomorrow -->
-
+<!--
 	<div class="col-sm-12 text-center">
 		<?php
 			// 予定の日付タイトル
@@ -163,9 +166,10 @@
 		</div>
 
 	</div>
-
+-->
 
 <!-- 3dayslater -->
+<!--
 	<div class="col-sm-12 text-center">
 
 		<?php
@@ -184,8 +188,9 @@
 		</div>
 		
 	</div>
-
+-->
 <!-- 4dayslater -->
+<!--
 	<div class="col-sm-12 text-center">
 
 		<?php
@@ -201,8 +206,9 @@
 		</div>
 
 	</div>
-
+-->
 <!-- 5dayslater -->
+<!--
 	<div class="col-sm-12 text-center">
 
 		<?php
@@ -219,7 +225,7 @@
 		</div>
 	</div>
 
-</div><!--全体枠END-->
+</div>--><!--全体枠END-->
 
 <!-- 形式切り替えと追加 (下部) -->
 <?php echo $this->element('Calendars.Calendars/change_sort', array('currentSort' => 'member', 'menuPosition' => 'bottom')); ?>
