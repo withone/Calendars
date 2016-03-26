@@ -146,6 +146,10 @@ NetCommonsApp.controller('CalendarsDetailEdit',
 
       console.log('DEBUGGING...');
 
+      $scope.initialize = function(data) {
+        $scope.data = angular.fromJson(data);
+      };
+
       $scope.changeYearMonth = function(prototypeUrl) {
         var elms = $scope.targetYear.split('-');
         var url = prototypeUrl.replace('YYYY', elms[0]);

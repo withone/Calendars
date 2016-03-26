@@ -47,6 +47,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 		'Calendars.CalendarDeletePlan', //Delete用
 		'Calendars.CalendarExposeRoom', //ルーム表示・選択用
 		'Calendars.CalendarPlanOption', //予定CRUD画面の各種選択用
+		'Calendars.CalendarPlanTimeValidate',	//予定（時間関連）バリデーション専用
+		'Calendars.CalendarPlanRruleValidate',	//予定（Rrule関連）バリデーション専用
 		'Calendars.CalendarPlanValidate',	//予定バリデーション専用
 	);
 	// @codingStandardsIgnoreStart
@@ -82,8 +84,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 		//簡易編集の日付時刻エリア
 		'easy_start_date' => array('type' => 'string', 'default' => ''),	//YYYY-MM-DD
-		'easy_start_hour_minute' => array('type' => 'string', 'default' => ''), //hh:mm
-		'easy_end_hour_minute' => array('type' => 'string', 'default' => ''),	//hh:mm
+		'easy_hour_minute_from' => array('type' => 'string', 'default' => ''), //hh:mm
+		'easy_hour_minute_to' => array('type' => 'string', 'default' => ''),	//hh:mm
 		//詳細編集の日付時刻エリア
 		'detail_start_datetime' => array('type' => 'string', 'default' => ''),	//YYYY-MM-DD or YYYY-MM-DD hh:mm
 		'detail_end_datetime' => array('type' => 'string', 'default' => ''), //YYYY-MM-DD or YYYY-MM-DD hh:mm
@@ -139,7 +141,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		'rrule_term' => array('type' => 'string', 'default' => ''),
 
 		//繰返し回数
-		'rrule_until' => array('type' => 'string', 'default' => ''),
+		'rrule_count' => array('type' => 'string', 'default' => ''),
 
 		//繰返し終了日
 		'rrule_until' => array('type' => 'string', 'default' => ''),
@@ -149,6 +151,11 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 		//メール通知タイミング
 		'email_send_timing' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+
+		//承認ステータス
+		//statusは $data['data_N']のNではいってくるので、ここからは外す。
+		//'status' => array('type' => 'integer', 'null' => false, 'unsigned' => false),
+
 	);
 
 /**
@@ -174,6 +181,54 @@ class CalendarActionPlan extends CalendarsAppModel {
 	}
 
 /**
+ * _doMergeDisplayParamValidate
+ *
+ * 画面パラメータ関連バリデーションのマージ
+ *
+ * @param bool $isDetailEdit 詳細画面かどうか true=詳細(detail)画面, false=簡易(easy)画面
+ * @return void
+ */
+	protected function _doMergeDisplayParamValidate($isDetailEdit) {
+		$this->validate = Hash::merge($this->validate, array(
+			'return_style' => array(
+				'rule1' => array(
+					'rule' => array('inList', array(
+						CalendarsComponent::CALENDAR_STYLE_SMALL_MONTHLY,
+						CalendarsComponent::CALENDAR_STYLE_LARGE_MONTHLY,
+						CalendarsComponent::CALENDAR_STYLE_WEEKLY,
+						CalendarsComponent::CALENDAR_STYLE_DAILY,
+						CalendarsComponent::CALENDAR_STYLE_SCHEDULE,
+					)),
+					'required' => false,
+					'allowEmpty' => true,
+					'message' => __d('calendars', '戻り先のスタイル指定が不正です'),
+				),
+			),
+			'return_sort' => array(
+				'rule1' => array(
+					'rule' => array('inList', array(
+						CalendarsComponent::CALENDAR_SCHEDULE_SORT_TIME,
+						CalendarsComponent::CALENDAR_SCHEDULE_SORT_MEMBER,
+					)),
+					'required' => false,	//sort指定はスケジュールの時だけ
+					'allowEmpty' => true,
+					'message' => __d('calendars', '戻り先のソート指定が不正です'),
+				),
+			),
+			'return_tab' => array(
+				'rule1' => array(
+					'rule' => array('inList', array(
+						CalendarsComponent::CALENDAR_DAILY_TAB_LIST,
+						CalendarsComponent::CALENDAR_DAILY_TAB_TIMELINE,
+					)),
+					'required' => false,	//tab指定は単一日の時だけ
+					'allowEmpty' => true,
+					'message' => __d('calendars', '戻り先のタブ指定が不正です'),
+				),
+			),
+		));
+	}
+/**
  * _doMergeRruleValidate
  *
  * 繰返し関連バリデーションのマージ
@@ -195,6 +250,20 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'rule' => array('checkRrule'),
 					'required' => false,
 					'message' => __d('calendars', '繰返し規則指定が不正です'),
+				),
+			),
+			'rrule_count' => array(
+				'rule1' => array(
+					'rule' => array('naturalNumber', false),	//自然数（１以上の整数）
+					'required' => false,
+					'allowEmpty' => true,
+					'message' => __d('calendars', '繰返し回数が不正です'),
+				),
+				'rule2' => array(
+					'rule' => array('range', 0, 1000),	//0より大きく1000未満(＝1以上999以下)
+					'required' => false,
+					'allowEmpty' => true,
+					'message' => sprintf(__d('calendars', '繰返し回数は %d 以上 %d 以下の整数です'), 1, 999),
 				),
 			),
 			'rrule_until' => array(
@@ -247,24 +316,24 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'message' => __d('calendars', '予定（年月日）の指定が不正です'),
 				),
 			),
-			'easy_start_hour_minute' => array(
+			'easy_hour_minute_from' => array(
 				'rule1' => array(
-					'rule' => array('time'), //hh:mm
+					'rule' => array('datetime'), //YYYY-MM-DD hh:mm
 					'required' => false,
 					'allowEmpty' => true,
-					'message' => __d('calendars', '予定（開始時分）の指定が不正です'),
+					'message' => __d('calendars', '予定（開始時間）の指定が不正です'),
 				),
 				'rule2' => array(
 					'rule' => array('checkReverseStartEndTime', 'easy'), //hh:mm
 					'message' => __d('calendars', '開始時分と終了時分の並びが不正です'),
 				),
 			),
-			'easy_end_hour_minute' => array(
+			'easy_hour_minute_to' => array(
 				'rule1' => array(
-					'rule' => array('time'), //hh:mm
+					'rule' => array('datetime'), //hh:mm
 					'required' => false,
 					'allowEmpty' => true,
-					'message' => __d('calendars', '予定（終了時分）の指定が不正です'),
+					'message' => __d('calendars', '予定（終了時間）の指定が不正です'),
 				),
 			),
 			'detail_start_datetime' => array(
@@ -303,16 +372,16 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'message' => __d('calendars', '件名が不正です'),
 				),
 				'rule2' => array(
-					'rule' => array('maxLength', CalendarComponent::CALENDAR_VALIDATOR_TITLE_LEN),
-					'message' => sprintf(__d('calendars', '件名は最大 %d 文字です'), CalendarComponent::CALENDAR_VALIDATOR_TITLE_LEN),
+					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
+					'message' => sprintf(__d('calendars', '件名は最大 %d 文字です'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 				),
 			),
 			'title_icon' => array(
 				'rule2' => array(
-					'rule' => array('maxLength', CalendarComponent::CALENDAR_VALIDATOR_GENERAL_VCHAR_LEN),
+					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_GENERAL_VCHAR_LEN),
 					'required' => false,
 					'allowEmpty' => true,
-					'message' => sprintf(__d('calendars', 'タイトルアイコンは最大 %d 文字です'), CalendarComponent::CALENDAR_VALIDATOR_GENERAL_VCHAR_LEN),
+					'message' => sprintf(__d('calendars', 'タイトルアイコンは最大 %d 文字です'), CalendarsComponent::CALENDAR_VALIDATOR_GENERAL_VCHAR_LEN),
 				),
 			),
 		));
@@ -329,6 +398,7 @@ class CalendarActionPlan extends CalendarsAppModel {
  */
 	public function beforeValidate($options = array()) {
 		$isDetailEdit = (isset($this->request->data['is_detail']) && $this->request->data['is_detail']) ? true : false;
+		$this->_doMergeDisplayParamValidate($isDetailEdit);	//画面パラメータ関連validation
 		$this->_doMergeTitleValidate($isDetailEdit);	//タイトル関連validation
 		$this->_doMergeDatetimeValidate($isDetailEdit);	//日付時刻関連validation
 		$this->validate = Hash::merge($this->validate, array(	//コンテンツ関連validation
@@ -356,27 +426,43 @@ class CalendarActionPlan extends CalendarsAppModel {
 			),
 			'location' => array(
 				'rule1' => array(
-					'rule' => array('maxLength', CalendarComponent::CALENDAR_VALIDATOR_TITLE_LEN),
+					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 					'required' => false,
-					'message' => sprintf(__d('calendars', '場所は最大 %d 文字です'), CalendarComponent::CALENDAR_VALIDATOR_TITLE_LEN),
+					'message' => sprintf(__d('calendars', '場所は最大 %d 文字です'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 				),
 			),
 			'contact' => array(
 				'rule1' => array(
-					'rule' => array('maxLength', CalendarComponent::CALENDAR_VALIDATOR_TITLE_LEN),
+					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 					'required' => false,
-					'message' => sprintf(__d('calendars', '連絡先は最大 %d 文字です'), CalendarComponent::CALENDAR_VALIDATOR_TITLE_LEN),
+					'message' => sprintf(__d('calendars', '連絡先は最大 %d 文字です'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 				),
 			),
 			'description' => array(
 				'rule1' => array(
-					'rule' => array('maxLength', CalendarComponent::CALENDAR_VALIDATOR_TEXTAREA_LEN),
+					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_TEXTAREA_LEN),
 					'required' => false,
-					'message' => sprintf(__d('calendars', '連絡先は最大 %d 文字です'), CalendarComponent::CALENDAR_VALIDATOR_TEXTAREA_LEN),
+					'message' => sprintf(__d('calendars', '連絡先は最大 %d 文字です'), CalendarsComponent::CALENDAR_VALIDATOR_TEXTAREA_LEN),
 				),
 			),
+			//statusの値は $data['data_N']のNではいってくるので、省略
 		));
 		$this->_doMergeRruleValidate($isDetailEdit);	//繰返し関連validation
 		return parent::beforeValidate($options);
+	}
+
+/**
+ * saveCalendarPlan
+ *
+ * 予定データ登録
+ *
+ * @param array $data POSTされたデータ
+ * @return bool 成功時true, 失敗時false
+ */
+	public function saveCalendarPlan($data) {
+		CakeLog::debug("DBG: saveCalendarPlan(data) START");
+		//CakeLog::debug("DBG: data[" . print_r($data, true) . "]");
+		CakeLog::debug("DBG: saveCalendarPlan() END");
+		return true;
 	}
 }

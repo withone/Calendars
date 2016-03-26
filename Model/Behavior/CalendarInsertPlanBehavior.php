@@ -83,7 +83,7 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 		//関連コンテンツの登録
 		if ($eventData['CalendarEventContent']['linked_model'] !== '') {
 			if (!(isset($this->CalendarEventContent))) {
-				$model->loadModels(['CalendarEventContent' => 'Calendar.CalendarEventContent']);
+				$model->loadModels(['CalendarEventContent' => 'Calendars.CalendarEventContent']);
 			}
 			$this->CalendarEventContent->saveLinkedData($eventData);
 		}

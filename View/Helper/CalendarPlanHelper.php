@@ -204,10 +204,14 @@ class CalendarPlanHelper extends AppHelper {
  *
  * 簡易編集ボタンHTML生成
  *
+ * @param string $statusFieldName 承認ステータス項目名
  * @param array $vars カレンダー情報
  * @return string HTML
  */
-	public function makeEasyEditButtonHtml($vars) {
+	public function makeEasyEditButtonHtml($statusFieldName, $vars) {
+		//save,tempsaveのoptionsでpath指定するため、Workflowヘルパーのbuttons()を参考に実装した。
+
+		$status = Hash::get($this->_View->data, $statusFieldName);
 		$options = array(
 			'controller' => 'calendars',
 			'action' => 'index',
@@ -222,11 +226,56 @@ class CalendarPlanHelper extends AppHelper {
 			$options['sort'] = $vars['return_sort'];	//cancel時の戻り先としてsortオプションがあればそれもセットで指定する.
 		}
 		$cancelUrl = NetCommonsUrl::actionUrl($options);
-		$cancelOptions = array();
-		$saveTempOptions = array();
-		$saveOptions = array();
 
-		$html = $this->Button->cancelAndSaveAndSaveTemp($cancelUrl, $cancelOptions, $saveTempOptions, $saveOptions);
-		return $html;
+		//キャンセル、一時保存、決定ボタンのoption生成
+		list($cancelOptions, $saveTempOptions, $saveOptions) = $this->_generateBtnOptions($status);
+
+		return $this->Button->cancelAndSaveAndSaveTemp($cancelUrl, $cancelOptions, $saveTempOptions, $saveOptions);
+	}
+
+/**
+ * _generateBtnOptions
+ *
+ * ボタンのオプション生成
+ *
+ * @param int $status 承認ステータス
+ * @return array ３ボタンのオプション
+ */
+	protected function _generateBtnOptions($status) {
+		$cancelOptions = array(
+			'ng-click' => 'sending=true',
+			'ng-class' => '{disabled: sending}',
+		);
+
+		$saveTempOptions = array(
+			'label' => __d('net_commons', 'Save temporally'),
+			'class' => 'btn btn-info btn-workflow',
+			'name' => 'save_' . WorkflowComponent::STATUS_IN_DRAFT,
+			'ng-class' => '{disabled: sending}'
+		);
+		if (Current::permission('content_publishable') && ($status === WorkflowComponent::STATUS_APPROVED)) {
+			$saveTempOptions = array(
+				'name' => 'save_' . WorkflowComponent::STATUS_DISAPPROVED,
+				'label' => __d('net_commons', 'Disapproval'),
+				'class' => 'btn btn-warning btn-workflow',
+				'ng-class' => '{disabled: sending}'
+			);
+		}
+
+		$saveOptions = array(
+			'label' => __d('net_commons', 'OK'),
+			'class' => 'btn btn-primary btn-workflow',
+			'name' => 'save_' . WorkflowComponent::STATUS_APPROVED,
+			'ng-class' => '{disabled: sending}'
+		);
+		if (Current::permission('content_publishable')) {
+			$saveOptions = array(
+				'label' => __d('net_commons', 'OK'),
+				'class' => 'btn btn-primary btn-workflow',
+				'name' => 'save_' . WorkflowComponent::STATUS_PUBLISHED,
+				'ng-class' => '{disabled: sending}'
+			);
+		}
+		return array($cancelOptions, $saveTempOptions, $saveOptions);
 	}
 }

@@ -32,6 +32,33 @@ class CalendarsComponent extends Component {
 	const	CALENDAR_DISP_TYPE_MSCHEDULE = 6;		//スケジュール（会員順）
 
 /**
+ * 画面スタイル(文字列)
+ *
+ * @var string
+ */
+	const	CALENDAR_STYLE_SMALL_MONTHLY = 'smallmonthly';	//月表示（縮小）
+	const	CALENDAR_STYLE_LARGE_MONTHLY = 'largemonthly';	//月表示（拡大）
+	const	CALENDAR_STYLE_WEEKLY = 'weekly';			//週表示
+	const	CALENDAR_STYLE_DAILY = 'daily';			//日表示
+	const	CALENDAR_STYLE_SCHEDULE = 'schedule';		//スケジュール
+
+/**
+ * スケジュール画面ソート(文字列)
+ *
+ * @var string
+ */
+	const	CALENDAR_SCHEDULE_SORT_TIME = 'time';	//スケジュール（時間順）
+	const	CALENDAR_SCHEDULE_SORT_MEMBER = 'member';	//スケジュール（会員順）
+
+/**
+ * 単一日画面タブ(文字列)
+ *
+ * @var string
+ */
+	const	CALENDAR_DAILY_TAB_LIST = 'list';	//単一日画面タブ（一覧）
+	const	CALENDAR_DAILY_TAB_TIMELINE = 'timeline';	//単一日画面タブ（タイムライン）
+
+/**
  * 開始位置 (年用)
  *
  * @var int
@@ -96,7 +123,7 @@ class CalendarsComponent extends Component {
  *
  * @var array
  */
-	public $tzTbl = array(
+	public static $tzTbl = array(
 		'_TZ_GMTM12' => array("(GMT-12:00) Eniwetok, Kwajalein", -12.0, "Etc/GMT+12"),
 		'_TZ_GMTM11' => array("(GMT-11:00) Midway Island, Samoa", -11.0, "Pacific/Midway"),
 		'_TZ_GMTM10' => array("(GMT-10:00) Hawaii", -10.0, "US/Hawaii"),

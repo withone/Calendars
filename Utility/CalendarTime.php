@@ -18,36 +18,29 @@
 class CalendarTime {
 
 /**
- * geTheTimeInTheLastHour
+ * getTheTimeInTheLastHour
  *
  * "Y/m/d H:i:s"形式の指定日付時刻からの直近１時間の日付時刻(from,to)を取得
  *
  * @param string $ymdHis "Y/m/d H:i:s"形式の指定日付時刻
- * @return array 直近１時間の日付、from時刻, to時刻の配列を返す。
+ * @return array 直近１時間の日付、from日付時刻, to日付時刻の配列を返す。
  */
-	public static function geTheTimeInTheLastHour($ymdHis) {
+	public static function getTheTimeInTheLastHour($ymdHis) {
 		$baseHi = self::getHourColonMin($ymdHis);	// hh:mm
 		$hour = intval(substr($baseHi, 0, 2));
 		if ($hour <= 21) {
 			$ymd = substr($ymdHis, 0, 10);	//YYYY-MM-DD
-			$fromHi = sprintf("%02d:00", $hour + 1);	//hh:mm
-			$toHi = sprintf("%02d:00", $hour + 2);	//hh:mm
+			$fromYmdHi = sprintf("%s %02d:00", $ymd, $hour + 1);	//YYYY-MM-DD hh:mm
+			$toYmdHi = sprintf("%s %02d:00", $ymd, $hour + 2);	//YYYY-MM-DD hh:mm
 		} else {
-			//22,23時は特例1.datetimepickerには24:00という表記は存在しないので、当日の最後１時間弱(23:00-23:55)に抑え込む.
+			//22,23時は特例1. toはその日の24:00を指定したい、、が
+			//datetimepickerには24:00という表記は存在しないので、翌日の00:00をセットする。
 			$ymd = substr($ymdHis, 0, 10);	//YYYY-MM-DD
-			$fromHi = '23:00';
-			$toHi = '23:55';
-
-			//} else {	//23時は特例2. 翌日の00:00-01:00とする。->NC2では23時台は22時台と同じ動作なのでNC3もそれに準じ特例2は中止.
-			//	$year = intval(substr($ymdHis, 0, 4));
-			//	$month = intval(substr($ymdHis, 5, 2));
-			//	$day = intval(substr($ymdHis, 8, 2));
-			//	list($yearOfNextDay, $monthOfNextDay, $nextDay) = self::getNextDay($year, $month, $day);
-			//	$ymd = sprintf("%04d-%02d-%02d", $yearOfNextDay, $monthOfNextDay, $nextDay);
-			//	$fromHi = '00:00';
-			//	$toHi = '01:00';
+			$fromYmdHi = sprintf("%s 23:00", $ymd);
+			list($yearOfNextDay, $monthOfNextDay, $nextDay) = self::getNextDay(intval(substr($ymdHis, 0, 4)), intval(substr($ymdHis, 5, 2)), intval(substr($ymdHis, 8, 2 )));
+			$toYmdHi = sprintf("%04d-%02d-%02d 00:00", $yearOfNextDay, $monthOfNextDay, $nextDay);
 		}
-		return array($ymd, $fromHi, $toHi);
+		return array($ymd, $fromYmdHi, $toYmdHi);
 	}
 
 /**
