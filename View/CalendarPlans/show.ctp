@@ -7,7 +7,7 @@
 
 <article class="block-setting-body">
 
-<div class='col-xs-12 col-sm-10 col-sm-offset-1 h3'>カレンダー</div>
+<div class='col-xs-12 col-sm-10 col-sm-offset-1 h3'><?php echo __d('calendars', 'カレンダー'); ?></div>
 
 <!-- <div class="panel panel-default"> -->
 
@@ -15,7 +15,7 @@
 
 <!-- <div class="panel-body"> -->
 
-
+<?php CakeLog::debug("event[" . print_r($event, true) . "]"); ?>
 
 <div name="dispTitle">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
@@ -23,8 +23,8 @@
 	<label><?php echo __d('calendars', '件名'); ?></label>
 	<div class="clearfix"></div>
 
-	<i><img style='width:1.8em; height:1.3em;' src='/calendars/img/svg/icon-weather3.svg' /></i>
-	<span>湯島天神に参拝</span>
+	<?php echo $this->TitleIcon->titleIcon($event['CalendarEvent']['title_icon']); ?>
+	<span><?php echo h($event['CalendarEvent']['title']); ?></span>
 	<div class="clearfix"></div>
 </div><!-- col-sm-10おわり -->
 </div><!-- おわり-->
@@ -34,7 +34,9 @@
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
 	<label><?php echo __d('calendars', '公開対象'); ?></label>
 	<div class="clearfix"></div>
-	<span class='calendar-plan-mark calendar-plan-mark-private'></span><span><?php echo __d('calendars', '自分自身'); ?></span>
+	<?php
+		echo "<span class='calendar-plan-mark " . $this->CalendarCommon->getPlanMarkClassName($vars, $event['CalendarEvent']['room_id']) . "'></span><span>" . h($roomLang['RoomsLanguage']['name']) . '</span>';
+	?>
 <div class="clearfix"></div>
 </div><!-- col-sm-10おわり -->
 </div><!-- おわり-->
@@ -43,10 +45,17 @@
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
 	<label><?php echo __d('calendars', '予定を共有する人'); ?></label>
 <div class="clearfix"></div>
-	<span class='calendar-share-person'>武蔵坊弁慶</span>
-	<span class='calendar-share-person'>山田太郎</span>
-	<span class='calendar-share-person'>鈴木イチロー</span>
-	<span class='calendar-share-person'>浅田まお</span>
+
+<?php
+	$shareUserNames = Hash::extract($shareUserInfos, "{n}.UsersLanguage.0.name");
+	foreach ($shareUserNames as $idx => $shareUserName) {
+		if ($idx) {
+			echo ',&nbsp;&nbsp;';
+		}
+		echo "<span class='calendar-share-person'>" . h($shareUserName) . '</span>';
+	}
+?>
+
 </div><!-- col-sm-10おわり -->
 </div><!-- おわり-->
 
@@ -55,7 +64,7 @@
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
 	<label><?php echo __d('calendars', '場所'); ?></label>
 	<div class="clearfix"></div>
-	<span>東京都文京区</span>
+	<span><?php echo h($event['CalendarEvent']['location']); ?></span>
 </div><!-- col-sm-10おわり -->
 </div><!-- おわり-->
 
@@ -64,7 +73,7 @@
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
 	<label><?php echo __d('calendars', '連絡先'); ?></label>
 	<div class="clearfix"></div>
-	<span>橋本携帯電話</span>
+	<span><?php echo h($event['CalendarEvent']['contact']); ?></span>
 </div><!-- col-sm-10おわり -->
 </div><!-- おわり-->
 
@@ -74,6 +83,9 @@
 	<label><?php echo __d('calendars', '詳細'); ?></label>
 	<div class="clearfix"></div>
 <!-- ここにwysiwyigの内容がきます -->
+	<span><?php echo h($event['CalendarEvent']['description']); ?></span><!-- FIXME: -->
+<!--
+
 	<div>
 	ここに<span class="h2">詳細</span>がはいります。ここに<span style="color:red">詳細</span>がはいります。
 	<br/>
@@ -81,7 +93,7 @@
 	<br/>
 	ここに<span class="h4">詳細</span>がはいります。ここに<span style="color:green">詳細</span>がはいります。
 	</div>
-
+-->
 <!-- ここにwysiwyigの内容がきます -->
 </div><!-- col-sm-10おわり -->
 </div><!-- おわり-->
@@ -90,8 +102,12 @@
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
 	<label><?php echo __d('calendars', '繰返し'); ?></label>
 	<div class="clearfix"></div>
+
+	<span><?php echo h($event['CalendarRrule']['rrule']); ?></span><!-- FIXME: -->
+<!--
 	<div><span style="margin-right: 1em">毎週</span><span>月曜日,火曜日</span></div>
 	<div>2016年2月29日まで</div>
+-->
 </div><!-- col-sm-10おわり -->
 </div><!-- おわり-->
 
@@ -99,7 +115,7 @@
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
 	<label><?php echo __d('calendars', '記入者'); ?></label>
 	<div class="clearfix"></div>
-	<span>橋本俊秀</span>
+	<span><?php echo h(Hash::get($createdUserInfo, 'UsersLanguage.0.name')); ?></span>
 </div><!-- col-sm-10おわり -->
 </div><!-- おわり-->
 
@@ -107,7 +123,7 @@
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
 	<label><?php echo __d('calendars', '更新日'); ?></label>
 	<div class="clearfix"></div>
-	<span>2016-02-07 15:25:30</span>
+	<span><?php echo h((new NetCommonsTime())->toUserDatetime($event['CalendarEvent']['modified'])); ?></span>
 </div><!-- col-sm-10おわり -->
 </div><!-- おわり-->
 
@@ -126,6 +142,7 @@
 </button>
 
 <!-- <hr style="margin-top:0.2em; margin-bottom:0.2em" /> -->
+<!-- 削除は、詳細登録へ移動
 <hr />
 
 <div class="col-xs-12 text-right">
@@ -134,8 +151,8 @@
 ?>
     <span class="glyphicon glyphicon-trash"> </span>
 </button>
-<!-- </div> --><!--panel-footerの閉じるタグ-->
 </div>
+-->
 
 <!-- </form> --><!--formを閉じる-->
 

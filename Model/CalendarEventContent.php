@@ -148,9 +148,7 @@ class CalendarEventContent extends CalendarsAppModel {
 			$this->commit();
 		} catch (Exception $ex) {
 			//トランザクションRollback
-			$this->rollback();
-			//エラー出力
-			CakeLog::error($ex);
+			$this->rollback($ex);
 			throw $ex;	//再throw
 		}
 		return $data;

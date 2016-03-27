@@ -42,11 +42,12 @@
 		}
 	?>
 
-	<?php $this->NetCommonsForm->unlockField('CalendarActionPlan.full_start_datetime'); ?>
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.full_start_datetime', array('value' => '' )); ?>
-
-	<?php $this->NetCommonsForm->unlockField('CalendarActionPlan.full_end_datetime'); ?>
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.full_end_datetime', array('value' => '' )); ?>
+	<?php 
+		//$this->NetCommonsForm->unlockField('CalendarActionPlan.full_start_datetime');
+		//echo $this->NetCommonsForm->hidden('CalendarActionPlan.full_start_datetime', array('value' => '' ));
+		//$this->NetCommonsForm->unlockField('CalendarActionPlan.full_end_datetime');
+		//echo $this->NetCommonsForm->hidden('CalendarActionPlan.full_end_datetime', array('value' => '' ));
+	?>
 
 	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.detail_start_datetime', array('value' => '' )); ?>
 	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.detail_end_datetime', array('value' => '' )); ?>
@@ -253,6 +254,9 @@
 			)); ?>
 		</div>
 	</div>
+	<?php echo $this->NetCommonsForm->error('CalendarActionPlan.easy_hour_minute_from'); ?>
+	<?php echo $this->NetCommonsForm->error('CalendarActionPlan.easy_hour_minute_to'); ?>
+
 </div><!-- class="col-sm-7 col-sm-offset-1" おわり -->
 <!-- 公開期限指定I/Fベース ここまで -->
 

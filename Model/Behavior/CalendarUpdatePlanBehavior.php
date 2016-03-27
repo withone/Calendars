@@ -213,7 +213,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			foreach ($results as $data) {
 				$this->setRruleData2Data($rruleData, $data);
 				if (!$model->CalendarRrule->save($data)) {	//validateもここで走る
-					$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarRrule->validationErrors);
+					$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarRrule->validationErrors);
 					//throw new InternalErrorException(__d('Calendars', 'Task plugin save error.'));
 					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 				}
@@ -242,14 +242,12 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		$eventId = $eventData['CalendarEvent']['id'];	//update対象のststartendIdを退避
 
 		if (!$this->CalendarEvent->validates()) {		//eventDataをチェック
-			$this->validationErrors = Hash::merge($this->validationErrors, $this->CalendarEvent->validationErrors);
-			//throw new InternalErrorException(__d('Calendars', 'Event data ofr update check error.'));
+			$model->validationErrors = Hash::merge($model->validationErrors, $this->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
 		if (!$this->CalendarEvent->save($eventData, false)) {	//保存のみ	//aaaaa
-			$this->validationErrors = Hash::merge($this->validationErrors, $this->CalendarEvent->validationErrors);
-			//throw new InternalErrorException(__d('Calendars', 'Event data for udapte save error.'));
+			$model->validationErrors = Hash::merge($model->validationErrors, $this->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
@@ -368,15 +366,13 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  */
 	public function setEventDataAndRruleData(Model &$model, $results, $eventData, $rruleData) {
 		if (!is_array($results) || !isset($results['CalendarEvent'])) {
-			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarEvent->validationErrors);
-				//throw new InternalErrorException(__d('Calendars', 'find result at event error.'));
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 		$eventData['CalendarEvent'] = $resutls['CalendarEvent'];
 		if (!is_array($results) || !isset($results['CalendarRrule'])) {
-			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarEvent->validationErrors);
-				//throw new InternalErrorException(__d('Calendars', 'find result at rrule error.'));
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 		$rruleData['CalendarRrule'] = $resutls['CalendarRrule'];
 

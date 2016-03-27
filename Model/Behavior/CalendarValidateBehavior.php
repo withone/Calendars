@@ -89,12 +89,13 @@ class CalendarValidateBehavior extends ModelBehavior {
 			return false;
 		}
 		//最大・最小に収まるかどうか。
+		App::uses('HolidaysAppController', 'Holidays.Controller');
 		if ($edge === 'start') {
-			if ($Ymd < CalendarsComponent::CALENDAR_MIN_DATE) {
+			if ($Ymd < substr(CalendarTime::stripDashColonAndSp(HolidaysAppController::HOLIDAYS_DATE_MIN), 0, 8)) {
 				return false;
 			}
 		} else {
-			if ($Ymd > CalendarsComponent::CALENDAR_MAX_DATE) {
+			if ($Ymd > substr(CalendarTime::stripDashColonAndSp(HolidaysAppController::HOLIDAYS_DATE_MAX), 0, 8)) {
 				return false;
 			}
 		}
@@ -119,21 +120,24 @@ class CalendarValidateBehavior extends ModelBehavior {
 		return true;
 	}
 
-	// /**
-	//  * Checks  timezone offset
-	//  *
-	//  * @param object &$model use model
-	//  * @param array $timezone_offset timezone_offset string
-	//  * @return bool
-	//  */
-	//	public function checkTimezoneOffset(&$model, $check) {
-	//		if ($check === ''){
-	//			return true; //空文字は0とみなす
-	//		}
-	//		$pattern = '/^[+-]?([0-9]|0[0-9]|1[0-2])(.[0-9])?$/';
-	//		if (!preg_match($pattern, $check, $matches)) {
-	//			return false;
-	//		}
-	//		return true;
-	//	}
+/**
+ * Checks  timezone offset
+ *
+ * @param object &$model use model
+ * @param array $check 入力配列. timezone_offset（-12.0 - +12.0）の数値
+ * @return bool
+ */
+	public function checkTimezoneOffset(&$model, $check) {
+		$value = array_values($check);
+		$value = $value[0];
+
+		if (!is_numeric($value)) {
+			return false;
+		}
+		$fval = floatval($value);
+		if ($fval < -12.0 || 12.0 < $fval) {
+			return false;
+		}
+		return true;
+	}
 }

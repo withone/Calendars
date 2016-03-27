@@ -9,7 +9,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-App:uses('CalendarTime', 'Calendars.Utility');
+//App:uses('CalendarTime', 'Calendars.Utility');
 
 /**
  * CalendarSupport Utiltiy
@@ -33,7 +33,7 @@ class CalendarSupport {
 		if (preg_match("/(?:.+)(?:\/\/)([^\/]+)/", FULL_BASE_URL, $matches) === 1) {
 			$domain = $matches[1];
 		}
-		$iCalendarUid = $startDate . 'T' . $startTime . 'Z' . '-' . uniquid() . '@' . $domain;
+		$iCalendarUid = $startDate . 'T' . $startTime . 'Z' . '-' . uniqid() . '@' . $domain;
 		return $iCalendarUid;
 	}
 

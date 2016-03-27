@@ -83,12 +83,13 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * @return array array($startDate, $startTime, $endDate, $endTime, $diffNum)を返す
  */
 	public function setStartEndDateAndTime(Model &$model, $eventData, $first) {
+		//サーバー系からユーザ系時刻のYmdHisに直す。
 		$sTime = CalendarTime::timezoneDate($eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'], 0, 'YmdHis');
 		$eTime = CalendarTime::timezoneDate($eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'], 0, 'YmdHis');
 
 		//開始日付(00:00:00)と終了日付(00:00:00)の累積秒および、その「差分日数」を計算する。
-		$startTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), substr($sTime, 6, 2), substr($sTime, 0, 4));
-		$endTimestamp = mktime(0, 0, 0, substr($eTime, 4, 2), substr($eTime, 6, 2), substr($eTime, 0, 4));
+		$startTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), substr($sTime, 6, 2), substr($sTime, 0, 4));	//FIXME:
+		$endTimestamp = mktime(0, 0, 0, substr($eTime, 4, 2), substr($eTime, 6, 2), substr($eTime, 0, 4));	//FIXME:
 		$diffNum = ($endTimestamp - $startTimestamp) / 86400;
 
 		if ($first) {
@@ -198,13 +199,13 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 
 		//開始日付時刻の処理
 		$sTime = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'];
-		$startTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), substr($sTime, 6, 2), substr($sTime, 0, 4));
+		$startTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), substr($sTime, 6, 2), substr($sTime, 0, 4));	//FIXME:
 
 		//インターバル日数の計算
 		$currentDay = intval(substr($sTime, 6, 2));
 
 		//１月の該当日(日付時刻)の計算
-		$firstTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), 1, substr($sTime, 0, 4));	//その年初月(=１月)の最初の該当日
+		$firstTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), 1, substr($sTime, 0, 4));	//その年初月(=１月)の最初の該当日	//FIXME.
 
 		if ($bymonthday > date('t', $firstTimestamp)) {
 			//毎月ｘ日のｘ日が、開始日の日より後なら、その差分の日数を、インターバル日数とする。
@@ -223,7 +224,7 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 
 		//終了日付時刻の処理
 		$eTime = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'];
-		$endTimestamp = mktime(0, 0, 0, substr($eTime, 4, 2), substr($eTime, 6, 2), substr($eTime, 0, 4));
+		$endTimestamp = mktime(0, 0, 0, substr($eTime, 4, 2), substr($eTime, 6, 2), substr($eTime, 0, 4));	//FIXME:
 
 		//開始日と終了日の差分日数の計算
 		$diffNum = ($endTimestamp - $startTimestamp) / 86400;
@@ -284,7 +285,7 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		$sTime = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'];
 		$eTime = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'];
 
-		$timestamp = mktime(0, 0, 0, substr($sTime, 4, 2), 1, substr($sTime, 0, 4));	//開始日の同年同月1日のtimestamp
+		$timestamp = mktime(0, 0, 0, substr($sTime, 4, 2), 1, substr($sTime, 0, 4));	//開始日の同年同月1日のtimestamp //FIXME:
 
 		$byday = CalendarSupport::getByday($timestamp, $week, $wdayNum);
 

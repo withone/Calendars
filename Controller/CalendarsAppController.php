@@ -176,5 +176,11 @@ class CalendarsAppController extends AppController {
 		);
 		$vars['plans'] = $this->CalendarEvent->getPlans($planParams);
 		//CakeLog::debug("DBGDBG: vars_plans[" . print_r($vars['plans'], true) . "]");
+
+		$vars['parentIdType'] = array(	//これも共通なので含めておく。
+			'public' => Room::PUBLIC_PARENT_ID,	//公開
+			'private' => Room::PRIVATE_PARENT_ID,	//プライベート
+			'member' => Room::ROOM_PARENT_ID,	//全会員
+		);
 	}
 }

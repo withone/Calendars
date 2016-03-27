@@ -38,6 +38,8 @@ class CalendarPlansController extends CalendarsAppController {
 		'Holidays.Holiday',
 		'Rooms.Room',
 		'Calendars.CalendarActionPlan',	//予定CRUDaction専用
+		'Rooms.RoomsLanguage',
+		'Users.User',
 	);
 
 /**
@@ -130,7 +132,7 @@ class CalendarPlansController extends CalendarsAppController {
 			$this->redirect($url);
 			//return; ここには到達しない.
 		} else {
-			//GETなので edit()を実行し、eady_edit.ctpを補油時
+			//GETなので edit()を実行
 			CakeLog::debug("DBG4: add() [Not post] was called\n");
 			$this->setAction('edit');
 			return;
@@ -145,10 +147,44 @@ class CalendarPlansController extends CalendarsAppController {
 	public function show() {
 		$vars = array();
 		$ctpName = $this->getCtpAndVarsForShow($vars);
+		//event関連取得
+		$options = array(
+			'conditions' => array(
+				$this->CalendarEvent->alias . '.id' => $this->request->params['named']['event'],
+			),
+			'recursive' => 1, //belongsTo, hasOne, hasManyまで取得
+		);
+		$event = $this->CalendarEvent->find('first', $options);
+		if (!$event) {
+			CakeLog::error(__d('calendars', '対象eventがないのでブランクページを表示します'));
+			$this->setAction('emptyRender');
+			return;
+		}
+		$roomLang = $this->RoomsLanguage->find('first', array(
+			'conditions' => array(
+				$this->RoomsLanguage->alias . '.room_id' => $event[$this->CalendarEvent->alias]['room_id'],
+				$this->RoomsLanguage->alias . '.language_id' => $event[$this->CalendarRrule->alias]['language_id'],
+			),
+			'recursive' => -1,
+		));
+		$shareUsers = $this->CalendarEventShareUser->find('all', array(
+			'conditions' => array(
+				$this->CalendarEventShareUser->alias . '.calendar_event_id' => $event[$this->CalendarEvent->alias]['id'],
+			),
+			'recursive' => -1,
+			'order' => array($this->CalendarEventShareUser->alias . '.share_user'),
+		));
+		$shareUserInfos = array();
+		foreach ($shareUsers as $shareUser) {
+			$shareUserInfos[] = $this->User->getUser($shareUser[$this->CalendarEventShareUser->alias]['share_user'], $event[$this->CalendarEvent->alias]['language_id']);
+		}
+
+		$createdUserInfo = $this->User->getUser($event[$this->CalendarEvent->alias]['created_user'], $event[$this->CalendarEvent->alias]['language_id']);
+
 		$frameId = Current::read('Frame.id');
 		$languageId = Current::read('Language.id');
-		$isRepeat = true;	//暫定
-		$this->set(compact('frameId', 'languageId', 'isRepeat', 'vars'));
+		$isRepeat = $event['CalendarRrule']['rrule'] !== '' ? true : false;
+		$this->set(compact('event', 'roomLang', 'shareUserInfos', 'createdUserInfo', 'frameId', 'languageId', 'isRepeat', 'vars'));
 		$this->render($ctpName);
 	}
 
@@ -186,7 +222,6 @@ class CalendarPlansController extends CalendarsAppController {
 			'conditions' => array('frame_key' => Current::read('Frame.key')),
 		));
 		$frameSettingId = $frameSetting['CalendarFrameSetting']['id'];
-		//$this->request->data['CalendarFrameSetting'] = $frameSetting['CalendarFrameSetting'];
 
 		$this->request->data['CalendarFrameSettingSelectRoom'] = $this->CalendarFrameSetting->getSelectRooms($frameSettingId);
 
@@ -213,6 +248,11 @@ class CalendarPlansController extends CalendarsAppController {
  */
 	public function getCtpAndVarsForShow(&$vars) {
 		$this->setCalendarCommonVars($vars);
+
+		if (isset($this->request->params['named']['event'])) {
+			$vars['eventId'] = $this->request->params['named']['event'];
+		}
+
 		$ctpName = 'show';
 		return $ctpName;
 	}

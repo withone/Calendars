@@ -49,7 +49,7 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 
 		//開始日付時刻の処理
 		$sTime = CalendarTime::timezoneDate($eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'], 0, 'YmdHis');
-		$startTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), substr($sTime, 6, 2), substr($sTime, 0, 4));
+		$startTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), substr($sTime, 6, 2), substr($sTime, 0, 4));	//FIXME: UTCなので00:00:00(0,0,0)でいいか要確認。
 
 		//インターバル月数の計算
 		$currentDay = intval(substr($sTime, 6, 2));

@@ -60,13 +60,27 @@ class CalendarRrule extends CalendarsAppModel {
  * @var array
  */
 	public $belongsTo = array(
-		'Block' => array(
-			'className' => 'Blocks.Block',
-			'foreignKey' => 'block_id',
+		'Calendar' => array(
+			'className' => 'Calendars.Calendar',
+			'foreignKey' => 'calendar_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
-		)
+		),
+		'Room' => array(
+			'className' => 'Rooms.Room',
+			'foreignKey' => 'room_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		'Language' => array(
+			'className' => 'Languages.Language',
+			'foreignKey' => 'language_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
 	);
 
 /**
@@ -76,7 +90,7 @@ class CalendarRrule extends CalendarsAppModel {
  */
 	public $hasMany = array(
 		'CalendarEvent' => array(
-			'className' => 'CalendarEvent',
+			'className' => 'Calendars.CalendarEvent',
 			'foreignKey' => 'calendar_rrule_id',
 			'dependent' => true,
 			'conditions' => '',

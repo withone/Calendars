@@ -165,17 +165,18 @@ class CalendarEvent extends CalendarsAppModel {
 			),
 			'end_date' => array(
 				'rule1' => array(
-					'rule' => array('checkHis'),
+					'rule' => array('checkYmd'),
 					'message' => __d('calendars', 'Invalid value.'),
 				),
 				'rule2' => array(
 					'rule' => array('checkMaxMinDate', 'end'),
 					'message' => __d('calendars', 'Out of range value.'),
 				),
-				'complex1' => array(
-					'rule' => array('checkReverseStartEndDate'),
-					'message' => __d('calendars', 'Reverse about start and end date.'),
-				),
+				//CalendarActionPlanのvalidateでチェック済なので省略
+				//'complex1' => array(
+				//	'rule' => array('checkReverseStartEndDate'),
+				//	'message' => __d('calendars', 'Reverse about start and end date.'),
+				//),
 			),
 			'end_time' => array(
 				'rule1' => array(

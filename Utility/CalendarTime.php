@@ -18,6 +18,62 @@
 class CalendarTime {
 
 /**
+ * convUserDate2SvrFromToDateTime
+ *
+ * ユーザー系の日とタイムゾーンを、サーバ系の終日(From,To)日付時刻に変換
+ *
+ * @param string $userYmd "YYYY-MM-DD"形式(ユーザ系)
+ * @param string $userTimezoneOffset タイムゾーン文字列（ex.Asia/Tokyo）
+ * @return array その日の00:00から翌日の00:00をサーバ系時刻になおして返す。
+ */
+	public function convUserDate2SvrFromToDateTime($userYmd, $userTimezoneOffset) {
+		$nctm = new NetCommonsTime();
+		$startDateZero = $userYmd . ' 00:00:00';
+		$serverStartDateZero = $nctm->toServerDatetime($startDateZero, $userTimezoneOffset);
+		list($yearOfNextDay, $monthOfNextDay, $nextDay) = CalendarTime::getNextDay(intval(substr($startDateZero, 0, 4)), intval(substr($startDateZero, 5, 2)), intval(substr($startDateZero, 8, 2 )));
+		$serverNextDateZero = $nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00", $yearOfNextDay, $monthOfNextDay, $nextDay), $userTimezoneOffset);
+
+		return array($serverStartDateZero, $serverNextDateZero);
+	}
+
+/**
+ * addDashColonAndSp
+ *
+ * "YmdHis", "Ymd", "His"形式の指定日付時刻に記号と空白(-,:,SPACE)を付与して、"YYYY-MM-DD hh:mm:ss"などに変換して返す。
+ *
+ * @param string $data 整形前の日付時刻
+ * @return string 整形後の日付時刻
+ */
+	public static function addDashColonAndSp($data) {
+		//YYYYMMDDhhmmss
+		if (preg_match("/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/", $data, $matches) === 1) {
+			return sprintf("%04d-%02d-%02d %02d:%02d:%02d", $matches[1], $matches[2], $matches[3], $matches[4], $matches[5], $matches[6]);
+		}
+		//YYYYMMDD
+		if (preg_match("/^(\d{4})(\d{2})(\d{2})$/", $data, $matches) === 1) {
+			return sprintf("%04d-%02d-%02d", $matches[1], $matches[2], $matches[3]);
+		}
+		//hhmmss
+		if (preg_match("/^(\d{2})(\d{2})(\d{2})$/", $data, $matches) === 1) {
+			return sprintf("%02d:%02d:%02d", $matches[1], $matches[2], $matches[3]);
+		}
+		//変換の必要がなかったケース.そのまま返す.
+		return $data;
+	}
+
+/**
+ * stripDashColonAndSp
+ *
+ * "Y-m-d H:i:s","Y-m-d","H:i:s"形式の指定日付時刻から記号と空白(-,:,SPACE)を取り除く
+ *
+ * @param string $data 整形前の日付時刻
+ * @return string 整形後の日付時刻
+ */
+	public static function stripDashColonAndSp($data) {
+		return preg_replace('/( |:|-)/', '', $data);
+	}
+
+/**
  * getTheTimeInTheLastHour
  *
  * "Y/m/d H:i:s"形式の指定日付時刻からの直近１時間の日付時刻(from,to)を取得

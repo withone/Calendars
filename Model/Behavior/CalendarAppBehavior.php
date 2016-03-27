@@ -86,8 +86,7 @@ class CalendarAppBehavior extends ModelBehavior {
 			//
 			$rruleData = $model->CalendarRrule->find('first', $params);
 			if (!is_array($rruleData) || !isset($rruleData['CalendarRrule'])) {
-				$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarRrule->validationErrors);
-				//throw new InternalErrorException(__d('Calendars', 'insert find error.'));
+				$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarRrule->validationErrors);
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 			$this->rruleData = $rruleData;	//CalendarRruleのデータを記録し、２度目以降に備える。
@@ -101,14 +100,12 @@ class CalendarAppBehavior extends ModelBehavior {
 		$model->CalendarEvent->set($rEventData);
 
 		if (!$model->CalendarEvent->validates()) {	//rEventDataをチェック
-			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarEvent->validationErrors);
-			//throw new InternalErrorException(__d('Calendars', 'rEvent data check error.'));
+			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
 		if (!$model->CalendarEvent->save($rEventData, false)) { //保存のみ
-			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarEvent->validationErrors);
-			//throw new InternalErrorException(__d('Calendars', 'rEvent data save error.'));
+			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
@@ -201,15 +198,14 @@ class CalendarAppBehavior extends ModelBehavior {
  */
 	public function setRruleData($planParams, &$rruleData, $mode = self::CALENDAR_INSERT_MODE) {
 		$params = array(
-			'location' => '',
-			'contact' => '',
-			'description' => '',
+			'calendar_id' => 1,	//暫定
+			'name' => '',
 			'rrule' => '',
-			'room_id' => 1, //Current::read('Room.id'),		//ATODE
-			'icalendar_uid' => CalendarSupprt::generateIcalUid($planParams['start_date'], $planParams['start_time']),
+			'icalendar_uid' => CalendarSupport::generateIcalUid($planParams['start_date'], $planParams['start_time']),
 			'icalendar_comp_name' => self::CALENDAR_PLUGIN_NAME,
+			'room_id' => Current::read('Room.id'),
+			'language_id' => Current::read('Language.id'),
 			'status' => WorkflowComponent::STATUS_IN_DRAFT,
-			//'language_id' => 1, //Current::read('Language.id'),	//ATODE
 		);
 
 		foreach ($planParams as $key => $val) {
@@ -219,24 +215,22 @@ class CalendarAppBehavior extends ModelBehavior {
 		}
 
 		//レコード $rrule_data  の初期化と'CalendarRrule'キーセットはおわっているので省略
-		//$rruleData = array();
-		//$rruleData['CalendarRrule'] = array();
-
 		//rruleDataに詰める。
-		//$rruleData['CalendarRrule']['id'] = null;		//create()の後なので、不要。
-		$rruleData['CalendarRrule']['block_id'] = 1; //ATODE  Current::read('Block.id');	//Block.idを取得
+
+		//idはcreate()の後なので、不要。
+		$rruleData['CalendarRrule']['calendar_id'] = $params['calendar_id'];
 		//keyは、Workflowが自動セット
-		$rruleData['CalendarRrule']['name'] = '';		//名前はデフォルトなし
-		////$rruleData['CalendarRrule']['location'] = $params['location'];
-		////$rruleData['CalendarRrule']['contact'] = $params['contact'];
-		////$rruleData['CalendarRrule']['description'] = $params['description'];
+		$rruleData['CalendarRrule']['name'] = $params['name'];
 		$rruleData['CalendarRrule']['rrule'] = $params['rrule'];
 		if ($mode === self::CALENDAR_INSERT_MODE) {
+			$rruleData['CalendarRrule']['icalendar_uid'] = $params['icalendar_uid'];
 			$rruleData['CalendarRrule']['icalendar_comp_name'] = $params['icalendar_comp_name'];
 		}
 		$rruleData['CalendarRrule']['room_id'] = $params['room_id'];
+		$rruleData['CalendarRrule']['language_id'] = $params['language_id'];
 		$rruleData['CalendarRrule']['status'] = $params['status'];
-		////$rruleData['CalendarRrule']['language_id'] = $params['language_id'];
+		//is_active,is_latestは、Workflowが自動セット
+		//create_user, created, modified_user, modifiedは、Trackableが自動セット
 	}
 
 /**
@@ -257,9 +251,6 @@ class CalendarAppBehavior extends ModelBehavior {
 			'description',
 			'is_allday',
 			'timezone_offset',
-			//'link_plugin',
-			//'link_key',
-			//'link_plugin_controller_action_name',
 			'linked_model',
 			'linked_content_key',
 		);
@@ -284,7 +275,7 @@ class CalendarAppBehavior extends ModelBehavior {
 			'calendar_rrule_id' => $rruleData['CalendarRrule']['id'],	//外部キーをセット
 			'room_id' => $rruleData['CalendarRrule']['room_id'],
 			'language_id' => $rruleData['CalendarRrule']['language_id'],
-			'target_user' => CakeSession::read('Calendars.target_user'),	//カレンダーの対象ユーザをSessionから取り出しセット
+			'target_user' => Current::read('User.id'),
 			'title' => '',
 			'title_icon' => '',
 			'location' => '',
@@ -297,15 +288,12 @@ class CalendarAppBehavior extends ModelBehavior {
 			'end_date' => $planParams['end_date'],
 			'end_time' => $planParams['end_time'],
 			'dtend' => $planParams['end_date'] . $planParams['end_time'],
-			'timezone_offset' => CakeSession::read('Calendars.timezone_offset'),
-			//'link_plugin' => '',
-			//'link_key' => '',
-			//'link_plugin_controller_action_name' => ''
+			'timezone_offset' => $planParams['timezone_offset'],
 			'linked_model' => '',
 			'linked_content_key' => '',
 		);
 
-		setPlanParams2Params($planParams, $params);
+		$this->setPlanParams2Params($planParams, $params);
 
 		//レコード $event_data  の初期化と'CalendarEvent'キーセットはおわっているので省略
 		//$eventData = array();
@@ -328,9 +316,6 @@ class CalendarAppBehavior extends ModelBehavior {
 		$eventData['CalendarEvent']['dtend'] = $params['dtend'];
 		$eventData['CalendarEvent']['timezone_offset'] = $params['timezone_offset'];
 
-		//$eventData['CalendarEvent']['link_plugin'] = $params['link_plugin'];
-		//$eventData['CalendarEvent']['link_key'] = $params['link_key'];
-		//$eventData['CalendarEvent']['link_plugin_controller_action_name'] = $params['link_plugin_controller_action_name'];
 		//保存するモデルをここで替える
 		$eventData['CalendarEventContent']['linked_model'] = $params['linked_model'];
 		$eventData['CalendarEventContent']['linked_content_key'] = $params['linked_content_key'];

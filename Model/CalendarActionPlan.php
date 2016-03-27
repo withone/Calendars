@@ -28,7 +28,7 @@ class CalendarActionPlan extends CalendarsAppModel {
  *
  * @var array
  */
-	public $useTable = false;	//このモデルはvalidateが主目的なのでテーブルを使用しない。
+	public $useTable = false;	//このモデルはvalidateとinsert/update/deletePlan()呼び出しが主目的なのでテーブルを使用しない。
 
 /**
  * use behaviors
@@ -78,9 +78,9 @@ class CalendarActionPlan extends CalendarsAppModel {
 		//時間の指定(1/0)
 		'enable_time' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
 
-		//完全なる開始日付時刻と終了日付時刻(hidden)
-		'full_start_datetime' => array('type' => 'string', 'default' => ''),	//hidden
-		'full_end_datetime' => array('type' => 'string', 'default' => ''),	//hidden
+		////完全なる開始日付時刻と終了日付時刻(hidden)
+		////'full_start_datetime' => array('type' => 'string', 'default' => ''),	//hidden
+		////'full_end_datetime' => array('type' => 'string', 'default' => ''),	//hidden
 
 		//簡易編集の日付時刻エリア
 		'easy_start_date' => array('type' => 'string', 'default' => ''),	//YYYY-MM-DD
@@ -324,13 +324,13 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'message' => __d('calendars', '予定（開始時間）の指定が不正です'),
 				),
 				'rule2' => array(
-					'rule' => array('checkReverseStartEndTime', 'easy'), //hh:mm
+					'rule' => array('checkReverseStartEndTime', 'easy'), //YYYY-MM-DD hh:mm
 					'message' => __d('calendars', '開始時分と終了時分の並びが不正です'),
 				),
 			),
 			'easy_hour_minute_to' => array(
 				'rule1' => array(
-					'rule' => array('datetime'), //hh:mm
+					'rule' => array('datetime'), //YYYY-MM-DD hh:mm
 					'required' => false,
 					'allowEmpty' => true,
 					'message' => __d('calendars', '予定（終了時間）の指定が不正です'),
@@ -460,9 +460,206 @@ class CalendarActionPlan extends CalendarsAppModel {
  * @return bool 成功時true, 失敗時false
  */
 	public function saveCalendarPlan($data) {
-		CakeLog::debug("DBG: saveCalendarPlan(data) START");
-		//CakeLog::debug("DBG: data[" . print_r($data, true) . "]");
-		CakeLog::debug("DBG: saveCalendarPlan() END");
+		$this->begin();
+
+		try {
+			$planParam = $this->convertToPlanParamFormat($data);
+
+			//CakeLog::debug("data[" . print_r($data, true), "]");
+			//CakeLog::debug("insertPlan()を発行する. planParam[" . print_r($planParam, true), "]");
+			$this->insertPlan($planParam);
+
+			$this->_enqueueEmail($data);
+
+			$this->commit();
+		} catch (Exception $ex) {
+
+			$this->rollback($ex);
+
+			return false;
+		}
+
 		return true;
+	}
+
+/**
+ * convertToPlanParamFormat
+ *
+ * 予定データ登録
+ *
+ * @param array $data POSTされたデータ
+ * @return mixed 成功時$planParamデータ
+ * @throws InternalErrorException
+ */
+	public function convertToPlanParamFormat($data) {
+		$planParam = array();
+
+		try {
+			$model = ClassRegistry::init('Calendars.Calendar');
+			if (!($calendar = $model->findByBlockKey($data['Block']['key']))) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			$planParam['calendar_id'] = $calendar[$model->alias]['id'];
+
+			$planParam['status'] = $this->_getStatus($data);
+			$planParam['language_id'] = Current::read('Language.id');
+			$planParam['room_id'] = $data[$this->alias]['plan_room_id'];
+			$planParam['timezone_offset'] = $this->_getTimeZoneOffsetNum($data[$this->alias]['timezone_offset']);
+			$planParam = $this->_setAndMergeDateTime($planParam, $data);
+			$planParam = $this->_setAndMergeRrule($planParam, $data);
+			$planParam['share_users'] = Hash::extract($data, 'GroupsUser.{n}.user_id');
+
+			//単純なcopyでＯＫな項目群
+			$fields = array(
+				'title', 'title_icon',		//FIXME: insert/update側に追加実装しないといけない項目
+				'location', 'contact', 'description',
+			);
+			foreach ($fields as $field) {
+				$planParam[$field] = $data[$this->alias][$field];
+			}
+
+		} catch(Exception $ex) {
+			//パラメータ変換のどこかでエラーが発生
+			CakeLog::error($ex->getMessage());
+			throw($ex);	//再throw
+		}
+
+		return $planParam;
+	}
+
+/**
+ * _getStatus
+ *
+ * WorkflowStatus値の取り出し
+ *
+ * @param array $data POSTされたデータ
+ * @return string 成功時 $status, 失敗時 例外をthrowする。
+ * @throws InternalErrorException
+ */
+	protected function _getStatus($data) {
+		$keys = array_keys($data);
+		foreach ($keys as $key) {
+			if (preg_match('/^save_(\d+)$/', $key, $matches) === 1) {
+				return $matches[1];
+			}
+		}
+		throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));	//マッチするものが無い場合例外throw
+	}
+
+/**
+ * _getTimeZoneOffsetNum
+ *
+ * timezoneID文字列(ex.Asia/Tokyo)からタイムゾーン数値(ex.-12.0,- 12.0)に変換
+ *
+ * @param string $timezoneOffset タイムゾーンオフセット文字列
+ * @return float 成功時 対応するタイムゾーンオフセット数値, 失敗時 例外をthrowする。
+ * @throws InternalErrorException
+ */
+	protected function _getTimeZoneOffsetNum($timezoneOffset) {
+		//$tzTblの形式 '_TZ_GMTP9' => array("(GMT+9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk", 9.0, "Asia/Tokyo"),
+		foreach (CalendarsComponent::$tzTbl as $tzData) {
+			if ($tzData[2] === $timezoneOffset) {
+				return $tzData[1];
+			}
+		}
+		throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));	//マッチするものが無い場合例外throw
+	}
+
+/**
+ * _setAndMergeDateTime
+ *
+ * 日付時刻系のパラメータを整形し、予定パラメータにマージして返す
+ *
+ * @param array $planParam merge前の予定パラメータ
+ * @param array $data POSTされたデータ
+ * @return array 成功時 整形,merged後の予定パラメータ. 失敗時 例外をthrowする.
+ * @throws InternalErrorException
+ */
+	protected function _setAndMergeDateTime($planParam, $data) {
+		if ($data[$this->alias]['is_detail']) {
+			//詳細画面からのデータ
+			//[detail_start_datetime] =>
+			//[detail_end_datetime] =>
+
+			//FIXME: 詳細画面 detail_start_datetime, detail_end_datetimeの変換は、このあと実装すること。
+
+		} else {
+			//簡易画面からのデータ
+			//[easy_start_date] => 2016-03-01  <= 日付だけなので、User系
+			//[easy_hour_minute_from] => 2016-02-29 16:00:00 <= サーバ系
+			//[easy_hour_minute_to] => 2016-02-29 17:00:00 <= サーバ系
+
+			if ($data[$this->alias]['enable_time']) {
+				$planParam['is_allday'] = 0;
+				//その日の時間指定あり
+				$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_from'], 0, 10));
+				$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_from'], 11, 8));
+				$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
+
+				$planParam['end_date'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_to'], 0, 10));
+				$planParam['end_time'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_to'], 11, 8));
+				$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
+
+			} else {
+				$planParam['is_allday'] = 1;
+				//その日の終日
+				list($serverStartDateZero, $serverNextDateZero) = (new CalendarTime())->convUserDate2SvrFromToDateTime($data[$this->alias]['easy_start_date'], $data[$this->alias]['timezone_offset']);
+
+				$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($serverStartDateZero, 0, 10));
+				$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($serverStartDateZero, 11, 8));
+				$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
+
+				$planParam['end_date'] = CalendarTime::stripDashColonAndSp(substr($serverNextDateZero, 0, 10));
+				$planParam['end_time'] = CalendarTime::stripDashColonAndSp(substr($serverNextDateZero, 11, 8));
+				$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
+			}
+		}
+		return $planParam;
+	}
+
+/**
+ * _setAndMergeRrule
+ *
+ * Rruleのパラメータを整形し、予定パラメータにマージして返す
+ *
+ * @param array $planParam merge前の予定パラメータ
+ * @param array $data POSTされたデータ
+ * @return array 成功時 整形,merged後の予定パラメータ. 失敗時 例外をthrowする.
+ * @throws InternalErrorException
+ */
+	protected function _setAndMergeRrule($planParam, $data) {
+		$planParam['rrule'] = '';	//初期化
+
+		if ($data[$this->alias]['is_repeat']) {
+			/*
+			[repeat_freq] =>
+			[rrule_interval] =>
+			[rrule_byday] =>
+			[bymonthday] =>
+			[rrule_bymonth] =>
+			[rrule_term] =>
+			[rrule_count] =>
+			[rrule_until] =>
+			*/
+			//FIXME: Rruleの各項目よりrrule配列をつくり、それをconcatRRule()などをつくって、シリアル化する。
+			//
+		}
+		return $planParam;
+	}
+
+/**
+ * enqueueEmail
+ *
+ * メール通知がonの場合、通知時刻等を指定したデータをMailキューに登録する。
+ *
+ * @param array $data POSTされたデータ
+ * @return void 失敗時 例外をthrowする.
+ * @throws InternalErrorException
+ */
+	protected function _enqueueEmail($data) {
+		if ($data[$this->alias]['enable_email']) {
+			//[email_send_timing] => 60
+			//FIXME: email_send_timingの値をつかって、Mailキューに登録する。
+		}
 	}
 }

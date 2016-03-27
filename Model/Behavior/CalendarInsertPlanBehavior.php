@@ -70,7 +70,6 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 
 		$eventData = $this->insertEventData($model, $planParams, $rruleData);	//eventDataの１件登録
 		if (!isset($eventData['CalendarEvent']['id'])) {
-			//throw new InternalErrorException(__d('Calendars', 'get insertEventData.id error.'));
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 		$eventId = $eventData['CalendarEvent']['id'];
@@ -78,21 +77,23 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 		if (!$model->Behaviors->hasMethod('insertShareUsers')) {
 			$model->Behaviors->load('Calendars.CalendarShareUserEntry');
 		}
-		$model->insertShareUsers($model, $planParams['share_users'], $eventId);	//カレンダー共有ユーザ登録
+
+		$model->insertShareUsers($planParams['share_users'], $eventId);	//カレンダー共有ユーザ登録
+		//注: 他のモデルの組み込みBehaviorをcallする場合、第一引数に$modelの指定はいらない。
 
 		//関連コンテンツの登録
 		if ($eventData['CalendarEventContent']['linked_model'] !== '') {
-			if (!(isset($this->CalendarEventContent))) {
+			if (!(isset($model->CalendarEventContent))) {
 				$model->loadModels(['CalendarEventContent' => 'Calendars.CalendarEventContent']);
 			}
-			$this->CalendarEventContent->saveLinkedData($eventData);
+			$model->CalendarEventContent->saveLinkedData($eventData);
 		}
 
 		if ($rruleData['CalendarRrule']['rrule'] !== '') {	//Rruleの登録
 			if (!$model->Behaviors->hasMethod('insertRrule')) {
 				$model->Behaviors->load('Calendars.CalendarRruleEntry');
 			}
-			$model->insertRrule($model, $planParams, $rruleData, $eventData);
+			$model->insertRrule($model, $planParams, $rruleData, $eventData);	//FIXME: TZ関係の見直しを行うこと。
 		}
 		return $eventId;
 	}
@@ -105,12 +106,12 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  */
 	public function arrangeData(&$planParams) {
-		if (!isset($planParams['timezone_offset'])) {
-			//NC2仕様: timezone_offsetがなければ、カレンダーのセッションから取得する。
-			//->
-			//NC3仕様: timezone_offsetがなければ、0.0(UTC)とする。
-			$planParams['timezone_offset'] = 0.0;
-		}
+		//if (!isset($planParams['timezone_offset'])) {
+		//	//NC2仕様: timezone_offsetがなければ、カレンダーのセッションから取得する。
+		//	//->
+		//	//NC3仕様: timezone_offsetがなければ、0.0(UTC)とする。
+		//	$planParams['timezone_offset'] = 0.0;
+		//}
 
 		if (!isset($planParams['start_date']) && !isset($planParams['start_time'])) { //開始日付と開始時刻は必須
 			//throw new InternalErrorException(__d('Calendars', 'No start_date or start_time'));
@@ -144,7 +145,7 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  */
 	public function insertRruleData(Model &$model, $planParams) {
-		if (!(isset($this->CalendarRrule) && is_callable($this->CalendarRrule->create))) {
+		if (!(isset($model->CalendarRrule) && is_callable($model->CalendarRrule->create))) {
 			$model->loadModels([
 				'CalendarRrule' => 'Calendars.CalendarRrule',
 			]);
@@ -155,19 +156,16 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 		$model->CalendarRrule->set($rruleData);
 
 		if (!$model->CalendarRrule->validates()) {		//rruleDataをチェック
-			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarRrule->validationErrors);
-			//throw new InternalErrorException(__d('Calendars', 'Rrule data check error.'));
+			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarRrule->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
 		if (!$model->CalendarRrule->save($rruleData, false)) {	//保存のみ
-			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarRrule->validationErrors);
-			//throw new InternalErrorException(__d('Calendars', 'Rrule data save error.'));
+			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarRrule->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
 		$rruleData['CalendarRrule']['id'] = $model->CalendarRrule->id;	//採番されたidをrruleDataにセットしておく
-
 		return $rruleData;
 	}
 
@@ -181,7 +179,7 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  */
 	public function insertEventData(Model &$model, $planParams, $rruleData) {
-		if (!(isset($this->CalendarEvent) && is_callable($this->CalendarEvent->create))) {
+		if (!(isset($model->CalendarEvent) && is_callable($model->CalendarEvent->create))) {
 			$model->loadModels([
 				'CalendarEvent' => 'Calendars.CalendarEvent',
 			]);
@@ -192,14 +190,13 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 		$model->CalendarEvent->set($eventData);
 
 		if (!$model->CalendarEvent->validates()) {		//eventDataをチェック
-			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarEvent->validationErrors);
-			//throw new InternalErrorException(__d('Calendars', 'Event data for insert check error.'));
+			//CakeLog::debug("validationErrors[ " . print_r($model->CalendarEvent->validationErrors, true) . "}");
+			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
 		if (!$model->CalendarEvent->save($eventData, false)) {	//保存のみ
-			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarEvent->validationErrors);
-			//throw new InternalErrorException(__d('Calendars', 'Event data for insert save error.'));
+			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 

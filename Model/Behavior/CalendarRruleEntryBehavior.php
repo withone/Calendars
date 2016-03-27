@@ -75,19 +75,17 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 		);
 		$rruleData = $model->CalendarEvent->find('all', $params);
 		if (!is_array($startEventData) || !isset($startEventData['CalendarEvent'])) {
-			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarEvent->validationErrors);
-			//throw new InternalErrorException(__d('Calendars', 'insertRrule find error.'));
+			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
 		$conditions = array(
-			'CalendarsEvent.calendar_rrule_id' => $eventData['CalendarEvent']['calendar_rrule_id'],
-			'CalendarsEvent.id <>' => $eventData['CalendarEvent']['id'],
+			$model->CalendarsEvent->alias . '.calendar_rrule_id' => $eventData['CalendarEvent']['calendar_rrule_id'],
+			$model->CalendarsEvent->alias . '.id <>' => $eventData['CalendarEvent']['id'],
 		);
 
 		if (!$model->CalendarEvent->deleteAll($conditions, false)) {
-			$this->validationErrors = Hash::merge($this->validationErrors, $model->CalendarEvent->validationErrors);
-			//throw new InternalErrorException(__d('Calendars', 'insertRrule deleteAll error.'));
+			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
@@ -124,6 +122,5 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 				$this->insertDaily($model, $planParams, $rruleData, $startEventData);
 				break;
 		}
-		////return $startEventData;
 	}
 }

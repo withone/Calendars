@@ -10,6 +10,7 @@
  */
 
 App::uses('ModelBehavior', 'Model');
+App::uses('CalendarTime', 'Calendars.Utility');
 
 /**
  * CalendarPlanTimeValidate Behavior
@@ -198,17 +199,14 @@ class CalendarPlanTimeValidateBehavior extends ModelBehavior {
 		}
 		//並び順チェック
 		//フォーマットが保証されているので、直接文字列同士で大小比較してＯＫ.
-		if ($model->data[$model->alias]['easy_hour_minute_from'] < $model->data[$model->alias]['easy_hour_minute_to']) {
+		if ($model->data[$model->alias]['easy_hour_minute_from'] > $model->data[$model->alias]['easy_hour_minute_to']) {
 			return false;
 		}
 
 		//form, toが予定日の許容範囲かのチェック （予定日の00:00:00-予定翌日の00:00:00内ならＯＫ。それからはずれたらＮＧ）
 		//
-		$nctm = new NetCommonsTime();
-		$startDateZero = $model->data[$model->alias]['easy_start_date'] . ' 00:00:00';
-		$serverStartDateZero = $nctm->toServerDatetime($startDateZero);
-		list($yearOfNextDay, $monthOfNextDay, $nextDay) = CalendarTime::getNextDay(intval(substr($startDateZero, 0, 4)), intval(substr($startDateZero, 5, 2)), intval(substr($startDateZero, 8, 2 )));
-		$serverNextDateZero = $nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00", $yearOfNextDay, $monthOfNextDay, $nextDay));
+		list($serverStartDateZero, $serverNextDateZero) = (new CalendarTime())->convUserDate2SvrFromToDateTime($model->data[$model->alias]['easy_start_date'], $model->data[$model->alias]['timezone_offset']);
+
 		if ($model->data[$model->alias]['easy_hour_minute_from'] < $serverStartDateZero ||
 			$serverNextDateZero < $model->data[$model->alias]['easy_hour_minute_to']) {
 			return false;

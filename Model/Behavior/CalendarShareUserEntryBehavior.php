@@ -40,24 +40,32 @@ class CalendarShareUserEntryBehavior extends CalendarAppBehavior {
  * @return void
  */
 	public function insertShareUsers(Model &$model, $shareUsers, $eventId) {
-		if (!(isset($this->CalendarEventShareUser))) {
+		//CakeLog::debug("DBG: insertShareUsers(shareUsers[" . print_r($shareUsers, true) . "] eventId[" . $eventId . "])");
+
+		if (!(isset($model->CalendarEventShareUser))) {
 			$model->loadModels(['CalendarEventShareUser' => 'Calendar.CalendarEventShareUser']);
 		}
-
 		if (!is_array($shareUsers)) {
 			return;
 		}
 
 		$func = function ($value) use($eventId) {
-			return array(
-				'calender_event_id' => $eventId,
+
+			$elm = array(
+				'calendar_event_id' => $eventId,
 				'share_user' => intval($value),
 			);
+			//CakeLog::debug("DBG: elm[" . print_r($elm, true) . "]");
+			return $elm;
 		};
 
+		CakeLog::debug("a3");
+
 		$shareUserData = array();
-		$shareUserData['CalendarEventShareUser'] = array_map($func, $shareUsers);
-		$model->CalendarEventShareUser->saveAll($shareUserData['CalendarEventShareUser']);
+		$shareUserData[$model->CalendarEventShareUser->alias] = array_map($func, $shareUsers);
+		$result = $model->CalendarEventShareUser->saveAll($shareUserData[$model->CalendarEventShareUser->alias]);
+
+		//CakeLog::debug("saveAll() result[" . serialize($result) . "] shareUserData [" . print_r($shareUserData) . "]");
 	}
 
 /**

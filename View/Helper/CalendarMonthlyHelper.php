@@ -29,6 +29,7 @@ class CalendarMonthlyHelper extends AppHelper {
 		'Form',
 		'Calendars.CalendarCommon',
 		'Calendars.CalendarUrl',
+		'NetCommons.TitleIcon',
 	);
 
 /**
@@ -138,6 +139,7 @@ class CalendarMonthlyHelper extends AppHelper {
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
 			$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
 			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
+			$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
 			$html .= '<span> ' . h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...')) . '</span>';
 			$html .= '</p>';
 			$html .= '</div>';
