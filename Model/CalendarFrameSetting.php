@@ -129,47 +129,93 @@ class CalendarFrameSetting extends CalendarsAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
+		$roomIds = $this->getReadableRoomIds();
 		$this->validate = Hash::merge($this->validate, array(
 			'display_type' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'required' => true,
-					'message' => __d('net_commons', 'Invaid request'),
+					'message' => __d('net_commons', 'Invalid request'),
+				),
+				'rule2' => array(
+					'rule' => array('inList', array(
+						self::DISPLAY_TYPE_DAILY_VALUE,
+						self::DISPLAY_TYPE_LARGE_MONTHLY_VALUE,
+						self::DISPLAY_TYPE_SMALL_MONTHLY_VALUE,
+						self::DISPLAY_TYPE_SCHEDULE_TIME_VALUE,
+						self::DISPLAY_TYPE_SCHEDULE_MEMBER_VALUE,
+						self::DISPLAY_TYPE_WEEKLY_VALUE
+					)),
+					'message' => __d('net_commons', 'Invalid request'),
 				),
 			),
 			'start_pos' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'required' => true,
-					'message' => __d('net_commons', 'Invaid request'),
+					'message' => __d('net_commons', 'Invalid request'),
+				),
+				'rule2' => array(
+					'rule' => array('inList', array(
+						CalendarsComponent::CALENDAR_START_POS_WEEKLY_TODAY,
+						CalendarsComponent::CALENDAR_START_POS_WEEKLY_YESTERDAY
+					)),
+					'message' => __d('net_commons', 'Invalid request'),
 				),
 			),
 			'display_count' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'required' => true,
-					'message' => __d('net_commons', 'Invaid request'),
+					'message' => __d('net_commons', 'Invalid request'),
+				),
+				'rule2' => array(
+					'rule' => array('comparison', '>=', CalendarsComponent::CALENDAR_MIN_DISPLAY_DAY_COUNT),
+					'message' => __d('net_commons', 'Invalid request'),
+				),
+				'rule3' => array(
+					'rule' => array('comparison', '<=', CalendarsComponent::CALENDAR_MAX_DISPLAY_DAY_COUNT),
+					'message' => __d('net_commons', 'Invalid request'),
 				),
 			),
 			'is_myroom' => array(
 				'rule1' => array(
 					'rule' => 'boolean',
 					'required' => true,
-					'message' => __d('net_commons', 'Invaid request'),
+					'message' => __d('net_commons', 'Invalid request'),
 				),
 			),
 			'is_select_room' => array(
 				'rule1' => array(
 					'rule' => 'boolean',
 					'required' => true,
-					'message' => __d('net_commons', 'Invaid request'),
+					'message' => __d('net_commons', 'Invalid request'),
 				),
 			),
 			'room_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'required' => true,
-					'message' => __d('net_commons', 'Invaid request'),
+					'message' => __d('net_commons', 'Invalid request'),
+				),
+				'rule2' => array(
+					'rule' => array('inList', $roomIds),
+					'message' => __d('net_commons', 'Invalid request'),
+				)
+			),
+			'timeline_base_time' => array(
+				'rule1' => array(
+					'rule' => array('numeric'),
+					'required' => true,
+					'message' => __d('net_commons', 'Invalid request'),
+				),
+				'rule2' => array(
+					'rule' => array('comparison', '>=', CalendarsComponent::CALENDAR_TIMELINE_MIN_TIME),
+					'message' => __d('net_commons', 'Invalid request'),
+				),
+				'rule3' => array(
+					'rule' => array('comparison', '<=', CalendarsComponent::CALENDAR_TIMELINE_MAX_TIME),
+					'message' => __d('net_commons', 'Invalid request'),
 				),
 			),
 		));
@@ -190,6 +236,9 @@ class CalendarFrameSetting extends CalendarsAppModel {
 					'frame_key' => Current::read('Frame.key'),
 				)
 			));
+			if (! $setting) {
+				return array();
+			}
 			$settingId = $setting['CalendarFrameSetting']['id'];
 		}
 		$this->CalendarFrameSettingSelectRoom = ClassRegistry::init('Calendars.CalendarFrameSettingSelectRoom', true);
@@ -231,9 +280,10 @@ class CalendarFrameSetting extends CalendarsAppModel {
 					$this->rollback();
 					return false;
 				}
-				if (! $this->CalendarFrameSettingSelectRoom->saveCalendarFrameSettingSelectRoom($data)) {
-					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-				}
+				// validateのエラーのときは上のvalidateCalendarFrameSettingSelectRoomでエラー処理されるし
+				// saveでエラーのときはsaveCalendarFrameSettingSelectRoomでthrowされるから
+				// ここでの判断は不要です
+				$this->CalendarFrameSettingSelectRoom->saveCalendarFrameSettingSelectRoom($data);
 			}
 			$this->commit();
 		} catch (Exception $ex) {

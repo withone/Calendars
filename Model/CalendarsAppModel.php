@@ -19,4 +19,23 @@ App::uses('AppModel', 'Model');
  */
 class CalendarsAppModel extends AppModel {
 
+/**
+ * getReadableRoomIds
+ *
+ * 読み取り可能なルームのID配列を返す
+ *
+ * @return array
+ */
+	public function getReadableRoomIds() {
+		// 読み取り可能なルームを取得
+		$this->Room = ClassRegistry::init('Rooms.Room', true);
+		$condition = $this->Room->getReadableRoomsConditions();
+		// カレンダーは特別に全会員向けルームIDを入れる
+		if (Current::read('User.id')) {
+			$condition['conditions'] = array('Room.id' => Room::ROOM_PARENT_ID);
+		}
+		$roomBase = $this->Room->find('all', $condition);
+		$roomIds = Hash::combine($roomBase, '{n}.Room.id', '{n}.Room.id');
+		return $roomIds;
+	}
 }

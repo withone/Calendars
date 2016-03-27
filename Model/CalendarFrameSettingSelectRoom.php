@@ -79,20 +79,25 @@ class CalendarFrameSettingSelectRoom extends CalendarsAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
+		$roomIds = $this->getReadableRoomIds();
 		$this->validate = Hash::merge($this->validate, array(
 			'calendar_frame_setting_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'required' => true,
-					'message' => __d('net_commons', 'Invaid request'),
+					'message' => __d('net_commons', 'Invalid request'),
 				),
 			),
 			'room_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'required' => true,
-					'message' => __d('net_commons', 'Invaid request'),
+					'message' => __d('net_commons', 'Invalid request'),
 				),
+				'rule2' => array(
+					'rule' => array('inList', $roomIds),
+					'message' => __d('net_commons', 'Invalid request'),
+				)
 			),
 		));
 
@@ -106,6 +111,7 @@ class CalendarFrameSettingSelectRoom extends CalendarsAppModel {
  */
 	public function getSelectRooms($settingId) {
 		$this->Room = ClassRegistry::init('Rooms.Room', true);
+		$roomIds = $this->getReadableRoomIds();
 		$selectRoom = $this->Room->find('all', array(
 			'fields' => array(
 				'Room.id',
@@ -123,8 +129,14 @@ class CalendarFrameSettingSelectRoom extends CalendarsAppModel {
 					)
 				)
 			),
+			'conditions' => array(
+				'Room.id' => $roomIds
+			),
 			'order' => array('Room.id ASC')
 		));
+		if (! $selectRoom) {
+			return array();
+		}
 		$selectRoom = Hash::combine($selectRoom, '{n}.Room.id', '{n}.CalendarFrameSettingSelectRoom.room_id');
 		return $selectRoom;
 	}
@@ -159,35 +171,43 @@ class CalendarFrameSettingSelectRoom extends CalendarsAppModel {
 	public function saveCalendarFrameSettingSelectRoom($data) {
 		$settingId = $data['CalendarFrameSetting']['id'];
 		$ret = array();
-		foreach ($data['CalendarFrameSettingSelectRoom'] as $roomId => $selectRoom) {
-			$condition = array(
-				'CalendarFrameSettingSelectRoom.calendar_frame_setting_id' => $settingId,
-				'CalendarFrameSettingSelectRoom.room_id' => $roomId,
-			);
-			$orgData = $this->find('first', array(
-				'conditions' => $condition
-			));
-			if (empty($selectRoom['room_id'])) {
-				$this->deleteAll($condition, false);
-			} else {
-				if (! $orgData) {
-					$this->create();
-					$this->set($selectRoom);
-					$ret[] = $this->save($selectRoom, false);
+		//トランザクションBegin
+		$this->begin();
+		try {
+			foreach ($data['CalendarFrameSettingSelectRoom'] as $roomId => $selectRoom) {
+				$condition = array(
+					'CalendarFrameSettingSelectRoom.calendar_frame_setting_id' => $settingId,
+					'CalendarFrameSettingSelectRoom.room_id' => $roomId,
+				);
+				$orgData = $this->find('first', array(
+					'conditions' => $condition
+				));
+				if (empty($selectRoom['room_id'])) {
+					$this->deleteAll($condition, false);
 				} else {
-					$ret[] = $orgData;
+					if (! $orgData) {
+						$this->create();
+						$this->set($selectRoom);
+						if (! $this->validates()) {
+							return false;
+						}
+						$saveData = $this->save($selectRoom, false);
+						if (! $saveData) {
+							throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+						}
+						$ret[] = $saveData;
+					} else {
+						$ret[] = $orgData;
+					}
 				}
 			}
+			$this->commit();
+		} catch (Exception $ex) {
+			CakeLog::error($ex);
+
+			$this->rollback();
+			throw $ex;
 		}
 		return $ret;
 	}
-
-/**
- * Called after each successful save operation.
- *
- * @param bool $created True if this save created a new record
- * @param array $options Options passed from Model::save().
- * @return void
- * @throws InternalErrorException
- */
 }

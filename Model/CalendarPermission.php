@@ -104,7 +104,7 @@ class CalendarPermission extends CalendarsAppModel {
 			$roomsBlocks = $this->Room->find('all', $conditions);
 
 			// 取得したルーム＋ブロック情報にさらにパーミッション情報を追加でセット
-			$this->setPermission($workflow, $roomsBlocks, $readableRoom);
+			$this->_setPermission($workflow, $roomsBlocks, $readableRoom);
 			$rooms[$spaceId] = Hash::combine($roomsBlocks, '{n}.Room.id', '{n}');
 		}
 		return $rooms;
@@ -130,7 +130,7 @@ class CalendarPermission extends CalendarsAppModel {
 		$roomsBlocks = Hash::combine($roomsBlocks, '{n}.Room.id', '{n}');
 
 		// 取得したルーム＋ブロック情報にさらにパーミッション情報を追加でセット
-		$this->setPermission($workflow, $roomsBlocks, $roomBase);
+		$this->_setPermission($workflow, $roomsBlocks, $roomBase);
 		return array(Space::ROOM_SPACE_ID => $roomsBlocks);
 	}
 /**
@@ -185,7 +185,7 @@ class CalendarPermission extends CalendarsAppModel {
 		);
 	}
 /**
- * setPermission
+ * _setPermission
  *
  * 指定されたルーム、ブロックに相当する権限設定情報を取り出す
  * 
@@ -194,7 +194,7 @@ class CalendarPermission extends CalendarsAppModel {
  * @param array $readableRoom アクセス可能ルームリスト（ルームでのRole情報が見られる
  * @return array
  */
-	public function setPermission($workflow, &$roomBlocks, $readableRoom) {
+	protected function _setPermission($workflow, &$roomBlocks, $readableRoom) {
 		foreach ($roomBlocks as &$roomBlock) {
 			$blockKey = $roomBlock['Block']['key'];
 			if (! isset($roomBlock['Block']['key'])) {
