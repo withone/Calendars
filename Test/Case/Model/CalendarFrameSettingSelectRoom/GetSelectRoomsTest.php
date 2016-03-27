@@ -84,16 +84,36 @@ class CalendarFrameSettingSelectRoomGetSelectRoomsTest extends WorkflowGetTest {
  */
 	public function dataProviderGet() {
 		$rooms = array(
-			1 => 1,
+			1 => array(
+				'calendar_frame_setting_id' => 1,
+				'room_id' => 1,
+			),
 			//2 => 2,
 			//3 => 3,
-			4 => 4,
-			5 => null,
+			4 => array(
+				'calendar_frame_setting_id' => 1,
+				'room_id' => 4,
+			),
+			5 => array(
+				'calendar_frame_setting_id' => null,
+				'room_id' => null,
+			)
 		);
 		$errRooms = array(
-			1 => null,
-			4 => null,
-			5 => null,
+			1 => array(
+				'calendar_frame_setting_id' => null,
+				'room_id' => null,
+			),
+			//2 => null,
+			//3 => null,
+			4 => array(
+				'calendar_frame_setting_id' => null,
+				'room_id' => null,
+			),
+			5 => array(
+				'calendar_frame_setting_id' => null,
+				'room_id' => null,
+			)
 		);
 		return array(
 			array(1, $rooms),

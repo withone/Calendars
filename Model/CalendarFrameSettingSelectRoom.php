@@ -137,7 +137,7 @@ class CalendarFrameSettingSelectRoom extends CalendarsAppModel {
 		if (! $selectRoom) {
 			return array();
 		}
-		$selectRoom = Hash::combine($selectRoom, '{n}.Room.id', '{n}.CalendarFrameSettingSelectRoom.room_id');
+		$selectRoom = Hash::combine($selectRoom, '{n}.Room.id', '{n}.CalendarFrameSettingSelectRoom');
 		return $selectRoom;
 	}
 

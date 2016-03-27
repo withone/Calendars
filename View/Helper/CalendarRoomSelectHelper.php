@@ -143,7 +143,7 @@ class CalendarRoomSelectHelper extends AppHelper {
  * @return string
  */
 	private function __getNgModelName($roomId) {
-		return 'data.calendarFrameSettingSelectRoom[' . $roomId . ']';
+		return 'data.calendarFrameSettingSelectRoom[' . $roomId . '].roomId';
 	}
 
 /**

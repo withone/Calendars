@@ -32,8 +32,12 @@ class CalendarsAppModel extends AppModel {
 		$condition = $this->Room->getReadableRoomsConditions();
 		$roomBase = $this->Room->find('all', $condition);
 		$roomIds = Hash::combine($roomBase, '{n}.Room.id', '{n}.Room.id');
+		// カレンダーは特別にプライベートスペースIDを入れる
 		// カレンダーは特別に全会員向けルームIDを入れる
 		if (Current::read('User.id')) {
+			if (Hash::extract($roomBase, '{n}.Room[space_id=' . Space::PRIVATE_SPACE_ID . ']')) {
+				$roomIds[Room::PRIVATE_PARENT_ID] = Room::PRIVATE_PARENT_ID;
+			}
 			$roomIds[Room::ROOM_PARENT_ID] = Room::ROOM_PARENT_ID;
 		}
 		return $roomIds;

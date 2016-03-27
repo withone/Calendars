@@ -130,7 +130,7 @@ class CalendarFrameSettingsController extends CalendarsAppController {
  * @return void
  */
 	public function edit() {
-		if ($this->request->is('put') || $this->request->is('post')) {
+		if ($this->request->is('put')) {
 			//登録(PUT)処理
 			$data = $this->request->data;
 			$data['CalendarFrameSetting']['display_type'] = (int)$data['CalendarFrameSetting']['display_type'];
@@ -157,12 +157,14 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 		if (! $setting) {
 			$this->setAction('throwBadRequest');
 		}
-		$this->request->data['CalendarFrameSetting'] = $setting['CalendarFrameSetting'];
+
 		$settingId = $setting['CalendarFrameSetting']['id'];
 		$this->set('settingId', $settingId);
 
-		// 選択ルーム情報取り出し
-		$this->request->data['CalendarFrameSettingSelectRoom'] = $this->CalendarFrameSetting->getSelectRooms($settingId);
+		if (! $this->request->is('put')) {
+			$this->request->data['CalendarFrameSetting'] = $setting['CalendarFrameSetting'];
+			$this->request->data['CalendarFrameSettingSelectRoom'] = $this->CalendarFrameSetting->getSelectRooms($settingId);
+		}
 
 		// 空間情報
 		$spaces = $this->Room->getSpaces();
