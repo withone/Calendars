@@ -49,8 +49,8 @@ class CalendarPlansController extends CalendarsAppController {
 		'NetCommons.Permission' => array(
 			//アクセスの権限
 			'allow' => array(
-				'edit' => 'content_creatable',	//indexとviewは祖先基底クラスNetCommonsAppControllerで許可済
-				'daylist,show' => 'content_readable', //null,		//content_readableは全員に与えられているときいているので、チェック省略
+				'edit,add' => 'content_creatable',	//indexとviewは祖先基底クラスNetCommonsAppControllerで許可済
+				'daylist,show' => 'content_readable', //null, //content_readableは全員に与えられているので、チェック省略
 			),
 		),
 		'Paginator',
@@ -82,13 +82,59 @@ class CalendarPlansController extends CalendarsAppController {
  */
 	public function beforeFilter() {
 		parent::beforeFilter();
-
 		if (! Current::read('Block.id')) {
+			CakeLog::error(__d('calendars', 'ブロックIDがないのでブランクページを表示します'));
 			$this->setAction('emptyRender');
 			return false;
 		}
 
 		$this->Auth->allow('daylist', 'show');
+	}
+
+/**
+ * add
+ *
+ * @return void
+ */
+	public function add() {
+		$this->view = 'edit';	//add()でレンダリングするviewファイルの名前をadd.ctpからedit.ctpに変える。これをしないと、View/CalendarPlans/add.ctpがないとの警告がでる。
+
+		if ($this->request->is('post')) {
+			//登録処理
+			$this->CalendarActionPlan->set($this->request->data);
+			if (!$this->CalendarActionPlan->validates()) {
+				//失敗なら、エラーメッセージを保持したまま、edit()を実行し、easy_edit.ctpを表示
+				$this->NetCommons->handleValidationError($this->CalendarActionPlan->validationErrors);	//これでエラーmsgが画面上部に数秒間flashされる。
+				$this->request->params['named']['style'] = 'easy';	//FIXME: easyとdetailを切り替える処理をいれること。
+				$this->setAction('edit');
+				return;
+			}
+			//成功なら元画面(カレンダーorスケジューラー)に戻る。
+			if (!$this->CalendarActionPlan->saveCalendarPlan($this->request->data)) {
+				//保存失敗
+				CakeLog::debug("DBG: 保存失敗");
+			}
+			//保存成功
+			$options = array(
+				'controller' => 'calendars',
+				'action' => 'index',
+				'frame_id' => Current::read('Frame.id'),
+			);
+			if (isset($this->request->data['return_style']) && $this->request->data['return_style']) {
+				$options['style'] = $this->request->data['return_style'];
+			}
+			if (isset($this->request->data['return_sort']) && $this->request->data['return_sort']) {
+				$options['sort'] = $this->request->data['return_sort'];
+			}
+			$url = NetCommonsUrl::actionUrl($options);
+			$this->redirect($url);
+			//return; ここには到達しない.
+		} else {
+			//GETなので edit()を実行し、eady_edit.ctpを補油時
+			CakeLog::debug("DBG4: add() [Not post] was called\n");
+			$this->setAction('edit');
+			return;
+		}
 	}
 
 /**

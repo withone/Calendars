@@ -427,31 +427,44 @@
 
 /*  カレンダー 月拡大表示の画面サイズxsの場合  */
 @media screen and (max-width:767px) {
-  table.calendar-monthly-table td.calendar-col-day{
-    width:100%;
-    height:auto;
-    display:block !important;
-  }
+	table.calendar-monthly-table td.calendar-col-day{
+		width:100%;
+		height:auto;
+		display:block !important;
+	}
 
-  /*-- カレンダー 詳細編集フィールド(max-width:767px) --*/
-  .calendar-detailedit-detail {
-  	padding-left:0px;
-  }
+	/*-- カレンダー 詳細編集フィールド(max-width:767px) --*/
+	.calendar-detailedit-detail {
+		adding-left:0px;
+	}
 
-/* カレンダー 週表示 2016.03.03 */
-.calendar-weekly-table {
-	font-size: 75%;
-}
-/* カレンダー 週表示(ルーム名)  2016.03.03 */
-.calendar-weekly-col-room-name {
- white-space:nowrap;
-}
+	/* カレンダー 週表示 2016.03.03 */
+	.calendar-weekly-table {
+		font-size: 75%;
+	}
 
-/* カレンダー 管理系 表示変更(タブ)  2016.03.04 */
-.calendar-change-nav-tabs > li > a {
- padding:10px 10px !important;
- font-size:88%;
-}
+  /* カレンダー 週表示(ルーム名)  2016.03.03 */
+  .calendar-weekly-col-room-name {
+    white-space:nowrap;
+	}
+
+	/* カレンダー 管理系 表示変更(タブ)  2016.03.04 */
+	.calendar-change-nav-tabs > li > a {
+		padding:10px 10px !important;
+		font-size:88%;
+	}
+
+	/* カレンダー予定簡易編集（幅狭用input-group）*/
+	.calendar-widecase-input-group {
+		/* 明示的に空にするクラス */
+	}
+
+	/* カレンダー予定簡易編集（幅狭用 via（minus）マーク）*/
+	.calendar-widecase-via-mark {
+		display: inline-block;
+		margin-left:40%;
+		width: 3em;
+	}
 
 }
 
@@ -464,4 +477,16 @@
 	position: absolute;
 	clip: rect(0,0,0,0);
 	pointer-events: none;
+}
+
+/* カレンダー予定簡易編集（通常幅用input-group）2016.03.26 */
+.calendar-widecase-input-group {
+	position: relative;
+	display: table;
+	border-collapse: separate;
+}
+
+/* カレンダー予定簡易編集（通常幅用 via（minus）マーク）2016.03.26 */
+.calendar-widecase-via-mark {
+	/* 明示的に空にするクラス */
 }

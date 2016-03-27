@@ -11,39 +11,6 @@
 <!-- <div class="panel panel-default"> -->
 <!-- <div class="panel-body"> -->
 
-<?php
-	//日付と曜日を取得
-	//明日の日付
-	/* 後で消す
-	list($yearAfterDay1, $monthAfterDay1, $afterDay1) = CalendarTime::getNextDay($vars['year'], $vars['month'], $vars['day']);
-	$wDay1 = CalendarTime::getWday($yearAfterDay1, $monthAfterDay1, $afterDay1);
-	$textColor1 = $this->CalendarCommon->makeTextColor($yearAfterDay1, $monthAfterDay1, $afterDay1, $vars['holidays'], $wDay1);
-
-	//明後日の日付
-	list($yearAfterDay2, $monthAfterDay2, $afterDay2) = CalendarTime::getNextDay($yearAfterDay1,  $monthAfterDay1, $afterDay1);
-	$wDay2 = CalendarTime::getWday($yearAfterDay2, $monthAfterDay2, $afterDay2);
-	$textColor2 = $this->CalendarCommon->makeTextColor($yearAfterDay2, $monthAfterDay2, $afterDay2, $vars['holidays'], $wDay2);
-
-	//3日後の日付
-	list($yearAfterDay3, $monthAfterDay3, $afterDay3) = CalendarTime::getNextDay($yearAfterDay2,  $monthAfterDay2, $afterDay2);
-	$wDay3 = CalendarTime::getWday($yearAfterDay3, $monthAfterDay3, $afterDay3);
-	$textColor3 = $this->CalendarCommon->makeTextColor($yearAfterDay3, $monthAfterDay3, $afterDay3, $vars['holidays'], $wDay3);
-
-	//4日後の日付
-	list($yearAfterDay4, $monthAfterDay4, $afterDay4) = CalendarTime::getNextDay($yearAfterDay3,  $monthAfterDay3, $afterDay3);
-	$wDay4 = CalendarTime::getWday($yearAfterDay4, $monthAfterDay4, $afterDay4);
-	$textColor4 = $this->CalendarCommon->makeTextColor($yearAfterDay4, $monthAfterDay4, $afterDay4, $vars['holidays'], $wDay4);
-
-	//5日後の日付
-	list($yearAfterDay5, $monthAfterDay5, $afterDay5) = CalendarTime::getNextDay($yearAfterDay4,  $monthAfterDay4, $afterDay4);
-	$wDay5 = CalendarTime::getWday($yearAfterDay5, $monthAfterDay5, $afterDay5);
-	$textColor5 = $this->CalendarCommon->makeTextColor($yearAfterDay5, $monthAfterDay5, $afterDay5, $vars['holidays'], $wDay5);
-	*/
-	/* 曜日 */
-	//$week = array('(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)'); // kuma temp
-?>
-
-
 <!-- 形式切り替えと追加 (上部) -->
 <?php echo $this->element('Calendars.Calendars/change_sort', array('currentSort' => 'member', 'menuPosition' => 'top')); ?>
 
@@ -57,26 +24,15 @@
 
 
 <!-- today -->
+<!--
 	<div class="col-sm-12 text-center">
+-->
 		<!-- 予定の内容 -->
+<!--
 		<?php
 			// 予定の日付タイトル
 			echo $this->CalendarSchedule->makeDayTitleHtml($vars, 1);
 		?>
-<!-- original
-		<div class='row'>
-			<div class='col-xs-12'>
-				<p data-openclose-stat='open' data-pos='1' class='calendar-schedule-disp calendar-plan-clickable text-left calendar-schedule-row-title'>
-					<span class='h4'>
-						<span data-pos='1' class="glyphicon glyphicon-chevron-down schedule-openclose"></span>
-						<span><?php echo __d('calendars', '今日'); ?></span>
-						<span style='margin-left: 0.5em'>(3)</span>
-					</span>
-				</p>
-			</div>
-			<div class='clearfix'></div>
-		</div>
--->
 
 		<div class='row calendar-schedule-row' data-pos='1'>
 			<div class='col-xs-12 col-sm-3'>
@@ -163,27 +119,15 @@
 		</div>
 
 	</div>
-
+-->
 
 <!-- tomorrow -->
-
+<!--
 	<div class="col-sm-12 text-center">
 		<?php
 			// 予定の日付タイトル
-			echo $this->CalendarSchedule->makeDayTitleHtml($vars, 2);
+		//	echo $this->CalendarSchedule->makeDayTitleHtml($vars, 2);
 		?>
-
-
-<!--original
-		<div class='row'>
-			<div class='col-xs-12'>
-				<p data-openclose-stat='open' data-pos='2' class='calendar-schedule-disp calendar-plan-clickable text-left calendar-schedule-row-title'>
-				<span class='h4'><span data-pos='2' class="glyphicon glyphicon-chevron-down schedule-openclose"></span><span><?php echo __d('calendars', '明日'); ?></span><span style='margin-left: 0.5em'>(3)</span></span>
-				</p>
-			</div>
-			<div class='clearfix'></div>
-		</div>
--->
 
 		<div class='row calendar-schedule-row'  data-pos='2'>
 			<div class='col-xs-12 col-sm-3'>
@@ -222,36 +166,17 @@
 		</div>
 
 	</div>
-
+-->
 
 <!-- 3dayslater -->
+<!--
 	<div class="col-sm-12 text-center">
 
 		<?php
 			// 予定の日付タイトル
-			echo $this->CalendarSchedule->makeDayTitleHtml($vars, 3);
+		//	echo $this->CalendarSchedule->makeDayTitleHtml($vars, 3);
 		?>
 
-<!-- original
-		<div class='row'>
-			<div class='col-xs-12'>
-				<p data-openclose-stat='open' data-pos='3' class='calendar-schedule-disp calendar-plan-clickable text-left calendar-schedule-row-title'>
-				<span class='h4'><span data-pos='3' class="glyphicon glyphicon-chevron-down schedule-openclose"></span>
-				<span class="
-				<?php echo $textColor3 ?>
-				">
-				<?php echo (int)$monthAfterDay3; ?>
-				月
-				<?php echo (int)$afterDay3; ?>
-				日
-				<?php echo $week[$wDay3] ?>
-				</span>
-				<span style='margin-left: 0.5em'></span></span>
-				</p>
-			</div>
-			<div class='clearfix'></div>
-		</div>
--->
 
 		<div class='row calendar-schedule-row'  data-pos='3'>
 
@@ -263,36 +188,15 @@
 		</div>
 		
 	</div>
-
+-->
 <!-- 4dayslater -->
+<!--
 	<div class="col-sm-12 text-center">
 
 		<?php
 			// 予定の日付タイトル
-			echo $this->CalendarSchedule->makeDayTitleHtml($vars, 4);
+		//	echo $this->CalendarSchedule->makeDayTitleHtml($vars, 4);
 		?>
-
-<!-- original
-		<div class='row'>
-			<div class='col-xs-12'>
-				<p data-openclose-stat='open' data-pos='4' class='calendar-schedule-disp calendar-plan-clickable text-left calendar-schedule-row-title'>
-				<span class='h4'><span data-pos='4' class="glyphicon glyphicon-chevron-down schedule-openclose"></span>
-				<span class='text-primary'>
-				<span class="
-				<?php echo $textColor4 ?>
-				">
-				<?php echo (int)$monthAfterDay4; ?>
-				月
-				<?php echo (int)$afterDay4; ?>
-				日
-				<?php echo $week[$wDay4] ?>
-				</span>
-				<span style='margin-left: 0.5em'></span></span>
-				</p>
-			</div>
-			<div class='clearfix'></div>
-		</div>
--->
 
 		<div class='row calendar-schedule-row'  data-pos='4'>
 			<div class='col-xs-12'>
@@ -302,33 +206,16 @@
 		</div>
 
 	</div>
-
+-->
 <!-- 5dayslater -->
+<!--
 	<div class="col-sm-12 text-center">
 
 		<?php
 			// 予定の日付タイトル
-			echo $this->CalendarSchedule->makeDayTitleHtml($vars, 5);
+		//	echo $this->CalendarSchedule->makeDayTitleHtml($vars, 5);
 		?>
 
-<!-- original
-		<div class='row'>
-			<div class='col-xs-12'>
-				<p data-openclose-stat='open' data-pos='5' class='calendar-schedule-disp calendar-plan-clickable text-left calendar-schedule-row-title'>
-				<span class='h4'><span data-pos='5' class="glyphicon glyphicon-chevron-down schedule-openclose"></span>
-				<span class="<?php echo $textColor5 ?>">
-				<?php echo (int)$monthAfterDay5; ?>
-				月
-				<?php echo (int)$afterDay5; ?>
-				日
-				<?php echo $week[$wDay5] ?>
-				</span>
-				<span style='margin-left: 0.5em'></span></span>
-				</p>
-			</div>
-			<div class='clearfix'></div>
-		</div>
--->
 
 		<div class='row calendar-schedule-row'  data-pos='5'>
 			<div class='col-xs-12'>
@@ -338,7 +225,7 @@
 		</div>
 	</div>
 
-</div><!--全体枠END-->
+</div>--><!--全体枠END-->
 
 <!-- 形式切り替えと追加 (下部) -->
 <?php echo $this->element('Calendars.Calendars/change_sort', array('currentSort' => 'member', 'menuPosition' => 'bottom')); ?>
