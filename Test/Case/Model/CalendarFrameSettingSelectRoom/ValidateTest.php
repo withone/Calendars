@@ -74,11 +74,11 @@ class CalendarFrameSettingSelectRoomValidateTest extends NetCommonsValidateTest 
 
 		return array(
 			array('data' => $data, 'field' => 'calendar_frame_setting_id', 'value' => 'aa',
-				'message' => __d('net_commons', 'Invalid request')),
+				'message' => __d('net_commons', 'Invalid request.')),
 			array('data' => $data, 'field' => 'room_id', 'value' => 'aa',
-				'message' => __d('net_commons', 'Invalid request')),
+				'message' => __d('net_commons', 'Invalid request.')),
 			array('data' => $data, 'field' => 'room_id', 'value' => '2',
-				'message' => __d('net_commons', 'Invalid request')),
+				'message' => __d('net_commons', 'Invalid request.')),
 		);
 	}
 

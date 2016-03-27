@@ -30,12 +30,12 @@ class CalendarsAppModel extends AppModel {
 		// 読み取り可能なルームを取得
 		$this->Room = ClassRegistry::init('Rooms.Room', true);
 		$condition = $this->Room->getReadableRoomsConditions();
-		// カレンダーは特別に全会員向けルームIDを入れる
-		if (Current::read('User.id')) {
-			$condition['conditions'] = array('Room.id' => Room::ROOM_PARENT_ID);
-		}
 		$roomBase = $this->Room->find('all', $condition);
 		$roomIds = Hash::combine($roomBase, '{n}.Room.id', '{n}.Room.id');
+		// カレンダーは特別に全会員向けルームIDを入れる
+		if (Current::read('User.id')) {
+			$roomIds[Room::ROOM_PARENT_ID] = Room::ROOM_PARENT_ID;
+		}
 		return $roomIds;
 	}
 }

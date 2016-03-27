@@ -85,18 +85,18 @@ class CalendarFrameSettingSelectRoom extends CalendarsAppModel {
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'required' => true,
-					'message' => __d('net_commons', 'Invalid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 				),
 			),
 			'room_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'required' => true,
-					'message' => __d('net_commons', 'Invalid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 				),
 				'rule2' => array(
 					'rule' => array('inList', $roomIds),
-					'message' => __d('net_commons', 'Invalid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 				)
 			),
 		));

@@ -110,7 +110,7 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 			CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY => __d('calendars', '週表示'),
 			CalendarsComponent::CALENDAR_DISP_TYPE_DAILY => __d('calendars', '日表示'),
 			CalendarsComponent::CALENDAR_DISP_TYPE_TSCHEDULE => __d('calendars', 'スケジュール（時間順）'),
-			CalendarsComponent::CALENDAR_DISP_TYPE_MSCHEDULE => __d('calendars', 'スケジュール（会員順）')
+			CalendarsComponent::CALENDAR_DISP_TYPE_MSCHEDULE => __d('calendars', 'スケジュール（会員順）'),
 		);
 	}
 
@@ -152,6 +152,11 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 			'recursive' => -1,
 			'conditions' => $conditions,
 		));
+		// まだ存在しないフレームについての要求を受けても処理のしようがない
+		// エラーを投げる
+		if (! $setting) {
+			$this->setAction('throwBadRequest');
+		}
 		$this->request->data['CalendarFrameSetting'] = $setting['CalendarFrameSetting'];
 		$settingId = $setting['CalendarFrameSetting']['id'];
 		$this->set('settingId', $settingId);
