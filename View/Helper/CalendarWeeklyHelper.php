@@ -91,7 +91,9 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 
 		foreach ($rooms as $room) {
 			$cnt++;
-			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $cnt);
+			$roomID = array_keys($rooms, $room);
+
+			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $roomID[0]);
 			$html .= "<tr><div class='row'>"; //1行の開始
 			//ルーム名
 			$html .= "<td class='calendar-weekly-col-room-name calendar-tbl-td-pos'>";
@@ -99,7 +101,6 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 			$html .= "<p class='calendar-plan-clickable text-left'><span class='calendar-plan-mark {$calendarPlanMark}'></span>";
 			$html .= '<span> ' . $room . '</span>';
 			$html .= "</div><div class='clearfix'></div></div></td>";
-			$roomID = array_keys($rooms, $room);
 			$vars['currentRoomId'] = $roomID[0];//$cnt;
 			//print_r('CURRENTROOM');
 			//print_r($vars['currentRoomId']);

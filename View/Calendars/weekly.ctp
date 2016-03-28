@@ -54,12 +54,28 @@
 	));
 
 	/* 第n週*/
-	$weekTime = mktime(0, 0, 0, $vars['month'], 1, $vars['year']);
-	$nWeekDay = date('w', $weekTime);
-	$nWeek = (int)ceil(($vars['day'] + $nWeekDay) / 7);
-
+	$nWeek = $vars['week'];
+	//n週の日曜日の日付をセットする(n日前にする)
+	$firstSunDay = (1 - $vars['mInfo']['wdayOf1stDay']) + (7 * ($nWeek - 1));
+	$firsttimestamp = mktime(0, 0, 0, $vars['month'], $firstSunDay, $vars['year']);
+	$firstYear = date('Y', $firsttimestamp);
+	$firstMonth = date('m', $firsttimestamp);
+	$firstDay = date('d', $firsttimestamp);
 
 	/* 日（曜日）(指定日を開始日) */
+	$days = array();
+	$wDay = array();
+	$i = 0;
+
+	for ($i = 0; $i < 7; $i++) {
+		$timestamp = mktime(0, 0, 0, $firstMonth, ($firstDay + $i ), $firstYear);
+		$years[$i] = date('Y', $timestamp);
+		$months[$i] = date('m', $timestamp);
+		$days[$i] = (int)date('d', $timestamp);
+		$wDay[$i] = date('w', $timestamp);
+	}
+
+/*  org
 	$days = array();
 	$wDay = array();
 	$i = 0;
@@ -70,9 +86,10 @@
 		$days[$i] = (int)date('d', $timestamp);
 		$wDay[$i] = date('w', $timestamp);
 	}
-
+*/
 	/* 曜日 */
 	$week = array('(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)'); // kuma temp
+
 ?>
 
 
@@ -84,6 +101,9 @@
   				<a href="<?php echo $prevWeekDay; ?>">前週</a>
   			</li>
   			<li><h3 class="calendar-inline"><?php echo __d('calendars', '第') . $nWeek . __d('calendars', '週'); ?></h3></li>
+			<li>
+				<label for="CalendarEventTargetWeek"><h4 class="calendar-inline">{{targetWeek | formatYyyymm : <?php echo $languageId; ?>}}</h4></label>
+			</li>
   			<li class="next" title="<?php echo __d('calendars', '次週へ'); ?>">
   				<a href="<?php echo $nextWeekDay; ?>">次週</a>
   			</li>

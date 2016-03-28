@@ -92,7 +92,7 @@
 		  </div>
 		  <div class="hidden-xs col-sm-4" style="padding:3px;">
 			<li>
-				<label for="CalendarCompDtstartendTargetYear"><h4 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h4></label>
+				<label for="CalendarEventTargetYear"><h4 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h4></label>
 			</li>
 		  </div>
 		  <div class="col-xs-6 col-sm-4 calendar-pager-button">

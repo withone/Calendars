@@ -224,8 +224,8 @@
 			<div class='clearfix'></div>
 		</div>
 	</div>
-
-</div>--><!--全体枠END-->
+-->
+</div><!--全体枠END-->
 
 <!-- 形式切り替えと追加 (下部) -->
 <?php echo $this->element('Calendars.Calendars/change_sort', array('currentSort' => 'member', 'menuPosition' => 'bottom')); ?>

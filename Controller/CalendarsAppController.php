@@ -91,8 +91,12 @@ class CalendarsAppController extends AppController {
 		if (isset($this->request->params['named']['day'])) {
 			$vars['day'] = intval($this->request->params['named']['day']);
 		} else { //省略時は、現在の日を設置
-			//$vars['day'] = intval($userNowArray['day']);
-			$vars['day'] = 1;	//月末日は月によって替わるので、すべての月でかならず存在する日(つまり一日）にする。
+			if (isset($this->request->params['named']['year']) === false && // 年月の指定がない場合は当日
+				isset($this->request->params['named']['month']) === false) {
+				$vars['day'] = intval($userNowArray['day']);
+			} else {
+				$vars['day'] = 1;	//月末日は月によって替わるので、すべての月でかならず存在する日(つまり一日）にする。
+			}
 		}
 	}
 
