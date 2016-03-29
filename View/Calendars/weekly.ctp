@@ -54,7 +54,14 @@
 	));
 
 	/* 第n週*/
-	$nWeek = $vars['week'];
+	if ($vars['week'] == 0) {
+		//日付から第n週を求めて設定
+		$nWeek = ceil(($vars['mInfo']['wdayOf1stDay'] + $vars['day'])/7);
+		//第n週の日曜日の日付に更新
+	} else {
+		$nWeek = $vars['week'];
+	}
+
 	//n週の日曜日の日付をセットする(n日前にする)
 	$firstSunDay = (1 - $vars['mInfo']['wdayOf1stDay']) + (7 * ($nWeek - 1));
 	$firsttimestamp = mktime(0, 0, 0, $vars['month'], $firstSunDay, $vars['year']);

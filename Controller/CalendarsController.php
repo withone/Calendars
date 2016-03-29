@@ -199,7 +199,7 @@ class CalendarsController extends CalendarsAppController {
 		if (isset($this->request->params['named']['week'])) {
 			$vars['week'] = $this->request->params['named']['week'];
 		} else {
-			$vars['week'] = 1; // 省略時は1?
+			$vars['week'] = 0; // 省略時は0
 		}
 		return $vars;
 	}
