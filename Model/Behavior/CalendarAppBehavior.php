@@ -316,6 +316,10 @@ class CalendarAppBehavior extends ModelBehavior {
 		$eventData['CalendarEvent']['dtend'] = $params['dtend'];
 		$eventData['CalendarEvent']['timezone_offset'] = $params['timezone_offset'];
 
+		$eventData['CalendarEvent']['location'] = $params['location'];
+		$eventData['CalendarEvent']['contact'] = $params['contact'];
+		$eventData['CalendarEvent']['description'] = $params['description'];
+
 		//保存するモデルをここで替える
 		$eventData['CalendarEventContent']['linked_model'] = $params['linked_model'];
 		$eventData['CalendarEventContent']['linked_content_key'] = $params['linked_content_key'];

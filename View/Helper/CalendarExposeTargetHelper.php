@@ -30,7 +30,9 @@ class CalendarExposeTargetHelper extends AppHelper {
 	);
 
 /**
- * makeSelectExposeTargetHtmlForEasyEdit
+ * makeSelectExposeTargetHtml
+ *
+ * 公開対象html生成
  *
  * @param int $frameId フレームID
  * @param int $languageId 言語ID
@@ -40,7 +42,7 @@ class CalendarExposeTargetHelper extends AppHelper {
  * @param int $myself 自分自身のroom_id
  * @return string HTML
  */
-	public function makeSelectExposeTargetHtmlForEasyEdit($frameId, $languageId, $vars, $frameSetting, $options, $myself) {
+	public function makeSelectExposeTargetHtml($frameId, $languageId, $vars, $frameSetting, $options, $myself) {
 		//option配列イメージ
 		/*
 		$options = array(
@@ -58,11 +60,12 @@ class CalendarExposeTargetHelper extends AppHelper {
 		$html = $this->NetCommonsForm->label('CalendarActionPlan.plan_room_id' . Inflector::camelize('room_id'),
 			__d('calendars', '公開対象') . $this->_View->element('NetCommons.required'));
 
+		$value = ($myself) ? $myself : Current::read('Room.id');
 		$html .= $this->NetCommonsForm->select('CalendarActionPlan.plan_room_id', $options, array(
 			'class' => 'form-control select-expose-target',
 			'empty' => false,
 			'required' => true,
-			'value' => Current::read('Room.id'),	//value値のoption要素がselectedになる。
+			'value' => $value, //Current::read('Room.id'),	//value値のoption要素がselectedになる。
 			//'ng-model' => "exposeRoomArray[" . $frameId . "]",
 			//'ng-change' => "changeRoom(" . $myself . "," . $frameId . ")",
 			'data-frame-id' => $frameId,

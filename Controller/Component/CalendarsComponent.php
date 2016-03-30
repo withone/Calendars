@@ -119,7 +119,7 @@ class CalendarsComponent extends Component {
 	const	CALENDAR_DEFAULT_MAIL_SEND_TIME = 60;	//メール通知タイミング初期値(60分前=1時間前)
 
 /**
- * カレンダータイムゾーン情報
+ * カレンダータイムゾーン情報	FIXME: 「システム管理」＞「一般設定」の「タイムゾーン一覧」に統合・一元化すること。
  *
  * @var array
  */

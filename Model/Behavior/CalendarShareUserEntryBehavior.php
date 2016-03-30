@@ -59,11 +59,11 @@ class CalendarShareUserEntryBehavior extends CalendarAppBehavior {
 			return $elm;
 		};
 
-		CakeLog::debug("a3");
+		//CakeLog::debug("a3");
 
 		$shareUserData = array();
 		$shareUserData[$model->CalendarEventShareUser->alias] = array_map($func, $shareUsers);
-		$result = $model->CalendarEventShareUser->saveAll($shareUserData[$model->CalendarEventShareUser->alias]);
+		$model->CalendarEventShareUser->saveAll($shareUserData[$model->CalendarEventShareUser->alias]);
 
 		//CakeLog::debug("saveAll() result[" . serialize($result) . "] shareUserData [" . print_r($shareUserData) . "]");
 	}

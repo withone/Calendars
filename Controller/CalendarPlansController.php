@@ -37,7 +37,8 @@ class CalendarPlansController extends CalendarsAppController {
 		'Calendars.CalendarSetting',
 		'Holidays.Holiday',
 		'Rooms.Room',
-		'Calendars.CalendarActionPlan',	//予定CRUDaction専用
+		'Calendars.CalendarActionPlan',	//予定追加変更action専用
+		'Calendars.CalendarDeleteActionPlan',	//予定削除action専用
 		'Rooms.RoomsLanguage',
 		'Users.User',
 	);
@@ -51,7 +52,7 @@ class CalendarPlansController extends CalendarsAppController {
 		'NetCommons.Permission' => array(
 			//アクセスの権限
 			'allow' => array(
-				'edit,add' => 'content_creatable',	//indexとviewは祖先基底クラスNetCommonsAppControllerで許可済
+				'edit,add,delete' => 'content_creatable',	//indexとviewは祖先基底クラスNetCommonsAppControllerで許可済
 				'daylist,show' => 'content_readable', //null, //content_readableは全員に与えられているので、チェック省略
 			),
 		),
@@ -94,46 +95,106 @@ class CalendarPlansController extends CalendarsAppController {
 	}
 
 /**
+ * delete
+ *
+ * @return void
+ */
+	public function delete() {
+		if (! $this->request->is('delete')) {
+			$this->throwBadRequest();
+			return;
+		}
+
+		//Rruleデータ取得
+		$calendarRrule = $this->CalendarRrule->getWorkflowContents('first', array(
+			'recursive' => -1,
+			'conditions' => array(
+				$this->CalendarRrule->alias . '.calendar_id' => $this->data['CalendarDeletePlan']['calendar_id'],
+				$this->CalendarRrule->alias . '.key' => $this->data['CalendarDeletePlan']['calendar_rrule_key']
+			)
+		));
+
+		//Rrule削除権限チェック
+		if (! $this->CalendarRrule->canDeleteWorkflowContent($calendarRrule)) {
+			$this->throwBadRequest();
+			return false;
+		}
+
+		//指定Rrule配下の指定event存在チェック
+		$count = $this->CalendarEvent->find('count', array(
+			'recursive' => -1,
+			'conditions' => array(
+				$this->CalendarEvent->alias . '.calendar_rrule_id' => $this->data['CalendarDeletePlan']['calendar_rrule_id'],
+				$this->CalendarEvent->alias . '.id' => $this->data['CalendarDeletePlan']['calendar_event_id'],
+			),
+		));
+		if ($count <= 0) {
+			$this->throwBadRequest();
+			return false;
+		}
+
+		if (!$this->CalendarDeleteActionPlan->deleteCalendarPlan($this->request->data)) {
+			$this->throwBadRequest();
+			return;
+		}
+
+		$this->redirect(NetCommonsUrl::backToPageUrl());
+	}
+
+/**
+ * _getOptions
+ *
+ * オプション取得
+ *
+ * @return array オプション配列
+ */
+	protected function _getOptions() {
+		$options = array(
+			'controller' => 'calendars',
+			'action' => 'index',
+			'frame_id' => Current::read('Frame.id'),
+		);
+		if (isset($this->request->data['return_style']) && $this->request->data['return_style']) {
+			$options['style'] = $this->request->data['return_style'];
+		}
+		if (isset($this->request->data['return_sort']) && $this->request->data['return_sort']) {
+			$options['sort'] = $this->request->data['return_sort'];
+		}
+		return $options;
+	}
+
+/**
  * add
  *
  * @return void
  */
 	public function add() {
 		$this->view = 'edit';	//add()でレンダリングするviewファイルの名前をadd.ctpからedit.ctpに変える。これをしないと、View/CalendarPlans/add.ctpがないとの警告がでる。
-
 		if ($this->request->is('post')) {
 			//登録処理
 			$this->CalendarActionPlan->set($this->request->data);
 			if (!$this->CalendarActionPlan->validates()) {
 				//失敗なら、エラーメッセージを保持したまま、edit()を実行し、easy_edit.ctpを表示
 				$this->NetCommons->handleValidationError($this->CalendarActionPlan->validationErrors);	//これでエラーmsgが画面上部に数秒間flashされる。
-				$this->request->params['named']['style'] = 'easy';	//FIXME: easyとdetailを切り替える処理をいれること。
+
+				$this->request->params['named']['style'] = (isset($this->request->data['CalendarActionPlan']['is_detail']) && $this->request->data['CalendarActionPlan']['is_detail']) ? 'detail' : 'easy';
+
 				$this->setAction('edit');
 				return;
 			}
 			//成功なら元画面(カレンダーorスケジューラー)に戻る。
 			if (!$this->CalendarActionPlan->saveCalendarPlan($this->request->data)) {
 				//保存失敗
-				CakeLog::debug("DBG: 保存失敗");
+				CakeLog::error("保存失敗");	//FIXME: エラー処理を記述のこと。
 			}
 			//保存成功
-			$options = array(
-				'controller' => 'calendars',
-				'action' => 'index',
-				'frame_id' => Current::read('Frame.id'),
-			);
-			if (isset($this->request->data['return_style']) && $this->request->data['return_style']) {
-				$options['style'] = $this->request->data['return_style'];
-			}
-			if (isset($this->request->data['return_sort']) && $this->request->data['return_sort']) {
-				$options['sort'] = $this->request->data['return_sort'];
-			}
+
+			$options = $this->_getOptions();
 			$url = NetCommonsUrl::actionUrl($options);
 			$this->redirect($url);
 			//return; ここには到達しない.
 		} else {
 			//GETなので edit()を実行
-			CakeLog::debug("DBG4: add() [Not post] was called\n");
 			$this->setAction('edit');
 			return;
 		}
@@ -231,9 +292,24 @@ class CalendarPlansController extends CalendarsAppController {
 		//eメール通知の選択options配列を取得
 		$emailOptions = $this->CalendarActionPlan->getNoticeEmailOption();
 
+		$event = array();	//0件を意味する空配列を入れておく。
+		if (isset($this->request->params['named']['event'])) {
+			$options = array(
+				'conditions' => array(
+					$this->CalendarEvent->alias . '.id' => $this->request->params['named']['event'],
+				),
+				'recursive' => 1, //belongsTo, hasOne, hasManyまで取得
+			);
+			$event = $this->CalendarEvent->find('first', $options);
+			if (!$event) {
+				CakeLog::error(__d('calendars', '対象eventがないのでeventを空にして下に流します。'));
+				$event = array();
+			}
+		}
+
 		$frameId = Current::read('Frame.id');
 		$languageId = Current::read('Language.id');
-		$this->set(compact('frameId', 'languageId', 'vars', 'frameSetting', 'exposeRoomOptions', 'myself', 'emailOptions'));
+		$this->set(compact('frameId', 'languageId', 'vars', 'frameSetting', 'exposeRoomOptions', 'myself', 'emailOptions', 'event'));
 		$this->render($ctpName);
 	}
 

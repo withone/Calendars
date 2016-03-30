@@ -60,7 +60,37 @@
 </div><!-- おわり-->
 
 
-<div name="showPlace">
+<div name="showStartDatetime">
+<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
+	<label><?php echo __d('calendars', '開始日時'); ?></label>
+	<div class="clearfix"></div>
+	<span>
+	<?php
+		$startUserDateWdayTime = $this->CalendarPlan->makeDatetimeWithUserSiteTz($event['CalendarEvent']['dtstart'], $event['CalendarEvent']['is_allday']);
+		echo h($startUserDateWdayTime);
+	?>
+	</span>
+</div><!-- col-sm-10おわり -->
+</div><!-- おわり-->
+
+<div name="showEndDatetime">
+<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
+	<label><?php echo __d('calendars', '終了日時'); ?></label>
+	<div class="clearfix"></div>
+	<span>
+	<?php
+		if ($event['CalendarEvent']['is_allday']) {
+			echo h($startUserDateWdayTime);	//終日指定の時は、開始日時と同じものを表示する
+		} else {
+			$endUserDateWdayTime = $this->CalendarPlan->makeDatetimeWithUserSiteTz($event['CalendarEvent']['dtend'], $event['CalendarEvent']['is_allday']);
+			echo h($endUserDateWdayTime);
+		}
+	?>
+	</span>
+</div><!-- col-sm-10おわり -->
+</div><!-- おわり-->
+
+<div name="showLocation">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
 	<label><?php echo __d('calendars', '場所'); ?></label>
 	<div class="clearfix"></div>
@@ -69,7 +99,7 @@
 </div><!-- おわり-->
 
 
-<div name="showPlace">
+<div name="showContact">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
 	<label><?php echo __d('calendars', '連絡先'); ?></label>
 	<div class="clearfix"></div>
@@ -83,7 +113,7 @@
 	<label><?php echo __d('calendars', '詳細'); ?></label>
 	<div class="clearfix"></div>
 <!-- ここにwysiwyigの内容がきます -->
-	<span><?php echo h($event['CalendarEvent']['description']); ?></span><!-- FIXME: -->
+	<span><?php echo $event['CalendarEvent']['description']; ?></span>
 <!--
 
 	<div>
@@ -131,6 +161,8 @@
 
 <!-- <div class="panel-footer text-center"> -->
 <div class="text-center">
+
+<!--
 <button name="cancel" onclick="location.href = '/faqs/faq_blocks/index/5?frame_id=11'" ng-click="sending=true" ng-disabled="sending" class="btn btn-default btn-workflow " type="button">
 	<span class="glyphicon glyphicon-remove"></span>
 	<?php echo __d('calendars', 'キャンセル'); ?>
@@ -140,6 +172,11 @@
 ?>
     <span class="glyphicon glyphicon-edit"> </span>
 </button>
+-->
+
+<?php
+	echo $this->CalendarPlan->makeShowDetailEditBtnHtml($vars, $event['CalendarEvent']['id']);
+?>
 
 <!-- <hr style="margin-top:0.2em; margin-bottom:0.2em" /> -->
 <!-- 削除は、詳細登録へ移動

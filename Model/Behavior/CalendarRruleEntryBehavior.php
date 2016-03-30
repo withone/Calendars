@@ -68,9 +68,9 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 			$model->loadModels(['CalendarEvent' => 'Calendars.CalendarEvent']);
 		}
 		$params = array(
-			'conditions' => array('CalendarsEvent.id' => $eventData['CalendarEvent']['id']),
+			'conditions' => array('CalendarEvent.id' => $eventData['CalendarEvent']['id']),
 			'recursive' => (-1),
-			'fields' => array('CalendarsEvent.*'),
+			'fields' => array('CalendarEvent.*'),
 			'callbacks' => false
 		);
 		$rruleData = $model->CalendarEvent->find('all', $params);
@@ -80,8 +80,8 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 		}
 
 		$conditions = array(
-			$model->CalendarsEvent->alias . '.calendar_rrule_id' => $eventData['CalendarEvent']['calendar_rrule_id'],
-			$model->CalendarsEvent->alias . '.id <>' => $eventData['CalendarEvent']['id'],
+			$model->CalendarEvent->alias . '.calendar_rrule_id' => $eventData['CalendarEvent']['calendar_rrule_id'],
+			$model->CalendarEvent->alias . '.id <>' => $eventData['CalendarEvent']['id'],
 		);
 
 		if (!$model->CalendarEvent->deleteAll($conditions, false)) {

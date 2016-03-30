@@ -73,6 +73,7 @@ class CalendarUrlHelper extends AppHelper {
 			'year' => $year,
 			'month' => $month,
 			'day' => $day,
+			'block_id' => Current::read('Block.id'),	//これがないと、遷移先でブロックIDがない、とでる。
 			'frame_id' => Current::read('Frame.id'),
 		);
 		if (isset($vars['return_style'])) {

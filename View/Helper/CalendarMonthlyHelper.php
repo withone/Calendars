@@ -45,6 +45,7 @@ class CalendarMonthlyHelper extends AppHelper {
  * @param object &$nctm NetCommonsTimeオブジェクトへの参照
  * @return mixed 該当するなら、拡張予定データを返す。該当しないならfalseを返す。
  */
+	/*
 	protected function _getPlanIfMatchThisDay($plan, $beginOfDay, $endOfDay, $fromTimeOfDay, $toTimeOfDay, &$nctm) {
 		//begin-end, dtstart-dtendともに、以上-未満であることに注意すること。
 		if ($beginOfDay <= $plan['CalendarEvent']['dtstart'] && $plan['CalendarEvent']['dtstart'] < $endOfDay) {
@@ -69,6 +70,7 @@ class CalendarMonthlyHelper extends AppHelper {
 		}
 		return false;
 	}
+	*/
 
 /**
  * _makePlanSummariesHtml
@@ -83,22 +85,8 @@ class CalendarMonthlyHelper extends AppHelper {
  * @return string HTML
  */
 	protected function _makePlanSummariesHtml(&$vars, &$nctm, $year, $month, $day) {
-		$beginOfDay = CalendarTime::dt2CalDt($nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00", $year, $month, $day)));
-		list($yearOfNextDay, $monthOfNextDay, $nextDay) = CalendarTime::getNextDay($year, $month, $day);
-		$endOfDay = CalendarTime::dt2CalDt(
-			$nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00", $yearOfNextDay, $monthOfNextDay, $nextDay)));
-
-		$plansOfDay = array();
-		$fromTimeOfDay = CalendarTime::getHourColonMin($nctm->toUserDatetime($beginOfDay));
-		$toTimeOfDay = CalendarTime::getHourColonMin($nctm->toUserDatetime($endOfDay));
-
-		foreach ($vars['plans'] as $plan) {
-			$thisDayPlan = $this->_getPlanIfMatchThisDay($plan, $beginOfDay, $endOfDay, $fromTimeOfDay, $toTimeOfDay, $nctm);
-			if ($thisDayPlan) {
-				$plansOfDay[] = $thisDayPlan;
-				continue;
-			}
-		}
+		//指定日の開始時間、終了時間および指定日で表示すべき予定群の配列を取得
+		list ($fromTimeOfDay, $toTimeOfDay, $plansOfDay) = $this->CalendarCommon->preparePlanSummaries($vars, $nctm, $year, $month, $day);
 		return $this->getPlanSummariesHtml($vars, $year, $month, $day, $fromTimeOfDay, $toTimeOfDay, $plansOfDay);
 	}
 

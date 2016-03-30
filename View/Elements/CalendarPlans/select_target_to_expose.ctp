@@ -259,7 +259,7 @@
 
 <div class="panel-footer text-center">
 
-<?php echo $this->CalendarPlan->makeEasyEditButtonHtml($vars); ?>
+<?php echo $this->CalendarPlan->makeEditButtonHtml($vars); ?>
 
 </div><!--panel-footerの閉じるタグ-->
 

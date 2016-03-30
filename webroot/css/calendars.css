@@ -208,6 +208,10 @@
 	background-color: #eee;
 }
 
+/*-- マージン左調整 --*/
+.calendar-margin-left-adjust {
+	margin-left: 1em;
+}
 
 .calendar-monthly-table {
 	width: 100%;

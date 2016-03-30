@@ -148,6 +148,16 @@ NetCommonsApp.controller('CalendarsTimeline', ['$scope', function($scope) {
 
 }]);
 
+NetCommonsApp.controller('CalendarDetailEditWysiwyg',
+    ['$scope', 'NetCommonsWysiwyg', function($scope, NetCommonsWysiwyg) {
+      /**
+       * tinymce
+       *
+       * @type {object}
+       */
+      $scope.tinymce = NetCommonsWysiwyg.new();
+    }]
+);
 NetCommonsApp.controller('CalendarsDetailEdit',
     ['$scope', 'ConfirmRepeat', function($scope, ConfirmRepeat) {
       $scope.repeatArray = [];  //key=Frame.id、value=T/F of checkbox
@@ -165,10 +175,47 @@ NetCommonsApp.controller('CalendarsDetailEdit',
       $scope.selectRepeatEndType = [];
       $scope.useNoticeMail = [];
 
+      $scope.detailStartDate;
+      $scope.detailStartDatetime;
+      $scope.detailEndDate;
+      $scope.detailEndDatetime;
+
       console.log('DEBUGGING...');
 
       $scope.initialize = function(data) {
         $scope.data = angular.fromJson(data);
+      };
+
+      $scope.changeDetailStartDate = function(targetId) {
+        //
+        if ($scope.detailStartDate != '') {
+          $('#' + targetId).val($scope.detailStartDate);
+          //
+        }
+      };
+
+      $scope.changeDetailStartDatetime = function(targetId) {
+        //
+        if ($scope.detailStartDatetime != '') {
+          $('#' + targetId).val($scope.detailStartDatetime);
+          //
+        }
+      };
+
+      $scope.changeDetailEndDate = function(targetId) {
+        //
+        if ($scope.detailEndDate != '') {
+          $('#' + targetId).val($scope.detailEndDate);
+          //
+        }
+      };
+
+      $scope.changeDetailEndDatetime = function(targetId) {
+        //
+        if ($scope.detailEndDatetime != '') {
+          $('#' + targetId).val($scope.detailEndDatetime);
+          //
+        }
       };
 
       $scope.changeYearMonth = function(prototypeUrl) {

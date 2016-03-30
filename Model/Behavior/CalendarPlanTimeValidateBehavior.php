@@ -83,6 +83,8 @@ class CalendarPlanTimeValidateBehavior extends ModelBehavior {
 			//失敗なのでそのまま返す
 			return false;
 		}
+		//数字であること、位置桁が一致していることから、ＯＫとする。。
+		/*
 		if ($date) {
 			if (! self::date($date, 'ymd')) {	//YYYY-MM-DD
 				return false;
@@ -93,6 +95,7 @@ class CalendarPlanTimeValidateBehavior extends ModelBehavior {
 				return false;
 			}
 		}
+		*/
 		return true;
 	}
 

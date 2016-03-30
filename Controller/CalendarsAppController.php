@@ -40,6 +40,7 @@ class CalendarsAppController extends AppController {
 		'Calendars.CalendarFrameSetting',
 		'Calendars.CalendarEventShareUser',
 		'Calendars.CalendarEventSelectRoom',
+		'Rooms.Room',
 	);
 
 /**
@@ -186,5 +187,11 @@ class CalendarsAppController extends AppController {
 			'private' => Room::PRIVATE_PARENT_ID,	//プライベート
 			'member' => Room::ROOM_PARENT_ID,	//全会員
 		);
+
+		//room_idとspace_idの対応表を載せておく。
+		$rooms = $this->Room->find('all', array('recursive' => -1, 'order' => array($this->Room->alias . '.id')));
+		$vars['roomSpaceMaps'] = Hash::combine($rooms, '{n}.Room.id', '{n}.Room.space_id');
+		//CakeLog::debug("DBG: roomSpaceMaps[" . print_r($vars['roomSpaceMaps'], true) . "]");
 	}
+
 }

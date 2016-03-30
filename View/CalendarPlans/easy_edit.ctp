@@ -9,93 +9,29 @@
 
 <div class='h3'><?php echo __d('calendars', 'カレンダー'); ?></div>
 <div class="panel panel-default">
-<?php
-	$options = array(
-		'type' => 'post',
-		'url' => NetCommonsUrl::actionUrl(array(
-			'plugin' => 'calendars',
-			'controller' => 'calendar_plans',
-			'action' => 'add',
-			'frame_id' => Current::read('Frame.id'),
-		)),
-		'inputDefaults' => array(
-			'label' => false,	//以降のinput要素のlabelをデフォルト抑止。必要なら各inputで明示指定する。
-			'div' => false,	//以降のinput要素のdivをデフォルト抑止。必要なら各inputで明示指定する。
-		),
-		'class' => 'form-horizontal',
-	);
-	echo $this->NetCommonsForm->create('CalendarActionPlan', $options);	//<!-- <form class="form-horizontal"> --> <!-- これで<div class-"form-group row"のrowを省略できる -->
-?>
-	<?php echo $this->NetCommonsForm->hidden('Frame.id', array('value' => Current::read('Frame.id'))); ?>
-	<?php echo $this->NetCommonsForm->hidden('Block.id', array('value' => Current::read('Block.id'))); ?>
-	<?php echo $this->NetCommonsForm->hidden('Block.key', array('value' => Current::read('Block.key'))); ?>
+<?php echo $this->element('Calendars.CalendarPlans/edit_form_create'); ?>
+
+	<?php echo $this->element('Calendars.CalendarPlans/required_hiddens'); ?>
 
 	<?php
-		$returns = array('return_style', 'return_sort', 'return_tab');
-		foreach ($returns as $return) {
-			if (isset($this->request->params['named'][$return])) {
-				$this->NetCommonsForm->unlockField('CalendarActionPlan.' . $return);
-				echo $this->NetCommonsForm->hidden('CalendarActionPlan.' . $return, array(
-					'value' => h($this->request->params['named'][$return])
-				));
-			}
-		}
-	?>
+		echo $this->element('Calendars.CalendarPlans/return_hiddens', array('model' => 'CalendarActionPlan')); ?>
 
-	<?php 
-		//$this->NetCommonsForm->unlockField('CalendarActionPlan.full_start_datetime');
-		//echo $this->NetCommonsForm->hidden('CalendarActionPlan.full_start_datetime', array('value' => '' ));
-		//$this->NetCommonsForm->unlockField('CalendarActionPlan.full_end_datetime');
-		//echo $this->NetCommonsForm->hidden('CalendarActionPlan.full_end_datetime', array('value' => '' ));
-	?>
-
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.detail_start_datetime', array('value' => '' )); ?>
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.detail_end_datetime', array('value' => '' )); ?>
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.timezone_offset', array('value' => Current::read('User.timezone') )); ?> 
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.is_detail', array('value' => '0' )); ?> 
-
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.location', array('value' => '' )); ?> 
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.contact', array('value' => '' )); ?> 
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.description', array('value' => '' )); ?> 
-
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.is_repeat', array('value' => '0' )); ?> 
-
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.repeat_freq', array('value' => '' )); ?> 
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.rrule_interval', array('value' => '' )); ?> 
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.rrule_byday', array('value' => '' )); ?> 
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.bymonthday', array('value' => '' )); ?> 
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.rrule_bymonth', array('value' => '' )); ?> 
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.rrule_term', array('value' => '' )); ?> 
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.rrule_count', array('value' => '' )); ?> 
-	<?php echo $this->NetCommonsForm->hidden('CalendarActionPlan.rrule_until', array('value' => '' )); ?> 
+	<?php echo $this->element('Calendars.CalendarPlans/easy_edit_hiddens'); ?>
 
 <div class="panel-body">
 
 <div class="form-group" name="inputTitle">
 <div class="col-sm-10 col-sm-offset-1">
 
-	<label><?php echo __d('calendars', '件名') . $this->element('NetCommons.required'); ?></label>
-<!-- <div class="input-group"> -->
-<?php
-	//inputWithTitleIcon()の第１引数がfieldName, 第２引数が$titleIconFieldName
-	echo $this->TitleIcon->inputWithTitleIcon('CalendarActionPlan.title', 'CalendarActionPlan.title_icon',
-		array('label' => false,
-			//'ng-model' => 'calendars.plan.title',
-			'div' => false,
-	));
-?>
-<!-- <i><img style='width:1.8em; height:1.3em;' src='/calendars/img/svg/icon-weather3.svg' /></i> -->
-
-<!-- </div> --><!-- input-groupおわり -->
+	<?php echo $this->element('Calendars.CalendarPlans/edit_title'); ?>
 
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->
 
 <div class="form-group" name="selectRoomForOpen">
 <div class="col-sm-10 col-sm-offset-1">
-<?php
-	echo $this->CalendarExposeTarget->makeSelectExposeTargetHtmlForEasyEdit($frameId, $languageId, $vars, $frameSetting, $exposeRoomOptions, $myself);
-?>
+
+	<?php echo $this->CalendarExposeTarget->makeSelectExposeTargetHtml($frameId, $languageId, $vars, $frameSetting, $exposeRoomOptions, $myself); ?>
 
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->
@@ -103,23 +39,8 @@
 <!-- 予定の共有 START -->
 <div class="form-group calendar-plan-share_<?php echo $frameId; ?>" name="planShare" style="display: none; margin-top:0.5em;">
 <div class="col-sm-9 col-sm-offset-2" style="padding-left:0px">
-<?php
 
-		$usersJson = array();
-		if (isset($this->data['GroupsUsersDetail']) && is_array($this->data['GroupsUsersDetail'])) {
-			foreach ($this->data['GroupsUsersDetail'] as $groupUser) {
-				$usersJson[] = $this->UserSearch->convertUserArrayByUserSelection($groupUser, 'User');
-			}
-		}
-		$this->NetCommonsForm->unlockField('GroupsUser');
-		echo $this->element('Groups.select', array(
-			'title' => __d('calendars', '予定を共有する人を選択してください'),
-			//'pluginModel'キーを省略すると、Groupプラグインの'GroupsUser'モデルがpluginModelとして内部指定されるようだ。
-			'selectUsers' => (isset($this->request->data['selectUsers'])) ? $this->request->data['selectUsers'] : null,
-			'roomId' => Room::ROOM_PARENT_ID, //全会員を表すID(roomId)を指定する。
-		));
-
-?>
+	<?php echo $this->element('Calendars.CalendarPlans/edit_plan_share'); ?>
 
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->
@@ -317,7 +238,7 @@
 
 <div class="panel-footer text-center">
 
-<?php echo $this->CalendarPlan->makeEasyEditButtonHtml('CalendarActionPlan.status', $vars); ?>
+<?php echo $this->CalendarPlan->makeEditButtonHtml('CalendarActionPlan.status', $vars); ?>
 
 </div><!--panel-footerの閉じるタグ-->
 

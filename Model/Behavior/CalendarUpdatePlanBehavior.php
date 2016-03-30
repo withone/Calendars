@@ -159,7 +159,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  */
 	public function getCalendarEventAndRrule(Model &$model, $eventId, $editRrule) {
 		$params = array(
-			'conditions' => array('CalendarsEvent.id' => $eventId),
+			'conditions' => array('CalendarEvent.id' => $eventId),
 			'recursive' => 0,		//belongTo, hasOneの１跨ぎの関係までとってくる。
 			'fields' => array('CalendarEvent.*', 'CalendarRrule.*'),
 			'callbacks' => false

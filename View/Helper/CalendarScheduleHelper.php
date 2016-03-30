@@ -47,23 +47,8 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
  * @return string HTML
  */
 	protected function _makeSchedulePlanSummariesHtml(&$vars, &$nctm, $year, $month, $day, $idx, &$cnt) {
-		$beginOfDay = CalendarTime::dt2CalDt($nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00", $year, $month, $day)));
-		list($yearOfNextDay, $monthOfNextDay, $nextDay) = CalendarTime::getNextDay($year, $month, $day);
-		$endOfDay = CalendarTime::dt2CalDt(
-			$nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00", $yearOfNextDay, $monthOfNextDay, $nextDay)));
-
-		$plansOfDay = array();
-		$fromTimeOfDay = CalendarTime::getHourColonMin($nctm->toUserDatetime($beginOfDay));
-		$toTimeOfDay = CalendarTime::getHourColonMin($nctm->toUserDatetime($endOfDay));
-
-		foreach ($vars['plans'] as $plan) {
-			$thisDayPlan = $this->_getPlanIfMatchThisDay($plan, $beginOfDay, $endOfDay, $fromTimeOfDay, $toTimeOfDay, $nctm);
-			if ($thisDayPlan) {
-				$plansOfDay[] = $thisDayPlan;
-				continue;
-			}
-		}
-
+		//指定日の開始時間、終了時間および指定日で表示すべき予定群の配列を取得
+		list ($fromTimeOfDay, $toTimeOfDay, $plansOfDay) = $this->CalendarCommon->preparePlanSummaries($vars, $nctm, $year, $month, $day);
 		return $this->getPlanSummariesHtml2($vars, $year, $month, $day, $fromTimeOfDay, $toTimeOfDay, $plansOfDay, $idx, $cnt);
 	}
 

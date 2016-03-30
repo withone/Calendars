@@ -2,31 +2,25 @@
 ?>
 <?php echo $this->element('Calendars.scripts'); ?>
 
-<article ng-controller="CalendarsDetailEdit" class="block-setting-body">
+<div ng-controller="CalendarsDetailEdit" class="block-setting-body"
+	ng-init="initialize(<?php echo h(json_encode(array('frameId' => Current::read('Frame.id')))); ?>)">
 
-<div class='h3'>カレンダー詳細</div>
+<div class='h3'><?php echo __d('calendars', 'カレンダー詳細'); ?></div>
 <div class="panel panel-default">
+<?php echo $this->element('Calendars.CalendarPlans/edit_form_create'); ?>
 
-<form class="form-horizontal"> <!-- これで<div class-"form-group row"のrowを省略できる -->
+	<?php echo $this->element('Calendars.CalendarPlans/required_hiddens'); ?>
+
+	<?php echo $this->element('Calendars.CalendarPlans/return_hiddens', array('model' => 'CalendarActionPlan')); ?>
+
+	<?php echo $this->element('Calendars.CalendarPlans/detail_edit_hiddens'); ?>
 
 <div class="panel-body">
 
 <div class="form-group" name="inputTitle">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
 
-	<label><?php echo __d('calendars', '件名'); ?></label>
-<div class="input-group">
-	<div class="input-group-addon">
-		<i><img style='width:1.8em; height:1.3em;' src='/calendars/img/svg/icon-weather3.svg' /></i>
-	</div>
-
-<?php echo $this->NetCommonsForm->input('CalendarCompDtstartend.title', array(
-		'type' => 'text',
-		'label' => false,
-		//'required' => true,
-		'div' => false,
-	)); ?>
-</div><!-- input-groupおわり -->
+	<?php echo $this->element('Calendars.CalendarPlans/edit_title'); ?>
 
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->
@@ -34,35 +28,15 @@
 
 <div class="form-group" name="selectRoomForOpen">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
-<?php
 
-		$myself = '5'; //自分自身の時、グループ共有が有効になる。
+	<?php
 
-		$selectedIdx = 2;	//ここでは、idx=2 つまり　デザインチームを初期値とする。
-
-		$options = array(
-			'1' => __d('calendars', 'パブリックスペース'),
-			'2' => __d('calendars', '開発部'),
-			'3' => __d('calendars', 'デザインチーム'),
-			'4' => __d('calendars', 'プログラマーチーム'),
-			$myself => __d('calendars', '自分自身'),
-			'6' => __d('calendars', '全会員'),
-		);
-
-		echo $this->NetCommonsForm->label('CalendarCompDtstartend' . Inflector::camelize('room_id'), __d('calendars', '公開対象'));
-
-		echo $this->NetCommonsForm->select('CalendarCompDtstartend.room_id', $options, array(
-			//'value' => __d('calendars', '開発部'),		//valueは初期値
-			//'selected' => $selectedIdx,
-			'class' => 'form-control',
-			'empty' => false,
-			'required' => true,
-			'ng-model' => "exposeRoomArray[" . $frameId . "]",
-			'ng-change' => "changeRoom(" . $myself . "," . $frameId . ")",
-			//'ng-init' => "exposeRoomArray[" . $frameId . "]=3",
-
-		));
-?>
+		if (isset($event['CalendarEvent']['room_id'])) {
+			CakeLog::debug("DBG: event room_id[" . $event['CalendarEvent']['room_id'] . "]");
+			$myself = $event['CalendarEvent']['room_id'];	//FIXME: 本当は、RoomsをTreeビヘイビアのparend()を使って空間IDに変換する必要あり。要改修。
+		}
+		echo $this->CalendarExposeTarget->makeSelectExposeTargetHtml($frameId, $languageId, $vars, $frameSetting, $exposeRoomOptions, $myself);
+	?>
 
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->
@@ -70,15 +44,8 @@
 <!-- 予定の共有 START -->
 <div class="form-group calendar-plan-share_<?php echo $frameId; ?>" name="planShare" style="display: none; margin-top:0.5em;">
 <div class="col-xs-12 col-sm-8 col-sm-offset-2">
-<?php
-		$usersJson = array();
-		if (isset($this->data['GroupsUsersDetail']) && is_array($this->data['GroupsUsersDetail'])) {
-			foreach ($this->data['GroupsUsersDetail'] as $groupUser) {
-				$usersJson[] = $this->UserSearch->convertUserArrayByUserSelection($groupUser, 'User');
-			}
-		}
-		echo $this->element('Groups.select', array('title' => '予定を共有する人を選択してください'));
-?>
+
+	<?php echo $this->element('Calendars.CalendarPlans/edit_plan_share'); ?>
 
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->
@@ -95,7 +62,7 @@
 <?php
 	$useTime = 'useTime[' . $frameId . ']';
 
-	echo $this->NetCommonsForm->input('enabletime', array(
+	echo $this->NetCommonsForm->input('CalendarActionPlan.enable_time', array(
 		'type' => 'checkbox',
 		'checked' => false,
 		'label' => false,
@@ -116,6 +83,21 @@
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->
 
+<?php 
+	$startDatetimeValue = '';
+	if (isset($event['CalendarActionPlan']['detail_start_datetime'])) {
+		$startDatetimeValue = $event['CalendarActionPlan']['detail_start_datetime'];
+	}
+	$this->NetCommonsForm->unlockField('CalendarActionPlan.detail_start_datetime');
+	echo $this->NetCommonsForm->hidden('CalendarActionPlan.detail_start_datetime', array('value' => $startDatetimeValue));
+
+	$endDatetimeValue = '';
+	if (isset($event['CalendarActionPlan']['detail_end_datetime'])) {
+		$endDatetimeValue = $event['CalendarActionPlan']['detail_end_datetime'];
+	}
+	$this->NetCommonsForm->unlockField('CalendarActionPlan.detail_end_datetime');
+	echo $this->NetCommonsForm->hidden('CalendarActionPlan.detail_end_datetime', array('value' => $endDatetimeValue));
+?>
 
 <div class="form-group" name="inputStartEndDateTime">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
@@ -142,49 +124,52 @@
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD',
 	)));
-
-
-	echo $this->NetCommonsForm->input('CalendarCompDtstartend.start_date',
+//aaaa
+	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_start_datetime',
 	array(
 		'div' => false,
 		'label' => false,
 		'datetimepicker' => 'datetimepicker',
 		'datetimepicker-options' => $pickerOpt,
-		'value' => (empty($date)) ? '' : intval($date),
-		'ng-model' => $ngModel,
+		'convert_timezone' => false,	//日付だけの場合、User系の必要あるのでoffし、カレンダー側でhandlingする。
+		'ng-model' => 'detailStartDate',
+		'ng-change' => "changeDetailStartDate('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')",	//FIXME: selectイベントに変えたい。
+		//////'value' => $start_datetime_value,
+		//////'value' => (empty($date)) ? '' : intval($date),
+		//////'ng-model' => $ngModel,
 		//'ng-show' => $useTime,		//表示条件１
 		//'ng-style' => "{float: 'left'}",
 	));
-
-	$pickerOpt = str_replace('"', "'", json_encode(array(
-		'format' => 'YYYY-MM-DD HH:mm',
-	)));
 ?>
 	<div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
 
 </div><!-- 表示条件１のinput-groupおわり -->
 </div><!--ng-show 表示条件１END-->
 
-
 <div ng-show="<?php echo $useTime; ?>"><!--表示条件２START-->
 <div class="input-group"><!-- 表示条件２のinput-group -->
 
 <?php
 	$ngModel = 'startDatetime[' . $frameId . ']';
-	echo $this->NetCommonsForm->input('CalendarCompDtstartend.start_datetime',
+	$pickerOpt = str_replace('"', "'", json_encode(array(
+		'format' => 'YYYY-MM-DD HH:mm',
+	)));
+	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_start_datetime',
 	array(
 		'div' => false,
 		'label' => false,
 		'datetimepicker' => 'datetimepicker',
 		'datetimepicker-options' => $pickerOpt,
-		'value' => (empty($date)) ? '' : intval($date),
-		'ng-model' => $ngModel,
+		'convert_timezone' => false,	//日付だけの場合、User系の必要あるのでoffし、カレンダー側でhandlingする。
+		'ng-model' => 'detailStartDatetime',
+		'ng-change' => "changeDetailStartDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')",	//FIXME: selectイベントに変えたい。
+		//////'value' => $start_datetime_value,
+		//////'value' => (empty($date)) ? '' : intval($date),
+		//////'ng-model' => $ngModel,
 		//'ng-show' => '!' . $useTime, //'!' . $useTime,	//表示条件を表示条件１の逆にする。
 	));
-
 ?>
 	<div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><i class="glyphicon glyphicon-time"></i></div>
-
 
 </div><!-- 表示条件２のinput-groupおわり -->
 </div><!--ng-show 表示条件２END-->
@@ -193,9 +178,6 @@
 
 <div class="clearfix"></div><!-- 次行 -->
 
-
-
-
 <br />
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
 	<label>
@@ -203,14 +185,7 @@
 	</label>
 </div><!-- col-sm-10おわり-->
 
-
-
-
-
 <div class="clearfix"></div><!-- 次行 -->
-
-
-
 
 <div class="col-xs-12 col-sm-5 col-sm-offset-1">
 
@@ -218,7 +193,7 @@
 <div class="input-group"><!-- 表示条件１のinput-group -->
 
 <?php
-	echo $this->element('NetCommons.datetimepicker');	//これを頭にいれること！
+	////echo $this->element('NetCommons.datetimepicker');	//すでに、From側で組み込み済なのでcommentout
 
 	$date = '';
 	$ngModel = 'endDate[' . $frameId . ']';
@@ -228,53 +203,54 @@
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD',
 	)));
-
-	echo $this->NetCommonsForm->input('CalendarCompDtstartend.end_date',
+	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_end_datetime',
 	array(
 		'div' => false,
 		'label' => false,
 		'datetimepicker' => 'datetimepicker',
 		'datetimepicker-options' => $pickerOpt,
-		'value' => (empty($date)) ? '' : intval($date),
-		'ng-model' => $ngModel,
+		'convert_timezone' => false,	//日付だけの場合、User系の必要あるのでoffし、カレンダー側でhandlingする。
+		'ng-model' => 'detailEndDate',
+		'ng-change' => "changeDetailEndDate('" . 'CalendarActionPlan' . Inflector::camelize('detail_end_datetime') . "')",	//FIXME: selectイベントに変えたい。
+		//////'value' => $end_datetime_value,
+		//////'value' => (empty($date)) ? '' : intval($date),
+		//////'ng-model' => $ngModel,
 		//'ng-show' => $useTime,		//表示条件１
 		//'ng-style' => "{float: 'left'}",
 	));
-
-	$pickerOpt = str_replace('"', "'", json_encode(array(
-		'format' => 'YYYY-MM-DD HH:mm',
-	)));
 ?>
 	<div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
 
 </div><!-- 表示条件１のinput-groupおわり -->
 </div><!-- ng-show 表示条件１END-->
 
-
-
 <div ng-show="<?php echo $useTime; ?>"><!--表示条件２START-->
 <div class="input-group"><!-- 表示条件２のinput-group -->
 
 <?php
 	$ngModel = 'endDatetime[' . $frameId . ']';
-	echo $this->NetCommonsForm->input('CalendarCompDtstartend.end_datetime',
+	$pickerOpt = str_replace('"', "'", json_encode(array(
+		'format' => 'YYYY-MM-DD HH:mm',
+	)));
+	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_end_datetime',
 	array(
 		'div' => false,
 		'label' => false,
 		'datetimepicker' => 'datetimepicker',
 		'datetimepicker-options' => $pickerOpt,
-		'value' => (empty($date)) ? '' : intval($date),
-		'ng-model' => $ngModel,
+		'convert_timezone' => false,	//日付だけの場合、User系の必要あるのでoffし、カレンダー側でhandlingする。
+		'ng-model' => 'detailEndDatetime',
+		'ng-change' => "changeDetailEndDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_end_datetime') . "')",	//FIXME: selectイベントにかえたい。
+		//////'value' => $end_datetime_value,
+		//////'value' => (empty($date)) ? '' : intval($date),
+		//////'ng-model' => $ngModel,
 		//'ng-show' => '!' . $useTime, //'!' . $useTime,	//表示条件を表示条件１の逆にする。
 	));
-
 ?>
 	<div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><i class="glyphicon glyphicon-time"></i></div>
 
-
 </div><!-- 表示条件２のinput-groupおわり -->
 </div><!-- ng-show 表示条件２END-->
-
 
 </div><!-- form-group name="inputStartEndDateTime"おわり -->
 </div><!-- kuma add -->
@@ -284,45 +260,13 @@
 
 <br />
 <?php
+		$options = Hash::combine(CalendarsComponent::$tzTbl, '{s}.2', '{s}.0');
 
-		$options = array(
-			'_TZ_GMTM12' => __d('calendars', '(GMT-12:00) エニウェトク、クエジェリン'),
-			'_TZ_GMTM11' => __d('calendars', '(GMT-11:00) ミッドウェー島、サモア'),
-			'_TZ_GMTM10' => __d('calendars', '(GMT-10:00) ハワイ'),
-			'_TZ_GMTM9' => __d('calendars', '(GMT-9:00) アラスカ'),
-			'_TZ_GMTM8' => __d('calendars', '(GMT-8:00) 太平洋標準時（米国およびカナダ）、ティファナ'),
-			'_TZ_GMTM7' => __d('calendars', '(GMT-7:00) 山地標準時（米国およびカナダ）'),
-			'_TZ_GMTM6' => __d('calendars', '(GMT-6:00) 中部標準時（米国およびカナダ）、メキシコシティ'),
-			'_TZ_GMTM5' => __d('calendars', '(GMT-5:00) 東部標準時（米国およびカナダ）、ボゴタ、リマ、キト'),
-			'_TZ_GMTM4' => __d('calendars', '(GMT-4:00) 大西洋標準時（カナダ）、カラカス、ラパス'),
-			'_TZ_GMTM35' => __d('calendars', '(GMT-3:30) ニューファンドランド'),
-			'_TZ_GMTM3' => __d('calendars', '(GMT-3:00) ブラジリア、ブエノスアイレス、ジョージタウン'),
-			'_TZ_GMTM2' => __d('calendars', '(GMT-2:00) 中央大西洋'),
-			'_TZ_GMTM1' => __d('calendars', '(GMT-1:00) アゾレス諸島、カーボベルデ諸島'),
-			'_TZ_GMT0' => __d('calendars', '(GMT) グリニッジ標準時、ダブリン、ロンドン、リスボン、エジンバラ'),
-			'_TZ_GMTP1' => __d('calendars', '(GMT+1:00) ブリュッセル、コペンハーゲン、マドリッド、パリ、アムステルダム'),
-			'_TZ_GMTP2' => __d('calendars', '(GMT+2:00) アテネ、イスタンブール、エルサレム、カイロ、ヘルシンキ'),
-			'_TZ_GMTP3' => __d('calendars', '(GMT+3:00) バグダッド、ナイロビ、クウェート、リヤド、モスクワ'),
-			'_TZ_GMTP35' => __d('calendars', '(GMT+3:30) テヘラン'),
-			'_TZ_GMTP4' => __d('calendars', '(GMT+4:00) アブダビ、マスカット、バク、トビリシ'),
-			'_TZ_GMTP45' => __d('calendars', '(GMT+4:30) カブール'),
-			'_TZ_GMTP5' => __d('calendars', '(GMT+5:00) イスラマバード、カラチ、タシケント、エカテリンバーグ'),
-			'_TZ_GMTP55' => __d('calendars', '(GMT+5:30) カルカッタ、チェンナイ、ムンバイ、ニューデリー'),
-			'_TZ_GMTP6' => __d('calendars', '(GMT+6:00) ダッカ、アルマティ、スリ・ジャヤワルダナプラ'),
-			'_TZ_GMTP7' => __d('calendars', '(GMT+7:00) バンコク、ハノイ、ジャカルタ'),
-			'_TZ_GMTP8' => __d('calendars', '(GMT+8:00) シンガポール、パース、台北、北京、重慶、香港、ウルムチ'),
-			'_TZ_GMTP9' => __d('calendars', '(GMT+9:00) 東京、大阪、札幌、ソウル、ヤクーツク'),
-			'_TZ_GMTP95' => __d('calendars', '(GMT+9:30) アデレード、ダーウィン'),
-			'_TZ_GMTP10' => __d('calendars', '(GMT+10:00) ウラジオストク、キャンベラ、メルボルン、シドニー、グアム'),
-			'_TZ_GMTP11' => __d('calendars', '(GMT+11:00) マガダン、ソロモン諸島、ニューカレドニア'),
-			'_TZ_GMTP12' => __d('calendars', '(GMT+12:00) オークランド、ウェリントン、フィジー、カムチャッカ'),
-		);
+		echo $this->NetCommonsForm->label('CalendarActionPlan.timezone_offset' . Inflector::camelize('timezone'), __d('calendars', 'タイムゾーン'));
 
-
-		echo $this->NetCommonsForm->label('CalendarCompDtstartend' . Inflector::camelize('timezone'), __d('calendars', 'タイムゾーン'));
-
-		echo $this->NetCommonsForm->select('CalendarCompDtstartend.timezone', $options, array(
-			'value' => __d('calendars', '_TZ_GMTP9'),		//valueは初期値
+		echo $this->NetCommonsForm->select('CalendarActionPlan.timezone_offset', $options, array(
+			//'value' => __d('calendars', '_TZ_GMTP9'),		//valueは初期値
+			'value' => Current::read('User.timezone'),		//valueは初期値
 			'class' => 'form-control',
 			'empty' => false,
 			'required' => true,
@@ -334,10 +278,8 @@
 
 <div class="form-group" name="inputLocation">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
-
 	<label><?php echo __d('calendars', '場所'); ?></label>
-
-<?php echo $this->NetCommonsForm->input('CalendarCompDtstartend.location', array(
+	<?php echo $this->NetCommonsForm->input('CalendarActionPlan.location', array(
 		'type' => 'text',
 		'label' => false,
 		//'required' => true,
@@ -348,10 +290,8 @@
 
 <div class="form-group" name="inputContact">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
-
 	<label><?php echo __d('calendars', '連絡先'); ?></label>
-
-<?php echo $this->NetCommonsForm->input('CalendarCompDtstartend.contact', array(
+	<?php echo $this->NetCommonsForm->input('CalendarActionPlan.contact', array(
 		'type' => 'text',
 		'label' => false,
 		//'required' => true,
@@ -361,16 +301,14 @@
 </div><!-- form-groupおわり -->
 
 
-<div class="form-group" name="inputDescription">
+<div class="form-group" name="inputDescription" ng-controller="CalendarDetailEditWysiwyg">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
-
 	<label>
 		<?php echo __d('calendars', '詳細'); ?>
 	</label>
 </div>
 <div class="col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 calendar-detailedit-detail">
-
-	<?php echo $this->NetCommonsForm->wysiwyg('CalendarCompDtstartend.description', array(
+	<?php echo $this->NetCommonsForm->wysiwyg('CalendarActionPlan.description', array(
 		'label' => false,
 		'required' => false,
 	));
@@ -396,7 +334,7 @@
 			<div class="form-group" name="checkRrule">
 			<div class="col-xs-12 col-sm-12">
 
-			<?php echo $this->NetCommonsForm->input('repeat', array(
+			<?php echo $this->NetCommonsForm->input('CalendarActionPlan.is_repeat', array(
 				'type' => 'checkbox',
 				'checked' => false,
 				'label' => false,
@@ -446,7 +384,7 @@
 						break;
 					}
 
-					echo $this->NetCommonsForm->input('selectPeriodTypeFrameid' . $frameId . 'Of', array(
+					echo $this->NetCommonsForm->input('CalendarActionPlan.repeat_freq', array(
 								'legend' => false,
 								'type' => 'radio',
 								'options' => array(
@@ -483,7 +421,8 @@
 						'6' => __d('calendars', '6日'),
 					);
 
-					echo $this->NetCommonsForm->select('CalendarCompRrule.daily', $options, array(
+					//////echo $this->NetCommonsForm->select('CalendarActionPlan.rrule_interval[DAILY]', $options, array(
+					echo $this->NetCommonsForm->select('CalendarActionPlan.rrule_interval', $options, array(
 						'value' => __d('calendars', '1日'),		//valueは初期値
 						'class' => 'form-control',
 						'empty' => false,
@@ -508,7 +447,7 @@
 						'5' => __d('calendars', '5週'),
 						'6' => __d('calendars', '6週'),
 					);
-
+/* aaaaa
 					echo $this->NetCommonsForm->select('CalendarCompRrule.weekly', $options, array(
 						'value' => __d('calendars', '1週'),		//valueは初期値
 						'class' => 'form-control',
@@ -516,6 +455,7 @@
 						'required' => true,
 						'div' => false,
 					));
+*/
 ?>
 				</div>
 				<div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div>
@@ -527,6 +467,7 @@
 	//第一引数(フィールド名)の最後に、.(ドット)をつけると、複数同じフィールド名のチェックボックスがあると、
 	//cakePHP側では配列でデータを受けるようになる、とのこと。。要確認
 	//
+/* aaaa
 	echo $this->NetCommonsForm->input('dayOfTheWeek.', array(
 		//'type' => 'checkbox',
 		//'checked' => false,
@@ -536,6 +477,7 @@
 		'options' => array('日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'),
 		'class' => 'text-left calendar-choice-day-of-the-week_' . $frameId,
 	));
+*/
 ?>
 				</div><!--col-sm-12おわり-->
 				</div><!-- row form-group終わり-->
@@ -558,7 +500,7 @@
 						'10' => __d('calendars', '10ヶ月'),
 						'11' => __d('calendars', '11ヶ月'),
 					);
-
+/* aaaaa
 					echo $this->NetCommonsForm->select('CalendarCompRrule.monthly', $options, array(
 						'value' => __d('calendars', '1ヶ月'),	//valueは初期値
 						'class' => 'form-control',
@@ -566,6 +508,7 @@
 						'required' => true,
 						'div' => false,
 					));
+*/
 ?>
 				</div>
 				<div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div>
@@ -614,7 +557,7 @@
 						'4_5' => __d('calendars', '最終週金曜日'),
 						'4_6' => __d('calendars', '最終週土曜日'),
 					);
-
+/* aaaaaa
 					echo $this->NetCommonsForm->select('CalendarCompRrule.dayofweek', $options, array(
 						//'' => __d('calendars', '-曜日指定-'),
 						'class' => 'form-control',
@@ -624,7 +567,7 @@
 						'ng-model' => 'monthlyDayOfTheWeek[' . $frameId . ']',
 						'ng-change' => 'changeMonthyDayOfTheWeek(' . $frameId . ')',
 					));
-
+*/
 ?>
 
 
@@ -670,6 +613,7 @@
 						'30' => __d('calendars', '30日'),
 						'31' => __d('calendars', '31日'),
 					);
+/* aaaaa
 					echo $this->NetCommonsForm->select('CalendarCompRrule.date', $options, array(
 						//'' => __d('calendars', '-日付指定-'),
 						'class' => 'form-control',
@@ -680,6 +624,7 @@
 						'ng-model' => 'monthlyDate[' . $frameId . ']',
 						'ng-change' => 'changeMonthlyDate(' . $frameId . ')',
 					));
+*/
 ?>
 
 				</div><!--col-sm-5おわり-->
@@ -703,7 +648,7 @@
 						'11' => __d('calendars', '11年'),
 						'12' => __d('calendars', '12年'),
 					);
-
+/* aaaaaa
 					echo $this->NetCommonsForm->select('CalendarCompRrule.yearly', $options, array(
 						'value' => __d('calendars', '1年'),		//valueは初期値
 						'class' => 'form-control',
@@ -711,6 +656,7 @@
 						'required' => true,
 						'div' => false,
 					));
+*/
 ?>
 				</div><!-- col-sm-8おわり -->
 				<div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div>
@@ -722,6 +668,7 @@
 	//第一引数(フィールド名)の最後に、.(ドット)をつけると、複数同じフィールド名のチェックボックスがあると、
 	//cakePHP側では配列でデータを受けるようになる、とのこと。。要確認
 	//
+/* aaaaa
 	echo $this->NetCommonsForm->input('month.', array(
 		//'type' => 'checkbox',
 		//'checked' => false,
@@ -731,6 +678,7 @@
 		'options' => array('1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'),
 		'class' => 'text-left calendar-choice-month_' . $frameId,
 	));
+*/
 ?>
 
 				</div><!--col-sm-12おわり-->
@@ -760,7 +708,7 @@
 						break;
 					}
 
-					echo $this->NetCommonsForm->input('selectRepeatEndTypeFrameid' . $frameId . 'Of', array(
+					echo $this->NetCommonsForm->input('CalendarActionPlan.rrule_term', array(
 								'legend' => false,
 								'type' => 'radio',
 								'options' => array(
@@ -777,6 +725,7 @@
 								'ng-init' => 'setInitRepeatEndType(' . $frameId . ',' . $repeatEndTypeIndex . ')',
 								'ng-change' => 'changeRepeatEndType(' . $frameId . ')',
 					));
+
 ?>
 					</ul>
 				</div><!--col-sm-12おわり-->
@@ -790,7 +739,7 @@
 <?php
 						$initValue = '3';		//初期値
 
-						echo $this->NetCommonsForm->input('CalendarCompRrule.count', array(
+						echo $this->NetCommonsForm->input('CalendarActionPlan.rrule_count', array(
 							'type' => 'text',
 							'label' => false,
 							'div' => false,
@@ -825,7 +774,7 @@
 										'format' => 'YYYY-MM-DD',
 									)));
 
-									echo $this->NetCommonsForm->input('CalendarCompDtstartend.end_date', array(
+									echo $this->NetCommonsForm->input('CalendarActionPlan.rrule_until', array(
 										'div' => false,
 										'label' => false,
 										'datetimepicker' => 'datetimepicker',
@@ -932,32 +881,34 @@
 
 <div class="panel-footer text-center">
 
-<button name="cancel" onclick="location.href = '/faqs/faq_blocks/index/5?frameId=11'" ng-click="sending=true" ng-disabled="sending" class="btn btn-default btn-workflow " type="button">
-	<span class="glyphicon glyphicon-remove"></span>
-	<?php echo __d('calendars', 'キャンセル'); ?>
-</button>
+<?php echo $this->CalendarPlan->makeEditButtonHtml('CalendarActionPlan.status', $vars); ?>
 
-<button name="cancel" onclick="location.href = '/faqs/faq_blocks/index/5?frameId=11'" ng-click="sending=true" ng-disabled="sending" class="btn btn-info btn-workflow " type="button">
-	<?php echo __d('calendars', '一時保存'); ?>
-</button>
-<br class="visible-xs" style="margin:5px" />
-<button type="submit" ng-disabled="sending" class="btn btn-primary btn-workflow" name="save">
-<?php echo __d('calendars', '決定'); ?>
-</button>
+<?php echo $this->NetCommonsForm->end(); ?>
 
-<!-- このゴミ箱は画面遷移上不要なので外すこととした
 <hr style="margin-top:0.2em; margin-bottom:0.2em" />
 
-<div class="text-right">
-<button type="submit" class="btn btn-danger btn-workflow" name="delete">
-	<span class="glyphicon glyphicon-trash"> </span>
-</button>
-</div>
+<!--
+<?php if (isset($event['CalendarEvent']) && ($this->request->params['action'] === 'edit' && $this->Workflow->canDelete('Calendars.CalendarRrule', $event))) : ?>
+	<div class="panel-footer text-right">
+		<?php echo $this->element('Calendars.CalendarPlans/delete_form'); ?>
+	</div>
+<?php endif; ?>
 -->
+
 
 </div><!--panel-footerの閉じるタグ-->
 
-</form><!--formを閉じる-->
+<!-- </form> --><!--formを閉じる-->
+
+
+<?php if (isset($event['CalendarEvent']) && ($this->request->params['action'] === 'edit' && $this->Workflow->canDelete('Calendars.CalendarRrule', $event))) : ?>
+	<div class="panel-footer text-right">
+		<?php echo $this->element('Calendars.CalendarPlans/delete_form'); ?>
+	</div>
+<?php endif; ?>
+
+
+
 
 </div><!--panelを閉じる-->
 

@@ -18,6 +18,30 @@
 class CalendarTime {
 
 /**
+ * convUserFromTo2SvrFromTo
+ *
+ * ユーザー系の開始日と終了日とタイムゾーンを、サーバ系の開始日の00:00:00から終了翌日の00:00:00に変換し返す
+ *
+ * @param string $userYmdFrom "YYYY-MM-DD"形式(ユーザ系)
+ * @param string $userYmdTo "YYYY-MM-DD"形式(ユーザ系)
+ * @param string $userTimezoneOffset タイムゾーン文字列（ex.Asia/Tokyo）
+ * @return array 開始日の00:00から終了日翌日の00:00をサーバ系時刻になおして返す。
+ */
+	public function convUserFromTo2SvrFromTo($userYmdFrom, $userYmdTo, $userTimezoneOffset) {
+		$nctm = new NetCommonsTime();
+
+		//From日付の00:00:00
+		$startDateZero = $userYmdFrom . ' 00:00:00';
+		$serverStartDate = $nctm->toServerDatetime($startDateZero, $userTimezoneOffset);
+
+		//To日付の翌日00:00:00をEndにセット
+		list($yearOfEndNextDay, $monthOfEndNextDay, $endNextDay) = CalendarTime::getNextDay(intval(substr($userYmdTo, 0, 4)), intval(substr($userYmdTo, 5, 2)), intval(substr($userYmdTo, 8, 2)));
+		$serverEndNextDate = $nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00", $yearOfEndNextDay, $monthOfEndNextDay, $endNextDay), $userTimezoneOffset);
+
+		return array($serverStartDate, $serverEndNextDate);
+	}
+
+/**
  * convUserDate2SvrFromToDateTime
  *
  * ユーザー系の日とタイムゾーンを、サーバ系の終日(From,To)日付時刻に変換
@@ -76,9 +100,9 @@ class CalendarTime {
 /**
  * getTheTimeInTheLastHour
  *
- * "Y/m/d H:i:s"形式の指定日付時刻からの直近１時間の日付時刻(from,to)を取得
+ * "Y-m-d H:i:s"形式の指定日付時刻からの直近１時間の日付時刻(from,to)を取得
  *
- * @param string $ymdHis "Y/m/d H:i:s"形式の指定日付時刻
+ * @param string $ymdHis "Y-m-d H:i:s"形式の指定日付時刻
  * @return array 直近１時間の日付、from日付時刻, to日付時刻の配列を返す。
  */
 	public static function getTheTimeInTheLastHour($ymdHis) {
@@ -102,9 +126,9 @@ class CalendarTime {
 /**
  * getHourColonMin
  *
- * "Y/m/d H:i:s"形式より"H:i"を抜き出す
+ * "Y-m-d H:i:s"形式より"H:i"を抜き出す
  *
- * @param string $ymdHis "Y/m/d H:i:s"形式のDatetime文字列
+ * @param string $ymdHis "Y-m-d H:i:s"形式のDatetime文字列
  * @return string "H:i"形式の文字列
  */
 	public static function getHourColonMin($ymdHis) {
@@ -168,9 +192,9 @@ class CalendarTime {
 /**
  * dt2CalDt
  *
- * Y/m/d H:i:s形式からYmdHis形式に変換する
+ * Y-m-d H:i:s形式からYmdHis形式に変換する
  *
- * @param string $datetime "Y/m/d H:i:s"形式の日付時刻
+ * @param string $datetime "Y-m-d H:i:s"形式の日付時刻
  * @return string "YmdHis"形式の日付時刻
  */
 	public static function dt2CalDt($datetime) {

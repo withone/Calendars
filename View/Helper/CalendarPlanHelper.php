@@ -24,12 +24,105 @@ class CalendarPlanHelper extends AppHelper {
 	public $helpers = array(
 		'NetCommonsForm',
 		'NetCommonsHtml',
+		'Html',
 		'Form',
 		'NetCommons.Button',
 		'Calendars.CalendarMonthly',
 		'Calendars.CalendarCommon',
 		'Calendars.CalendarUrl',
 	);
+
+/**
+ * makeDatetimeWithUserSiteTz
+ *
+ * サーバ系日付時刻、タイムゾーン、言語より、言語別ユーザ系日付時刻曜日文字列を生成
+ * ユーザーTZ or サイトTZ を暗黙裡に使う。登録時の現地TZは、ここではつかわない。
+ *
+ * @param string $YmdHis "YYYYMMDDhhmmss"形式のシステム系日付時刻
+ * @param bool $isAllday 終日フラグ
+ * @return string HTML
+ */
+	public function makeDatetimeWithUserSiteTz($YmdHis, $isAllday) {
+		$nctm = new NetCommonsTime();
+		$serverDatetime = CalendarTime::addDashColonAndSp($YmdHis);
+		$userDatetime = $nctm->toUserDatetime($serverDatetime);	//toUserDatetime()が内部でユーザTZorサイトTZを使う.
+		$tma = CalendarTime::transFromYmdHisToArray($userDatetime);
+		$unixtm = mktime(intval($tma['hour']), intval($tma['min']), intval($tma['sec']), intval($tma['month']), intval($tma['day']), intval($tma['year']));
+
+		$html = sprintf(__d('calendars', '%s年%s月%s日'), $tma['year'], $tma['month'], $tma['day']);
+		$wdayArray = $this->CalendarCommon->getWdayArray();
+		$dateInfo = getdate($unixtm);
+		$html .= '(' . $wdayArray[$dateInfo['wday']] . ')';
+		if (!$isAllday) {
+			$html .= ' ' . sprintf(__d('calendars', '%s:%s'), $tma['hour'], $tma['min']);
+		}
+		return $html;
+	}
+
+/**
+ * makeShowDetailEditBtnHtml
+ *
+ * 特定日の特定予定画面(show画面)での編集キャンセルボタンHTML生成
+ *
+ * @param array $vars カレンダー情報
+ * @param int $eventId イベントID
+ * @return string HTML
+ */
+	public function makeShowDetailEditBtnHtml($vars, $eventId) {
+		$html = '';
+		$urlOptions = array(
+			'controller' => 'calendars',
+			'action' => 'index',
+			'year' => $vars['year'],
+			'month' => $vars['month'],
+			'frame_id' => Current::read('Frame.id'),
+		);
+		if (isset($vars['return_style'])) {
+			$urlOptions['style'] = $vars['return_style'];	//cancel時の戻り先としてstyleを指定する。
+		}
+		if (isset($vars['return_sort'])) {
+			$urlOptions['sort'] = $vars['return_sort'];	//cancel時の戻り先としてsortオプションがあればそれもセットで指定する.
+		}
+		$cancelUrl = NetCommonsUrl::actionUrl($urlOptions);
+
+		/*
+		$cancelOptions = array(
+			'ng-click' => 'sending=true',
+			'ng-class' => '{disabled: sending}',
+		);
+		//キャンセル
+		$cancelOptions = Hash::merge(array(
+			'class' => 'btn btn-default btn-workflow', 'escape' => false
+		), $cancelOptions);
+		$label = Hash::get($cancelOptions, 'label', __d('net_commons', 'Cancel'));
+		$cancelOptions = Hash::remove($cancelOptions, 'label');
+		$html .= $this->Html->link(
+			'<span class="glyphicon glyphicon-remove"></span> ' . $label,
+			$cancelUrl,
+			$cancelOptions
+		);
+		*/
+
+		$html .= "<button class='btn btn-default calendar-detail-edit' type='button' data-url='" . $cancelUrl . "'>";
+		$html .= "<span class='glyphicon glyphicon-remove'></span>";
+		$html .= __d('calendars', 'キャンセル');
+		$html .= '</button>';
+
+		$detailEditUrl = NetCommonsUrl::actionUrl(array(
+			'controller' => 'calendar_plans',
+			'action' => 'edit',
+			'style' => 'detail',
+			'year' => $vars['year'],
+			'month' => $vars['month'],
+			'day' => $vars['day'],
+			'event' => $eventId,
+			'frame_id' => Current::read('Frame.id'),
+		));
+		$html .= "<button class='btn btn-primary calendar-detail-edit calendar-margin-left-adjust' data-url='" . $detailEditUrl . "'>";
+		$html .= "<span class='glyphicon glyphicon-edit'></span>";
+		$html .= '</button>';
+		return $html;
+	}
 
 /**
  * makeDetailEditBtnHtml
@@ -47,6 +140,7 @@ class CalendarPlanHelper extends AppHelper {
 			'year' => $vars['year'],
 			'month' => $vars['month'],
 			'day' => $vars['day'],
+			'block_id' => Current::read('Block.id'),	//これを付けないと、遷移先画面でBlock.idがない、と出る。
 			'frame_id' => Current::read('Frame.id'),
 		));
 
@@ -200,15 +294,15 @@ class CalendarPlanHelper extends AppHelper {
 	}
 
 /**
- * makeEasyEditButtonHtml
+ * makeEditButtonHtml
  *
- * 簡易編集ボタンHTML生成
+ * 編集画面のボタンHTML生成
  *
  * @param string $statusFieldName 承認ステータス項目名
  * @param array $vars カレンダー情報
  * @return string HTML
  */
-	public function makeEasyEditButtonHtml($statusFieldName, $vars) {
+	public function makeEditButtonHtml($statusFieldName, $vars) {
 		//save,tempsaveのoptionsでpath指定するため、Workflowヘルパーのbuttons()を参考に実装した。
 
 		$status = Hash::get($this->_View->data, $statusFieldName);
@@ -217,6 +311,7 @@ class CalendarPlanHelper extends AppHelper {
 			'action' => 'index',
 			'year' => $vars['year'],
 			'month' => $vars['month'],
+			'block_id' => Current::read('Block.id'),	//追加しておく
 			'frame_id' => Current::read('Frame.id'),
 		);
 		if (isset($vars['return_style'])) {

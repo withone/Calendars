@@ -397,7 +397,8 @@ class CalendarActionPlan extends CalendarsAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
-		$isDetailEdit = (isset($this->request->data['is_detail']) && $this->request->data['is_detail']) ? true : false;
+		//CakeLog::debug("request_data[" . print_r($this->data, true) . "]");
+		$isDetailEdit = (isset($this->data['CalendarActionPlan']['is_detail']) && $this->data['CalendarActionPlan']['is_detail']) ? true : false;
 		$this->_doMergeDisplayParamValidate($isDetailEdit);	//画面パラメータ関連validation
 		$this->_doMergeTitleValidate($isDetailEdit);	//タイトル関連validation
 		$this->_doMergeDatetimeValidate($isDetailEdit);	//日付時刻関連validation
@@ -407,14 +408,14 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'rule' => array('allowedRoomId'),
 					'required' => true,
 					'allowEmpty' => false,
-					'message' => __d('net_commons', '権限が不正です'),
+					'message' => __d('calendars', '権限が不正です'),
 				),
 			),
 			'timezone_offset' => array(
 				'rule1' => array(
 					'rule' => array('allowedTimezoneOffset'),
 					'required' => false,
-					'message' => __d('net_commons', 'タイムゾーンが不正です'),
+					'message' => __d('calendars', 'タイムゾーンが不正です'),
 				),
 			),
 			'is_detail' => array(
@@ -465,8 +466,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 		try {
 			$planParam = $this->convertToPlanParamFormat($data);
 
-			//CakeLog::debug("data[" . print_r($data, true), "]");
-			//CakeLog::debug("insertPlan()を発行する. planParam[" . print_r($planParam, true), "]");
+			//CakeLog::debug("DBGDBG: data[" . print_r($data, true), "]");
+			//CakeLog::debug("DBGDBG: insertPlan()を発行する. planParam[" . print_r($planParam, true), "]");
 			$this->insertPlan($planParam);
 
 			$this->_enqueueEmail($data);
@@ -578,41 +579,102 @@ class CalendarActionPlan extends CalendarsAppModel {
 	protected function _setAndMergeDateTime($planParam, $data) {
 		if ($data[$this->alias]['is_detail']) {
 			//詳細画面からのデータ
-			//[detail_start_datetime] =>
-			//[detail_end_datetime] =>
-
-			//FIXME: 詳細画面 detail_start_datetime, detail_end_datetimeの変換は、このあと実装すること。
-
+			$planParam = $this->_setAndMergeDateTimeDetail($planParam, $data);
 		} else {
 			//簡易画面からのデータ
-			//[easy_start_date] => 2016-03-01  <= 日付だけなので、User系
-			//[easy_hour_minute_from] => 2016-02-29 16:00:00 <= サーバ系
-			//[easy_hour_minute_to] => 2016-02-29 17:00:00 <= サーバ系
+			$planParam = $this->_setAndMergeDateTimeEasy($planParam, $data);
+		}
+		return $planParam;
+	}
 
-			if ($data[$this->alias]['enable_time']) {
-				$planParam['is_allday'] = 0;
-				//その日の時間指定あり
-				$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_from'], 0, 10));
-				$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_from'], 11, 8));
-				$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
+/**
+ * _setAndMergeDateTimeDetail
+ *
+ * 詳細画面系の日付時刻系のパラメータを整形し、予定パラメータにマージして返す
+ *
+ * @param array $planParam merge前の予定パラメータ
+ * @param array $data POSTされたデータ
+ * @return array 成功時 整形,merged後の予定パラメータ. 失敗時 例外をthrowする.
+ * @throws InternalErrorException
+ */
+	protected function _setAndMergeDateTimeDetail($planParam, $data) {
+		//詳細画面からのデータ
+		//時間指定なしの場合
+		//  [detail_start_datetime] => 2016-03-06 　ユーザ系日付（から）
+		//  [detail_end_datetime] => 2016-03-08		ユーザ系日付（まで）
+		//時間指定有の場合
+		//  [detail_start_datetime] => 2016-03-06 09:00		ユーザ系日付時刻（秒はなし）（から）
+		//  [detail_end_datetime] => 2016-03-08 12:00		ユーザ系日付時刻（秒はなし）（まで）
 
-				$planParam['end_date'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_to'], 0, 10));
-				$planParam['end_time'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_to'], 11, 8));
-				$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
+		if ($data[$this->alias]['enable_time']) {
+			$planParam['is_allday'] = 0;
+			//時間指定あり
+			$nctm = new NetCommonsTime();
 
-			} else {
-				$planParam['is_allday'] = 1;
-				//その日の終日
-				list($serverStartDateZero, $serverNextDateZero) = (new CalendarTime())->convUserDate2SvrFromToDateTime($data[$this->alias]['easy_start_date'], $data[$this->alias]['timezone_offset']);
+			$serverStartDatetime = $nctm->toServerDatetime($data[$this->alias]['detail_start_datetime'] . ':00', $data[$this->alias]['timezone_offset']);
+			$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($serverStartDatetime, 0, 10));
+			$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($serverStartDatetime, 11, 8));
+			$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
 
-				$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($serverStartDateZero, 0, 10));
-				$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($serverStartDateZero, 11, 8));
-				$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
+			$serverEndDatetime = $nctm->toServerDatetime($data[$this->alias]['detail_end_datetime'] . ':00', $data[$this->alias]['timezone_offset']);
+			$planParam['end_date'] = CalendarTime::stripDashColonAndSp(substr($serverEndDatetime, 0, 10));
+			$planParam['end_time'] = CalendarTime::stripDashColonAndSp(substr($serverEndDatetime, 11, 8));
+			$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
+		} else {
+			$planParam['is_allday'] = 1;
+			//ユーザー系の開始日と終了日とタイムゾーンを、サーバ系の開始日の00:00:00から終了翌日の00:00:00に変換する
+			list($serverStartDate, $serverEndNextDate) = (new CalendarTime())->convUserFromTo2SvrFromTo($data[$this->alias]['detail_start_datetime'], $data[$this->alias]['detail_end_datetime'], $data[$this->alias]['timezone_offset']);
 
-				$planParam['end_date'] = CalendarTime::stripDashColonAndSp(substr($serverNextDateZero, 0, 10));
-				$planParam['end_time'] = CalendarTime::stripDashColonAndSp(substr($serverNextDateZero, 11, 8));
-				$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
-			}
+			$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($serverStartDate, 0, 10));
+			$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($serverStartDate, 11, 8));
+			$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
+
+			$planParam['end_date'] = CalendarTime::stripDashColonAndSp(substr($serverEndNextDate, 0, 10));
+			$planParam['end_time'] = CalendarTime::stripDashColonAndSp(substr($serverEndNextDate, 11, 8));
+			$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
+		}
+		return $planParam;
+	}
+
+/**
+ * _setAndMergeDateTimeEasy
+ *
+ * 簡易画面系の日付時刻系のパラメータを整形し、予定パラメータにマージして返す
+ *
+ * @param array $planParam merge前の予定パラメータ
+ * @param array $data POSTされたデータ
+ * @return array 成功時 整形,merged後の予定パラメータ. 失敗時 例外をthrowする.
+ * @throws InternalErrorException
+ */
+	protected function _setAndMergeDateTimeEasy($planParam, $data) {
+		//簡易画面からのデータ
+		//[easy_start_date] => 2016-03-01  <= 日付だけなので、User系
+		//[easy_hour_minute_from] => 2016-02-29 16:00:00 <= サーバ系
+		//[easy_hour_minute_to] => 2016-02-29 17:00:00 <= サーバ系
+
+		if ($data[$this->alias]['enable_time']) {
+			$planParam['is_allday'] = 0;
+			//その日の時間指定あり
+			$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_from'], 0, 10));
+			$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_from'], 11, 8));
+			$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
+
+			$planParam['end_date'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_to'], 0, 10));
+			$planParam['end_time'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_to'], 11, 8));
+			$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
+
+		} else {
+			$planParam['is_allday'] = 1;
+			//その日の終日
+			list($serverStartDateZero, $serverNextDateZero) = (new CalendarTime())->convUserDate2SvrFromToDateTime($data[$this->alias]['easy_start_date'], $data[$this->alias]['timezone_offset']);
+
+			$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($serverStartDateZero, 0, 10));
+			$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($serverStartDateZero, 11, 8));
+			$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
+
+			$planParam['end_date'] = CalendarTime::stripDashColonAndSp(substr($serverNextDateZero, 0, 10));
+			$planParam['end_time'] = CalendarTime::stripDashColonAndSp(substr($serverNextDateZero, 11, 8));
+			$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
 		}
 		return $planParam;
 	}
@@ -657,9 +719,9 @@ class CalendarActionPlan extends CalendarsAppModel {
  * @throws InternalErrorException
  */
 	protected function _enqueueEmail($data) {
-		if ($data[$this->alias]['enable_email']) {
-			//[email_send_timing] => 60
-			//FIXME: email_send_timingの値をつかって、Mailキューに登録する。
-		}
+		//if ($data[$this->alias]['enable_email']) {
+		//	$[email_send_timing] => 60
+		//	FIXME: email_send_timingの値をつかって、Mailキューに登録する。
+		//}
 	}
 }

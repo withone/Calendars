@@ -190,7 +190,7 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 		$model->CalendarEvent->set($eventData);
 
 		if (!$model->CalendarEvent->validates()) {		//eventDataをチェック
-			//CakeLog::debug("validationErrors[ " . print_r($model->CalendarEvent->validationErrors, true) . "}");
+			//CakeLog::debug("DBG: validationErrors[ " . print_r($model->CalendarEvent->validationErrors, true) . "}");
 			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
