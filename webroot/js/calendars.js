@@ -28,6 +28,25 @@ NetCommonsApp.filter('formatYyyymm', function() {
   }
 });
 
+/**
+ * YYYY-MM-DD形式の年月を、言語別のフォーマットに変形するフィルター
+ */
+NetCommonsApp.filter('formatYyyymmdd', function() {
+  return function(value, languageId) {
+    if (!angular.isString(value)) {  //valueが文字列でなければ加工しない
+      return value;
+    }
+
+    languageId = (languageId + '') || '2';    //lang指定なければデフォルト言語
+    switch (languageId) {  //言語別 YYYY-MM-DD 整形
+      case '2':
+        value = value.replace(/^(\d{1,4})-(\d{1,2})-(\d{1,2})$/, '$1年$2月$3日');
+        break;
+      default:
+    }
+    return value;
+  }
+});
 
 /**
  * 予定の編集・削除のモーダル表示サービス
@@ -154,6 +173,18 @@ NetCommonsApp.controller('CalendarsDetailEdit',
         var elms = $scope.targetYear.split('-');
         var url = prototypeUrl.replace('YYYY', elms[0]);
         url = url.replace('MM', elms[1]);
+        //console.log('frameId[' + frameId + '] prototypeUrl[' +
+        //  prototypeUrl + '] targetYear[' + $scope.targetYear +
+        //  '] url[' + url + ']');
+        window.location = url;
+      };
+      $scope.changeYearMonthDay = function(prototypeUrl) {
+        //console.log('DEBUGGING...' + $scope.targetYear);
+
+        var elms = $scope.targetYear.split('-');
+        var url = prototypeUrl.replace('YYYY', elms[0]);
+        url = url.replace('MM', elms[1]);
+         url = url.replace('DD', elms[2]);
         //console.log('frameId[' + frameId + '] prototypeUrl[' +
         //  prototypeUrl + '] targetYear[' + $scope.targetYear +
         //  '] url[' + url + ']');
