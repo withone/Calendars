@@ -18,7 +18,7 @@
 
 				<!-- 予定の内容 -->
 				<?php
-					echo $this->CalendarSchedule->makeTimeBodyHtml($vars);
+					echo $this->CalendarSchedule->makeBodyHtml($vars);
 				?>
 
 

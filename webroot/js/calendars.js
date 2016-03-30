@@ -28,6 +28,7 @@ NetCommonsApp.filter('formatYyyymm', function() {
   }
 });
 
+
 /**
  * YYYY-MM-DD形式の年月を、言語別のフォーマットに変形するフィルター
  */
@@ -47,6 +48,7 @@ NetCommonsApp.filter('formatYyyymmdd', function() {
     return value;
   }
 });
+
 
 /**
  * 予定の編集・削除のモーダル表示サービス
