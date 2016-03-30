@@ -56,7 +56,7 @@
 	/* 第n週*/
 	if ($vars['week'] == 0) {
 		//日付から第n週を求めて設定
-		$nWeek = ceil(($vars['mInfo']['wdayOf1stDay'] + $vars['day'])/7);
+		$nWeek = ceil(($vars['mInfo']['wdayOf1stDay'] + $vars['day']) / 7);
 		//第n週の日曜日の日付に更新
 	} else {
 		$nWeek = $vars['week'];
@@ -68,6 +68,10 @@
 	$firstYear = date('Y', $firsttimestamp);
 	$firstMonth = date('m', $firsttimestamp);
 	$firstDay = date('d', $firsttimestamp);
+
+	$vars['weekFirst']['firstYear'] = $firstYear;
+	$vars['weekFirst']['firstMonth'] = $firstMonth;
+	$vars['weekFirst']['firstDay'] = $firstDay;
 
 	/* 日（曜日）(指定日を開始日) */
 	$days = array();

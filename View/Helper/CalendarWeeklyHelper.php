@@ -64,6 +64,8 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
 			$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
 			// pending ここに一時保存/承認待ちのマーク
+			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
+
 			$html .= '<span> ' . $plan['CalendarEvent']['title'] . '</span>';
 
 		}
@@ -107,9 +109,12 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 			//予定（7日分繰り返し）
 			for ($nDay = 0; $nDay < 7; $nDay++) {
 				if ($nDay === 0) { //前日+1日
-					$year = $vars['year'];
-					$month = $vars['month'];
-					$day = $vars['day'];
+					//$year = $vars['year'];
+					//$month = $vars['month'];
+					//$day = $vars['day'];
+					$year = $vars['weekFirst']['firstYear'];
+					$month = $vars['weekFirst']['firstMonth'];
+					$day = $vars['weekFirst']['firstDay'];
 				} else {
 					list($year, $month, $day) = CalendarTime::getNextDay($year, $month, $day);
 				}
