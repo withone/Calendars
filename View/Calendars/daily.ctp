@@ -67,46 +67,6 @@
 
 ?>
 
-
-
-<!-- 日切り替えtest start 
-<div class="row">
-	<div class="col-xs-6 col-xs-offset-3 text-center">
-		<ul class="pager">
-  			<li class="previous" title="<?php echo __d('calendars', '前日へ'); ?>">
-  				<a href="<?php echo $prevDayLink; ?>">
-  				<span class="glyphicon glyphicon-chevron-left"></span></a>
-  			</li> 
-  			<li>
-   			<div class='hidden-xs calendar-inline <?php echo $textColor ?>'>
-				<span class='h4'><label for="CalendarEventTargetYear">{{targetYear | formatYyyymmdd : <?php echo $languageId; ?>}}</label></span>
-  				<span class='h5'>
-  					<?php echo (($holidayTitle === '') ? '&nbsp;' : $holidayTitle); ?>
-  				</span>
-  			</div>
-  			</li> 
-			
-  			<br class="visible-xs" />
-  			<li class="next" title="<?php echo __d('calendars', '翌日へ'); ?>">
-  				<a href="<?php echo $nextDayLink; ?>">
-  				<span class="glyphicon glyphicon-chevron-right"></span></a>
-  			</li>
-		</ul>
-	</div>
-
-	<div class='col-xs-12 visible-xs text-center <?php echo $textColor ?>'>
-  		<span class='h5'><?php echo $vars['year'] . __d('calendars', '年'); ?></span>
-  		<br />
-  		<div style="margin-top:5px;"></div>
-  		<span class='h3'><?php echo $vars['month'] . __d('calendars', '月') . $vars['day'] . __d('calendars', '日'); ?></span>
-  		<br />
-  		<span class='h5'><?php echo (($holidayTitle === '') ? '&nbsp;' : $holidayTitle); ?></span>
-	</div>
-
-</div>
--->
-
-
 <!-- 日切り替え org-->
 <div class="row">
 	<div class="col-xs-6 col-xs-offset-3 text-center">

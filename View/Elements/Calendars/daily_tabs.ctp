@@ -1,6 +1,9 @@
 <?php
 ?>
-
+<div class="col-xs-3 col-xs-push-9">
+	<?php echo $this->CalendarMonthly->makeGlyphiconPlusWithUrl($vars['year'], $vars['month'], $vars['day'], $vars); ?>
+</div>
+<br />
 <?php
 
 	$timelineLink = NetCommonsUrl::actionUrl(array(

@@ -13,7 +13,7 @@
 			<?php endif; ?>
 			</div>
 			<div class="col-xs-3 col-sm-1 col-sm-offset-7 text-right">
-				<div class='glyphicon glyphicon-plus'></div>
+				<?php echo $this->CalendarMonthly->makeGlyphiconPlusWithUrl($vars['year'], $vars['month'], $vars['day'], $vars); ?>
 			</div>
 		</div>
 	</div>
