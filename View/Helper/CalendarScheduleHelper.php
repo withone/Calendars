@@ -29,7 +29,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		'Calendars.CalendarCommon',
 		'Calendars.CalendarDaily',
 		'Html',
-		//'Users.DisplayUser',
+		'Users.DisplayUser',
 	);
 
 /**
@@ -87,10 +87,10 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 				$html .= "<p class='calendar-plan-clickable text-left calendar-schedule-row-member'>";
 				$html .= "<span class='text-success'>";
 				if ($prevUser != $plan['TrackableCreator']['username']) {
-					$html .= $this->Html->link($plan['TrackableCreator']['username'], array());
+					//$html .= $this->Html->link($plan['TrackableCreator']['username'], array());
+					$html .= $this->DisplayUser->handleLink($plan, array('avatar' => false));
 				}
 				$prevUser = $plan['TrackableCreator']['username'];
-				//$this->DisplayUser->handleLink($plan, array('avatar' => true));
 				$html .= "</span>";
 				$html .= "</p>";
 				$html .= "</div>";
@@ -140,7 +140,8 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 				$html .= "<div class='col-xs-12 col-sm-3'>";
 				$html .= "<p class='calendar-plan-clickable text-left calendar-schedule-row-member-t'>";
 				$html .= "<span class='text-success'>";
-				$html .= $this->Html->link($plan['TrackableCreator']['username'], array());
+				$html .= $this->DisplayUser->handleLink($plan, array('avatar' => false));
+				//$html .= $this->Html->link($plan['TrackableCreator']['username'], array());
 				$html .= "</span>";
 				$html .= "</p>";
 				$html .= "</div>";
