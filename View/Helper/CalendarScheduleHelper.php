@@ -75,6 +75,8 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 
 		foreach ($plans as $plan) { //※プランは表示対象ルームのみと想定
 			$cnt++; //プラン件数カウント
+			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
+
 			//仕様
 			//予定が１件以上あるとき）
 			$html .= "<div class='row calendar-schedule-row' data-pos='{$idx}'>"; //１プランの開始
@@ -95,7 +97,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 
 				//予定
 				$html .= "<div class='col-xs-12 col-sm-9'>";
-				$html .= "<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'>";
+				$html .= "<p class='calendar-plan-clickable text-left calendar-plan-show calendar-schedule-row-plan-member' data-url='" . $url . "'>";
 
 				if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
 					////<!-- 3row -->
@@ -106,7 +108,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 				$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
 				$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
 				// pending ここに一時保存/承認待ちのマーク
-				$html .= '<span> ' . $plan['CalendarEvent']['title'] . '</span>';
+				$html .= '<span>' . $plan['CalendarEvent']['title'] . '</span>';
 
 				$html .= "</p>";
 				$html .= "</div>";
@@ -115,7 +117,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 				//予定
 				$html .= "<div class='col-xs-12 col-sm-9'>";
 
-				$html .= "<p class='calendar-plan-clickable text-left calendar-schedule-row-plan'>";
+				$html .= "<p class='calendar-plan-clickable text-left calendar-plan-show calendar-schedule-row-plan' data-url='" . $url . "'>";
 
 				if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
 					////<!-- 3row -->
@@ -124,7 +126,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 				$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
 				$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
 				// pending ここに一時保存/承認待ちのマーク
-				$html .= '<span> ' . $plan['CalendarEvent']['title'] . '</span>';
+				$html .= '<span>' . $plan['CalendarEvent']['title'] . '</span>';
 
 				$html .= "</p>";
 				$html .= "</div>";
