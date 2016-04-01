@@ -241,8 +241,8 @@ class CalendarsController extends CalendarsAppController {
  * @return array $vars スケジュール（会員順）データ
  */
 	public function getMemberScheduleVars($vars) {
-		$this->setCalendarCommonVars($vars);
 		$vars['sort'] = 'member';
+		$this->setCalendarCommonVars($vars);
 
 		$vars['selectRooms'] = array();	//マージ前の暫定
 		$vars['parentIdType'] = array(
@@ -274,8 +274,8 @@ class CalendarsController extends CalendarsAppController {
  * @return array $vars スケジュール（時間順）データ
  */
 	public function getTimeScheduleVars($vars) {
-		$this->setCalendarCommonVars($vars);
 		$vars['sort'] = 'time';
+		$this->setCalendarCommonVars($vars);
 
 		$vars['selectRooms'] = array();	//マージ前の暫定
 		$vars['parentIdType'] = array(

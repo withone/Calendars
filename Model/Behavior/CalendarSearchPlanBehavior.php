@@ -28,14 +28,16 @@ class CalendarSearchPlanBehavior extends CalendarAppBehavior {
  *
  * @param Model &$model 実際のモデル名
  * @param array $planParams  予定パラメータ
+ * @param array $order ソートパラメータ
  * @return array 検索成功時 予定配列を返す。検索結果が０件の時は、空配列を返す。検索失敗した時はInternalError例外をthrowする。
  * @throws InternalErrorException
  */
-	public function getPlans(Model &$model, $planParams) {
+	public function getPlans(Model &$model, $planParams, $order = array()) {
 		$options = array(
 			'conditions' => array(),
 			'recursive' => 1,		//belongTo, hasOne, hasMany関係をもつ１階層上下を対象にする。
-			'order' => array($model->alias . '.start_date'),
+			//'order' => array($model->alias . '.start_date'),
+			'order' => $order,
 		);
 		foreach ($planParams as $field => $val) {
 			$key = $model->alias . '.' . $field;

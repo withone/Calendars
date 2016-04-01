@@ -179,7 +179,19 @@ class CalendarsAppController extends AppController {
 			'dtstart' => $dtstart,
 			'dtend' => $dtend,
 		);
-		$vars['plans'] = $this->CalendarEvent->getPlans($planParams);
+		//$vars['plans'] = $this->CalendarEvent->getPlans($planParams);
+
+		if (isset($vars['sort'])) { //スケジュールでソートする場合
+			if ($vars['sort'] === 'member') { //メンバー順
+				$order = array('TrackableCreator' . '.username');
+			} else { //時間順
+				$order = array('CalendarEvent' . '.dtstart');
+			}
+		} else {
+			$order = array('CalendarEvent' . '.start_date');
+		}
+		$vars['plans'] = $this->CalendarEvent->getPlans($planParams, $order);
+
 		//CakeLog::debug("DBGDBG: vars_plans[" . print_r($vars['plans'], true) . "]");
 
 		$vars['parentIdType'] = array(	//これも共通なので含めておく。
