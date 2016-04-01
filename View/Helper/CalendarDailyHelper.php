@@ -62,7 +62,8 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
 			$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
-			// pending ここに一時保存/承認待ちのマーク
+			// ワークフロー（一時保存/承認待ち、など）のマーク
+			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
 			$html .= '<span> ' . $plan['CalendarEvent']['title'] . '</span>';
 
 			// 1プランの終了
