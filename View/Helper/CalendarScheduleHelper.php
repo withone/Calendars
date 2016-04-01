@@ -227,7 +227,13 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		$html .= "<p data-openclose-stat='open' data-pos='{$dayCount}' class='calendar-schedule-disp calendar-plan-clickable text-left calendar-schedule-row-title'>";
 		$html .= "<span class='h4'><span data-pos='{$dayCount}' class='glyphicon glyphicon-chevron-down schedule-openclose'></span>";
 
-		if ($dayCount == 1) { // 今日
+		if ($vars['start_pos'] == 1) {
+			$dayCount--; // 開始日（前日）
+		}
+
+		if ($dayCount == 0) {
+			$html .= "<span>" . __d('calendars', '昨日') . "</span>";
+		} elseif ($dayCount == 1) {
 			$html .= "<span>" . __d('calendars', '今日') . "</span>";
 		} elseif ($dayCount == 2) { // 明日
 			$html .= "<span>" . __d('calendars', '明日') . "</span>";
