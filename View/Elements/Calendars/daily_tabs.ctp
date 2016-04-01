@@ -33,7 +33,7 @@
 <?php if ($active === 'list'): ?>
 	<li class='active'>
 	<a href='#' onclidk='return false;'>
-<?php else: ?>
+ <?php else: ?>
 		<li>
 		<a href="<?php echo $dailyLink; ?>">
 <?php endif; ?>
@@ -42,7 +42,7 @@
 <?php if ($active === 'timeline'): ?>
 	<li class='active'>
 	<a href='#' onclick='return false;'>
-<?php else: ?>
+ <?php else: ?>
 		<li>
 		<a href="<?php echo $timelineLink; ?>">
 <?php endif; ?>

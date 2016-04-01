@@ -154,7 +154,8 @@
 	));
 
 ?>
-<!-- <?php echo $this->element('Calendars.Calendars/daily_tabs', array('active' => 'list', 'frameId' => $frameId, 'languageId' => $languageId)); ?> -->
+
+
 </form>
 </article>
 <?php

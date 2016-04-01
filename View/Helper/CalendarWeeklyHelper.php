@@ -27,6 +27,7 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		'Form',
 		'Calendars.CalendarCommon',
 		'Calendars.CalendarUrl',
+		'Calendars.CalendarDaily',
 	);
 
 /**
@@ -52,22 +53,7 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 				continue;
 			}
 
-			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
-			$html .= "<p class='calendar-plan-clickable text-left calendar-plan-show calendar-daily-nontimeline-plan' data-url='" . $url . "'>";
-			if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
-				////<!-- 3row -->
-				$html .= "<span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small></span>';
-				//$html .= '</div>';
-			}
-			//<!-- 4row -->
-
-			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
-			$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
-			// pending ここに一時保存/承認待ちのマーク
-			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
-
-			$html .= '<span> ' . $plan['CalendarEvent']['title'] . '</span>';
-
+			$html .= $this->CalendarDaily->getPlanTitleHtml($vars, $year, $month, $day, $fromTime, $toTime, $plan);
 		}
 		return $html;
 	}
