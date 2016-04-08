@@ -42,7 +42,9 @@ class CalendarPermissionHelper extends AppHelper {
 		} else {
 			$title = __d('calendars', '全会員');
 		}
-		$html = '<tab heading="' . $title . '">';
+		//$html = '<tab heading="' . $title . '">';
+		//$html = '<uib-tab-heading="' . $title . '">';
+		$html = '<uib-tab heading="' . $title . '">';
 		return $html;
 	}
 /**
@@ -52,7 +54,9 @@ class CalendarPermissionHelper extends AppHelper {
  * @return string
  */
 	public function getSpaceSelectTabEnd($space = null) {
-		return '</tab>';
+		//return '</tab>';
+		//return '</uib-tab-heading>';
+		return '</uib-tab>';
 	}
 /**
  * getPermissionCells

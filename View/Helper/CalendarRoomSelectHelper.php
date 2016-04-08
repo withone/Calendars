@@ -66,12 +66,15 @@ class CalendarRoomSelectHelper extends AppHelper {
  * @return string
  */
 	protected function _getSpaceAccordionElm($title, $openStatusParam, $panelBody = '') {
-		$html = '<accordion-group is-open="' . $openStatusParam . '"><accordion-heading>';
+		//$html = '<accordion-group is-open="' . $openStatusParam . '"><accordion-heading>';
+		$html = '<uib-accordion-group is-open="' . $openStatusParam . '"><uib-accordion-heading>';
 		$html .= $title;
 		$html .= '<i class="pull-right glyphicon" ng-class="{\'glyphicon-chevron-down\': ' . $openStatusParam . ', \'glyphicon-chevron-right\': !' . $openStatusParam . '}"></i>';
-		$html .= '</accordion-heading>';
+		//$html .= '</accordion-heading>';
+		$html .= '</uib-accordion-heading>';
 		$html .= $panelBody;
-		$html .= '</accordion-group>';
+		//$html .= '</accordion-group>';
+		$html .= '</uib-accordion-group>';
 		return $html;
 	}
 

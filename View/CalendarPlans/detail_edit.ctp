@@ -322,12 +322,12 @@
 <div class="form-group" name="inputRruleInfo">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
 
-	<accordion close-others="oneAtATime">
+	<uib-accordion close-others="oneAtATime">
 
-		<accordion-group is-open="status.open">
-			<accordion-heading>
+		<uib-accordion-group is-open="status.open">
+			<uib-accordion-heading>
 				繰返しの予定<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-			</accordion-heading>
+			</uib-accordion-heading>
 
 			<!-- ここからアコーディオンの中身START -->
 
@@ -805,9 +805,9 @@
 
 			<!-- ここからアコーディオンの中身END -->
 
-		</accordion-group>
+		</uib-accordion-group>
 
-	</accordion>
+	</uib-accordion>
 
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->

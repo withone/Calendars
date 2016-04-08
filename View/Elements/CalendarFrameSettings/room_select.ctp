@@ -31,10 +31,12 @@
 		</div>
 		<div name="roomSelect" ng-show="data.calendarFrameSetting.isSelectRoom">
 			<div class="panel-body">
-				<accordion close-others="true">
+				<!-- <accordion close-others="true"> -->
+				<uib-accordion close-others="true">
 					<small><?php echo __d('calendars', '参加させるルームは、ルーム名の前にあるマークを <span class="glyphicon glyphicon-eye-open"></span>  にしてください。'); ?></small>
 					<?php echo $this->CalendarRoomSelect->spaceSelector($spaces); ?>
-				</accordion>
+				<!-- </accordion> -->
+				</uib-accordion>
 			</div><!--panel-bodyおわり-->
 		</div><!--panelおわり-->
 

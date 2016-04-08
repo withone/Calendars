@@ -9,7 +9,8 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 ?>
-<tabset type="pills">
+<!-- <tabset type="pills"> -->
+<uib-tabset type="pills">
 <?php foreach ($spaces as $space): ?>
 	<?php echo $this->CalendarPermission->getSpaceSelectTabStart($space); ?>
 		<?php if ($space['Space']['type'] != Space::PRIVATE_SPACE_TYPE): ?>
@@ -30,5 +31,5 @@
 	echo $this->element('Calendars.CalendarBlockRolePermissions/permission_all_members');
 	echo $this->CalendarPermission->getSpaceSelectTabEnd();
 ?>
-</tabset>
-
+<!-- </tabset> -->
+</uib-tabset>
