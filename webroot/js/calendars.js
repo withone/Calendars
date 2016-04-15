@@ -136,6 +136,8 @@ NetCommonsApp.controller('CalendarsTimeline', ['$scope', function($scope) {
   var row0 = $('.calendar-daily-timeline-0000');
   var row0Top = row0[0].getBoundingClientRect().top;
 
+  //$scope.row0Top = row0Top; //基準点
+
   //01:00の行のtop
   var row1 = $('.calendar-daily-timeline-0100');
   var row1Top = row1[0].getBoundingClientRect().top;
@@ -146,7 +148,167 @@ NetCommonsApp.controller('CalendarsTimeline', ['$scope', function($scope) {
   //指定時間が最初になるよう、divの縦スクロールを移動
   coordinateOrigins[0].scrollTop = rowHeight * idx;
 
+  //$scope.origin = coordinateOrigins[0].scrollTop;
+  $scope.rowHeight = rowHeight;
+
+  //0:00高さ固定
+  var dataArea = $('.calendar-timeline-data-area');
+  dataArea[0].style.height = String(rowHeight) + 'px'; //固定にしないと伸びてしまう
+
+  var row1Width = row1[0].getBoundingClientRect().width;
+  $scope.rowWidth = row1Width;
+  console.log('rowWitdh %d', row1Width);
+
+  //初期化
+  $scope.prevMargin = 0;
+  $scope.maxLineNum = 1;
+  $scope.Column = [];
+  $scope.Column[0] = [];
+
+  //row0[0].style.height= String(rowHeight) + "px"; //test
+  //row0[0].style.visibility = 'hidden';
+  //row0[0].style.backgroundColor = '#222233';
+
+  //var test = $('.calendar-period-0000');
+  //test[0].style.height = String(rowHeight) + "px";
+  //test[0].style.overflow = 'hidden';
+
+  //1予定のタイムラインdiv
+  //for () { 予定の数だけループ
+  //var planObj = document.getElementById('1');
+  //var planObj = $('#1');
+  //planObj.style.height = '150px';
+  //planObj.style.top = '35px';
+  //planObj.style.left = '35px';
+  //planObj.style.position = 'relative';
+  //console.log('pnanObj height = %s:', planObj.style.height);
 }]);
+
+NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
+  $scope.calendarPlans = [];
+  console.log('TIMELINE.Plan!!!..%d', $scope.rowHeight);
+
+  $scope.initialize = function(data) {
+    console.log('TIMELINE.Plan!INIT!..');
+    $scope.calendarPlans = data.calendarPlans;
+    console.log('plan! %d', data.calendarPlans.length);
+
+    //位置情報を設定
+    for (var i = 0; i < data.calendarPlans.length;
+        i++) {
+      $scope.setTimelinePos(i, $scope.calendarPlans[i].
+          fromTime, $scope.calendarPlans[i].toTime);
+      //console.log('plan! %s', $scope.calendarPlans[i].fromTime);
+      //console.log('plan! %s', $scope.calendarPlans[i].toTime);
+    }
+  };
+
+  $scope.setTimelinePos = function(id, fromTime, toTime) {
+    console.log('TIMELINE.Plan!setTimelinePos!..');
+    var planObj = document.getElementById('plan' + String(id));
+
+    var start = fromTime.split(':');
+    var end = toTime.split(':');
+
+    var startHour = parseInt(start[0]);
+    var startMin = parseInt(start[1]);
+
+    var endHour = parseInt(end[0]);
+    var endMin = parseInt(end[1]);
+
+    //高さ
+    var height = endHour - startHour;
+    height = (height + ((endMin - startMin) / 60)) * $scope.rowHeight;
+
+    //開始位置
+    var top = (startHour + (startMin / 60)) * $scope.rowHeight;
+
+    //タイムライン重ならない列数を取得
+    var lineNum = $scope.getLineNum(top, (height + top));
+    console.log('lineNum%d', lineNum);
+    //位置決定
+    planObj.style.height = String(height) + 'px';
+    planObj.style.top = String(top - $scope.prevMargin) + 'px'; //(調整)
+
+    //前回の位置が蓄積されてくる※位置調整のため
+    $scope.prevMargin = $scope.prevMargin + height;
+    console.log('prevMargin%d', $scope.prevMargin);
+
+    //次回の重なりチェックのため、値保持
+    var data = {x: top, y: (height + top)};
+    $scope.Column[lineNum].push(data);
+    //$scope.Column[0].push(data);
+    //console.log('data $d %d', data.x, data.y);
+    //console.log('push data $d %d', $scope.Column[0][0].
+    //  x, $scope.Column[0][0].y);
+    //console.log('push data length %d', $scope.Column[0].length);
+
+    //左からの位置
+    planObj.style.left = String((lineNum * ($scope.rowWidth + 5))) + 'px';
+    planObj.style.position = 'relative';
+  };
+
+  $scope.getLineNum = function(x, y) {
+    console.log('TIMELINE.Plan!getLineNum!..%d %d', x, y);
+
+    //0列目からチェック
+    for (var i = 0; i < $scope.maxLineNum; i++) {
+      if ($scope.checkColumn(i, x, y) == false) {
+        return i; //重なりの無い列を返却
+      }
+    }
+
+    $scope.maxLineNum++; //新しい列
+
+    return $scope.maxLineNum;
+  };
+
+  $scope.checkColumn = function(checkColumn, x, y) {
+    console.log('TIMELINE.Plan!checkColumn!..');
+
+    //指定列の重なりチェック
+    for (var i = 0; i < $scope.Column[checkColumn].length; i++) {
+      if ($scope.checkOverlap($scope.Column[checkColumn][i].
+          x, $scope.Column[checkColumn][i].y, x, y) == true) {
+        console.log('OVER!! checkColumn %d', i);
+        return true;
+      }
+    }
+    return false; //重なりなし
+  };
+
+  $scope.checkOverlap = function(x1, y1, x2, y2) {
+    console.log('TIMELINE.Plan!checkOverlap!..');
+
+    //線分1と線分2の重なりチェック
+    if (x1 > x2 && x1 > y2 &&
+        y1 > x2 && y1 > x2) {
+      return false;
+    }
+    if (x2 > x1 && x2 > y1 &&
+        y2 > x1 && y2 > y1) {
+      return false;
+    }
+    console.log('OVER!! x1 %d y1 %d x2 %d y1 %d', x1, y1, x2, y2);
+    /*
+      if(x1 < x2 && y1 > y2) {
+        return true; //重なりあり
+      }
+      if( x2 < x1 && y2 > y1 ) {
+        return true; //重なりあり
+      }
+      if( x1 < x2 && y1 < y2){
+        return true; //重なりあり
+      }
+      if( x2 < x1 && y2 < y1){
+        return true; //重なりあり
+      }
+    */
+    return true; //重なりあり
+  };
+
+});
+
 
 NetCommonsApp.controller('CalendarDetailEditWysiwyg',
     ['$scope', 'NetCommonsWysiwyg', function($scope, NetCommonsWysiwyg) {
