@@ -161,7 +161,7 @@ NetCommonsApp.controller('CalendarsTimeline', ['$scope', function($scope) {
 
   //初期化
   $scope.prevMargin = 0;
-  $scope.maxLineNum = 1;
+  $scope.maxLineNum = 0;
   $scope.Column = [];
   $scope.Column[0] = [];
 
@@ -244,7 +244,10 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
     //console.log('push data length %d', $scope.Column[0].length);
 
     //左からの位置
-    planObj.style.left = String((lineNum * ($scope.rowWidth + 5))) + 'px';
+    //planObj.style.left = String((lineNum * ($scope.rowWidth + 5))) + 'px';
+    planObj.style.left = String((lineNum * ($scope.rowWidth + 15)) + 5) + 'px';
+    //console.log('lineNum %d rowWidth %d left %s', lineNum, $scope.
+    //rowWidth, planObj.style.left);
     planObj.style.position = 'relative';
   };
 
@@ -259,7 +262,7 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
     }
 
     $scope.maxLineNum++; //新しい列
-
+    $scope.Column[$scope.maxLineNum] = [];
     return $scope.maxLineNum;
   };
 
@@ -281,8 +284,8 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
     console.log('TIMELINE.Plan!checkOverlap!..');
 
     //線分1と線分2の重なりチェック
-    if (x1 > x2 && x1 > y2 &&
-        y1 > x2 && y1 > x2) {
+    if (x1 >= x2 && x1 >= y2 &&
+        y1 >= x2 && y1 >= x2) {
       return false;
     }
     if (x2 > x1 && x2 > y1 &&
