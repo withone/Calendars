@@ -132,18 +132,21 @@ NetCommonsApp.controller('CalendarsTimeline', ['$scope', function($scope) {
   //指定時間のindex値を、タイムラインdivの属性から取り出し
   var idx = $(coordinateOrigins[0]).attr('data-daily-start-time-idx') - 0;
 
-  //00:00の行のtop
-  var row0 = $('.calendar-daily-timeline-0000');
-  var row0Top = row0[0].getBoundingClientRect().top;
-
-  //$scope.row0Top = row0Top; //基準点
+  //00:00の行のtop 誤差をなくすため2300に変更
+  //var row0 = $('.calendar-daily-timeline-0000');
+  //var row0Top = row0[0].getBoundingClientRect().top;
 
   //01:00の行のtop
   var row1 = $('.calendar-daily-timeline-0100');
   var row1Top = row1[0].getBoundingClientRect().top;
 
+  //23:00の行のtop
+  var row23 = $('.calendar-daily-timeline-2300');
+  var row23Top = row23[0].getBoundingClientRect().top;
+
   //1行(=１時間)の高さ
-  var rowHeight = row1Top - row0Top;
+  //var rowHeight = row1Top - row0Top;
+  var rowHeight = (row23Top - row1Top) / 22;
 
   //指定時間が最初になるよう、divの縦スクロールを移動
   coordinateOrigins[0].scrollTop = rowHeight * idx;
@@ -165,23 +168,6 @@ NetCommonsApp.controller('CalendarsTimeline', ['$scope', function($scope) {
   $scope.Column = [];
   $scope.Column[0] = [];
 
-  //row0[0].style.height= String(rowHeight) + "px"; //test
-  //row0[0].style.visibility = 'hidden';
-  //row0[0].style.backgroundColor = '#222233';
-
-  //var test = $('.calendar-period-0000');
-  //test[0].style.height = String(rowHeight) + "px";
-  //test[0].style.overflow = 'hidden';
-
-  //1予定のタイムラインdiv
-  //for () { 予定の数だけループ
-  //var planObj = document.getElementById('1');
-  //var planObj = $('#1');
-  //planObj.style.height = '150px';
-  //planObj.style.top = '35px';
-  //planObj.style.left = '35px';
-  //planObj.style.position = 'relative';
-  //console.log('pnanObj height = %s:', planObj.style.height);
 }]);
 
 NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
@@ -198,8 +184,6 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
         i++) {
       $scope.setTimelinePos(i, $scope.calendarPlans[i].
           fromTime, $scope.calendarPlans[i].toTime);
-      //console.log('plan! %s', $scope.calendarPlans[i].fromTime);
-      //console.log('plan! %s', $scope.calendarPlans[i].toTime);
     }
   };
 
@@ -216,6 +200,10 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
     var endHour = parseInt(end[0]);
     var endMin = parseInt(end[1]);
 
+    if (endHour < startHour) {
+      endHour = 24;
+    }
+
     //高さ
     var height = endHour - startHour;
     height = (height + ((endMin - startMin) / 60)) * $scope.rowHeight;
@@ -225,7 +213,7 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
 
     //タイムライン重ならない列数を取得
     var lineNum = $scope.getLineNum(top, (height + top));
-    console.log('lineNum%d', lineNum);
+
     //位置決定
     planObj.style.height = String(height) + 'px';
     planObj.style.top = String(top - $scope.prevMargin) + 'px'; //(調整)
@@ -237,17 +225,9 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
     //次回の重なりチェックのため、値保持
     var data = {x: top, y: (height + top)};
     $scope.Column[lineNum].push(data);
-    //$scope.Column[0].push(data);
-    //console.log('data $d %d', data.x, data.y);
-    //console.log('push data $d %d', $scope.Column[0][0].
-    //  x, $scope.Column[0][0].y);
-    //console.log('push data length %d', $scope.Column[0].length);
 
     //左からの位置
-    //planObj.style.left = String((lineNum * ($scope.rowWidth + 5))) + 'px';
     planObj.style.left = String((lineNum * ($scope.rowWidth + 15)) + 5) + 'px';
-    //console.log('lineNum %d rowWidth %d left %s', lineNum, $scope.
-    //rowWidth, planObj.style.left);
     planObj.style.position = 'relative';
   };
 
@@ -292,21 +272,6 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
         y2 > x1 && y2 > y1) {
       return false;
     }
-    console.log('OVER!! x1 %d y1 %d x2 %d y1 %d', x1, y1, x2, y2);
-    /*
-      if(x1 < x2 && y1 > y2) {
-        return true; //重なりあり
-      }
-      if( x2 < x1 && y2 > y1 ) {
-        return true; //重なりあり
-      }
-      if( x1 < x2 && y1 < y2){
-        return true; //重なりあり
-      }
-      if( x2 < x1 && y2 < y1){
-        return true; //重なりあり
-      }
-    */
     return true; //重なりあり
   };
 

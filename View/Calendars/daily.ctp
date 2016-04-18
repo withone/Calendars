@@ -23,7 +23,6 @@
 		'year' => sprintf("%04d", $prevYear),
 		'month' => sprintf("%02d", $prevMonth),
 		'day' => sprintf("%02d", $prevDay),
-//		'day' => $prevDay,
 		'frame_id' => Current::read('Frame.id'),
 	));
 	/* 翌日 */
@@ -129,12 +128,8 @@
 	}
 
 	$year = sprintf("%04d", $vars['year']);	//'2016';
-//	$targetYearMonth = sprintf("%04d-%02d", $vars['mInfo']['year'], $vars['mInfo']['month']);	//'2016-01'
 
 	$targetYearMonthDay = sprintf("%04d-%02d-%02d", $vars['mInfo']['year'], $vars['mInfo']['month'], $vars['mInfo']['day']);	//'2016-01-01'
-
-//	print_r('TargetYearMonth');print_r($targetYearMonth);
-//	print_r('TargetYearMonthDay');print_r($targetYearMonthDay);
 
 	$ngModel = 'targetYear';
 
