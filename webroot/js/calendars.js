@@ -235,7 +235,7 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
     console.log('TIMELINE.Plan!getLineNum!..%d %d', x, y);
 
     //0列目からチェック
-    for (var i = 0; i < $scope.maxLineNum; i++) {
+    for (var i = 0; i <= $scope.maxLineNum; i++) {
       if ($scope.checkColumn(i, x, y) == false) {
         return i; //重なりの無い列を返却
       }
