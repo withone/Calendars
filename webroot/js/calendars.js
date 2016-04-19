@@ -268,8 +268,8 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
         y1 >= x2 && y1 >= x2) {
       return false;
     }
-    if (x2 > x1 && x2 > y1 &&
-        y2 > x1 && y2 > y1) {
+    if (x2 >= x1 && x2 >= y1 &&
+        y2 >= x1 && y2 >= y1) {
       return false;
     }
     return true; //重なりあり

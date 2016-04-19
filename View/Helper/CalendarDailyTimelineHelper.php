@@ -99,21 +99,23 @@ class CalendarDailyTimelineHelper extends CalendarMonthlyHelper {
 		//print_r($id);
 
 		if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
-
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
 			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
 
-			$html .= "<div class='calendar-daily-timeline-slit-deco {$calendarPlanMark} calendar-plan-clickable', data-url='" . $url . "', id='" . $id . "'>";
+			$html .= "<div class='calendar-daily-timeline-slit-deco {$calendarPlanMark}' id='" . $id . "'>";
 
 			$html .= "<div class='calendar-common-margin-padding'>";
+
+			$html .= "<div><p class='calendar-plan-clickable text-left calendar-plan-show' data-url='" . $url . "'>";
+
 			$html .= "<small>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small>';
 
 			// ワークフロー（一時保存/承認待ち、など）のマーク
 			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
-			$html .= '<div>' . $plan['CalendarEvent']['title'] . '</div>';
+			$html .= '<small>' . $plan['CalendarEvent']['title'] . '</small>';
 			$html .= '</div></div>';
-			//$html .= '<div ng-controller="CalendarsTimelinePlan"></div>';
-			//$this->_timelineData[$cnt]['id'] = $cnt;
+			$html .= '</p></div>';
+
 			$this->_timelineData[$cnt]['fromTime'] = $plan['CalendarEvent']['fromTime'];
 			$this->_timelineData[$cnt]['toTime'] = $plan['CalendarEvent']['toTime'];
 			$cnt++;

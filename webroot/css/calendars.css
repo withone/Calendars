@@ -345,6 +345,7 @@
 	border-left-style: solid;
 	margin: 0 0 0 5px;
 	padding: 5px;
+	overflow: hidden;
 }
 
 /*-- 共通マージン・パディング(0) --*/
