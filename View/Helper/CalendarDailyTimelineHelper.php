@@ -108,7 +108,7 @@ class CalendarDailyTimelineHelper extends CalendarMonthlyHelper {
 
 			$html .= "<div><p class='calendar-plan-clickable text-left calendar-plan-show' data-url='" . $url . "'>";
 
-			$html .= "<small>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small>';
+			$html .= "<small style='float:left'>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small>';
 
 			// ワークフロー（一時保存/承認待ち、など）のマーク
 			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
