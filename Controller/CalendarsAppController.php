@@ -76,7 +76,8 @@ class CalendarsAppController extends AppController {
 		//現在のユーザTZ「考慮済」年月日時分秒を取得
 		$userNowYmdHis = $nctm->toUserDatetime('now');
 		$userNowArray = CalendarTime::transFromYmdHisToArray($userNowYmdHis);
-
+		$vars['today'] = $userNowArray;
+		//print_r($vars['today']);
 		if (isset($this->request->params['named']['year'])) {
 			$vars['year'] = intval($this->request->params['named']['year']);
 		} else { //省略時は、現在の年を設置

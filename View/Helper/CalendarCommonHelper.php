@@ -111,6 +111,27 @@ class CalendarCommonHelper extends AppHelper {
 	}
 
 /**
+ * getTdColor
+ *
+ * TDセル色取得
+ *
+ * @param array $vars カレンダー情報
+ * @param int $year 年
+ * @param int $month 月
+ * @param int $day 日
+ * @return string 指定色が無いは空文字''を返す。
+ */
+	public function getTdColor($vars, $year, $month, $day) {
+		$tdColor = '';
+
+		//今日
+		if ($year == $vars['today']['year'] && $month == $vars['today']['month'] && $day == $vars['today']['day']) {
+			$tdColor = 'calendar-tbl-td-today';	//本日のセル色
+		}
+		return $tdColor;
+	}
+
+/**
  * makeTextColor
  *
  * 日付別テキスト色生成

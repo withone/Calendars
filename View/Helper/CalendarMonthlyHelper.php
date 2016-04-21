@@ -142,13 +142,23 @@ class CalendarMonthlyHelper extends AppHelper {
  *
  * 予定群html生成
  *
+ * @param array &$vars カレンダー情報
+ * @param object &$nctm NetCommonsTimeオブジェクトへの参照
  * @param int $year 年
  * @param int $month 月
  * @param int $day 日
  * @return string HTML
  */
-	public function makePlansHtml($year, $month, $day) {
-		$html = '<div>&nbsp;</div>';	//暫定暫定
+	public function makePlansHtml(&$vars, &$nctm, $year, $month, $day) {
+		//list ($fromTimeOfDay, $toTimeOfDay, $plansOfDay) = $this->CalendarCommon->preparePlanSummaries($vars, $nctm, $year, $month, $day);
+		$plansOfDay = array();
+		$plansOfDay = $this->CalendarCommon->preparePlanSummaries($vars, $nctm, $year, $month, $day);
+		$planNum = count($plansOfDay[2]);
+		if ($planNum === 0) {
+			$html = '<div>&nbsp</div>'; //0件
+		} else {
+			$html = '<div><span class="badge">' . $planNum . '</span></div>'; //1件以上
+		}
 		return $html;
 	}
 
@@ -211,17 +221,19 @@ class CalendarMonthlyHelper extends AppHelper {
 		$cnt = 0;
 		$week = 0;
 
+		$nctm = new NetCommonsTime();
 		//初週の前月部 処理
 		for ($idx = 0; $idx < $vars['mInfo']['wdayOf1stDay']; ++$idx) {
 
 			$html .= $this->_makeStartTr($cnt, $vars, $week);
 
 			$day = $vars['mInfo']['daysInPrevMonth'] - $vars['mInfo']['wdayOf1stDay'] + ($idx + 1);
-			$url = $this->CalendarUrl->getPlanListUrl('prevMonth', $vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day, $vars);
+			//$url = $this->CalendarUrl->getPlanListUrl('prevMonth', $vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day, $vars);
+			$url = $this->CalendarUrl->getCalendarDailyUrl($vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day);
 			$html .= "<td class='calendar-col-small-day calendar-out-of-range calendar-plan-list' data-url='" . $url . "'><div><span class='text-center text-muted'>";
 			$html .= $day;
 			$html .= '</span></div>';
-			$html .= $this->makePlansHtml($vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day);
+			$html .= $this->makePlansHtml($vars, $nctm, $vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day);
 			$html .= '</td>';
 
 			$html .= $this->_makeEndTr($cnt);
@@ -232,14 +244,15 @@ class CalendarMonthlyHelper extends AppHelper {
 		for ($day = 1; $day <= $vars['mInfo']['daysInMonth']; ++$day) {
 
 			$html .= $this->_makeStartTr($cnt, $vars, $week);
-
+			$tdColor = $this->CalendarCommon->getTdColor($vars, $vars['mInfo']['year'], $vars['mInfo']['month'], $day);
 			$textColor = $this->CalendarCommon->makeTextColor($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
 
-			$url = $this->CalendarUrl->getPlanListUrl('thisMonth', $vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars);
-			$html .= "<td class='calendar-col-small-day calendar-plan-list' data-url='" . $url . "'><div><span class='text-center {$textColor}'>";
+			//$url = $this->CalendarUrl->getPlanListUrl('thisMonth', $vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars);
+			$url = $this->CalendarUrl->getCalendarDailyUrl($vars['mInfo']['year'], $vars['mInfo']['month'], $day);
+			$html .= "<td class='calendar-col-small-day calendar-plan-list {$tdColor}' data-url='" . $url . "'><div><span class='text-center {$textColor}'>";
 			$html .= $day;
 			$html .= '</span></div>';
-			$html .= $this->makePlansHtml($vars['mInfo']['year'], $vars['mInfo']['month'], $day);
+			$html .= $this->makePlansHtml($vars, $nctm, $vars['mInfo']['year'], $vars['mInfo']['month'], $day);
 			$html .= '</td>';
 
 			$html .= $this->_makeEndTr($cnt);
@@ -252,11 +265,12 @@ class CalendarMonthlyHelper extends AppHelper {
 
 			$html .= $this->_makeStartTr($cnt, $vars, $week);
 
-			$url = $this->CalendarUrl->getPlanListUrl('nextMonth', $vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $day, $vars);
+			//$url = $this->CalendarUrl->getPlanListUrl('nextMonth', $vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $day, $vars);
+			$url = $this->CalendarUrl->getCalendarDailyUrl($vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $day);
 			$html .= "<td class='calendar-col-small-day calendar-out-of-range calendar-plan-list' data-url='" . $url . "'><div><span class='text-center text-muted'>";
 			$html .= $day;
 			$html .= '</span></div>';
-			$html .= $this->makePlansHtml($vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $day);
+			$html .= $this->makePlansHtml($vars, $nctm, $vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $day);
 			$html .= '</td>';
 
 			$html .= $this->_makeEndTr($cnt);
@@ -369,8 +383,8 @@ class CalendarMonthlyHelper extends AppHelper {
 			$url = $this->CalendarUrl->getCalendarDailyUrl($vars['mInfo']['year'], $vars['mInfo']['month'], $day);
 
 			$html .= $this->_makeStartTr($cnt, $vars, $week);
-
-			$html .= "<td class='calendar-col-day calendar-tbl-td-pos'>";
+			$tdColor = $this->CalendarCommon->getTdColor($vars, $vars['mInfo']['year'], $vars['mInfo']['month'], $day);
+			$html .= "<td class='calendar-col-day calendar-tbl-td-pos {$tdColor}'>";
 			$holidayTitle = $this->CalendarCommon->getHolidayTitle($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
 			$textColor = $this->CalendarCommon->makeTextColor($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
 			//<!-- 1row --> 日付と予定追加glyph

@@ -402,6 +402,12 @@
 	background-color: #F2DEDE;
 }
 
+/*-- カレンダー セル 今日--*/
+.calendar-tbl-td-today {
+	background-color: #ffffcf;
+	border: 2px solid #f0d946 !important;
+}
+
 /*-- カレンダー 対象の回転表示 --*/
 .calendar-rotate-right-90deg {
 	transform: rotate(90deg);
@@ -494,4 +500,28 @@
 /* カレンダー予定簡易編集（通常幅用 via（minus）マーク）2016.03.26 */
 .calendar-widecase-via-mark {
 	/* 明示的に空にするクラス */
+}
+
+.calendar-sunday {
+  color:#cc3333;
+}
+
+.calendar-saturday {
+  color:#3366cc;
+}
+
+.calendar-month {
+  vertical-align:middle;
+  color:#333;
+}
+
+.calendar-smonthly-div{
+  width:100%;
+  text-align:center;
+}
+
+.calendar-smonthly-div div{
+  width:100%;
+  margin:0 auto;
+
 }
