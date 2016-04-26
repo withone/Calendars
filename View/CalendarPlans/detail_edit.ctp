@@ -447,7 +447,6 @@
 						'5' => __d('calendars', '5週'),
 						'6' => __d('calendars', '6週'),
 					);
-/* aaaaa
 					echo $this->NetCommonsForm->select('CalendarCompRrule.weekly', $options, array(
 						'value' => __d('calendars', '1週'),		//valueは初期値
 						'class' => 'form-control',
@@ -455,7 +454,6 @@
 						'required' => true,
 						'div' => false,
 					));
-*/
 ?>
 				</div>
 				<div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div>
@@ -467,7 +465,6 @@
 	//第一引数(フィールド名)の最後に、.(ドット)をつけると、複数同じフィールド名のチェックボックスがあると、
 	//cakePHP側では配列でデータを受けるようになる、とのこと。。要確認
 	//
-/* aaaa
 	echo $this->NetCommonsForm->input('dayOfTheWeek.', array(
 		//'type' => 'checkbox',
 		//'checked' => false,
@@ -477,7 +474,6 @@
 		'options' => array('日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'),
 		'class' => 'text-left calendar-choice-day-of-the-week_' . $frameId,
 	));
-*/
 ?>
 				</div><!--col-sm-12おわり-->
 				</div><!-- row form-group終わり-->
@@ -500,7 +496,6 @@
 						'10' => __d('calendars', '10ヶ月'),
 						'11' => __d('calendars', '11ヶ月'),
 					);
-/* aaaaa
 					echo $this->NetCommonsForm->select('CalendarCompRrule.monthly', $options, array(
 						'value' => __d('calendars', '1ヶ月'),	//valueは初期値
 						'class' => 'form-control',
@@ -508,7 +503,6 @@
 						'required' => true,
 						'div' => false,
 					));
-*/
 ?>
 				</div>
 				<div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div>
@@ -557,7 +551,6 @@
 						'4_5' => __d('calendars', '最終週金曜日'),
 						'4_6' => __d('calendars', '最終週土曜日'),
 					);
-/* aaaaaa
 					echo $this->NetCommonsForm->select('CalendarCompRrule.dayofweek', $options, array(
 						//'' => __d('calendars', '-曜日指定-'),
 						'class' => 'form-control',
@@ -567,7 +560,6 @@
 						'ng-model' => 'monthlyDayOfTheWeek[' . $frameId . ']',
 						'ng-change' => 'changeMonthyDayOfTheWeek(' . $frameId . ')',
 					));
-*/
 ?>
 
 
@@ -613,7 +605,6 @@
 						'30' => __d('calendars', '30日'),
 						'31' => __d('calendars', '31日'),
 					);
-/* aaaaa
 					echo $this->NetCommonsForm->select('CalendarCompRrule.date', $options, array(
 						//'' => __d('calendars', '-日付指定-'),
 						'class' => 'form-control',
@@ -624,7 +615,6 @@
 						'ng-model' => 'monthlyDate[' . $frameId . ']',
 						'ng-change' => 'changeMonthlyDate(' . $frameId . ')',
 					));
-*/
 ?>
 
 				</div><!--col-sm-5おわり-->
@@ -648,7 +638,6 @@
 						'11' => __d('calendars', '11年'),
 						'12' => __d('calendars', '12年'),
 					);
-/* aaaaaa
 					echo $this->NetCommonsForm->select('CalendarCompRrule.yearly', $options, array(
 						'value' => __d('calendars', '1年'),		//valueは初期値
 						'class' => 'form-control',
@@ -656,7 +645,6 @@
 						'required' => true,
 						'div' => false,
 					));
-*/
 ?>
 				</div><!-- col-sm-8おわり -->
 				<div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div>
@@ -668,7 +656,6 @@
 	//第一引数(フィールド名)の最後に、.(ドット)をつけると、複数同じフィールド名のチェックボックスがあると、
 	//cakePHP側では配列でデータを受けるようになる、とのこと。。要確認
 	//
-/* aaaaa
 	echo $this->NetCommonsForm->input('month.', array(
 		//'type' => 'checkbox',
 		//'checked' => false,
@@ -678,7 +665,6 @@
 		'options' => array('1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'),
 		'class' => 'text-left calendar-choice-month_' . $frameId,
 	));
-*/
 ?>
 
 				</div><!--col-sm-12おわり-->

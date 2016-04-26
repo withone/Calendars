@@ -16,10 +16,8 @@
 	));
 ?>
 <div class="calendar-smonthly-div">
-<div class="row">
 
 	<!-- <div class="col-xs-6 col-xs-offset-3 text-center"> -->
-
 	<!-- <div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-1 text-center" style="padding:0"> -->
 	<!--<div class="col-xs-10 col-xs-offset-1">-->
 		<table style='width:80%; border-collapse: collapse; margin:0 auto;'>
@@ -40,7 +38,6 @@
 		</table>
   </div>
 </div>
-
 <!--<?php echo $this->element('Calendars.Calendars/change_style', array('frameId' => $frameId, 'languageId' => $languageId, 'vars' => $vars)); ?>-->
 
 <!--</form>-->

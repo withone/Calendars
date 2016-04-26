@@ -41,6 +41,7 @@ class CalendarsAppController extends AppController {
 		'Calendars.CalendarEventShareUser',
 		'Calendars.CalendarEventSelectRoom',
 		'Rooms.Room',
+		//'Rooms.RoomsLanguages', //pending
 	);
 
 /**
@@ -204,6 +205,8 @@ class CalendarsAppController extends AppController {
 		//room_idとspace_idの対応表を載せておく。
 		$rooms = $this->Room->find('all', array('recursive' => -1, 'order' => array($this->Room->alias . '.id')));
 		$vars['roomSpaceMaps'] = Hash::combine($rooms, '{n}.Room.id', '{n}.Room.space_id');
+		//$roomsLanguages = $this->RoomsLanguages->find('all', array('recursive' => -1)); //pending
+		//$vars['roomsLanguages'] = $roomsLanguages;
 		//CakeLog::debug("DBG: roomSpaceMaps[" . print_r($vars['roomSpaceMaps'], true) . "]");
 	}
 

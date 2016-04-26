@@ -58,7 +58,7 @@
 		</div>
 	</div>
  <?php elseif ($vars['style'] === 'weekly'): /* weekly */ ?>
-  <div class="row">
+  <!--<div class="row">
     <div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3 text-center calendar-weekly-year-pager">
 		<ul class="pager small">
 		  <div class="col-xs-6 col-sm-4 calendar-pager-button">
@@ -87,7 +87,7 @@
     <div class="col-xs-12 visible-xs text-center">
 		<label for="CalendarCompDtstartendTargetYear"><h4 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h4></label>
     </div>
-  </div>
+  </div>-->
  <?php else: /* largemonthly */ ?>
 		<div class="row">
 			<div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 text-center calendar-weekly-year-pager">

@@ -77,6 +77,7 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		$day = $vars['day'];
 		$nctm = new NetCommonsTime();
 
+		$roomMaxNum = count($rooms);
 		foreach ($rooms as $room) {
 			$cnt++;
 			$roomID = array_keys($rooms, $room);
@@ -94,6 +95,7 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 			//print_r($vars['currentRoomId']);
 			//予定（7日分繰り返し）
 			for ($nDay = 0; $nDay < 7; $nDay++) {
+				$tdColor = '';
 				if ($nDay === 0) { //前日+1日
 					//$year = $vars['year'];
 					//$month = $vars['month'];
@@ -104,8 +106,14 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 				} else {
 					list($year, $month, $day) = CalendarTime::getNextDay($year, $month, $day);
 				}
-
-				$html .= "<td class='calendar-weekly-col-day calendar-tbl-td-pos calendar-tbl-td-room-plan'>";
+				if ($tdColor = $this->CalendarCommon->isToday($vars, $year, $month, $day) == true) {
+					if ($cnt == $roomMaxNum) {//最終行
+						$tdColor = 'calendar-weekly-tbl-td-today-last';
+					} else {
+						$tdColor = 'calendar-weekly-tbl-td-today';
+					}
+				}
+				$html .= "<td class='calendar-weekly-col-day calendar-tbl-td-pos calendar-tbl-td-room-plan {$tdColor}'>";
 				//ルームID($cnt)が一致するの当日の予定を取得 pending
 				$html .= $this->_makePlanSummariesHtml($vars, $nctm, $year, $month, $day);
 				$html .= "</td>";
@@ -113,6 +121,37 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 
 			$html .= "</div></tr>"; // 1行の終了
 		}
+		return $html;
+	}
+
+/**
+ * makeRoomLegendHtml
+ *
+ * (room凡例)html生成
+ *
+ * @param array $vars コントローラーからの情報
+ * @return string HTML
+ */
+	public function makeRoomLegendHtml($vars) {
+		$html = '';
+		$rooms = $vars['exposeRoomOptions'];
+
+		//ルーム数分繰り返し
+		$html .= "<div class='calendar-room-legend'>"; //1行の開始
+
+		foreach ($rooms as $room) {
+			$roomID = array_keys($rooms, $room);
+			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $roomID[0]);
+			$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
+
+			if ($calendarPlanMark == 'calendar-plan-mark-group') {
+				$html .= '<span> ' . __d('calendars', 'グループルーム') . '</span>';
+			} else {
+				$html .= '<span> ' . $room . '</span>';
+			}
+			$html .= '&nbsp&nbsp';
+		}
+		$html .= "</div>"; //1行の開始
 		return $html;
 	}
 

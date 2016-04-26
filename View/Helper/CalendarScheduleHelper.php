@@ -115,8 +115,20 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 				$html .= "</div>";
 				$html .= "<div class='clearfix'></div>";
 			} else { // 時間順
+				//ユーザー名
+				//$html .= "<div class='row'>";
+				$html .= "<div class='col-xs-12 col-sm-3 col-sm-push-9'>";
+				$html .= "<p class='calendar-plan-clickable text-left calendar-schedule-row-member-t'>";
+				$html .= "<span class='text-success'>";
+				$html .= $this->DisplayUser->handleLink($plan, array('avatar' => false));
+				//$html .= $this->Html->link($plan['TrackableCreator']['username'], array());
+				$html .= "</span>";
+				$html .= "</p>";
+				$html .= "</div>";
+				//$html .= "<div class='clearfix'></div>";
+
 				//予定
-				$html .= "<div class='col-xs-12 col-sm-9'>";
+				$html .= "<div class='col-xs-12 col-sm-9 col-sm-pull-3'>";
 
 				$html .= "<p class='calendar-plan-clickable text-left calendar-plan-show calendar-schedule-row-plan' data-url='" . $url . "'>";
 
@@ -135,17 +147,6 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 				//$html .= "<div class='clearfix'></div>";
 
 				//$html .= "</div>";
-
-				//ユーザー名
-				$html .= "<div class='col-xs-12 col-sm-3'>";
-				$html .= "<p class='calendar-plan-clickable text-left calendar-schedule-row-member-t'>";
-				$html .= "<span class='text-success'>";
-				$html .= $this->DisplayUser->handleLink($plan, array('avatar' => false));
-				//$html .= $this->Html->link($plan['TrackableCreator']['username'], array());
-				$html .= "</span>";
-				$html .= "</p>";
-				$html .= "</div>";
-				$html .= "<div class='clearfix'></div>";
 			}
 
 			// 1プランの終了

@@ -220,7 +220,7 @@ class CalendarMonthlyHelper extends AppHelper {
 		$html = '';
 		$cnt = 0;
 		$week = 0;
-
+		$tdColor = '';
 		$nctm = new NetCommonsTime();
 		//初週の前月部 処理
 		for ($idx = 0; $idx < $vars['mInfo']['wdayOf1stDay']; ++$idx) {
@@ -242,9 +242,11 @@ class CalendarMonthlyHelper extends AppHelper {
 		}
 
 		for ($day = 1; $day <= $vars['mInfo']['daysInMonth']; ++$day) {
-
+			$tdColor = '';
 			$html .= $this->_makeStartTr($cnt, $vars, $week);
-			$tdColor = $this->CalendarCommon->getTdColor($vars, $vars['mInfo']['year'], $vars['mInfo']['month'], $day);
+			if ($this->CalendarCommon->isToday($vars, $vars['mInfo']['year'], $vars['mInfo']['month'], $day) == true) {
+				$tdColor = 'calendar-tbl-td-today'; //本日のセル色
+			}
 			$textColor = $this->CalendarCommon->makeTextColor($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
 
 			//$url = $this->CalendarUrl->getPlanListUrl('thisMonth', $vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars);
@@ -380,10 +382,13 @@ class CalendarMonthlyHelper extends AppHelper {
 
 		//当月部
 		for ($day = 1; $day <= $vars['mInfo']['daysInMonth']; ++$day) {
+			$tdColor = '';
 			$url = $this->CalendarUrl->getCalendarDailyUrl($vars['mInfo']['year'], $vars['mInfo']['month'], $day);
 
 			$html .= $this->_makeStartTr($cnt, $vars, $week);
-			$tdColor = $this->CalendarCommon->getTdColor($vars, $vars['mInfo']['year'], $vars['mInfo']['month'], $day);
+			if ($this->CalendarCommon->isToday($vars, $vars['mInfo']['year'], $vars['mInfo']['month'], $day) == true) {
+				$tdColor = 'calendar-tbl-td-today'; //本日のセル色
+			}
 			$html .= "<td class='calendar-col-day calendar-tbl-td-pos {$tdColor}'>";
 			$holidayTitle = $this->CalendarCommon->getHolidayTitle($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
 			$textColor = $this->CalendarCommon->makeTextColor($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);

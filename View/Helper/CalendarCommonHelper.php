@@ -111,24 +111,22 @@ class CalendarCommonHelper extends AppHelper {
 	}
 
 /**
- * getTdColor
+ * isToday
  *
- * TDセル色取得
+ * 本日か判定
  *
  * @param array $vars カレンダー情報
  * @param int $year 年
  * @param int $month 月
  * @param int $day 日
- * @return string 指定色が無いは空文字''を返す。
+ * @return bool 本日の場合はtrueを返す。
  */
-	public function getTdColor($vars, $year, $month, $day) {
-		$tdColor = '';
-
+	public function isToday($vars, $year, $month, $day) {
 		//今日
 		if ($year == $vars['today']['year'] && $month == $vars['today']['month'] && $day == $vars['today']['day']) {
-			$tdColor = 'calendar-tbl-td-today';	//本日のセル色
+			return true;
 		}
-		return $tdColor;
+		return false;
 	}
 
 /**
