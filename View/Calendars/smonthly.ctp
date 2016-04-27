@@ -20,7 +20,7 @@
 	<!-- <div class="col-xs-6 col-xs-offset-3 text-center"> -->
 	<!-- <div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-1 text-center" style="padding:0"> -->
 	<!--<div class="col-xs-10 col-xs-offset-1">-->
-		<table style='width:80%; border-collapse: collapse; margin:0 auto;'>
+		<table style='border-collapse: collapse; margin:0 auto;'>
 		<tbody>
 		<tr>
 			<td class='calendar-col-small-day-head'><span class='calendar-sunday h4'><?php echo __d('calendars', '日'); ?></span></td>
@@ -37,7 +37,7 @@
 		</tbody>
 		</table>
   </div>
-</div>
+<!-- </div> -->
 <!--<?php echo $this->element('Calendars.Calendars/change_style', array('frameId' => $frameId, 'languageId' => $languageId, 'vars' => $vars)); ?>-->
 
 <!--</form>-->

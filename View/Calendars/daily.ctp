@@ -9,6 +9,17 @@
 
 <!-- <div class="clearfix"></div> -->
 <?php
+	/* 今日へ */
+	$thisDay = NetCommonsUrl::actionUrl(array(
+		'controller' => 'calendars',
+		'action' => 'index',
+		'style' => $vars['style'],
+		'year' => sprintf("%04d", $vars['today']['year']),
+		'month' => sprintf("%02d", $vars['today']['month']),
+		'day' => sprintf("%02d", $vars['today']['day']),
+		'frame_id' => Current::read('Frame.id'),
+	));
+
 	/* 前日 */
 	$prevtimestamp = mktime(0, 0, 0, $vars['month'], ($vars['day'] - 1 ), $vars['year']);
 	$prevYear = date('Y', $prevtimestamp);
@@ -64,31 +75,36 @@
 		'frame_id' => Current::read('Frame.id'),
 	));
 
+	/* 曜日 */
+	$week = array('(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)'); // kuma temp
+
 ?>
 
-<!-- 日切り替え org-->
 <div class="row">
-	<div class="col-xs-6 col-xs-offset-3 text-center">
-		<ul class="pager">
-  			<li class="previous" title="<?php echo __d('calendars', '前日へ'); ?>">
-  				<a href="<?php echo $prevDayLink; ?>">
-  				<span class="glyphicon glyphicon-chevron-left"></span></a>
-  			</li>
-  			<li>
-   			<div class='hidden-xs calendar-inline <?php echo $textColor ?>'>
-   			<label for="CalendarEventTargetYear">
-  			<span class='h5'><?php echo $vars['year'] . __d('calendars', '年'); ?></span>
-  			<span class='h3'><?php echo $vars['month'] . __d('calendars', '月') . $vars['day'] . __d('calendars', '日'); ?></span>
-  			<span class='h5'><?php echo (($holidayTitle === '') ? '&nbsp;' : $holidayTitle); ?></span>
- 			</label>
-  			</div>
-  			</li> 
-  			<br class="visible-xs" />
-  			<li class="next" title="<?php echo __d('calendars', '翌日へ'); ?>">
-  				<a href="<?php echo $nextDayLink; ?>">
-  				<span class="glyphicon glyphicon-chevron-right"></span></a>
-  			</li>
-		</ul>
+	<div class="col-xs-6 col-xs-offset-3 col-sm-12">
+		<div class="calendar-pager-daily-button previous" title="<?php echo __d('calendars', '前日へ'); ?>">
+			<a href="<?php echo $prevDayLink; ?>">
+			<span class="glyphicon glyphicon-chevron-left"></span></a>
+		</div>
+		<div class='hidden-xs calendar-pager-daily-button calendar-inline <?php echo $textColor ?>'>
+		<label for="CalendarEventTargetYear">
+		<span class='h5'><?php echo $vars['year'] . __d('calendars', '年'); ?></span>
+		<span class='h3'><?php echo $vars['month'] . __d('calendars', '月') . $vars['day'] . __d('calendars', '日'); ?><?php echo $week[$wDay] ?></span>
+		<span class='h5'><?php echo (($holidayTitle === '') ? '&nbsp;' : $holidayTitle); ?></span>
+		</label>
+		</div>
+		<br class="visible-xs" />
+		<div class="calendar-pager-daily-button next" title="<?php echo __d('calendars', '翌日へ'); ?>">
+			<a href="<?php echo $nextDayLink; ?>">
+			<span class="glyphicon glyphicon-chevron-right"></span></a>
+		</div>
+		<div class="hidden-xs calendar-thismonth">
+			<h4 class="calendar-inline">
+			<a href="<?php echo $thisDay; ?>">
+				<?php echo __d('calendars', '今日へ'); ?>
+			</a>
+			</h4>
+		</div>
 	</div>
 
 	<div class='col-xs-12 visible-xs text-center <?php echo $textColor ?>'>
@@ -100,12 +116,16 @@
   		</label>
   		<br />
   		<span class='h5'><?php echo (($holidayTitle === '') ? '&nbsp;' : $holidayTitle); ?></span>
+		<div class="calendar-thismonth">
+			<h4 class="calendar-inline">
+			<a href="<?php echo $thisDay; ?>">
+				<?php echo __d('calendars', '今日へ'); ?>
+			</a>
+			</h4>
+		</div>
 	</div>
-
 </div>
-<!-- org -->
 
-<br />
 <?php
 	//angularJSのdatetimepicker変化の時に使う雛形URL
 	$prototypeUrl = NetCommonsUrl::actionUrl(array(
@@ -120,7 +140,7 @@
 
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD',
-		'viewMode' => 'years',
+		'viewMode' => 'months',
 	)));
 
 	if (!isset($vars['mInfo']['day'])) {
@@ -149,7 +169,6 @@
 	));
 
 ?>
-
 
 </form>
 </article>

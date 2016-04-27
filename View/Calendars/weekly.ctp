@@ -232,7 +232,7 @@
 	echo $this->CalendarWeekly->makeRoomLegendHtml($vars);
 ?>
 
-<?php echo $this->element('Calendars.Calendars/change_style', array('frameId' => $frameId, 'languageId' => $languageId, 'vars' => $vars)); ?>
+<?php //echo $this->element('Calendars.Calendars/change_style', array('frameId' => $frameId, 'languageId' => $languageId, 'vars' => $vars)); ?>
 
 <!-- </div> --><!-- panel-body END -->
 <!-- </div> --><!-- panel END -->

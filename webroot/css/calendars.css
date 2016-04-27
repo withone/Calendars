@@ -89,7 +89,8 @@
 	border-width: 0 0 1px 0;
 	border-style: solid;
 	border-color: #ddd;
-	padding: 5px;
+	//padding: 5px;
+	padding: 0px 0px 5px;
 }
 
 /*-- カレンダー カラム 月縮小 --*/
@@ -98,7 +99,15 @@
 	border-width: 1px 1px 1px 1px;
 	border-style: solid;
 	border-color: #ddd;
-	padding: 5px;
+	//padding: 5px;
+	padding: 5px 0px;
+}
+
+.calendar-smonthly-div > table {
+	border-collapse: collapse;
+	margin: 0 auto;
+	width: 100%;
+	table-layout: fixed;
 }
 
 /*-- カレンダー カラム 月縮小 (ホバー時) --*/
@@ -132,11 +141,11 @@
 	padding:0em 0.2em;
 	margin-bottom:-0.5em;
 }
-.calendar-plan-mark	{
-	border-left-width: 5px;
+
+.calendar-plan-mark {
+	border-left-width: 3px;
 	border-left-style: solid;
-	margin: 0 ;
-	padding: 0 5px 0 0;
+	margin: 3px 0px 7px 3px;
 }
 
 /*-- 単一日カレンダー　非タイムライン　時間帯 装飾 --*/
@@ -161,13 +170,12 @@
 
 .calendar-plan-mark-member {
 	//border-left-color: #c90505;
-	border-left-color: #5cb85c;
+	border-left-color: #d9534f;
 }
 
 .calendar-plan-mark-share {
 	border-left-color: #e888ec;
 }
-
 
 /*-- カレンダー月縮小用mark 色 --*/
 .calendar-plan-smallmonthly-mark-deco {
@@ -381,7 +389,7 @@
 }
 
 .calendar-weekly-col-plus div{
-background-color:#efefef;
+	background-color:#efefef;
 }
 
 /*-- カレンダーヘッダーのページャー部 (ボタン) 2016.3.3--*/
@@ -389,6 +397,13 @@ background-color:#efefef;
 	padding-right:5px !important;
 	border:none;
 	text-align:left;
+}
+
+
+.calendar-pager-daily-button {
+    float: left;
+    margin: 10px;
+    padding-left: 10px;
 }
 
 
@@ -649,6 +664,44 @@ td.calendar-col-day.calendar-out-of-range  .calendar-day {
   margin-bottom: 15px;
 }
 
+/* カレンダーの時間 */
+
+.calendar-plan-time {
+	margin: 1px 5px 1px 5px;
+	font-weight: normal;
+	float: left;
+}
+
+/* カレンダーのスペース名 */
+
+.calendar-plan-spacename {
+	margin: 1px 5px 1px 5px;
+	font-weight: normal;
+	float: left;
+}
+
+/* カレンダーのタイトル */
+.calendar-plan-tittle {
+	margin: 1px 5px 3px 5px;
+	clear: left;
+	font-size: 1.12em;
+}
+
+/* カレンダーの場所 */
+
+.calendar-plan-place {
+	margin: 0 5px 1px 5px;
+	font-weight: normal;
+}
+
+/* カレンダーの住所 */
+
+.calendar-plan-address {
+	margin: 0 5px 1px 5px;
+	font-weight: normal;
+}
+
+/* カレンダー＋アイコン */
 a.calendar-edit-plus-icon {
 	padding: 0.1em 0.3em;
 	display: inline-block;

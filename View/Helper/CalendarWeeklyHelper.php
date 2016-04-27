@@ -145,12 +145,25 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 			$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
 
 			if ($calendarPlanMark == 'calendar-plan-mark-group') {
-				$html .= '<span> ' . __d('calendars', 'グループルーム') . '</span>';
+				$html .= '<span>' . __d('calendars', 'グループルーム') . '</span>';
 			} else {
-				$html .= '<span> ' . $room . '</span>';
+				$html .= '<span>' . $room . '</span>';
 			}
 			$html .= '&nbsp&nbsp';
 		}
+
+		//共有予定
+		$calendarPlanMark = 'calendar-plan-mark-share';
+		$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
+		$html .= '<span> ' . __d('calendars', '共有予定') . '</span>';
+		$html .= '&nbsp&nbsp';
+
+		//共有した予定 pending
+		$calendarPlanMark = 'calendar-plan-mark-share';
+		$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
+		$html .= '<span>' . __d('calendars', '共有した予定') . '</span>';
+		$html .= '&nbsp&nbsp';
+
 		$html .= "</div>"; //1行の開始
 		return $html;
 	}

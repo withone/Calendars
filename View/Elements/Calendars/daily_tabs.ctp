@@ -1,5 +1,3 @@
-<?php
-?>
 <div class="col-xs-3 col-xs-push-9">
 	<?php echo $this->CalendarMonthly->makeGlyphiconPlusWithUrl($vars['year'], $vars['month'], $vars['day'], $vars); ?>
 </div>
@@ -29,24 +27,28 @@
 	));
 ?>
 
-<ul role='tablist' class='nav nav-tabs'>
+<!-- <button type="button" class="btn btn-default" data-toggle="button" aria-pressed="false" autocomplete="off">
+</button> -->
+
+<div class="btn-group btn-group-justified" role="group" aria-label="...">
+	<div class="btn-group" role="group">
 <?php if ($active === 'list'): ?>
-	<li class='active'>
-	<a href='#' onclidk='return false;'>
+	<a class="btn btn-default active" href='#' onclick='return false;'>
  <?php else: ?>
-		<li>
-		<a href="<?php echo $dailyLink; ?>">
+	<a class='btn btn-default' href="<?php echo $dailyLink; ?>">
 <?php endif; ?>
-<?php echo __d('calendars', '一覧'); ?></a>
-</li>
+<?php echo __d('calendars', '予定一覧'); ?></a>
+	</a>
+</div>
+<div class="btn-group" role="group">
+
 <?php if ($active === 'timeline'): ?>
-	<li class='active'>
-	<a href='#' onclick='return false;'>
+	<a class="btn btn-default active" href='#' onclick='return false;'>
  <?php else: ?>
-		<li>
-		<a href="<?php echo $timelineLink; ?>">
+	<a class="btn btn-default" href="<?php echo $timelineLink; ?>">
 <?php endif; ?>
 <?php echo __d('calendars', 'タイムライン'); ?></a>
-</li>
-</ul>
+	</a>
+</div>
+</div>
 <br>
