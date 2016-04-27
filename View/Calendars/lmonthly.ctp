@@ -5,7 +5,9 @@
 <article ng-controller="CalendarsDetailEdit" class="block-setting-body">
 
 
-<div class="clearfix"></div>
+	<?php
+	echo $this->element('Calendars.Calendars/calendar_tabs', array('active' => 'lmonthly', 'frameId' => $frameId, 'languageId' => $languageId));
+	?>
 
 
 <form>
@@ -50,8 +52,6 @@
 	</div>
 
 </div><!--全体枠END-->
-
-<?php echo $this->element('Calendars.Calendars/change_style', array('frameId' => $frameId, 'languageId' => $languageId, 'vars' => $vars)); ?>
 
 <!-- </div> --><!-- panel-body END -->
 <!-- </div> --><!-- panel END -->

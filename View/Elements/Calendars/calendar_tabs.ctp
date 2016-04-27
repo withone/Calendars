@@ -35,7 +35,7 @@
 
 ?>
 
-<ul role='tablist' class='nav nav-tabs'>
+<ul role='tablist' class='nav nav-tabs calendar-date-move-tablist'>
 
 <?php if ($active === 'lmonthly'): ?>
 	<li class='active'>
@@ -45,7 +45,7 @@
 		<a href="<?php echo $lmonthlyLink; ?>">
 <?php endif; ?>
 
-<h3><?php echo __d('calendars', '月'); ?></h3></a>
+<?php echo __d('calendars', '月'); ?></a>
 </li>
 
 <?php if ($active === 'weekly'): ?>
@@ -56,7 +56,7 @@
 		<a href="<?php echo $weeklyLink; ?>">
 <?php endif; ?>
 
-<h3><?php echo __d('calendars', '週'); ?></h3></a>
+<?php echo __d('calendars', '週'); ?></a>
 </li>
 
 <?php if ($active === 'daily'): ?> 
@@ -67,7 +67,7 @@
 		<a href="<?php echo $dailyLink; ?>">
 <?php endif; ?>
 
-<h3><?php echo __d('calendars', '日'); ?></h3></a>
+<?php echo __d('calendars', '日'); ?></a>
 </li>
 </ul>
 <br>

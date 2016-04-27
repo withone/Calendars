@@ -12,31 +12,6 @@
 /**
  * YYYY-MM形式の年月を、言語別のフォーマットに変形するフィルター
  */
-NetCommonsApp.filter('ncFormatY', function() {
-  return function(value, fmt, languageId) {
-    if (!angular.isString(value)) {  //valueが文字列でなければ加工しない
-      return value;
-    }
-    languageId = (languageId + '') || '2';    //lang指定なければデフォルト言語
-    switch (languageId) {  //言語別 YYYY 整形
-      case '2':
-        if (fmt == 'yyy') {
-          value = value.replace(/^(\d{1,4})-(\d{1,2})$/, '$1年');
-        } else if (fmt == 'mm') {
-          value = value.replace(/^(\d{1,4})-(\d{1,2})$/, '$2月');
-        } else if (fmt == 'yyymm') {
-          value = value.replace(/^(\d{1,4})-(\d{1,2})$/, '$1年$2月');
-        }
-        break;
-      default:
-    }
-    return value;
-  }
-});
-
-/**
- * YYYY-MM形式の年月を、言語別のフォーマットに変形するフィルター
- */
 NetCommonsApp.filter('formatYyyymm', function() {
   return function(value, languageId) {
     if (!angular.isString(value)) {  //valueが文字列でなければ加工しない

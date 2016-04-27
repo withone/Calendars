@@ -107,32 +107,32 @@ class CalendarMonthlyHelper extends AppHelper {
 	public function getPlanSummariesHtml(&$vars, $year, $month, $day, $fromTime, $toTime, $plans) {
 		$html = '';
 		foreach ($plans as $plan) {
-			//仕様
-			//予定が１件以上あるとき）
-			// 3row(時刻。任意. 略称 T)、4row(予定サマリ。必須. 略称 S)。 正規表現風に規則を書くなら右記。 ((T)?S)*
-			if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
-				////<!-- 3row -->
-				$html .= "<div class='row'>";
-				$html .= "<div class='col-xs-12'>";
-				$html .= "<p><span><small>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small></span></p>';
-				$html .= '</div>';
-				$html .= "<div class='clearfix'></div>";
-				$html .= '</div>';
-			}
-			//<!-- 4row -->
-			$html .= "<div class='row'>";
-			$html .= "<div class='col-xs-12'>";
-			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
-			$html .= "<p class='calendar-plan-clickable text-left calendar-plan-show' data-url='" . $url . "'>";
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
-			$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
+			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
+
+			// 大枠
+			$html .= '<div class="row"><div class="col-xs-12">';
+			// スペースごとの枠
+			$html .= '<div class="calendar-plan-mark ' . $calendarPlanMark . '">';
+			// ステータスラベル
+			$html .= '<div>';
 			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
+			$html .= '</div>';
+			// 時間
+			if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
+				$html .= '<p class="calendar-plan-time small">';
+				$html .= $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'];
+				$html .= '</p>';
+			}
+			$html .= '<h3 class="calendar-plan-tittle">';
+			$html .= '<a href=' . $url . '>';
 			$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
-			$html .= '<span> ' . h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...')) . '</span>';
-			$html .= '</p>';
+			$html .= h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...'));
+			$html .= '</a>';
+			$html .= '</h3>';
+
 			$html .= '</div>';
-			$html .= "<div class='clearfix'></div>";
-			$html .= '</div>';
+			$html .= '</div></div>';
 		}
 		return $html;
 	}
