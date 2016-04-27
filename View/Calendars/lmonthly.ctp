@@ -26,19 +26,19 @@
 <div class="row"><!--全体枠-->
 	<div class="visible-xs" style="margin:10px"></div>
 	<!-- <div class="col-sm-11 col-sm-offset-1 text-center"> -->
-	<div class="col-xs-12 col-sm-12 text-center">
+	<div class="col-xs-12 col-sm-12">
 
 		<table class='calendar-monthly-table'>
 			<tbody>
 				<tr class="hidden-xs">
 					<td class='calendar-col-week-head'>&nbsp;</td>
-					<td class='calendar-col-day-head'><span class='text-danger h4'><?php echo __d('calendars', '日'); ?></span></td>
+					<td class='calendar-col-day-head'><span class='calendar-sunday h4'><?php echo __d('calendars', '日'); ?></span></td>
 					<td class='calendar-col-day-head'><span class='h4'><?php echo __d('calendars', '月'); ?></span></td>
 					<td class='calendar-col-day-head'><span class='h4'><?php echo __d('calendars', '火'); ?></span></td>
 					<td class='calendar-col-day-head'><span class='h4'><?php echo __d('calendars', '水'); ?></span></td>
 					<td class='calendar-col-day-head'><span class='h4'><?php echo __d('calendars', '木'); ?></span></td>
 					<td class='calendar-col-day-head'><span class='h4'><?php echo __d('calendars', '金'); ?></span></td>
-					<td class='calendar-col-day-head'><span class='text-primary h4'><?php echo __d('calendars', '土'); ?></span></td>
+					<td class='calendar-col-day-head'><span class='calendar-saturday h4'><?php echo __d('calendars', '土'); ?></span></td>
 				</tr>
 
 <?php

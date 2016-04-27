@@ -89,37 +89,19 @@
     </div>
   </div>-->
  <?php else: /* largemonthly */ ?>
-		<div class="row">
-			<div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 text-center calendar-weekly-year-pager">
-				<ul class="pager">
-				  <div class="col-xs-6 col-sm-3 calendar-pager-button">
-					<li class="previous" title="<?php echo __d('calendars', '前年へ'); ?>">
-						<a href="<?php echo $prevYearDay; ?>"><span class="glyphicon glyphicon-backward"></span></a>
-					</li>
-					<li class="previous" title="<?php echo __d('calendars', '前月へ'); ?>">
-						<a href="<?php echo $prevMonthDay; ?>"><span class="glyphicon glyphicon-chevron-left"></span></a>
-					</li>
-				  </div>
-				  <div class="hidden-xs col-sm-6">
-					<li>
-						<label for="CalendarEventTargetYear"><h2 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h2></label>
-					</li>
-				  </div>
-				  <div class="col-xs-6 col-sm-3 calendar-pager-button">
-					<li class="next" title="<?php echo __d('calendars', '次年へ'); ?>">
-						<a href="<?php echo $nextYearDay; ?>"><span class="glyphicon glyphicon-forward"></span></a>
-					</li>
-					<li class="next" title="<?php echo __d('calendars', '次月へ'); ?>">
-						<a href="<?php echo $nextMonthDay; ?>"><span class="glyphicon glyphicon-chevron-right"></span></a>
-					</li>
-				  </div>
-				</ul>
-			</div>
-		
-			<div class="col-xs-12 visible-xs text-center" style="margin-top:5px">
-				<label for="CalendarEventTargetYear"><h3 class="calendar-inline">{{targetYear | formatYyyymm : <?php echo $languageId; ?>}}</h3></label>
-			</div>
-		</div>
+<div class="row">
+	<div class="col-xs-12">
+		<a href="<?php echo $prevMonthDay; ?>"><span class="glyphicon glyphicon-chevron-left"></span></a>
+		<label for="CalendarEventTargetYear">
+			<h2 class="calendar-inline">
+				<small>{{targetYear | ncFormatY : 'yyy' : <?php echo $languageId; ?>}}</small>
+				{{targetYear | ncFormatY : 'mm' : <?php echo $languageId; ?>}}
+			</h2>
+		</label>
+		<a href="<?php echo $nextMonthDay; ?>"><span class="glyphicon glyphicon-chevron-right"></span></a>
+	</div>
+
+</div>
 
 <?php endif; ?>
 

@@ -114,7 +114,7 @@ class CalendarMonthlyHelper extends AppHelper {
 				////<!-- 3row -->
 				$html .= "<div class='row'>";
 				$html .= "<div class='col-xs-12'>";
-				$html .= "<p><span class='pull-left'><small>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small></span></p>';
+				$html .= "<p><span><small>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small></span></p>';
 				$html .= '</div>';
 				$html .= "<div class='clearfix'></div>";
 				$html .= '</div>';
@@ -190,7 +190,7 @@ class CalendarMonthlyHelper extends AppHelper {
 					'week' => $week,
 					'frame_id' => Current::read('Frame.id'),
 				));
-				$html .= "<tr><td class='calendar-col-week hidden-xs' data-url='" . $url . "'>" . $week . __d('calendars', '週') . '</td>';
+				$html .= "<tr><th class='calendar-col-week hidden-xs' data-url='" . $url . "'>" . $week . __d('calendars', '週') . '</th>';
 			}
 		}
 		return $html;
@@ -298,7 +298,7 @@ class CalendarMonthlyHelper extends AppHelper {
 		$html = '';
 		if (Current::permission('content_creatable')) {
 			$url = $this->CalendarUrl->makeEasyEditUrl($year, $month, $day, $vars);
-			$html .= "<small><span class='pull-right glyphicon glyphicon-plus calendar-easy-edit' data-url='" . $url . "'></span></small>";
+			$html .= "<a class='pull-right calendar-edit-plus-icon' href='" . $url . "'>+</a>";
 		}
 		return $html;
 	}
@@ -330,25 +330,24 @@ class CalendarMonthlyHelper extends AppHelper {
 		$url = $this->CalendarUrl->getCalendarDailyUrl($year, $month, $day);
 
 		//<!-- 1row --> 日付と予定追加glyph
+		$html .= $this->makeGlyphiconPlusWithUrl($year, $month, $day, $vars);
+		$html .= "<div class='row'>";
+		$html .= "<div class='col-xs-3 col-sm-12'>";
 		$html .= "<div class='row'>";
 		$html .= "<div class='col-xs-12'>";
-		$html .= "<p class='h4'>";
-		$html .= "<span class='pull-left text-muted calendar-day calendar-daily-disp' data-url='" . $url . "'>" . $day . '</span>';
-		$html .= "<span class='pull-left text-muted visible-xs'><small>(" . __d('calendars', '日') . ')</small></span>';
-		$html .= $this->makeGlyphiconPlusWithUrl($year, $month, $day, $vars);
-		$html .= '</p>';
-		$html .= '</div>';
-		$html .= "<div class='clearfix'></div>";
+		$html .= "<span class='text-muted calendar-day calendar-daily-disp' data-url='" . $url . "'>" . $day . '</span>';
+		$html .= "<span class='text-muted visible-xs-inline'><small>(" . $this->_getWeekName($cnt) . ')</small></span>';
 		$html .= '</div>';
 		//<!-- 2row --> 祝日タイトル
-		$html .= "<div class='row'>";
 		$html .= "<div class='col-xs-12'>";
-		$html .= "<p><span class='pull-left text-danger'><small>" . (($holidayTitle === '') ? '&nbsp;' : $holidayTitle) . '</small></span></p>';
+		$html .= "<span class='calendar-sunday'><small>" . (($holidayTitle === '') ? '&nbsp;' : $holidayTitle) . '</small></span>';
 		$html .= "</div>";
-		$html .= "<div class='clearfix'></div>";
+		$html .= '</div>';
 		$html .= '</div>';
 		//予定概要群
+		$html .= "<div class='col-xs-9 col-sm-12'>";
 		$html .= $this->_makePlanSummariesHtml($vars, $nctm, $vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day);
+		$html .= '</div>';
 		$html .= '</td>';
 	}
 
@@ -393,25 +392,25 @@ class CalendarMonthlyHelper extends AppHelper {
 			$holidayTitle = $this->CalendarCommon->getHolidayTitle($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
 			$textColor = $this->CalendarCommon->makeTextColor($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
 			//<!-- 1row --> 日付と予定追加glyph
+			$html .= $this->makeGlyphiconPlusWithUrl($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars);
+			$html .= "<div class='row'>";
+			$html .= "<div class='col-xs-3 col-sm-12'>";
 			$html .= "<div class='row'>";
 			$html .= "<div class='col-xs-12'>";
-			$html .= "<p class='h4'>";
-			$html .= "<span class='pull-left calendar-day calendar-daily-disp {$textColor}' data-url='" . $url . "'>" . $day . '</span>';
-			$html .= "<span class='pull-left text-muted visible-xs'><small>(" . __d('calendars', '日') . ')</small></span>';
-			$html .= $this->makeGlyphiconPlusWithUrl($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars);
-			$html .= '</p>';
-			$html .= '</div>';
-			$html .= "<div class='clearfix'></div>";
+			$html .= "<span class='calendar-day calendar-daily-disp {$textColor}' data-url='" . $url . "'>" . $day . '</span>';
+			$html .= "<span class='{$textColor} visible-xs-inline'><small>(" . $this->_getWeekName($cnt) . ')</small></span>';
 			$html .= '</div>';
 			//<!-- 2row --> 祝日タイトル
-			$html .= "<div class='row'>";
 			$html .= "<div class='col-xs-12'>";
-			$html .= "<p><span class='pull-left text-danger'><small>" . (($holidayTitle === '') ? '&nbsp;' : $holidayTitle) . '</small></span></p>';
+			$html .= "<span class='calendar-sunday'><small>" . (($holidayTitle === '') ? '&nbsp;' : $holidayTitle) . '</small></span>';
 			$html .= "</div>";
-			$html .= "<div class='clearfix'></div>";
+			$html .= '</div>';
 			$html .= '</div>';
 			//予定概要群
+			$html .= "<div class='col-xs-9 col-sm-12'>";
 			$html .= $this->_makePlanSummariesHtml($vars, $nctm, $vars['mInfo']['year'], $vars['mInfo']['month'], $day);
+			$html .= '</div>';
+			$html .= '</div>';
 			$html .= '</td>';
 
 			$html .= $this->_makeEndTr($cnt);
@@ -434,5 +433,25 @@ class CalendarMonthlyHelper extends AppHelper {
 		}
 
 		return $html;
+	}
+
+/**
+ * _getWeekName
+ * 曜日名称をカラム列番号に合わせて取り出す
+ *
+ * @param $cnt
+ * @return string week name
+ */
+	protected function _getWeekName($cnt) {
+		$weeks = array(
+			0 => __d('calendars', 'Sun'),
+			1 => __d('calendars', 'Mon'),
+			2 => __d('calendars', 'Tue'),
+			3 => __d('calendars', 'Wed'),
+			4 => __d('calendars', 'Thu'),
+			5 => __d('calendars', 'Fri'),
+			6 => __d('calendars', 'Sat'),
+		);
+		return $weeks[$cnt % 7];
 	}
 }

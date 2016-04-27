@@ -145,16 +145,16 @@ class CalendarCommonHelper extends AppHelper {
 		$ymd = sprintf("%04d-%02d-%02d", $year, $month, $day);
 		$hday = Hash::extract($holidays, '{n}.Holiday[holiday=' . $ymd . '].holiday');
 		if (count($hday) === 1) {
-			return 'text-danger';	//祝日
+			return 'calendar-sunday';	//祝日
 		}
 
 		//祝日ではないので、通常ルール適用
 		$textColor = '';
 		$mod = $cnt % 7;
 		if ($mod === 0) { //日曜
-			$textColor = 'text-danger';
+			$textColor = 'calendar-sunday';
 		} elseif ($mod === 6) { //土曜
-			$textColor = 'text-info';
+			$textColor = 'calendar-saturday';
 		}
 		return $textColor;
 	}

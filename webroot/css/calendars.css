@@ -76,10 +76,11 @@
 
 .calendar-col-day-head {
 	width: 13.7%;
-	border-width: 0 0 1px 0;
+	border-width: 1px 1px 1px 1px;
 	border-style: solid;
 	border-color: #ddd;
 	padding: 5px;
+	text-align:center;
 }
 
 /*-- カレンダー カラム 月縮小　ヘッダー --*/
@@ -110,19 +111,27 @@
 	width: 4.1%;
 	border: 1px solid #ddd;
 	height: 10em;
+	text-align:center;
+	font-weight:normal;
 }
 
 .calendar-col-week:hover {
 	cursor: pointer;
-	background-color: #eee;
+	background-color: #d9edf7;
 }
 
 .calendar-col-day {
 	width: 13.7%;
 	border: 1px solid #ddd;
-	padding: 5px;
+	padding: 3px;
+	position:relative !important;
 }
-
+.calendar-col-day .calendar-day {
+	font-size:2.0em;
+	display:inline-block;
+	padding:0em 0.2em;
+	margin-bottom:-0.5em;
+}
 .calendar-plan-mark	{
 	border-left-width: 5px;
 	border-left-style: solid;
@@ -136,20 +145,29 @@
 }
 
 .calendar-plan-mark-public {
-	border-left-color: #04419a;
+	//border-left-color: #04419a;
+	border-left-color: #428bca;
 }
 
 .calendar-plan-mark-group {
-	border-left-color: #5da302;
+	//border-left-color: #5da302;
+	border-left-color: #5cb85c;
 }
 
 .calendar-plan-mark-private {
-	border-left-color: #d78f03;
+	//border-left-color: #d78f03;
+	border-left-color: #f0ad4e;
 }
 
 .calendar-plan-mark-member {
-	border-left-color: #c90505;
+	//border-left-color: #c90505;
+	border-left-color: #5cb85c;
 }
+
+.calendar-plan-mark-share {
+	border-left-color: #e888ec;
+}
+
 
 /*-- カレンダー月縮小用mark 色 --*/
 .calendar-plan-smallmonthly-mark-deco {
@@ -363,7 +381,7 @@
 }
 
 .calendar-weekly-col-plus div{
-background-color=#efefef;
+background-color:#efefef;
 }
 
 /*-- カレンダーヘッダーのページャー部 (ボタン) 2016.3.3--*/
@@ -445,6 +463,10 @@ background-color=#efefef;
 .calendar-out-of-range {
 	background-color: #F5F5F5;
 }
+td.calendar-col-day.calendar-out-of-range  .calendar-day {
+	font-size:1.4em;
+	margin-top:0.2em;
+}
 
 /*-- カレンダー セル 祝日--*/
 .calendar-tbl-td-holiday {
@@ -454,7 +476,7 @@ background-color=#efefef;
 /*-- カレンダー セル 今日--*/
 .calendar-tbl-td-today {
 	background-color: #ffffcf;
-	border: 2px solid #f0d946 !important;
+	border: 1px solid #f0d946 !important;
 }
 
 /*-- カレンダー セル 今日--*/
@@ -537,6 +559,9 @@ background-color=#efefef;
 		width:100%;
 		height:auto;
 		display:block !important;
+	}
+	table.calendar-monthly-table td.calendar-col-day.calendar-out-of-range{
+		display:none !important;
 	}
 
 	/*-- カレンダー 詳細編集フィールド(max-width:767px) --*/
@@ -624,3 +649,17 @@ background-color=#efefef;
   margin-bottom: 15px;
 }
 
+a.calendar-edit-plus-icon {
+	padding: 0.1em 0.3em;
+	display: inline-block;
+	font-size: 1.6em;
+	color: #bbb;
+	position:absolute;
+	right:0;
+	z-index:100;
+}
+a.calendar-edit-plus-icon:hover {
+	text-decoration:none;
+	background-color:#dff0d8;
+	color:#3c763d;
+}
