@@ -329,17 +329,23 @@
 	border-width: 1px 1px 0px 1px;
 	border-style: solid;
 	border-color: #ddd;
-	padding: 5px;
-//	line-height:0.4;
+	padding: 0.2em;
+	vertical-align:top;
 }
-
+.calendar-weekly-col-day-head .calendar-day {
+	font-size: 1.8em;
+	display: inline-block;
+	padding: 0em 0.2em;
+}
+.calendar-weekly-col-day-head .calendar-day small {
+	font-size:70%;
+}
 .calendar-weekly-col-day-head-bottom {
 	width: 12%;
 	border-width: 0px 1px 0px 1px;
 	border-style: solid;
 	border-color: #ddd;
-	padding: 10px;
-//	line-height:0.4;
+	min-height:1.2em;
 }
 
 /*-- 週カレンダーのルーム名のセル --*/
@@ -349,6 +355,7 @@
 	height: 2em;
 	padding: 5px;
 	background-color:#f5f5f5;
+	text-align:left;
 }
 
 /*-- 単一日カレンダー タイムライン カラム 時間帯 --*/
@@ -746,6 +753,10 @@ a.calendar-edit-plus-icon {
 	position:absolute;
 	right:0;
 	z-index:100;
+}
+.calendar-weekly-col-day-head-bottom a.calendar-edit-plus-icon {
+	position:static;
+	right:0;
 }
 a.calendar-edit-plus-icon:hover {
 	text-decoration:none;

@@ -28,6 +28,8 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		'Calendars.CalendarCommon',
 		'Calendars.CalendarUrl',
 		'Calendars.CalendarDaily',
+		'Calendars.CalendarMonthly',
+		'NetCommons.TitleIcon',
 	);
 
 /**
@@ -57,7 +59,72 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		}
 		return $html;
 	}
+/**
+ * makeWeeklyHeaderHtml
+ *
+ * (週表示)ヘッダ部分html生成
+ *
+ * @param array $vars コントローラーからの情報
+ * @return string HTML
+ */
+	public function makeWeeklyHeaderHtml($vars) {
+		if ($vars['week'] == 0) {
+			//日付から第n週を求めて設定
+			$nWeek = ceil(($vars['mInfo']['wdayOf1stDay'] + $vars['day']) / 7);
+			//第n週の日曜日の日付に更新
+		} else {
+			$nWeek = $vars['week'];
+		}
 
+		//n週の日曜日の日付をセットする(n日前にする)
+		$firstSunDay = (1 - $vars['mInfo']['wdayOf1stDay']) + (7 * ($nWeek - 1));
+		$firsttimestamp = mktime(0, 0, 0, $vars['month'], $firstSunDay, $vars['year']);
+		$firstYear = date('Y', $firsttimestamp);
+		$firstMonth = date('m', $firsttimestamp);
+		$firstDay = date('d', $firsttimestamp);
+
+		$vars['weekFirst']['firstYear'] = $firstYear;
+		$vars['weekFirst']['firstMonth'] = $firstMonth;
+		$vars['weekFirst']['firstDay'] = $firstDay;
+
+		/* 日（曜日）(指定日を開始日) */
+		$days = array();
+		$wDay = array();
+
+		/* 曜日 */
+		$html = '<tr><td rowspan=2 class="calendar-weekly-col-room-name-head"></td>';
+		for ($i = 0; $i < 7; $i++) {
+			$timestamp = mktime(0, 0, 0, $firstMonth, ($firstDay + $i ), $firstYear);
+			$years[$i] = date('Y', $timestamp);
+			$months[$i] = date('m', $timestamp);
+			$days[$i] = (int)date('d', $timestamp);
+			$wDay[$i] = date('w', $timestamp);
+			$url = $this->CalendarUrl->getCalendarDailyUrl($years[$i], $months[$i], $days[$i]);
+			$tdColor[$i] = '';
+			if ($this->CalendarCommon->isToday($vars, $years[$i], $months[$i], $days[$i])) {
+				$tdColor[$i] = 'calendar-weekly-tbl-td-today-head-top';
+			}
+			$textColor = $this->CalendarCommon->makeTextColor($years[$i], $months[$i], $days[$i], $vars['holidays'], $wDay[$i]);
+			$holidayTitle = $this->CalendarCommon->getHolidayTitle($years[$i], $months[$i], $days[$i], $vars['holidays'], $i);
+
+			$html .= '<td class="calendar-weekly-col-day-head ' . $tdColor[$i] . '">';
+			$html .= '<span class="calendar-day calendar-daily-disp ' . $textColor . '" data-url="' . $url . '">';
+			$html .= $days[$i] . '<small>(' . $this->CalendarCommon->getWeekName($i) . ')</small>';
+			$html .= '</span>';
+			$html .= '<div><small class="' . $textColor . '">' . $holidayTitle . '</small></div>';
+			$html .= '</td>';
+		}
+		$html .= '</tr>';
+		$html .= '<tr>';
+		for ($i = 0; $i < 7; $i++) {
+			$tdBottomColor = str_replace('top', 'bottom', $tdColor[$i]);
+			$html .= '<td class="calendar-weekly-col-day-head-bottom ' . $tdBottomColor . '">';
+			$html .= $this->CalendarMonthly->makeGlyphiconPlusWithUrl($years[$i], $months[$i], $days[$i], $vars);
+			$html .= '</td>';
+		}
+		$html .= '</tr>';
+		return $html;
+	}
 /**
  * makeWeeklyBodyHtml
  *
@@ -83,23 +150,18 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 			$roomID = array_keys($rooms, $room);
 
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $roomID[0]);
-			$html .= "<tr><div class='row'>"; //1行の開始
+			$html .= '<tr><div class="row">'; //1行の開始
 			//ルーム名
-			$html .= "<td class='calendar-weekly-col-room-name calendar-tbl-td-pos'>";
-			$html .= "<div class='row'><div class='col-xs-12'>";
-			$html .= "<p class='calendar-plan-clickable text-left'><span class='calendar-plan-mark {$calendarPlanMark}'></span>";
-			$html .= '<span> ' . $room . '</span>';
-			$html .= "</div><div class='clearfix'></div></div></td>";
+			$html .= '<td class="calendar-weekly-col-room-name calendar-tbl-td-pos">';
+			$html .= '<div class="row"><div class="col-xs-12">';
+			$html .= '<div class="calendar-plan-mark ' . $calendarPlanMark . '">';
+			$html .= $room;
+			$html .= '</div></div></div></td>';
 			$vars['currentRoomId'] = $roomID[0];//$cnt;
-			//print_r('CURRENTROOM');
-			//print_r($vars['currentRoomId']);
 			//予定（7日分繰り返し）
 			for ($nDay = 0; $nDay < 7; $nDay++) {
 				$tdColor = '';
 				if ($nDay === 0) { //前日+1日
-					//$year = $vars['year'];
-					//$month = $vars['month'];
-					//$day = $vars['day'];
 					$year = $vars['weekFirst']['firstYear'];
 					$month = $vars['weekFirst']['firstMonth'];
 					$day = $vars['weekFirst']['firstDay'];

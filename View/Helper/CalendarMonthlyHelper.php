@@ -336,7 +336,7 @@ class CalendarMonthlyHelper extends AppHelper {
 		$html .= "<div class='row'>";
 		$html .= "<div class='col-xs-12'>";
 		$html .= "<span class='text-muted calendar-day calendar-daily-disp' data-url='" . $url . "'>" . $day . '</span>';
-		$html .= "<span class='text-muted visible-xs-inline'><small>(" . $this->_getWeekName($cnt) . ')</small></span>';
+		$html .= "<span class='text-muted visible-xs-inline'><small>(" . $this->CalendarCommon->getWeekName($cnt) . ')</small></span>';
 		$html .= '</div>';
 		//<!-- 2row --> 祝日タイトル
 		$html .= "<div class='col-xs-12'>";
@@ -435,23 +435,5 @@ class CalendarMonthlyHelper extends AppHelper {
 		return $html;
 	}
 
-/**
- * _getWeekName
- * 曜日名称をカラム列番号に合わせて取り出す
- *
- * @param $cnt
- * @return string week name
- */
-	protected function _getWeekName($cnt) {
-		$weeks = array(
-			0 => __d('calendars', 'Sun'),
-			1 => __d('calendars', 'Mon'),
-			2 => __d('calendars', 'Tue'),
-			3 => __d('calendars', 'Wed'),
-			4 => __d('calendars', 'Thu'),
-			5 => __d('calendars', 'Fri'),
-			6 => __d('calendars', 'Sat'),
-		);
-		return $weeks[$cnt % 7];
-	}
+
 }

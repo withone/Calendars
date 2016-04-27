@@ -67,6 +67,7 @@ class CalendarsController extends CalendarsAppController {
 		//'NetCommons.DisplayNumber',
 		//'NetCommons.Button',
 		'Calendars.CalendarMonthly',
+		'Calendars.CalendarTurnCalendar',
 	);
 
 /**
