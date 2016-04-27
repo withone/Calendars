@@ -69,7 +69,7 @@
 
 .calendar-col-week-head {
 	width: 4.1%;
-	border-width: 0 0 1px 0;
+	border-width: 1px;
 	border-style: solid;
 	border-color: #ddd;
 }
@@ -223,20 +223,56 @@
 	background-color: #e6eff6;
 }
 
-/* 今月へボタン */
-.calendar-thismonth {
-	border: 1px solid #ddd;
-	border-radius: 22px;
-	float: left;
-	margin: 5px;
-	padding: 4px 8px 4px 8px;
-}
+/* カレンダー表示切替タブ */
+.nav-tabs.calendar-date-move-tablist {
 
-.calendar-thismonth:hover {
+}
+.nav-tabs.calendar-date-move-tablist > li > a {
+	font-size: 1.5em;
+	padding-left: 1.2em;
+	padding-right: 1.2em;
+}
+/* カレンダー先頭の年月移動リンク入れ物 */
+.calendar-date-move-operations {
+	margin-bottom:0.5em;
+}
+.calendar-date-move-operations > a {
+	display:inline-block;
+	padding: 5px 14px;
+}
+.calendar-date-move-operations > label {
+	margin: 0;
 	cursor: pointer;
+}
+.calendar-date-move-operations > label small {
+	color:inherit;
+}
+/* 今月へボタン */
+.calendar-this-month {
+	display:inline;
+}
+.calendar-this-month a {
+	display: inline-block;
+	padding: 5px 14px;
+	background-color: #fff;
+	border: 1px solid #ddd;
+	border-radius: 15px;
+	position:relative;
+	top: -0.2em;
+}
+.calendar-this-month a:hover, .calendar-this-month a:focus {
+	text-decoration: none;
 	background-color: #e6eff6;
 }
-
+/* 年月移動DateTimePickerInputのCSS 隠れて見えないようにしている */
+.calendar-datetimepicker-hide-input {
+	margin: 0;
+	width: 0;
+	height : 0;
+	opacity: 0;
+	display: block;
+	float: left;
+}
 /*-- カレンダー　予定共有 人情報 --*/
 .calendar-share-person {
 	margin-right: 1em;
