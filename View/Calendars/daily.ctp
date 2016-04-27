@@ -98,7 +98,7 @@
 			<a href="<?php echo $nextDayLink; ?>">
 			<span class="glyphicon glyphicon-chevron-right"></span></a>
 		</div>
-		<div class="hidden-xs calendar-thismonth">
+		<div class="hidden-xs calendar-this-month">
 			<h4 class="calendar-inline">
 			<a href="<?php echo $thisDay; ?>">
 				<?php echo __d('calendars', '今日へ'); ?>
@@ -116,7 +116,7 @@
   		</label>
   		<br />
   		<span class='h5'><?php echo (($holidayTitle === '') ? '&nbsp;' : $holidayTitle); ?></span>
-		<div class="calendar-thismonth">
+		<div class="calendar-this-month">
 			<h4 class="calendar-inline">
 			<a href="<?php echo $thisDay; ?>">
 				<?php echo __d('calendars', '今日へ'); ?>
