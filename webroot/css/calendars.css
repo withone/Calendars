@@ -347,7 +347,10 @@
 	border-color: #ddd;
 	min-height:1.2em;
 }
-
+.calendar-weekly-holiday {
+	min-height:1.5em;
+	display: block;
+}
 /*-- 週カレンダーのルーム名のセル --*/
 .calendar-weekly-col-room-name {
 	width: 16%;
@@ -406,6 +409,7 @@
 	width: 12%;
 	border: 1px solid #ddd;
 	padding: 5px;
+	text-align:left;
 }
 
 .calendar-weekly-subroom, .calendar-daily-nontimeline-plan, .calendar-schedule-row-title {

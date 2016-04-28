@@ -111,7 +111,7 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 			$html .= '<span class="calendar-day calendar-daily-disp ' . $textColor . '" data-url="' . $url . '">';
 			$html .= $days[$i] . '<small>(' . $this->CalendarCommon->getWeekName($i) . ')</small>';
 			$html .= '</span>';
-			$html .= '<div><small class="' . $textColor . '">' . $holidayTitle . '</small></div>';
+			$html .= '<small class="calendar-weekly-holiday ' . $textColor . '">' . $holidayTitle . '</small>';
 			$html .= '</td>';
 		}
 		$html .= '</tr>';

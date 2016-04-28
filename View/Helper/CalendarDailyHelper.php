@@ -22,8 +22,9 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
  * @var array
  */
 	public $helpers = array(
-		'NetCommonsForm',
-		'NetCommonsHtml',
+		'NetCommons.NetCommonsForm',
+		'NetCommons.NetCommonsHtml',
+		'NetCommons.TitleIcon',
 		'Form',
 		'Calendars.CalendarCommon',
 		'Calendars.CalendarUrl',
@@ -149,6 +150,8 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 		$url = '';
 		$html = '';
 		$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
+		$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
+		/*
 		$html .= "<p class='calendar-plan-clickable text-left calendar-plan-show calendar-daily-nontimeline-plan' data-url='" . $url . "'>";
 		if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
 			$html .= "<span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small></span>';
@@ -158,6 +161,30 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 		// ワークフロー（一時保存/承認待ち、など）のマーク
 		$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
 		$html .= '<span> ' . $plan['CalendarEvent']['title'] . '</span>';
+		*/
+		// 大枠
+		$html .= '<div class="row"><div class="col-xs-12">';
+		// スペースごとの枠
+		$html .= '<div class="calendar-plan-mark ' . $calendarPlanMark . '">';
+		// ステータスラベル
+		$html .= '<div>';
+		$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
+		$html .= '</div>';
+		// 時間
+		if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
+			$html .= '<p class="calendar-plan-time small">';
+			$html .= $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'];
+			$html .= '</p>';
+		}
+		$html .= '<h3 class="calendar-plan-tittle">';
+		$html .= '<a href=' . $url . '>';
+		$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
+		$html .= h($plan['CalendarEvent']['title']);
+		$html .= '</a>';
+		$html .= '</h3>';
+
+		$html .= '</div>';
+		$html .= '</div></div>';
 
 		return $html;
 	}

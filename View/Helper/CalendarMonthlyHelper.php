@@ -398,11 +398,11 @@ class CalendarMonthlyHelper extends AppHelper {
 			$html .= "<div class='row'>";
 			$html .= "<div class='col-xs-12'>";
 			$html .= "<span class='calendar-day calendar-daily-disp {$textColor}' data-url='" . $url . "'>" . $day . '</span>';
-			$html .= "<span class='{$textColor} visible-xs-inline'><small>(" . $this->_getWeekName($cnt) . ')</small></span>';
+			$html .= "<span class='{$textColor} visible-xs-inline'><small>(" . $this->CalendarCommon->getWeekName($cnt) . ')</small></span>';
 			$html .= '</div>';
 			//<!-- 2row --> 祝日タイトル
 			$html .= "<div class='col-xs-12'>";
-			$html .= "<span class='calendar-sunday'><small>" . (($holidayTitle === '') ? '&nbsp;' : $holidayTitle) . '</small></span>';
+			$html .= "<small class='calendar-sunday'>" . (($holidayTitle === '') ? '&nbsp;' : $holidayTitle) . '</small>';
 			$html .= "</div>";
 			$html .= '</div>';
 			$html .= '</div>';
