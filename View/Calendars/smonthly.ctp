@@ -17,9 +17,9 @@
 ?> -->
 
 <div class="row">
-	<div class="col-xs-12 text-center calendar-smonthly-div">
+	<div class="col-xs-12 text-center calendar-smonthly-div calendar-small-title">
 		<a href='/calendars/calendars/index/style:largemonthly?frame_id=<?php echo h($frameId); ?>'>
-		<div><span class='h4 calendar-month'><?php echo $vars['mInfo']['year'] . __d('calendars', '年'); ?></span>
+		<div><span class='h4 calendar-month'><?php echo $vars['mInfo']['year'] . __d('calendars', '年'); ?></span>&nbsp;
 		<span class='h3 calendar-month'><?php echo $vars['mInfo']['month'] . __d('calendars', '月'); ?></span></div></a>
 	</div>
 </div>

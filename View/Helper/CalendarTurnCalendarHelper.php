@@ -25,7 +25,8 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		'NetCommons.NetCommonsForm',
 		'NetCommons.NetCommonsHtml',
 		'Form',
-		'Calendars.CalendarCommon'
+		'Calendars.CalendarCommon',
+		'Calendars.CalendarUrl'
 	);
 
 /**
@@ -38,7 +39,6 @@ class CalendarTurnCalendarHelper extends AppHelper {
  * @return string html
  */
 	public function getTurnCalendarOperationsWrap($type, $vars) {
-
 		$html = '';
 		$html .= '<div class="row"><div class="col-xs-12">';
 		$html .= $this->getTurnCalendarOperations($type, $vars);
@@ -60,6 +60,36 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		$thisDayUrl = $this->_getUrl('now', $type, $vars);
 
 		$html = '';
+		$html .= '<div class="row"><div class="col-xs-12 col-sm-2 col-sm-push-10"><div class="pull-right">';
+
+		$url = $this->CalendarUrl->makeEasyEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
+
+		$html .= '<a class="btn btn-success" href="' . $url . '">';
+		$html .= '<span class="glyphicon glyphicon-plus" tooltip="' . __d('net_commons', 'Add') . '"></span>';
+		$html .= '</a></div></div>';
+
+		$html .= '<div class="col-xs-12 col-sm-10 col-sm-pull-2">';
+
+		$html .= '<div class="calendar-date-move-operations">';
+		$html .= '<a href="' . $prevUrl . '"><span class="glyphicon glyphicon-chevron-left"></span></a>';
+
+		$html .= $this->_getDateTitle($type, $vars);
+
+		$html .= '<a href="' . $nextUrl . '"><span class="glyphicon glyphicon-chevron-right"></span></a>';
+
+		$html .= '<div class="calendar-this-month">';
+		$html .= '<a href="' . $thisDayUrl . '" >';
+		$html .= $this->_getNowButtonTitle($type);
+		$html .= '</a></div>';
+		$html .= '</div></div></div>';
+		return $html;
+
+		/* org
+		$prevUrl = $this->_getUrl('prev', $type, $vars);
+		$nextUrl = $this->_getUrl('next', $type, $vars);
+		$thisDayUrl = $this->_getUrl('now', $type, $vars);
+
+		$html = '';
 		$html .= '<div class="calendar-date-move-operations">';
 		$html .= '<a href="' . $prevUrl . '"><span class="glyphicon glyphicon-chevron-left"></span></a>';
 
@@ -73,6 +103,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		$html .= '</a></div>';
 		$html .= '</div>';
 		return $html;
+		*/
 	}
 /**
  * _getDateTitle
@@ -91,7 +122,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 				$vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $vars['dayOfTheWeek']);
 		}
 
-		$html = '<label for="CalendarEventTargetYear"><h2 class="' . $textColor . '">';
+		$html = '<label for="CalendarEventTargetYear"><h2 class="' . $textColor . ' calendar-space0">';
 		switch($type) {
 			case 'month':
 				$html .= '<small>';
