@@ -106,8 +106,9 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 		$html = "<div class='calendar-plan-mark {$calendarPlanMark}'>";
 
 		// ワークフロー（一時保存/承認待ち、など）のマーク
+		$html .= '<div>';
 		$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
-
+		$html .= '</div>';
 		$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
 		if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
 			$html .= "<p class='calendar-daily-nontimeline-plan calendar-plan-time small'>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</p>';

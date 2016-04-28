@@ -10,11 +10,20 @@
 
 <?php echo $this->element('NetCommons.datetimepicker'); ?>
  
-<?php
+<!-- <?php
 	echo $this->element('Calendars.Calendars/turn_calendar', array(
 		'frameId' => $frameId, 'languageId' => $languageId, 'vars' => $vars
 	));
-?>
+?> -->
+
+<div class="row">
+	<div class="col-xs-12 text-center calendar-smonthly-div">
+		<a href='/calendars/calendars/index/style:largemonthly?frame_id=<?php echo h($frameId); ?>'>
+		<div><span class='h4 calendar-month'><?php echo $vars['mInfo']['year'] . __d('calendars', '年'); ?></span>
+		<span class='h3 calendar-month'><?php echo $vars['mInfo']['month'] . __d('calendars', '月'); ?></span></div></a>
+	</div>
+</div>
+
 <div class="calendar-smonthly-div">
 
 	<!-- <div class="col-xs-6 col-xs-offset-3 text-center"> -->
@@ -37,7 +46,7 @@
 		</tbody>
 		</table>
   </div>
-<!-- </div> -->
+
 <!--<?php echo $this->element('Calendars.Calendars/change_style', array('frameId' => $frameId, 'languageId' => $languageId, 'vars' => $vars)); ?>-->
 
 <!--</form>-->
