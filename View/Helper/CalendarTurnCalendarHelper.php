@@ -55,6 +55,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
  * @return string html
  */
 	public function getTurnCalendarOperations($type, $vars) {
+		/* ng
 		$prevUrl = $this->_getUrl('prev', $type, $vars);
 		$nextUrl = $this->_getUrl('next', $type, $vars);
 		$thisDayUrl = $this->_getUrl('now', $type, $vars);
@@ -83,8 +84,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		$html .= '</a></div>';
 		$html .= '</div></div></div>';
 		return $html;
-
-		/* org
+		*/
 		$prevUrl = $this->_getUrl('prev', $type, $vars);
 		$nextUrl = $this->_getUrl('next', $type, $vars);
 		$thisDayUrl = $this->_getUrl('now', $type, $vars);
@@ -103,7 +103,6 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		$html .= '</a></div>';
 		$html .= '</div>';
 		return $html;
-		*/
 	}
 /**
  * _getDateTitle
