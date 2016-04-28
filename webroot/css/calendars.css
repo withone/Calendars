@@ -718,11 +718,18 @@ td.calendar-col-day.calendar-out-of-range  .calendar-day {
 }
 
 /* カレンダー ルーム凡例 */
-.calendar-room-legend{
-  border:1px solid #dddddd;
-  margin-top: 15px;
-  padding: 5px;
-  margin-bottom: 15px;
+.panel.calendar-room-legend {
+	margin-top:25px;
+}
+.calendar-room-legend {
+	margin-bottom: 0px;
+	padding-bottom:0px;
+}
+.calendar-room-legend .calendar-plan-mark {
+	border-left-width: 3px;
+	border-left-style: solid;
+	padding: 0px 0px 0px 5px;
+	margin: 0px 5px 5px 3px;
 }
 
 /* カレンダーの時間 */
