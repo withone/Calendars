@@ -782,3 +782,8 @@ a.calendar-edit-plus-icon:hover {
 	background-color:#dff0d8;
 	color:#3c763d;
 }
+
+.calendar-space0 {
+margin: 0;
+padding: 0;
+}

@@ -1,5 +1,3 @@
-<?php
-?>
 <?php echo $this->element('Calendars.scripts'); ?>
 
 <article ng-controller="CalendarsDetailEdit" class="block-setting-body">
