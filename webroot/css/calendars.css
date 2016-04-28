@@ -145,7 +145,8 @@
 .calendar-plan-mark {
 	border-left-width: 3px;
 	border-left-style: solid;
-	margin: 3px 0px 7px 3px;
+	padding: 0px 0px 0px 5px;
+	margin: 5px 0px 5px 3px;
 }
 
 /*-- 単一日カレンダー　非タイムライン　時間帯 装飾 --*/
@@ -154,28 +155,25 @@
 }
 
 .calendar-plan-mark-public {
-	//border-left-color: #04419a;
 	border-left-color: #428bca;
 }
 
 .calendar-plan-mark-group {
-	//border-left-color: #5da302;
 	border-left-color: #5cb85c;
 }
 
 .calendar-plan-mark-private {
-	//border-left-color: #d78f03;
 	border-left-color: #f0ad4e;
 }
 
 .calendar-plan-mark-member {
-	//border-left-color: #c90505;
 	border-left-color: #d9534f;
 }
 
 .calendar-plan-mark-share {
 	border-left-color: #e888ec;
 }
+
 
 /*-- カレンダー月縮小用mark 色 --*/
 .calendar-plan-smallmonthly-mark-deco {
@@ -235,21 +233,37 @@
 /* カレンダー先頭の年月移動リンク入れ物 */
 .calendar-date-move-operations {
 	margin-bottom:0.5em;
+	display:-webkit-box;
+	display:-moz-box;
+	display:box;
+	-moz-box-align:center;
+	-webkit-box-align:center;
+	box-align:center;
 }
 .calendar-date-move-operations > a {
-	display:inline-block;
+	display:block;
 	padding: 5px 14px;
 }
 .calendar-date-move-operations > label {
+	display:block;
 	margin: 0;
 	cursor: pointer;
 }
+.calendar-date-move-operations > label > h2 {
+	margin:0;
+}
+@media screen and (max-width:767px) {
+	.calendar-date-move-operations > label > h2 {
+		font-size:20px;
+	}
+}
 .calendar-date-move-operations > label small {
 	color:inherit;
+	margin-left:0.25em;
+	margin-right:0.25em;
 }
 /* 今月へボタン */
 .calendar-this-month {
-	display:inline;
 }
 .calendar-this-month a {
 	display: inline-block;
@@ -308,6 +322,7 @@
 
 /*-- 週カレンダー のルーム名のヘッダ--*/
 .calendar-weekly-col-room-name-head {
+	min-width:6em;
 	width: 16%;
 	border-width: 1px 1px 1px 1px;
 	border-style: solid;
@@ -356,7 +371,7 @@
 	width: 16%;
 	border: 1px solid #ddd;
 	height: 2em;
-	padding: 5px;
+	padding: 3px;
 	background-color:#f5f5f5;
 	text-align:left;
 }
@@ -408,7 +423,7 @@
 .calendar-weekly-col-day {
 	width: 12%;
 	border: 1px solid #ddd;
-	padding: 5px;
+	padding: 3px;
 	text-align:left;
 }
 
@@ -727,34 +742,35 @@ td.calendar-col-day.calendar-out-of-range  .calendar-day {
 }
 
 /* カレンダーのスペース名 */
-
 .calendar-plan-spacename {
-	margin: 1px 5px 1px 5px;
+	margin: 0px;
+	padding-top:1px;
+	padding-left:5px;
 	font-weight: normal;
 	float: left;
 }
 
 /* カレンダーのタイトル */
 .calendar-plan-tittle {
-	margin: 1px 5px 3px 5px;
+	margin: 0px;
+	padding-bottom:4px;
 	clear: left;
-	font-size: 1.12em;
+	font-size: 1.07em;
 }
 
 /* カレンダーの場所 */
-
 .calendar-plan-place {
-	margin: 0 5px 1px 5px;
+	margin: 0px;
+	padding-top:1px;
 	font-weight: normal;
 }
 
 /* カレンダーの住所 */
-
 .calendar-plan-address {
-	margin: 0 5px 1px 5px;
+	margin: 0px;
+	padding-top:1px;
 	font-weight: normal;
 }
-
 /* カレンダー＋アイコン */
 a.calendar-edit-plus-icon {
 	padding: 0.1em 0.3em;
@@ -778,8 +794,4 @@ a.calendar-edit-plus-icon:hover {
 .calendar-space0 {
 margin: 0;
 padding: 0;
-}
-
-.calendar-small-title{
-  padding:10px;
 }
