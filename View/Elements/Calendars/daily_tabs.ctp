@@ -1,4 +1,4 @@
-<div class="row">
+<!-- <div class="row">
 	<div class="col-xs-12 col-sm-2 col-sm-push-10">
 		<div class="pull-right">
 			<?php
@@ -13,7 +13,7 @@
     <div class="col-xs-12 col-sm-10 col-sm-pull-2">
     	<h2 class="calendar-space0">年月日など</h2>
     </div>
-</div>
+</div> -->
 
 <br />
 <?php
