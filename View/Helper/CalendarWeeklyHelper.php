@@ -111,10 +111,10 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
  *
  * (週表示)ヘッダ部分html生成
  *
- * @param array $vars コントローラーからの情報
+ * @param array &$vars コントローラーからの情報
  * @return string HTML
  */
-	public function makeWeeklyHeaderHtml($vars) {
+	public function makeWeeklyHeaderHtml(&$vars) {
 		if ($vars['week'] == 0) {
 			//日付から第n週を求めて設定
 			$nWeek = ceil(($vars['mInfo']['wdayOf1stDay'] + $vars['day']) / 7);
@@ -158,7 +158,8 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 			$html .= '<span class="calendar-day calendar-daily-disp ' . $textColor . '" data-url="' . $url . '">';
 			$html .= $days[$i] . '<small>(' . $this->CalendarCommon->getWeekName($i) . ')</small>';
 			$html .= '</span>';
-			$html .= '<small class="calendar-weekly-holiday ' . $textColor . '">' . $holidayTitle . '</small>';
+			$html .= '<small class="calendar-weekly-holiday ' . $textColor . '">';
+			$html .= $holidayTitle . '</small>';
 			$html .= '</td>';
 		}
 		$html .= '</tr>';
@@ -166,7 +167,8 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		for ($i = 0; $i < 7; $i++) {
 			$tdBottomColor = str_replace('top', 'bottom', $tdColor[$i]);
 			$html .= '<td class="calendar-weekly-col-day-head-bottom ' . $tdBottomColor . '">';
-			$html .= $this->CalendarMonthly->makeGlyphiconPlusWithUrl($years[$i], $months[$i], $days[$i], $vars);
+			$html .= $this->CalendarMonthly->makeGlyphiconPlusWithUrl(
+				$years[$i], $months[$i], $days[$i], $vars);
 			$html .= '</td>';
 		}
 		$html .= '</tr>';
@@ -222,7 +224,9 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 						$tdColor = 'calendar-weekly-tbl-td-today';
 					}
 				}
-				$html .= "<td class='calendar-weekly-col-day calendar-tbl-td-pos calendar-tbl-td-room-plan {$tdColor}'>";
+				$html .= '<td class="';
+				$html .= 'calendar-weekly-col-day calendar-tbl-td-pos calendar-tbl-td-room-plan';
+				$html .= '{$tdColor}">';
 				//ルームID($cnt)が一致するの当日の予定を取得 pending
 				$html .= $this->_makePlanSummariesHtml($vars, $nctm, $year, $month, $day);
 				$html .= "</td>";

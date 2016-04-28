@@ -8,7 +8,7 @@
 	?>
 	<form>
 		<?php
-			echo $this->CalendarTurnCalendar->getTurnCalendarOperations('month', $vars);
+			echo $this->CalendarTurnCalendar->getTurnCalendarOperationsWrap('month', $vars);
 		?>
 		<div class="row"><!--全体枠-->
 			<div class="visible-xs" style="margin:10px"></div>

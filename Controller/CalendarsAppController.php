@@ -94,13 +94,16 @@ class CalendarsAppController extends AppController {
 		if (isset($this->request->params['named']['day'])) {
 			$vars['day'] = intval($this->request->params['named']['day']);
 		} else { //省略時は、現在の日を設置
-			if (isset($this->request->params['named']['year']) === false && // 年月の指定がない場合は当日
+			// 年月の指定がない場合は当日
+			if (isset($this->request->params['named']['year']) === false &&
 				isset($this->request->params['named']['month']) === false) {
 				$vars['day'] = intval($userNowArray['day']);
 			} else {
-				$vars['day'] = 1;	//月末日は月によって替わるので、すべての月でかならず存在する日(つまり一日）にする。
+				//月末日は月によって替わるので、すべての月でかならず存在する日(つまり一日）にする。
+				$vars['day'] = 1;
 			}
 		}
+		$vars['dayOfTheWeek'] = date('w', strtotime($userNowYmdHis));
 	}
 
 /**
@@ -126,11 +129,13 @@ class CalendarsAppController extends AppController {
 		}
 
 		//戻りsytlと戻りsort
-		if (isset($this->request->params['named']) && isset($this->request->params['named']['return_style'])) {
+		if (isset($this->request->params['named']) &&
+			isset($this->request->params['named']['return_style'])) {
 			$vars['return_style'] = $this->request->params['named']['return_style'];
 		}	//無いケースもある
 
-		if (isset($this->request->params['named']) && isset($this->request->params['named']['return_sort'])) {
+		if (isset($this->request->params['named']) &&
+			isset($this->request->params['named']['return_sort'])) {
 			$vars['return_sort'] = $this->request->params['named']['return_sort'];
 		}	//無いケースもある
 	}
@@ -160,20 +165,33 @@ class CalendarsAppController extends AppController {
 		//前月・当月・次月の祝日情報を取り出す。
 		$vars['holidays'] = $this->Holiday->getHoliday(
 			sprintf("%04d-%02d-%02d",
-				$vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], 1),
+				$vars['mInfo']['yearOfPrevMonth'],
+				$vars['mInfo']['prevMonth'],
+				1),
 			sprintf("%04d-%02d-%02d",
-				$vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $vars['mInfo']['daysInNextMonth'])
+				$vars['mInfo']['yearOfNextMonth'],
+				$vars['mInfo']['nextMonth'],
+				$vars['mInfo']['daysInNextMonth'])
 		);
 
 		//前月1日00:00:00以後
 		$dtstart = CalendarTime::dt2CalDt(
 			$nctm->toServerDatetime(sprintf(
-				"%04d-%02d-%02d 00:00:00", $vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], 1)));
+				"%04d-%02d-%02d 00:00:00",
+				$vars['mInfo']['yearOfPrevMonth'],
+				$vars['mInfo']['prevMonth'],
+				1
+			)));
 		//次次月1日00:00:00含まずより前(＝次月末日23:59:59含みより前)
-		list($yearOfNextNextMonth, $nextNextMonth) = CalendarTime::getNextMonth($vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth']);
+		list($yearOfNextNextMonth, $nextNextMonth) = CalendarTime::getNextMonth(
+			$vars['mInfo']['yearOfNextMonth'],
+			$vars['mInfo']['nextMonth']);
 		$dtend = CalendarTime::dt2CalDt(
 			$nctm->toServerDatetime(sprintf(
-				"%04d/%02d/%02d 00:00:00", $yearOfNextNextMonth, $nextNextMonth, 1 )));
+				"%04d/%02d/%02d 00:00:00",
+				$yearOfNextNextMonth,
+				$nextNextMonth,
+				1 )));
 		//前月・当月・次月の予定情報を取り出す。
 		$planParams = array(
 			//'room_id'の取捨選択は、View側でする。
@@ -203,7 +221,12 @@ class CalendarsAppController extends AppController {
 		);
 
 		//room_idとspace_idの対応表を載せておく。
-		$rooms = $this->Room->find('all', array('recursive' => -1, 'order' => array($this->Room->alias . '.id')));
+		$rooms = $this->Room->find('all', array(
+			'recursive' => -1,
+			'order' => array(
+				$this->Room->alias . '.id'
+			)
+		));
 		$vars['roomSpaceMaps'] = Hash::combine($rooms, '{n}.Room.id', '{n}.Room.space_id');
 		$roomsLanguages = $this->RoomsLanguages->find('all', array('recursive' => -1)); //pending
 		$vars['roomsLanguages'] = $roomsLanguages;

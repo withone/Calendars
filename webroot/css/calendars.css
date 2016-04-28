@@ -232,21 +232,37 @@
 /* カレンダー先頭の年月移動リンク入れ物 */
 .calendar-date-move-operations {
 	margin-bottom:0.5em;
+	display:-webkit-box;
+	display:-moz-box;
+	display:box;
+	-moz-box-align:center;
+	-webkit-box-align:center;
+	box-align:center;
 }
 .calendar-date-move-operations > a {
-	display:inline-block;
+	display:block;
 	padding: 5px 14px;
 }
 .calendar-date-move-operations > label {
+	display:block;
 	margin: 0;
 	cursor: pointer;
 }
+.calendar-date-move-operations > label > h2 {
+	margin:0;
+}
+@media screen and (max-width:767px) {
+	.calendar-date-move-operations > label > h2 {
+		font-size:20px;
+	}
+}
 .calendar-date-move-operations > label small {
 	color:inherit;
+	margin-left:0.25em;
+	margin-right:0.25em;
 }
 /* 今月へボタン */
 .calendar-this-month {
-	display:inline;
 }
 .calendar-this-month a {
 	display: inline-block;
@@ -305,6 +321,7 @@
 
 /*-- 週カレンダー のルーム名のヘッダ--*/
 .calendar-weekly-col-room-name-head {
+	min-width:6em;
 	width: 16%;
 	border-width: 1px 1px 1px 1px;
 	border-style: solid;
@@ -353,7 +370,7 @@
 	width: 16%;
 	border: 1px solid #ddd;
 	height: 2em;
-	padding: 5px;
+	padding: 3px;
 	background-color:#f5f5f5;
 	text-align:left;
 }

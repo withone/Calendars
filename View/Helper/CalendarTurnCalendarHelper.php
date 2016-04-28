@@ -22,16 +22,36 @@ class CalendarTurnCalendarHelper extends AppHelper {
  * @var array
  */
 	public $helpers = array(
-		'NetCommonsForm',
-		'NetCommonsHtml',
+		'NetCommons.NetCommonsForm',
+		'NetCommons.NetCommonsHtml',
 		'Form',
+		'Calendars.CalendarCommon'
 	);
 
+/**
+ * getTurnCalendarOperationsWrap
+ *
+ * カレンダー上部の年月移動オペレーション部
+ *
+ * @param string $type month, week, day のいずれか
+ * @param array $vars カレンダー日付情報
+ * @return string html
+ */
+	public function getTurnCalendarOperationsWrap($type, $vars) {
+
+		$html = '';
+		$html .= '<div class="row"><div class="col-xs-12">';
+		$html .= $this->getTurnCalendarOperations($type, $vars);
+		$html .= '</div></div>';
+		return $html;
+	}
 /**
  * getTurnCalendarOperations
  *
  * カレンダー上部の年月移動オペレーション部
  *
+ * @param string $type month, week, day のいずれか
+ * @param array $vars カレンダー日付情報
  * @return string html
  */
 	public function getTurnCalendarOperations($type, $vars) {
@@ -40,7 +60,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		$thisDayUrl = $this->_getUrl('now', $type, $vars);
 
 		$html = '';
-		$html .= '<div class="row"><div class="col-xs-12"><div class="calendar-date-move-operations">';
+		$html .= '<div class="calendar-date-move-operations">';
 		$html .= '<a href="' . $prevUrl . '"><span class="glyphicon glyphicon-chevron-left"></span></a>';
 
 		$html .= $this->_getDateTitle($type, $vars);
@@ -51,7 +71,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		$html .= '<a href="' . $thisDayUrl . '" >';
 		$html .= $this->_getNowButtonTitle($type);
 		$html .= '</a></div>';
-		$html .= '</div></div></div>';
+		$html .= '</div>';
 		return $html;
 	}
 /**
@@ -59,14 +79,23 @@ class CalendarTurnCalendarHelper extends AppHelper {
  *
  * カレンダー上部の年月表示部
  *
+ * @param string $type month, week, day のいずれか
+ * @param array $vars カレンダー日付情報
  * @return string html
  */
 	protected function _getDateTitle($type, $vars) {
-		$html = '<label for="CalendarEventTargetYear"><h1>';
+		$textColor = '';
+		if ($type == 'day') {
+			// 文字色
+			$textColor = $this->CalendarCommon->makeTextColor(
+				$vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $vars['dayOfTheWeek']);
+		}
+
+		$html = '<label for="CalendarEventTargetYear"><h2 class="' . $textColor . '">';
 		switch($type) {
 			case 'month':
 				$html .= '<small>';
-				$html .= sprintf(__d('calendars', '%d年 '), $vars['mInfo']['year']);
+				$html .= sprintf(__d('calendars', '%d年'), $vars['mInfo']['year']);
 				$html .= '</small>';
 				$html .= sprintf(__d('calendars', '%d月'), $vars['mInfo']['month']);
 				break;
@@ -79,14 +108,30 @@ class CalendarTurnCalendarHelper extends AppHelper {
 					$nWeek = $vars['week'];
 				}
 				$html .= '<small>';
-				$html .= sprintf(__d('calendars', '%d年 '), $vars['year']);
-				$html .= sprintf(__d('calendars', '%d月 '), $vars['month']);
+				$html .= sprintf(__d('calendars', '%d年'), $vars['year']);
 				$html .= '</small>';
-				$html .= sprintf(__d('calendars', '第%d週'), $nWeek);
+				$html .= sprintf(__d('calendars', '%d月'), $vars['month']);
+				//$html .= sprintf(__d('calendars', '第%d週'), $nWeek);
 				break;
+			case 'day':
+				/* 祝日タイトル */
+				$holidayTitle = $this->CalendarCommon->getHolidayTitle(
+					$vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $vars['dayOfTheWeek']);
+				$html .= '<small>';
+				$html .= sprintf(__d('calendars', '%d年'), $vars['year']);
+				$html .= '</small>';
+				$html .= sprintf(__d('calendars', '%d月'), $vars['month']);
+				$html .= sprintf(__d('calendars', '%d日'), $vars['day']);
+				$html .= '<small>';
+				$html .= sprintf(__d('calendars', '(%s)'),
+					$this->CalendarCommon->getWeekName($vars['dayOfTheWeek']));
+				$html .= '&nbsp;<br class="visible-xs" />' . $holidayTitle;
+				$html .= '</small>';
+				break;
+
 		}
 		$dateTimePickerInput = $this->_getDateTimePickerForMoveOperation($type, $vars);
-		$html .= '</h1>' . $dateTimePickerInput . '</label>';
+		$html .= '</h2>' . $dateTimePickerInput . '</label>';
 		return $html;
 	}
 /**
@@ -94,6 +139,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
  *
  * カレンダー上部の現在へのボタン
  *
+ * @param string $type month, week, day のいずれか
  * @return string html
  */
 	protected function _getNowButtonTitle($type) {
@@ -104,6 +150,8 @@ class CalendarTurnCalendarHelper extends AppHelper {
 			case 'week':
 				$ret = __d('calendars', '今週へ');
 				break;
+			case 'day':
+				$ret = __d('calendars', '今日へ');
 		}
 		return $ret;
 	}
@@ -113,12 +161,15 @@ class CalendarTurnCalendarHelper extends AppHelper {
  *
  * カレンダー上部の前へのURL
  *
+ * @param string $prevNext prev, next, now のいずれか
+ * @param string $type month, week, day のいずれか
+ * @param array $vars カレンダー日付情報
  * @return string html
  */
 	protected function _getUrl($prevNext, $type, $vars) {
 		if ($prevNext == 'prev') {
 			$dateArr = $this->_getPrevDate($type, $vars);
-		} else if ($prevNext == 'next') {
+		} elseif ($prevNext == 'next') {
 			$dateArr = $this->_getNextDate($type, $vars);
 		} else {
 			$dateArr = $this->_getNowDate($type, $vars);
@@ -139,6 +190,8 @@ class CalendarTurnCalendarHelper extends AppHelper {
  *
  * カレンダー上部の前への日付
  *
+ * @param string $type month, week, day のいずれか
+ * @param array $vars カレンダー日付情報
  * @return array
  */
 	protected function _getPrevDate($type, $vars) {
@@ -157,6 +210,14 @@ class CalendarTurnCalendarHelper extends AppHelper {
 					'month' => sprintf("%02d", date('m', $prevtimestamp)),
 					'day' => date('d', $prevtimestamp),
 				);
+				break;
+			case 'day':
+				$prevtimestamp = mktime(0, 0, 0, $vars['month'], ($vars['day'] - 1 ), $vars['year']);
+				$ret = array(
+					'year' => sprintf("%04d", date('Y', $prevtimestamp)),
+					'month' => sprintf("%02d", date('m', $prevtimestamp)),
+					'day' => date('d', $prevtimestamp),
+				);
 		}
 		return $ret;
 	}
@@ -165,6 +226,8 @@ class CalendarTurnCalendarHelper extends AppHelper {
  *
  * カレンダー上部次への日付
  *
+ * @param string $type month, week, day のいずれか
+ * @param array $vars カレンダー日付情報
  * @return array
  */
 	protected function _getNextDate($type, $vars) {
@@ -183,6 +246,14 @@ class CalendarTurnCalendarHelper extends AppHelper {
 					'month' => sprintf("%02d", date('m', $prevtimestamp)),
 					'day' => date('d', $prevtimestamp),
 				);
+				break;
+			case 'day':
+				$prevtimestamp = mktime(0, 0, 0, $vars['month'], ($vars['day'] + 1 ), $vars['year']);
+				$ret = array(
+					'year' => sprintf("%04d", date('Y', $prevtimestamp)),
+					'month' => sprintf("%02d", date('m', $prevtimestamp)),
+					'day' => date('d', $prevtimestamp),
+				);
 		}
 		return $ret;
 	}
@@ -191,6 +262,8 @@ class CalendarTurnCalendarHelper extends AppHelper {
  *
  * カレンダー上部今への日付
  *
+ * @param string $type month, week, day のいずれか
+ * @param array $vars カレンダー日付情報
  * @return array
  */
 	protected function _getNowDate($type, $vars) {
@@ -208,6 +281,13 @@ class CalendarTurnCalendarHelper extends AppHelper {
 					'month' => sprintf("%02d", $vars['today']['month']),
 					'day' => $vars['today']['day'],
 				);
+				break;
+			case 'day':
+				$ret = array(
+					'year' => sprintf("%04d", $vars['today']['year']),
+					'month' => sprintf("%02d", $vars['today']['month']),
+					'day' => sprintf("%02d", $vars['today']['day']),
+				);
 		}
 		return $ret;
 	}
@@ -216,6 +296,8 @@ class CalendarTurnCalendarHelper extends AppHelper {
  *
  * カレンダー上部今への日付
  *
+ * @param string $type month, week, day のいずれか
+ * @param array $vars カレンダー日付情報
  * @return array
  */
 	protected function _getDateTimePickerForMoveOperation($type, $vars) {
@@ -228,8 +310,11 @@ class CalendarTurnCalendarHelper extends AppHelper {
 				'format' => 'YYYY-MM',
 				'viewMode' => 'years',
 			)));
-			$year = sprintf("%04d", $vars['mInfo']['year']);	//'2016';
-			$targetYearMonth = sprintf("%04d-%02d", $vars['mInfo']['year'], $vars['mInfo']['month']);	//'2016-01'
+			$year = sprintf("%04d",
+				$vars['mInfo']['year']);
+			$targetYearMonth = sprintf("%04d-%02d",
+				$vars['mInfo']['year'],
+				$vars['mInfo']['month']);
 			$ngChange = 'changeYearMonth';
 		} else {
 			$prototypeUrlOpt = array(
@@ -244,8 +329,11 @@ class CalendarTurnCalendarHelper extends AppHelper {
 			if (!isset($vars['mInfo']['day'])) {
 				$vars['mInfo']['day'] = $vars['day'];
 			}
-			$year = sprintf("%04d", $vars['year']);	//'2016';
-			$targetYearMonth = sprintf("%04d-%02d-%02d", $vars['mInfo']['year'], $vars['mInfo']['month'], $vars['mInfo']['day']);	//'2016-01-01'
+			$year = sprintf("%04d", $vars['year']);
+			$targetYearMonth = sprintf("%04d-%02d-%02d",
+				$vars['mInfo']['year'],
+				$vars['mInfo']['month'],
+				$vars['mInfo']['day']);
 			$ngChange = 'changeYearMonthDay';
 		}
 		//angularJSのdatetimepicker変化の時に使う雛形URL
