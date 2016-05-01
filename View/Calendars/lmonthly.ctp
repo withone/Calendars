@@ -36,6 +36,6 @@
 	</form>
 	<!-- 予定の内容 -->
 	<?php
-		echo $this->CalendarWeekly->makeRoomLegendHtml($vars);
+		echo $this->CalendarLegend->getCalendarLegend($vars);
 	?>
 </article>

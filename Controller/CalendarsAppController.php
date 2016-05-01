@@ -223,6 +223,9 @@ class CalendarsAppController extends AppController {
 		//room_idとspace_idの対応表を載せておく。
 		$rooms = $this->Room->find('all', array(
 			'recursive' => -1,
+			'conditions' => array(
+				'Room.id' => $this->CalendarFrameSetting->getReadableRoomIds()
+			),
 			'order' => array(
 				$this->Room->alias . '.id'
 			)

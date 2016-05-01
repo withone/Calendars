@@ -1,17 +1,6 @@
-<?php
-?>
-<?php echo $this->element('Calendars.scripts'); ?>
-
-<article class="block-setting-body" ng-controller="CalendarsTimeline">
-
-<div class="clearfix"></div>
-
-<form>
 <!-- 日切り替え -->
 
-<?php echo $this->element('Calendars.Calendars/daily_tabs', array('active' => 'timeline', 'frameId' => $frameId, 'languageId' => $languageId)); ?>
-
-<div class="row"><!--全体枠-->
+<div class="row" ng-controller="CalendarsTimeline"><!--全体枠-->
 	<div class="col-xs-12 text-center">
 
 		<div name='timeline_1' style='height: 568px; overflow-y: scroll; border-width: 1px 1px 1px 1px; border-style: solid; border-color: #ddd;' class='calendar-daily-timeline-coordinate-origin' data-daily-start-time-idx='<?php echo $vars['CalendarFrameSetting']['timeline_base_time']; ?>'><!-- overflow-yのdivの始まり -->
@@ -477,8 +466,4 @@
 	</div>
 </div><!--全体枠END-->
 
-<?php echo $this->element('Calendars.Calendars/change_style', array('frameId' => $frameId, 'languageId' => $languageId, 'vars' => $vars)); ?>
 
-</form>
-
-</article>

@@ -293,9 +293,9 @@ class CalendarCommonHelper extends AppHelper {
 			//ROOM_SPACE_ID = '4';
 
 			//CakeLog::debug("DBG: 未ログインの時は、公開空間の予定のみ表示可能");
-			$spaceId = $vars['roomSpaceMaps'][$plan['CalendarEvent']['room_id']];
-			if ($spaceId == '2') {
-				//公開空間ならtrue
+			//$spaceId = $vars['roomSpaceMaps'][$plan['CalendarEvent']['room_id']];
+			if (in_array($plan['CalendarEvent']['room_id'], $vars['roomSpaceMaps'])) {
+				//読み取り可能ルームならtrue
 				return true;
 			}
 			//公開空間以外ならfalse;

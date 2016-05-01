@@ -225,8 +225,8 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 					}
 				}
 				$html .= '<td class="';
-				$html .= 'calendar-weekly-col-day calendar-tbl-td-pos calendar-tbl-td-room-plan';
-				$html .= '{$tdColor}">';
+				$html .= 'calendar-weekly-col-day calendar-tbl-td-pos calendar-tbl-td-room-plan ';
+				$html .= $tdColor . '">';
 				//ルームID($cnt)が一致するの当日の予定を取得 pending
 				$html .= $this->_makePlanSummariesHtml($vars, $nctm, $year, $month, $day);
 				$html .= "</td>";
