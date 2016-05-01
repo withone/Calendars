@@ -13,7 +13,7 @@
 		<div class="text-right">
 			<?php
 				$url = $this->CalendarUrl->makeEasyEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
-				echo $this->Button->addLink('', array('url' => $url));
+				echo $this->LinkButton->add('', $url);
 			?>
 		</div>
 	</div>
