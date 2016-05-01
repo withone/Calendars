@@ -15,7 +15,6 @@
     </div>
 </div> -->
 
-<br />
 <?php
 
 	$timelineLink = NetCommonsUrl::actionUrl(array(

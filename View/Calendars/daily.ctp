@@ -9,7 +9,15 @@
 
 
 <div class="row">
-	<div class="col-xs-12">
+	<div class="col-xs-12 col-sm-2 col-sm-push-10">
+		<div class="text-right">
+			<?php
+				$url = $this->CalendarUrl->makeEasyEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
+				echo $this->Button->addLink('', array('url' => $url));
+			?>
+		</div>
+	</div>
+	<div class="col-xs-12  col-sm-10 col-sm-pull-2">
 		<?php echo $this->CalendarTurnCalendar->getTurnCalendarOperations('day', $vars); ?>
 	</div>
 </div>

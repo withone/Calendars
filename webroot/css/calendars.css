@@ -232,7 +232,7 @@
 }
 /* カレンダー先頭の年月移動リンク入れ物 */
 .calendar-date-move-operations {
-	margin-bottom:0.5em;
+	margin-bottom:1em;
 	display:-webkit-box;
 	display:-moz-box;
 	display:box;
@@ -253,6 +253,9 @@
 	margin:0;
 }
 @media screen and (max-width:767px) {
+	.calendar-date-move-operations {
+		margin-top:0.5em;
+	}
 	.calendar-date-move-operations > label > h2 {
 		font-size:20px;
 	}
@@ -271,8 +274,6 @@
 	background-color: #fff;
 	border: 1px solid #ddd;
 	border-radius: 15px;
-	position:relative;
-	top: -0.2em;
 }
 .calendar-this-month a:hover, .calendar-this-month a:focus {
 	text-decoration: none;
