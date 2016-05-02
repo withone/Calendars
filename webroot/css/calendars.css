@@ -132,6 +132,8 @@
 .calendar-col-day {
 	width: 13.7%;
 	border: 1px solid #ddd;
+}
+.calendar-col-day > div {
 	padding: 3px;
 	position:relative !important;
 }
@@ -428,7 +430,9 @@
 	padding: 3px;
 	text-align:left;
 }
-
+.calendar-weekly-col-day > div {
+	position:relative;
+}
 .calendar-weekly-subroom, .calendar-daily-nontimeline-plan, .calendar-schedule-row-title {
 	margin-left: 10px;
 }
@@ -588,8 +592,6 @@ td.calendar-col-day.calendar-out-of-range  .calendar-day {
 	border-left-width: 2px;
 	border-right-color: #f0d946;
 	border-right-width: 2px;
-	padding-right:10px;
-
 }
 
 .calendar-weekly-tbl-td-today-last {

@@ -226,59 +226,14 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 				}
 				$html .= '<td class="';
 				$html .= 'calendar-weekly-col-day calendar-tbl-td-pos calendar-tbl-td-room-plan ';
-				$html .= $tdColor . '">';
+				$html .= $tdColor . '"><div>';
 				//ルームID($cnt)が一致するの当日の予定を取得 pending
 				$html .= $this->_makePlanSummariesHtml($vars, $nctm, $year, $month, $day);
-				$html .= "</td>";
+				$html .= "</div></td>";
 			}
 
 			$html .= "</div></tr>"; // 1行の終了
 		}
 		return $html;
 	}
-
-/**
- * makeRoomLegendHtml
- *
- * (room凡例)html生成
- *
- * @param array $vars コントローラーからの情報
- * @return string HTML
- */
-	public function makeRoomLegendHtml($vars) {
-		$html = '';
-		$rooms = $vars['exposeRoomOptions'];
-
-		//ルーム数分繰り返し
-		$html .= "<div class='calendar-room-legend'>"; //1行の開始
-
-		foreach ($rooms as $room) {
-			$roomID = array_keys($rooms, $room);
-			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $roomID[0]);
-			$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
-
-			if ($calendarPlanMark == 'calendar-plan-mark-group') {
-				$html .= '<span>' . __d('calendars', 'グループルーム') . '</span>';
-			} else {
-				$html .= '<span>' . $room . '</span>';
-			}
-			$html .= '&nbsp&nbsp';
-		}
-
-		//共有予定
-		$calendarPlanMark = 'calendar-plan-mark-share';
-		$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
-		$html .= '<span> ' . __d('calendars', '共有予定') . '</span>';
-		$html .= '&nbsp&nbsp';
-
-		//共有した予定 pending
-		$calendarPlanMark = 'calendar-plan-mark-share';
-		$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
-		$html .= '<span>' . __d('calendars', '共有した予定') . '</span>';
-		$html .= '&nbsp&nbsp';
-
-		$html .= "</div>"; //1行の開始
-		return $html;
-	}
-
 }

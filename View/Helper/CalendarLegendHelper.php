@@ -142,6 +142,9 @@ class CalendarLegendHelper extends AppHelper {
  */
 	protected function _getDoneShareLegend($vars) {
 		$html = '';
+		if (empty(Current::read('User.id'))) {
+			return $html;
+		}
 		$html = $this->_getLegend(
 			$vars,
 			null,

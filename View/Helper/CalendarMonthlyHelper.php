@@ -382,36 +382,46 @@ class CalendarMonthlyHelper extends AppHelper {
 		//当月部
 		for ($day = 1; $day <= $vars['mInfo']['daysInMonth']; ++$day) {
 			$tdColor = '';
-			$url = $this->CalendarUrl->getCalendarDailyUrl($vars['mInfo']['year'], $vars['mInfo']['month'], $day);
+			$url = $this->CalendarUrl->getCalendarDailyUrl(
+				$vars['mInfo']['year'], $vars['mInfo']['month'], $day);
+			$isToday = $this->CalendarCommon->isToday(
+				$vars, $vars['mInfo']['year'], $vars['mInfo']['month'], $day);
+			$holidayTitle = $this->CalendarCommon->getHolidayTitle(
+				$vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
+			$textColor = $this->CalendarCommon->makeTextColor(
+				$vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
 
 			$html .= $this->_makeStartTr($cnt, $vars, $week);
-			if ($this->CalendarCommon->isToday($vars, $vars['mInfo']['year'], $vars['mInfo']['month'], $day) == true) {
+			if ($isToday == true) {
 				$tdColor = 'calendar-tbl-td-today'; //本日のセル色
 			}
-			$html .= "<td class='calendar-col-day calendar-tbl-td-pos {$tdColor}'>";
-			$holidayTitle = $this->CalendarCommon->getHolidayTitle($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
-			$textColor = $this->CalendarCommon->makeTextColor($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars['holidays'], $cnt);
+			$html .= '<td class="calendar-col-day calendar-tbl-td-pos ' . $tdColor . '"><div>';
 			//<!-- 1row --> 日付と予定追加glyph
-			$html .= $this->makeGlyphiconPlusWithUrl($vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars);
-			$html .= "<div class='row'>";
-			$html .= "<div class='col-xs-3 col-sm-12'>";
-			$html .= "<div class='row'>";
-			$html .= "<div class='col-xs-12'>";
-			$html .= "<span class='calendar-day calendar-daily-disp {$textColor}' data-url='" . $url . "'>" . $day . '</span>';
-			$html .= "<span class='{$textColor} visible-xs-inline'><small>(" . $this->CalendarCommon->getWeekName($cnt) . ')</small></span>';
+			$html .= $this->makeGlyphiconPlusWithUrl(
+				$vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars);
+			$html .= '<div class="row">';
+			$html .= '<div class="col-xs-3 col-sm-12">';
+			$html .= '<div class="row">';
+			$html .= '<div class="col-xs-12">';
+			$html .= '<span class="calendar-day calendar-daily-disp ' . $textColor . '" data-url="' . $url . '">' . $day . '</span>';
+			$html .= '<span class="' . $textColor . ' visible-xs-inline">';
+			$html .= '<small>(' . $this->CalendarCommon->getWeekName($cnt) . ')</small>';
+			$html .= '</span>';
 			$html .= '</div>';
 			//<!-- 2row --> 祝日タイトル
-			$html .= "<div class='col-xs-12'>";
-			$html .= "<small class='calendar-sunday'>" . (($holidayTitle === '') ? '&nbsp;' : $holidayTitle) . '</small>';
-			$html .= "</div>";
+			$html .= '<div class="col-xs-12">';
+			$html .= '<small class="calendar-sunday">';
+			$html .= (($holidayTitle === '') ? '&nbsp;' : $holidayTitle);
+			$html .= '</small>';
+			$html .= '</div>';
 			$html .= '</div>';
 			$html .= '</div>';
 			//予定概要群
-			$html .= "<div class='col-xs-9 col-sm-12'>";
+			$html .= '<div class="col-xs-9 col-sm-12">';
 			$html .= $this->_makePlanSummariesHtml($vars, $nctm, $vars['mInfo']['year'], $vars['mInfo']['month'], $day);
 			$html .= '</div>';
 			$html .= '</div>';
-			$html .= '</td>';
+			$html .= '</div></td>';
 
 			$html .= $this->_makeEndTr($cnt);
 
