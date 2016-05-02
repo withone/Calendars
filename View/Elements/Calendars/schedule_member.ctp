@@ -23,217 +23,137 @@
 
 
 
-<!-- today -->
-<!--
-	<div class="col-sm-12 text-center">
--->
-		<!-- 予定の内容 -->
-<!--
-		<?php
-			// 予定の日付タイトル
-			echo $this->CalendarSchedule->makeDayTitleHtml($vars, 1);
-		?>
-
-		<div class='row calendar-schedule-row' data-pos='1'>
-			<div class='col-xs-12 col-sm-3'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'>
-					<span class='text-success'>山田太郎</span>
-				</p>
-			</div>
-			<div class='col-xs-12 col-sm-9'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'>
-					<span class='calendar-plan-mark calendar-plan-mark-public'></span>
-					<span>会社HPメンテナンス</span>
-				</p>
-			</div>
-			<div class='clearfix'></div>
-		</div>
-		<div class='row calendar-schedule-row' data-pos='1'>
-			<div class='col-xs-12 col-sm-3'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'>
-					<span class='text-success sr-only'>山田太郎</span>
-				</p>
-			</div>
-			<div class='col-xs-12 col-sm-9'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'>
-					<span class='pull-left'>
-						<small class='calendar-daily-nontimeline-periodtime-deco'>09:30-12:00</small>
-					</span>
-					<span class='calendar-plan-mark calendar-plan-mark-group'></span>
-					<span class='label label-warning'>承認待ち</span>
-					<span>開発部定例会議</span>
-				</p>
-			</div>
-			<div class='clearfix'></div>
-		</div>
-
-		<div class='row calendar-schedule-row' data-pos='1'>
-			<div class='col-xs-12 col-sm-3'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'>
-					<span class='text-success'>ジョン・F・ケネディ</span>
-				</p>
-			</div>
-			<div class='col-xs-12 col-sm-9'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'>
-					<span class='pull-left'>
-						<small class='calendar-daily-nontimeline-periodtime-deco'>08:00-09:00</small>
-					</span>
-					<span class='calendar-plan-mark calendar-plan-mark-group'></span>
-					<span>演説の練習</span>
-				</p>
-			</div>
-			<div class='clearfix'></div>
-		</div>
-
-		<div class='row calendar-schedule-row' data-pos='1'>
-			<div class='col-xs-12 col-sm-3'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'>
-					<span class='text-success sr-only'>山田太郎</span>
-				</p>
-			</div>
-			<div class='col-xs-12 col-sm-9'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'>
-					<span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>13:00-15:00</small></span>
-					<span class='calendar-plan-mark calendar-plan-mark-group'></span>
-					<span class='label label-warning'>承認待ち</span>
-					<span>社内発表会</span>
-				</p>
-			</div>
-			<div class='clearfix'></div>
-		</div>
-		<div class='row calendar-schedule-row' data-pos='1'>
-			<div class='col-xs-12 col-sm-3'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'>
-					<span class='text-success sr-only'>山田太郎</span>
-				</p>
-			</div>
-			<div class='col-xs-12 col-sm-9'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'>
-					<span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>17:00-18:00</small></span>
-					<span class='calendar-plan-mark calendar-plan-mark-group'></span>
-					<span class='label label-warning'>承認待ち</span>
-					<span>社内成績発表</span>
-				</p>
-			</div>
-			<div class='clearfix'></div>
-		</div>
-
-	</div>
--->
-
-<!-- tomorrow -->
-<!--
-	<div class="col-sm-12 text-center">
-		<?php
-			// 予定の日付タイトル
-		//	echo $this->CalendarSchedule->makeDayTitleHtml($vars, 2);
-		?>
-
-		<div class='row calendar-schedule-row'  data-pos='2'>
-			<div class='col-xs-12 col-sm-3'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'><span class='text-success'>鈴木イチロー</span></p>
-			</div>
-			<div class='col-xs-12 col-sm-9'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'><span class='calendar-plan-mark calendar-plan-mark-group'></span><span>社内進捗会議</span></p>
-			</div>
-			<div class='clearfix'></div>
-		</div>
-		
-		<div class='row calendar-schedule-row'  data-pos='2'>
-
-			<div class='col-xs-12 col-sm-3'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'><span class='text-success'>徳川家康</span></p>
-			</div>
-			<div class='col-xs-12 col-sm-9'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'><span class='calendar-plan-mark calendar-plan-mark-private'></span><span>帰宅後、家族で外食</span></p>
-			</div>
-			<div class='clearfix'></div>
-
-
-		</div>
-
-		<div class='row calendar-schedule-row'  data-pos='2'>
-
-			<div class='col-xs-12 col-sm-3'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-member'><span class='text-success sr-only'>徳川家康</span></p>
-			</div>
-			<div class='col-xs-12 col-sm-9'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan-member'><span class='calendar-plan-mark calendar-plan-mark-private'></span><span>深夜のフットボール中継録画</span></p>
-			</div>
-			<div class='clearfix'></div>
-
-
-		</div>
-
-	</div>
--->
-
-<!-- 3dayslater -->
-<!--
-	<div class="col-sm-12 text-center">
-
-		<?php
-			// 予定の日付タイトル
-		//	echo $this->CalendarSchedule->makeDayTitleHtml($vars, 3);
-		?>
-
-
-		<div class='row calendar-schedule-row'  data-pos='3'>
-
-			<div class='col-xs-12'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan'><span>予定はありません</span></p>
-			</div>
-			<div class='clearfix'></div>
-
-		</div>
-		
-	</div>
--->
-<!-- 4dayslater -->
-<!--
-	<div class="col-sm-12 text-center">
-
-		<?php
-			// 予定の日付タイトル
-		//	echo $this->CalendarSchedule->makeDayTitleHtml($vars, 4);
-		?>
-
-		<div class='row calendar-schedule-row'  data-pos='4'>
-			<div class='col-xs-12'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan'><span>予定はありません</span></p>
-			</div>
-			<div class='clearfix'></div>
-		</div>
-
-	</div>
--->
-<!-- 5dayslater -->
-<!--
-	<div class="col-sm-12 text-center">
-
-		<?php
-			// 予定の日付タイトル
-		//	echo $this->CalendarSchedule->makeDayTitleHtml($vars, 5);
-		?>
-
-
-		<div class='row calendar-schedule-row'  data-pos='5'>
-			<div class='col-xs-12'>
-				<p class='calendar-plan-clickable text-left calendar-schedule-row-plan'><span>予定はありません</span></p>
-			</div>
-			<div class='clearfix'></div>
-		</div>
-	</div>
--->
+  
+  <h2>スケジュール（会員順） </h2> 
+  
+  <div class="row calendar-tablecontainer">
+  <div class="col-xs-12 col-sm-2"><p class="calendar-schedule-membername"><a>橋本さん橋本さん</a></p></div>
+  <div class="col-xs-12 col-sm-10">
+  <table class="table table-hover calendar-tablestyle">
+   <tbody>
+    <tr><td>
+<div class="calendar-plan-mark calendar-plan-mark-share">
+<p class="calendar-plan-time small">00:00-00:00</p>
+<p class="calendar-plan-spacename small">スペース名</p>
+<h3 class="calendar-plan-tittle"><a>オールクリエイター株式会社を訪問</a></h3>
+<p class="calendar-plan-place small">場所の詳細:〒106-0031 東京都港区西麻布1-3-21ヒルサイド六本木203</p>
+<p class="calendar-plan-address small">連絡先:０３－６４５９－２８１０</p>
+</div>
+</td>
+</tr>
+<tr><td>
+<div class="calendar-plan-mark calendar-plan-mark-share">
+<p class="calendar-plan-time small">00:00-00:00</p>
+<p class="calendar-plan-spacename small">スペース名</p>
+<h3 class="calendar-plan-tittle"><a>オールクリエイター株式会社を訪問</a></h3>
+<p class="calendar-plan-place small">場所の詳細:〒106-0031 東京都港区西麻布1-3-21ヒルサイド六本木203</p>
+<p class="calendar-plan-address small">連絡先:０３－６４５９－２８１０</p>
+</div>
+</td>
+</tr><tr><td>
+<div class="calendar-plan-mark calendar-plan-mark-share">
+<p class="calendar-plan-time small">00:00-00:00</p>
+<p class="calendar-plan-spacename small">スペース名</p>
+<h3 class="calendar-plan-tittle"><a>オールクリエイター株式会社を訪問</a></h3>
+<p class="calendar-plan-place small">場所の詳細:〒106-0031 東京都港区西麻布1-3-21ヒルサイド六本木203</p>
+<p class="calendar-plan-address small">連絡先:０３－６４５９－２８１０</p>
+</div>
+</td>
+</tr>
+   </tbody>
+  </table>
+    </div>
+    </div>
+    <div class="row calendar-tablecontainer">
+  <div class="col-xs-12 col-sm-2"><p class="calendar-schedule-membername"><a>橋本さん橋本さん</a></p></div>
+  <div class="col-xs-12 col-sm-10">
+  <table class="table table-hover calendar-tablestyle">
+   <tbody>
+    <tr><td>
+<div class="calendar-plan-mark calendar-plan-mark-share">
+<p class="calendar-plan-time small">00:00-00:00</p>
+<p class="calendar-plan-spacename small">スペース名</p>
+<h3 class="calendar-plan-tittle"><a>オールクリエイター株式会社を訪問</a></h3>
+<p class="calendar-plan-place small">場所の詳細:〒106-0031 東京都港区西麻布1-3-21ヒルサイド六本木203</p>
+<p class="calendar-plan-address small">連絡先:０３－６４５９－２８１０</p>
+</div>
+</td>
+</tr>
+<tr><td>
+<div class="calendar-plan-mark calendar-plan-mark-share">
+<p class="calendar-plan-time small">00:00-00:00</p>
+<p class="calendar-plan-spacename small">スペース名</p>
+<h3 class="calendar-plan-tittle"><a>オールクリエイター株式会社を訪問</a></h3>
+<p class="calendar-plan-place small">場所の詳細:〒106-0031 東京都港区西麻布1-3-21ヒルサイド六本木203</p>
+<p class="calendar-plan-address small">連絡先:０３－６４５９－２８１０</p>
+</div>
+</td>
+</tr><tr><td>
+<div class="calendar-plan-mark calendar-plan-mark-share">
+<p class="calendar-plan-time small">00:00-00:00</p>
+<p class="calendar-plan-spacename small">スペース名</p>
+<h3 class="calendar-plan-tittle"><a>オールクリエイター株式会社を訪問</a></h3>
+<p class="calendar-plan-place small">場所の詳細:〒106-0031 東京都港区西麻布1-3-21ヒルサイド六本木203</p>
+<p class="calendar-plan-address small">連絡先:０３－６４５９－２８１０</p>
+</div>
+</td>
+</tr>
+   </tbody>
+  </table>
+    </div>
+    </div>
+    <div class="row calendar-tablecontainer">
+  <div class="col-xs-12 col-sm-2"><p class="calendar-schedule-membername"><a>橋本さん橋本さん</a></p></div>
+  <div class="col-xs-12 col-sm-10">
+  <table class="table table-hover calendar-tablestyle">
+   <tbody>
+    <tr><td>
+<div class="calendar-plan-mark calendar-plan-mark-share">
+<p class="calendar-plan-time small">00:00-00:00</p>
+<p class="calendar-plan-spacename small">スペース名</p>
+<h3 class="calendar-plan-tittle"><a>オールクリエイター株式会社を訪問</a></h3>
+<p class="calendar-plan-place small">場所の詳細:〒106-0031 東京都港区西麻布1-3-21ヒルサイド六本木203</p>
+<p class="calendar-plan-address small">連絡先:０３－６４５９－２８１０</p>
+</div>
+</td>
+</tr>
+<tr><td>
+<div class="calendar-plan-mark calendar-plan-mark-share">
+<p class="calendar-plan-time small">00:00-00:00</p>
+<p class="calendar-plan-spacename small">スペース名</p>
+<h3 class="calendar-plan-tittle"><a>オールクリエイター株式会社を訪問</a></h3>
+<p class="calendar-plan-place small">場所の詳細:〒106-0031 東京都港区西麻布1-3-21ヒルサイド六本木203</p>
+<p class="calendar-plan-address small">連絡先:０３－６４５９－２８１０</p>
+</div>
+</td>
+</tr><tr><td>
+<div class="calendar-plan-mark calendar-plan-mark-share">
+<p class="calendar-plan-time small">00:00-00:00</p>
+<p class="calendar-plan-spacename small">スペース名</p>
+<h3 class="calendar-plan-tittle"><a>オールクリエイター株式会社を訪問</a></h3>
+<p class="calendar-plan-place small">場所の詳細:〒106-0031 東京都港区西麻布1-3-21ヒルサイド六本木203</p>
+<p class="calendar-plan-address small">連絡先:０３－６４５９－２８１０</p>
+</div>
+</td>
+</tr>
+   </tbody>
+  </table>
+    </div>
+    </div>
 </div><!--全体枠END-->
 
 <!-- 形式切り替えと追加 (下部) -->
-<?php echo $this->element('Calendars.Calendars/change_sort', array('currentSort' => 'member', 'menuPosition' => 'bottom')); ?>
+<?php //echo $this->element('Calendars.Calendars/change_sort', array('currentSort' => 'member', 'menuPosition' => 'bottom')); ?>
 
 <!-- </div> --><!-- panel-body END -->
 <!-- </div> --><!-- panel END -->
 
 </form>
+
+	<!-- 予定の内容 -->
+	<?php
+		echo $this->CalendarLegend->getCalendarLegend($vars);
+	?>
 
 </article>
 
@@ -277,7 +197,7 @@ mock.fnc =  function(evt) {
 		for(var i = 0; i < elms2.length; ++i) {
 			var elm = elms2[i];
 			if (elm.getAttribute('data-pos') == num) {
-				elm.className = 'glyphicon glyphicon-chevron-right schedule-openclose';
+				elm.className = 'glyphicon glyphicon-menu-right schedule-openclose';
 				console.log('アイコンをcloseにしました。');
 			}
 		}
@@ -303,7 +223,7 @@ mock.fnc =  function(evt) {
 		for(var i = 0; i < elms2.length; ++i) {
 			var elm = elms2[i];
 			if (elm.getAttribute('data-pos') == num) {
-				elm.className = 'glyphicon glyphicon-chevron-down schedule-openclose';
+				elm.className = 'glyphicon glyphicon-menu-down schedule-openclose';
 				console.log('アイコンをopenにしました。');
 			}
 		}

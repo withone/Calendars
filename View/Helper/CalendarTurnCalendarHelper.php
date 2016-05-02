@@ -26,7 +26,8 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		'NetCommons.NetCommonsHtml',
 		'Form',
 		'Calendars.CalendarCommon',
-		'Calendars.CalendarUrl'
+		'Calendars.CalendarUrl',
+
 	);
 
 /**

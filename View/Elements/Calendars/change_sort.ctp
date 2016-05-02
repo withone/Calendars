@@ -1,6 +1,31 @@
 <?php
+
+	$timeLink = NetCommonsUrl::actionUrl(array(
+		'controller' => 'calendars',
+		'action' => 'index',
+		'style' => 'schedule',
+		//'tab' => 'timeline',
+		//'year' => sprintf("%04d", $vars['year']),
+		//'month' => sprintf("%02d", $vars['month']),
+		'sort' => 'time',
+		'frame_id' => Current::read('Frame.id'),
+	));
+
+	$memberLink = NetCommonsUrl::actionUrl(array(
+		'controller' => 'calendars',
+		'action' => 'index',
+		'style' => 'schedule',
+		//'tab' => 'list',
+		//'year' => sprintf("%04d", $vars['year']),
+		//'month' => sprintf("%02d", $vars['month']),
+		'sort' => 'member',
+		'frame_id' => Current::read('Frame.id'),
+	));
+
 ?>
-<div class="row">
+
+
+<!--<div class="row">
 	<div class="col-sm-12 text-center calendar-schedule-sort-<?php echo $menuPosition; ?>">
 		<div class='row'>
 			<div class="col-xs-9 col-sm-4 text-left">
@@ -17,4 +42,35 @@
 			</div>
 		</div>
 	</div>
+</div>-->
+
+
+<div class="row">
+
+<ul role='tablist' class='nav nav-tabs calendar-date-move-tablist'>
+
+<?php if ($currentSort === 'time'): ?>
+	<li class='active'>
+		<a href='#' onclidk='return false;'>
+  <?php else: ?>
+	<li>
+		<a href="<?php echo $timeLink; ?>">
+<?php endif; ?>
+
+<?php echo __d('calendars', '時間順'); ?></a>
+</li>
+
+<?php if ($currentSort === 'member'): ?>
+	<li class='active'>
+		<a href='#' onclidk='return false;'>
+  <?php else: ?>
+	<li>
+		<a href="<?php echo $memberLink; ?>">
+<?php endif; ?>
+
+<?php echo __d('calendars', '会員順'); ?></a>
+</li>
+</ul>
 </div>
+
+

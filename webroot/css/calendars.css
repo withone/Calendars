@@ -804,3 +804,28 @@ padding: 0;
 padding:10px;
 }
 
+/* スケジュール */
+
+.calendar-schedule-membername {
+	font-size: 1.20em;
+	margin: 0px 0px 0px 15px;
+	padding:20px 0 5px 0;
+}
+
+.calendar-tablestyle {
+	margin-bottom: 0px;
+}
+
+.calendar-tablestyle tbody tr:first-child td {
+	border-top: none;
+}
+
+.calendar-tablecontainer {
+	border-top: 2px solid #DDD;
+	margin-bottom: 10px;
+}
+
+.calendar-tablestyle {
+	margin-bottom: 0px;
+}
+
