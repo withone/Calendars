@@ -53,6 +53,152 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 	}
 
 /**
+ * getPlanSummariesMemberHtml
+ *
+ * 予定概要群html取得(メンバー順)
+ *
+ * @param array &$vars カレンダー情報
+ * @param int $year 年
+ * @param int $month 月
+ * @param int $day 日
+ * @param string $fromTime この日の１日のスタート時刻
+ * @param string $toTime この日の１日のエンド時刻
+ * @param array $plans この日の予定群
+ * @param int $idx (初日からｎ日）
+ * @param int &$cnt (ｎ日のPlan数）
+ * @return string HTML
+ */
+	public function getPlanSummariesMemberHtml(&$vars, $year, $month, $day, $fromTime, $toTime, $plans, $idx, &$cnt) {
+		$html = '';
+		$cnt = 0;
+		$prevUser = '';
+
+		foreach ($plans as $plan) { //※プランは表示対象ルームのみと想定
+			$cnt++; //プラン件数カウント
+			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
+			$html .= "<div class='calendar-schedule-row' data-pos='{$idx}'>"; //１プランの開始
+
+			if ($prevUser != $plan['TrackableCreator']['username']) {
+				$html .= '<div class="row calendar-tablecontainer">';
+				$html .= '<div class="col-xs-12 col-sm-2">';
+				$html .= '<p class="calendar-schedule-membername">';
+				$html .= $this->DisplayUser->handleLink($plan, array('avatar' => false));
+				$html .= '</p></div>';
+				$html .= '<div class="col-xs-12 col-sm-10">';
+				$html .= '<table class="table table-hover calendar-tablestyle"><tbody>';
+			}
+			$prevUser = $plan['TrackableCreator']['username'];
+			$html .= '<tr><td>';
+			// 1プラン-----
+			//予定が１件以上あるとき）
+			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
+
+			//予定
+			$html .= '<div class="col-xs-12 col-sm-10">';
+			$html .= "<div class='calendar-plan-mark {$calendarPlanMark}'>";
+			$html .= '<div>';
+			// ワークフロー（一時保存/承認待ち、など）のマーク
+			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
+			$html .= '</div>';
+
+			if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
+				$html .= "<span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small></span>';
+			}
+			//スペース名
+			$spaceName = $this->CalendarDaily->getSpaceName($vars, $plan['CalendarEvent']['room_id'], $plan['CalendarEvent']['language_id']);
+			$html .= '<p class="calendar-plan-spacename small">' . $spaceName . '</p>';
+			$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>' . $plan['CalendarEvent']['title'] . '</a></h3>';
+			if ($plan['CalendarEvent']['location'] != '') {
+				$html .= '<p class="calendar-plan-place small">' . __d('calendars', '場所の詳細:') . $plan['CalendarEvent']['location'] . '</p>';
+			}
+			if ($plan['CalendarEvent']['contact']) {
+				$html .= '<p class="calendar-plan-address small">' . __d('calendars', '連絡先:') . $plan['CalendarEvent']['contact'] . '</p>';
+			}
+
+			$html .= '</div></div>';
+
+			// 1プランの終了
+			$html .= '</td></tr>';
+		}
+
+		if ($cnt != 0) {
+			$html .= '</tbody></table></div></div></div>';
+		}
+		return $html;
+	}
+
+/**
+ * getPlanSummariesTimeHtml
+ *
+ * 予定概要群html取得(時間順)
+ *
+ * @param array &$vars カレンダー情報
+ * @param int $year 年
+ * @param int $month 月
+ * @param int $day 日
+ * @param string $fromTime この日の１日のスタート時刻
+ * @param string $toTime この日の１日のエンド時刻
+ * @param array $plans この日の予定群
+ * @param int $idx (初日からｎ日）
+ * @param int &$cnt (ｎ日のPlan数）
+ * @return string HTML
+ */
+	public function getPlanSummariesTimeHtml(&$vars, $year, $month, $day, $fromTime, $toTime, $plans, $idx, &$cnt) {
+		$html = '';
+		$cnt = 0;
+		$html .= '<div class="row calendar-tablecontainer">';
+
+		$html .= '<div class="col-xs-12"><table class="table table-hover calendar-tablestyle"><tbody>';
+
+		foreach ($plans as $plan) { //※プランは表示対象ルームのみと想定
+			$cnt++; //プラン件数カウント
+			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
+			$html .= '<tr><td>';
+
+			//予定が１件以上あるとき）
+			$html .= "<div class='row calendar-schedule-row' data-pos='{$idx}'>"; //１プランの開始
+			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
+
+			//ユーザー名
+			$html .= '<div class="col-xs-12 col-sm-2 col-sm-push-10">';
+			$html .= '<p class="text-right calendar-space0 small">';
+			$html .= "<span class='text-success'>";
+			$html .= $this->DisplayUser->handleLink($plan, array('avatar' => false));
+			$html .= '</span></p></div>';
+
+			//予定
+			$html .= '<div class="col-xs-12 col-sm-10 col-sm-pull-2">';
+			$html .= "<div class='calendar-plan-mark {$calendarPlanMark}'>";
+			$html .= '<div>';
+			// ワークフロー（一時保存/承認待ち、など）のマーク
+			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
+			$html .= '</div>';
+
+			if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
+				$html .= "<span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small></span>';
+			}
+			//スペース名
+			$spaceName = $this->CalendarDaily->getSpaceName($vars, $plan['CalendarEvent']['room_id'], $plan['CalendarEvent']['language_id']);
+			$html .= '<p class="calendar-plan-spacename small">' . $spaceName . '</p>';
+			$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>' . $plan['CalendarEvent']['title'] . '</a></h3>';
+			if ($plan['CalendarEvent']['location'] != '') {
+				$html .= '<p class="calendar-plan-place small">' . __d('calendars', '場所の詳細:') . $plan['CalendarEvent']['location'] . '</p>';
+			}
+			if ($plan['CalendarEvent']['contact']) {
+				$html .= '<p class="calendar-plan-address small">' . __d('calendars', '連絡先:') . $plan['CalendarEvent']['contact'] . '</p>';
+			}
+			$html .= '</div></div>';
+
+			// 1プランの終了
+			$html .= "</div></tr></td>";
+		}
+
+		$html .= '</tbody></table>';
+		$html .= '</div></div>';
+		return $html;
+	}
+
+/**
  * getPlanSummariesHtml2
  *
  * 予定概要群html取得
@@ -70,87 +216,13 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
  */
 	public function getPlanSummariesHtml2(&$vars, $year, $month, $day, $fromTime, $toTime, $plans, $idx, &$cnt) {
 		$html = '';
-		$cnt = 0;
-		$prevUser = '';
+		//$cnt = 0;
+		//$prevUser = '';
 
-		foreach ($plans as $plan) { //※プランは表示対象ルームのみと想定
-			$cnt++; //プラン件数カウント
-			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
-
-			//仕様
-			//予定が１件以上あるとき）
-			$html .= "<div class='row calendar-schedule-row' data-pos='{$idx}'>"; //１プランの開始
-
-			if ($vars['sort'] === 'member') { // 会員順
-				//ユーザー名
-				$html .= "<div class='col-xs-12 col-sm-3'>";
-				$html .= "<p class='calendar-plan-clickable text-left calendar-schedule-row-member'>";
-				$html .= "<span class='text-success'>";
-				if ($prevUser != $plan['TrackableCreator']['username']) {
-					//$html .= $this->Html->link($plan['TrackableCreator']['username'], array());
-					$html .= $this->DisplayUser->handleLink($plan, array('avatar' => false));
-				}
-				$prevUser = $plan['TrackableCreator']['username'];
-				$html .= "</span>";
-				$html .= "</p>";
-				$html .= "</div>";
-
-				//予定
-				$html .= "<div class='col-xs-12 col-sm-9'>";
-				$html .= "<p class='calendar-plan-clickable text-left calendar-plan-show calendar-schedule-row-plan-member' data-url='" . $url . "'>";
-
-				if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
-					////<!-- 3row -->
-					$html .= "<span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small></span>';
-				}
-				//<!-- 4row -->
-
-				$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
-				$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
-				// ワークフロー（一時保存/承認待ち、など）のマーク
-				$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
-				$html .= '<span>' . $plan['CalendarEvent']['title'] . '</span>';
-
-				$html .= "</p>";
-				$html .= "</div>";
-				$html .= "<div class='clearfix'></div>";
-			} else { // 時間順
-				//ユーザー名
-				//$html .= "<div class='row'>";
-				$html .= "<div class='col-xs-12 col-sm-3 col-sm-push-9'>";
-				$html .= "<p class='calendar-plan-clickable text-left calendar-schedule-row-member-t'>";
-				$html .= "<span class='text-success'>";
-				$html .= $this->DisplayUser->handleLink($plan, array('avatar' => false));
-				//$html .= $this->Html->link($plan['TrackableCreator']['username'], array());
-				$html .= "</span>";
-				$html .= "</p>";
-				$html .= "</div>";
-				//$html .= "<div class='clearfix'></div>";
-
-				//予定
-				$html .= "<div class='col-xs-12 col-sm-9 col-sm-pull-3'>";
-
-				$html .= "<p class='calendar-plan-clickable text-left calendar-plan-show calendar-schedule-row-plan' data-url='" . $url . "'>";
-
-				if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
-					////<!-- 3row -->
-					$html .= "<span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small></span>';
-				}
-				$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
-				$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
-				// ワークフロー（一時保存/承認待ち、など）のマーク
-				$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
-				$html .= '<span>' . $plan['CalendarEvent']['title'] . '</span>';
-
-				$html .= "</p>";
-				$html .= "</div>";
-				//$html .= "<div class='clearfix'></div>";
-
-				//$html .= "</div>";
-			}
-
-			// 1プランの終了
-			$html .= "</div>";
+		if ($vars['sort'] === 'member') { // 会員順
+			$html .= $this->getPlanSummariesMemberHtml($vars, $year, $month, $day, $fromTime, $toTime, $plans, $idx, $cnt);
+		} else { //時間順
+			$html .= $this->getPlanSummariesTimeHtml($vars, $year, $month, $day, $fromTime, $toTime, $plans, $idx, $cnt);
 		}
 
 		if ($cnt == 0) { //予定0件のとき
@@ -181,7 +253,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		for ($idx = 1; $idx <= $vars['display_count']; $idx++) {
 			$htmlTitle = '';
 			$htmlPlan = '';
-			$html .= "<div class='col-sm-12 text-center'>"; //一日の開始
+			$html .= '<div class="col-sm-12">'; //一日の開始
 
 			//予定の数分ループ（予定数取得）
 			//dayCount後の日付
@@ -227,7 +299,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		$html = '';
 		$html .= "<div class='row'><div class='col-xs-12'>";
 		$html .= "<p data-openclose-stat='open' data-pos='{$dayCount}' class='calendar-schedule-disp calendar-plan-clickable text-left calendar-schedule-row-title'>";
-		$html .= "<span class='h4'><span data-pos='{$dayCount}' class='glyphicon glyphicon-chevron-down schedule-openclose'></span>";
+		$html .= "<span class='h4'><span data-pos='{$dayCount}' class='glyphicon glyphicon-menu-down schedule-openclose'></span>";
 
 		if ($vars['start_pos'] == 1) {
 			$dayCount--; // 開始日（前日）
@@ -243,7 +315,9 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 			$html .= "<span class='{$textColor}'>{$month}月{$day}日{$week[$wDay]}</span>";
 		}
 
-		$html .= "<span style='margin-left: 0.5em'>({$planCount})</span>"; //pending 予定数
+		if ($planCount != 0) {
+			$html .= "<span style='margin-left: 0.5em' class='badge'>{$planCount}</span>"; //pending 予定数
+		}
 		$html .= "</span></p></div><div class='clearfix'></div></div>";
 
 		return $html;
