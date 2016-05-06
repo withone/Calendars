@@ -38,6 +38,7 @@ class CalendarsController extends CalendarsAppController {
 		'Calendars.CalendarActionPlan',	//予定CRUDaction専用
 		'Holidays.Holiday',
 		'Rooms.Room',
+		'NetCommons.BackTo',
 	);
 
 /**

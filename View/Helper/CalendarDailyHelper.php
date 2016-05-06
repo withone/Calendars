@@ -121,7 +121,13 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 		//$html .= '<span>' . $plan['CalendarEvent']['title'] . '</span>';
 		//$html .= "<p class='calendar-plan-clickable text-left calendar-plan-show calendar-daily-nontimeline-plan' data-url='" . $url . "'>";
 		//$html .= '<h3 class="calendar-plan-tittle"><p class="calendar-plan-clickable text-left calendar-plan-show calendar-daily-nontimeline-plan" data-url="' . $url . '">' . $plan['CalendarEvent']['title'] . '</p></h3>';
-		$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>' . $plan['CalendarEvent']['title'] . '</a></h3>';
+		//$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>' . $plan['CalendarEvent']['title'] . '</a></h3>';
+		$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>';
+
+		//タイトルアイコン
+		$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
+		$html .= $plan['CalendarEvent']['title'];
+		$html .= '</a></h3>';
 
 		$html .= '</p>';
 		if ($plan['CalendarEvent']['location'] != '') {

@@ -74,6 +74,8 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		$cnt = 0;
 		$prevUser = '';
 
+		$html = '';
+
 		foreach ($plans as $plan) { //※プランは表示対象ルームのみと想定
 			$cnt++; //プラン件数カウント
 			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
@@ -160,9 +162,6 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		$html = '';
 		$htmlPlan = '';
 		$cnt = 0;
-		//$html .= '<div class="row calendar-tablecontainer">';//予定が１件もないときは、クラスcalendar-tablecontainerを外す pending
-
-		//$html .= '<div class="col-xs-12"><table class="table table-hover calendar-tablestyle"><tbody>';
 
 		foreach ($plans as $plan) { //※プランは表示対象ルームのみと想定
 			$cnt++; //プラン件数カウント
@@ -215,20 +214,26 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 			$htmlPlan .= "</div></tr></td>";
 		}
 
+		$html .= '<div class="row calendar-tablecontainer" uib-collapse="isCollapsed[' . $idx . ']">';
+		$html .= '<div class="col-xs-12">';
+
 		if ($cnt == 0) {
-			$html .= '<div class="row">';//予定が１件もないときは、クラスcalendar-tablecontainerを外す pending
-			//$html .= '<div class="col-xs-12"><table class="table table-hover calendar-tablestyle"><tbody>';
+			//$html .= '<div class="row">';//予定が１件もないときは、クラスcalendar-tablecontainerを外す pending
+			//$html .= '<div class="col-xs-12">';
+			//$html .= '<table class="table table-hover calendar-tablestyle"><tbody>';
 			//$html .= '</tbody></table>';
 
 			//$html .= $htmlPlan;
-			$html .= '</div>';
+			//$html .= '</div></div>';
+			$html .= '<p class="calendar-schedule-row-plan">予定はありません</p>';
+
 		} else {
-			$html .= '<div class="row calendar-tablecontainer" uib-collapse="isCollapsed[' . $idx . ']">';//予定が１件以上
-			$html .= '<div class="col-xs-12"><table class="table table-hover calendar-tablestyle"><tbody>';
+			$html .= '<table class="table table-hover calendar-tablestyle"><tbody>';
 			$html .= $htmlPlan;
 			$html .= '</tbody></table>';
-			$html .= '</div></div>';
 		}
+
+		$html .= '</div></div>';
 
 		return $html;
 	}
@@ -256,14 +261,15 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 
 		if ($vars['sort'] === 'member') { // 会員順
 			$html .= $this->getPlanSummariesMemberHtml($vars, $year, $month, $day, $fromTime, $toTime, $plans, $idx, $cnt);
+
+			if ($cnt == 0) { //予定0件のとき
+				$html .= '<div class="row calendar-schedule-row calendar-tablecontainer" uib-collapse="isCollapsed[' . $idx . ']"><div class="col-xs-12">';
+				$html .= '<p class="calendar-schedule-row-plan">予定はありません</p>';
+				$html .= '</div></div>';
+			}
+
 		} else { //時間順
 			$html .= $this->getPlanSummariesTimeHtml($vars, $year, $month, $day, $fromTime, $toTime, $plans, $idx, $cnt);
-		}
-
-		if ($cnt == 0) { //予定0件のとき
-			$html .= '<div class="row calendar-schedule-row" uib-collapse="isCollapsed[' . $idx . ']"><div class="col-xs-12">';
-			$html .= '<div class="calendar-tablecontainer"><p class="calendar-schedule-row-plan">予定はありません</p></div>';
-			$html .= '</div><div class="clearfix"></div></div>';
 		}
 
 		return $html;
@@ -324,7 +330,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
  */
 	public function makeDayTitleHtml($vars, $dayCount, $planCount, $year, $month, $day) {
 		/* 曜日 */
-		$week = array('(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)'); // kuma temp
+		//$week = array('(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)'); // kuma temp
 
 		//dayCount後の日付
 		$wDay = CalendarTime::getWday($year, $month, $day);

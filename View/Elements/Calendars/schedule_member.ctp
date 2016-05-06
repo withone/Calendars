@@ -30,3 +30,8 @@
 		echo $this->CalendarLegend->getCalendarLegend($vars);
 	?>
 
+<div class="row text-center calendar-backto-btn">
+	<?php
+		echo $this->BackTo->indexLinkButton('最初の画面に戻る');
+	?>
+</div>
