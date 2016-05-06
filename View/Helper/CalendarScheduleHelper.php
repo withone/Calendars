@@ -30,6 +30,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		'Calendars.CalendarDaily',
 		'Html',
 		'Users.DisplayUser',
+		'NetCommons.TitleIcon',
 	);
 
 /**
@@ -79,6 +80,11 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 			$html .= "<div class='calendar-schedule-row' data-pos='{$idx}'>"; //１プランの開始
 
 			if ($prevUser != $plan['TrackableCreator']['username']) {
+				if ($prevUser != '') {
+					//print_r($prevUser);
+					$html .= '</tbody></table></div></div>';
+				}
+
 				$html .= '<div class="row calendar-tablecontainer">';
 				$html .= '<div class="col-xs-12 col-sm-2">';
 				$html .= '<p class="calendar-schedule-membername">';
@@ -107,7 +113,14 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 			//スペース名
 			$spaceName = $this->CalendarDaily->getSpaceName($vars, $plan['CalendarEvent']['room_id'], $plan['CalendarEvent']['language_id']);
 			$html .= '<p class="calendar-plan-spacename small">' . $spaceName . '</p>';
-			$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>' . $plan['CalendarEvent']['title'] . '</a></h3>';
+
+			//$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>' . $plan['CalendarEvent']['title'] . '</a></h3>';
+			$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>';
+			//タイトルアイコン
+			$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
+
+			$html .= $plan['CalendarEvent']['title'];
+			$html .= '</a></h3>';
 			if ($plan['CalendarEvent']['location'] != '') {
 				$html .= '<p class="calendar-plan-place small">' . __d('calendars', '場所の詳細:') . $plan['CalendarEvent']['location'] . '</p>';
 			}
@@ -180,7 +193,15 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 			//スペース名
 			$spaceName = $this->CalendarDaily->getSpaceName($vars, $plan['CalendarEvent']['room_id'], $plan['CalendarEvent']['language_id']);
 			$html .= '<p class="calendar-plan-spacename small">' . $spaceName . '</p>';
-			$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>' . $plan['CalendarEvent']['title'] . '</a></h3>';
+			//$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>' . $plan['CalendarEvent']['title'] . '</a></h3>';
+
+			$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>';
+			//タイトルアイコン
+			$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
+
+			$html .= $plan['CalendarEvent']['title'];
+			$html .= '</a></h3>';
+
 			if ($plan['CalendarEvent']['location'] != '') {
 				$html .= '<p class="calendar-plan-place small">' . __d('calendars', '場所の詳細:') . $plan['CalendarEvent']['location'] . '</p>';
 			}
