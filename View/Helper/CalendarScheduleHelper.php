@@ -158,64 +158,78 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
  */
 	public function getPlanSummariesTimeHtml(&$vars, $year, $month, $day, $fromTime, $toTime, $plans, $idx, &$cnt) {
 		$html = '';
+		$htmlPlan = '';
 		$cnt = 0;
-		$html .= '<div class="row calendar-tablecontainer">';
+		//$html .= '<div class="row calendar-tablecontainer">';//予定が１件もないときは、クラスcalendar-tablecontainerを外す pending
 
-		$html .= '<div class="col-xs-12"><table class="table table-hover calendar-tablestyle"><tbody>';
+		//$html .= '<div class="col-xs-12"><table class="table table-hover calendar-tablestyle"><tbody>';
 
 		foreach ($plans as $plan) { //※プランは表示対象ルームのみと想定
 			$cnt++; //プラン件数カウント
 			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
-			$html .= '<tr><td>';
+			$htmlPlan .= '<tr><td>';
 
 			//予定が１件以上あるとき）
-			$html .= "<div class='row calendar-schedule-row' data-pos='{$idx}'>"; //１プランの開始
+			$htmlPlan .= "<div class='row calendar-schedule-row' data-pos='{$idx}'>"; //１プランの開始
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
 
 			//ユーザー名
-			$html .= '<div class="col-xs-12 col-sm-2 col-sm-push-10">';
-			$html .= '<p class="text-right calendar-schedule-membername">';
+			$htmlPlan .= '<div class="col-xs-12 col-sm-2 col-sm-push-10">';
+			$htmlPlan .= '<p class="text-right calendar-schedule-membername">';
 			//$html .= "<span class='text-success'>";
-			$html .= $this->DisplayUser->handleLink($plan, array('avatar' => false));
-			$html .= '</p></div>';
+			$htmlPlan .= $this->DisplayUser->handleLink($plan, array('avatar' => false));
+			$htmlPlan .= '</p></div>';
 
 			//予定
-			$html .= '<div class="col-xs-12 col-sm-10 col-sm-pull-2">';
-			$html .= "<div class='calendar-plan-mark {$calendarPlanMark}'>";
-			$html .= '<div>';
+			$htmlPlan .= '<div class="col-xs-12 col-sm-10 col-sm-pull-2">';
+			$htmlPlan .= "<div class='calendar-plan-mark {$calendarPlanMark}'>";
+			$htmlPlan .= '<div>';
 			// ワークフロー（一時保存/承認待ち、など）のマーク
-			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
-			$html .= '</div>';
+			$htmlPlan .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
+			$htmlPlan .= '</div>';
 
 			if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
-				$html .= "<span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small></span>';
+				$htmlPlan .= "<span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small></span>';
 			}
 			//スペース名
 			$spaceName = $this->CalendarDaily->getSpaceName($vars, $plan['CalendarEvent']['room_id'], $plan['CalendarEvent']['language_id']);
-			$html .= '<p class="calendar-plan-spacename small">' . $spaceName . '</p>';
+			$htmlPlan .= '<p class="calendar-plan-spacename small">' . $spaceName . '</p>';
 			//$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>' . $plan['CalendarEvent']['title'] . '</a></h3>';
 
-			$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>';
+			$htmlPlan .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>';
 			//タイトルアイコン
-			$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
+			$htmlPlan .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
 
-			$html .= $plan['CalendarEvent']['title'];
-			$html .= '</a></h3>';
+			$htmlPlan .= $plan['CalendarEvent']['title'];
+			$htmlPlan .= '</a></h3>';
 
 			if ($plan['CalendarEvent']['location'] != '') {
-				$html .= '<p class="calendar-plan-place small">' . __d('calendars', '場所の詳細:') . $plan['CalendarEvent']['location'] . '</p>';
+				$htmlPlan .= '<p class="calendar-plan-place small">' . __d('calendars', '場所の詳細:') . $plan['CalendarEvent']['location'] . '</p>';
 			}
 			if ($plan['CalendarEvent']['contact']) {
-				$html .= '<p class="calendar-plan-address small">' . __d('calendars', '連絡先:') . $plan['CalendarEvent']['contact'] . '</p>';
+				$htmlPlan .= '<p class="calendar-plan-address small">' . __d('calendars', '連絡先:') . $plan['CalendarEvent']['contact'] . '</p>';
 			}
-			$html .= '</div></div>';
+			$htmlPlan .= '</div></div>';
 
 			// 1プランの終了
-			$html .= "</div></tr></td>";
+			$htmlPlan .= "</div></tr></td>";
 		}
 
-		$html .= '</tbody></table>';
-		$html .= '</div></div>';
+		if ($cnt == 0) {
+			$html .= '<div class="row">';//予定が１件もないときは、クラスcalendar-tablecontainerを外す pending
+			//$html .= '<div class="col-xs-12"><table class="table table-hover calendar-tablestyle"><tbody>';
+			//$html .= '</tbody></table>';
+
+			//$html .= $htmlPlan;
+			$html .= '</div>';
+		} else {
+			$html .= '<div class="row calendar-tablecontainer">';//予定が１件以上
+			$html .= '<div class="col-xs-12"><table class="table table-hover calendar-tablestyle"><tbody>';
+			$html .= $htmlPlan;
+			$html .= '</tbody></table>';
+			$html .= '</div></div>';
+		}
+
 		return $html;
 	}
 
@@ -248,7 +262,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 
 		if ($cnt == 0) { //予定0件のとき
 			$html .= "<div class='row calendar-schedule-row'  data-pos='5'><div class='col-xs-12'>";
-			$html .= "<p class='calendar-plan-clickable text-left calendar-schedule-row-plan'><span>予定はありません</span></p>";
+			$html .= "<div class='calendar-tablecontainer'><p class='calendar-plan-clickable text-left calendar-schedule-row-plan'>予定はありません</p></div>";
 			$html .= "</div><div class='clearfix'></div></div>";
 		}
 
@@ -322,7 +336,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		$html .= "<div class='row'><div class='col-xs-12'>";
 		$html .= "<p data-openclose-stat='open' data-pos='{$dayCount}' class='calendar-schedule-disp calendar-plan-clickable text-left calendar-schedule-row-title'>";
 
-		$html .= "<span class='h4'><span data-pos='{$dayCount}' class='glyphicon glyphicon-menu-down schedule-openclose'></span>";
+		$html .= "<span data-pos='{$dayCount}' class='glyphicon glyphicon-menu-down schedule-openclose'></span><span class='h4'>";
 		//$html .= "<div class='col-xs-1'>";
 		$html .= $this->makeGlyphiconPlusWithUrl($year, $month, $day, $vars);
 		//$html .= "</div>";
