@@ -123,6 +123,12 @@ NetCommonsApp.factory('ConfirmRepeat', ['NetCommonsModal',
   }
 ]);
 
+NetCommonsApp.controller('CalendarSchedule', function($scope) {
+  $scope.initialize = function (data) {
+    $scope.isCollapsed = data.isCollapsed;
+  };
+});
+
 NetCommonsApp.controller('CalendarsTimeline', ['$scope', function($scope) {
   console.log('TIMELINE...');
 

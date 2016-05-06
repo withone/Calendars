@@ -264,6 +264,16 @@ class CalendarsController extends CalendarsAppController {
 
 		//表示日数（n日分）
 		$vars['display_count'] = $frameSetting['CalendarFrameSetting']['display_count'];
+
+		$vars['isCollapsed'] = array_fill(0, $vars['display_count'] + 1, true);
+
+		if ($vars['start_pos'] == CalendarsComponent::CALENDAR_START_POS_WEEKLY_TODAY) {
+			$vars['isCollapsed'][1] = false;
+			$vars['isCollapsed'][2] = false;
+		} else {
+			$vars['isCollapsed'][2] = false;
+			$vars['isCollapsed'][3] = false;
+		}
 		return $vars;
 	}
 
@@ -297,6 +307,15 @@ class CalendarsController extends CalendarsAppController {
 
 		//表示日数（n日分）
 		$vars['display_count'] = $frameSetting['CalendarFrameSetting']['display_count'];
+		$vars['isCollapsed'] = array_fill(0, $vars['display_count'] + 1, true);
+
+		if ($vars['start_pos'] == CalendarsComponent::CALENDAR_START_POS_WEEKLY_TODAY) {
+			$vars['isCollapsed'][1] = false;
+			$vars['isCollapsed'][2] = false;
+		} else {
+			$vars['isCollapsed'][2] = false;
+			$vars['isCollapsed'][3] = false;
+		}
 
 		return $vars;
 	}

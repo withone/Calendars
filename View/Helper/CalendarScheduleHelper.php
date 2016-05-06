@@ -77,7 +77,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		foreach ($plans as $plan) { //※プランは表示対象ルームのみと想定
 			$cnt++; //プラン件数カウント
 			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
-			$html .= "<div class='calendar-schedule-row' data-pos='{$idx}'>"; //１プランの開始
+			$html .= "<div class='calendar-schedule-row'>"; //１プランの開始
 
 			if ($prevUser != $plan['TrackableCreator']['username']) {
 				if ($prevUser != '') {
@@ -85,7 +85,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 					$html .= '</tbody></table></div></div>';
 				}
 
-				$html .= '<div class="row calendar-tablecontainer">';
+				$html .= '<div class="row calendar-tablecontainer" uib-collapse="isCollapsed[' . $idx . ']">';
 				$html .= '<div class="col-xs-12 col-sm-2">';
 				$html .= '<p class="calendar-schedule-membername">';
 				$html .= $this->DisplayUser->handleLink($plan, array('avatar' => false));
@@ -170,7 +170,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 			$htmlPlan .= '<tr><td>';
 
 			//予定が１件以上あるとき）
-			$htmlPlan .= "<div class='row calendar-schedule-row' data-pos='{$idx}'>"; //１プランの開始
+			$htmlPlan .= '<div class="row calendar-schedule-row">'; //１プランの開始
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
 
 			//ユーザー名
@@ -223,7 +223,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 			//$html .= $htmlPlan;
 			$html .= '</div>';
 		} else {
-			$html .= '<div class="row calendar-tablecontainer">';//予定が１件以上
+			$html .= '<div class="row calendar-tablecontainer" uib-collapse="isCollapsed[' . $idx . ']">';//予定が１件以上
 			$html .= '<div class="col-xs-12"><table class="table table-hover calendar-tablestyle"><tbody>';
 			$html .= $htmlPlan;
 			$html .= '</tbody></table>';
@@ -261,9 +261,9 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		}
 
 		if ($cnt == 0) { //予定0件のとき
-			$html .= "<div class='row calendar-schedule-row'  data-pos='5'><div class='col-xs-12'>";
-			$html .= "<div class='calendar-tablecontainer'><p class='calendar-plan-clickable text-left calendar-schedule-row-plan'>予定はありません</p></div>";
-			$html .= "</div><div class='clearfix'></div></div>";
+			$html .= '<div class="row calendar-schedule-row" uib-collapse="isCollapsed[' . $idx . ']"><div class="col-xs-12">';
+			$html .= '<div class="calendar-tablecontainer"><p class="calendar-schedule-row-plan">予定はありません</p></div>';
+			$html .= '</div><div class="clearfix"></div></div>';
 		}
 
 		return $html;
@@ -332,37 +332,40 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		$month = (int)$month;
 		$day = (int)$day;
 
-		$html = '';
-		$html .= "<div class='row'><div class='col-xs-12'>";
-		$html .= "<p data-openclose-stat='open' data-pos='{$dayCount}' class='calendar-schedule-disp calendar-plan-clickable text-left calendar-schedule-row-title'>";
+		$ngClick = sprintf('isCollapsed[%d] = !isCollapsed[%d]', $dayCount, $dayCount);
+		$ngClass = sprintf('\'glyphicon-menu-right\': isCollapsed[%d], \'glyphicon-menu-down\': !isCollapsed[%d]', $dayCount, $dayCount);
 
-		$html .= "<span data-pos='{$dayCount}' class='glyphicon glyphicon-menu-down schedule-openclose'></span><span class='h4'>";
-		//$html .= "<div class='col-xs-1'>";
+		$html = '';
+		$html .= '<div class="row"><div class="col-xs-12">';
+		$html .= '<p ng-click="' . $ngClick . '" ';
+		$html .= 'class="calendar-schedule-disp calendar-plan-clickable calendar-schedule-row-title">';
+
+		$html .= '<span class="glyphicon schedule-openclose" ng-class="{' . $ngClass . '}"></span>';
+		$html .= '<span class="h4">';
 		$html .= $this->makeGlyphiconPlusWithUrl($year, $month, $day, $vars);
-		//$html .= "</div>";
 
 		if ($vars['start_pos'] == 1) {
 			$dayCount--; // 開始日（前日）
 		}
 
 		if ($dayCount == 0) {
-			$html .= "<span>" . __d('calendars', '昨日') . "</span>";
+			$html .= '<span>' . __d('calendars', '昨日') . '</span>';
 		} elseif ($dayCount == 1) {
-			$html .= "<span>" . __d('calendars', '今日') . "</span>";
+			$html .= '<span>' . __d('calendars', '今日') . '</span>';
 		} elseif ($dayCount == 2) { // 明日
-			$html .= "<span>" . __d('calendars', '明日') . "</span>";
+			$html .= '<span>' . __d('calendars', '明日') . '</span>';
 		} else { //3日目以降
-			$html .= "<span class='{$textColor}'>{$month}月{$day}日{$week[$wDay]}</span>";
+			$html .= '<span class="' . $textColor . '">';
+			$html .= sprintf('%d月%d日(%s)', $month, $day, $this->CalendarCommon->getWeekName($wDay));
+			$html .= '</span>';
 		}
 
 		if ($planCount != 0) {
-			$html .= "<span style='margin-left: 0.5em' class='badge'>{$planCount}</span>"; //pending 予定数
+			$html .= '<span class="badge nc-badge">' . $planCount . '</span>'; //pending 予定数
 		}
-		$html .= "</span></p></div>";
+		$html .= '</span></p></div>';
 
-		$html .= "<div class='clearfix'>";
-		$html .= "</div>";
-		$html .= "</div>";
+		$html .= '</div>';
 
 		return $html;
 	}
