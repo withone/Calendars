@@ -161,10 +161,10 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 
 			//ユーザー名
 			$html .= '<div class="col-xs-12 col-sm-2 col-sm-push-10">';
-			$html .= '<p class="text-right calendar-space0 small">';
-			$html .= "<span class='text-success'>";
+			$html .= '<p class="text-right calendar-schedule-membername">';
+			//$html .= "<span class='text-success'>";
 			$html .= $this->DisplayUser->handleLink($plan, array('avatar' => false));
-			$html .= '</span></p></div>';
+			$html .= '</p></div>';
 
 			//予定
 			$html .= '<div class="col-xs-12 col-sm-10 col-sm-pull-2">';
@@ -216,7 +216,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
  */
 	public function getPlanSummariesHtml2(&$vars, $year, $month, $day, $fromTime, $toTime, $plans, $idx, &$cnt) {
 		$html = '';
-		//$cnt = 0;
+		$cnt = 0;
 		//$prevUser = '';
 
 		if ($vars['sort'] === 'member') { // 会員順
@@ -267,7 +267,8 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 			//タイトル+予定
 			$html .= $htmlTitle; //タイトル追加
 			$html .= $htmlPlan; //プラン追加
-
+			//$html .= $this->makeGlyphiconPlusWithUrl(
+			//	$yearAfterDay, $monthAfterDay, $afterDay, $vars);
 			$html .= "</div>"; //一日の終了
 		}
 		return $html;
@@ -299,7 +300,11 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		$html = '';
 		$html .= "<div class='row'><div class='col-xs-12'>";
 		$html .= "<p data-openclose-stat='open' data-pos='{$dayCount}' class='calendar-schedule-disp calendar-plan-clickable text-left calendar-schedule-row-title'>";
+
 		$html .= "<span class='h4'><span data-pos='{$dayCount}' class='glyphicon glyphicon-menu-down schedule-openclose'></span>";
+		//$html .= "<div class='col-xs-1'>";
+		$html .= $this->makeGlyphiconPlusWithUrl($year, $month, $day, $vars);
+		//$html .= "</div>";
 
 		if ($vars['start_pos'] == 1) {
 			$dayCount--; // 開始日（前日）
@@ -318,7 +323,11 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		if ($planCount != 0) {
 			$html .= "<span style='margin-left: 0.5em' class='badge'>{$planCount}</span>"; //pending 予定数
 		}
-		$html .= "</span></p></div><div class='clearfix'></div></div>";
+		$html .= "</span></p></div>";
+
+		$html .= "<div class='clearfix'>";
+		$html .= "</div>";
+		$html .= "</div>";
 
 		return $html;
 	}

@@ -15,6 +15,7 @@
 <?php echo $this->element('Calendars.Calendars/change_sort', array('currentSort' => 'time', 'menuPosition' => 'top')); ?>
 
 <div class="row"><!--全体枠-->
+
 				<!-- 予定の内容 -->
 				<?php
 					echo $this->CalendarSchedule->makeBodyHtml($vars);

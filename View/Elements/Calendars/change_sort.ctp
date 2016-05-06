@@ -46,7 +46,7 @@
 
 
 <div class="row">
-
+	<div class="col-sm-12 text-center calendar-schedule-sort">
 <ul role='tablist' class='nav nav-tabs calendar-date-move-tablist'>
 
 <?php if ($currentSort === 'time'): ?>
@@ -71,6 +71,7 @@
 <?php echo __d('calendars', '会員順'); ?></a>
 </li>
 </ul>
+</div>
 </div>
 
 
