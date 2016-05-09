@@ -172,9 +172,23 @@ class CalendarPlansController extends CalendarsAppController {
 		$this->view = 'edit';	//add()でレンダリングするviewファイルの名前をadd.ctpからedit.ctpに変える。これをしないと、View/CalendarPlans/add.ctpがないとの警告がでる。
 		if ($this->request->is('post')) {
 			//登録処理
+
+			//CakeLog::debug("DBG: request_data[" . print_r($this->request->data, true) . "]");
+
 			$this->CalendarActionPlan->set($this->request->data);
+
+			$this->CalendarActionPlan->calendarProofreadValidationErrors = array();	//校正用配列の準備
 			if (!$this->CalendarActionPlan->validates()) {
 				//失敗なら、エラーメッセージを保持したまま、edit()を実行し、easy_edit.ctpを表示
+
+				//validationエラーの内、いくつか（主にrrule関連)を校正する。
+				$this->CalendarActionPlan->proofreadValidationErrors($this->CalendarActionPlan);
+
+				//DBGDBGDBG
+				//$this->CalendarActionPlan->validationErrors['rrule_interval'] = array();
+				//$this->CalendarActionPlan->validationErrors['rrule_interval']['DAILY'] = array();
+				//$this->CalendarActionPlan->validationErrors['rrule_interval']['DAILY'][] = 'aaabbbccc';
+				//CakeLog::debug("DBG: x1: CalendarActionPlan_vaidationErrors[" . print_r($this->CalendarActionPlan->validationErrors, true) . "]");
 				$this->NetCommons->handleValidationError($this->CalendarActionPlan->validationErrors);	//これでエラーmsgが画面上部に数秒間flashされる。
 
 				$this->request->params['named']['style'] = (isset($this->request->data['CalendarActionPlan']['is_detail']) && $this->request->data['CalendarActionPlan']['is_detail']) ? 'detail' : 'easy';
@@ -182,6 +196,7 @@ class CalendarPlansController extends CalendarsAppController {
 				$this->setAction('edit');
 				return;
 			}
+
 			//成功なら元画面(カレンダーorスケジューラー)に戻る。
 			if (!$this->CalendarActionPlan->saveCalendarPlan($this->request->data)) {
 				//保存失敗

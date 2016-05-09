@@ -311,7 +311,7 @@ class CalendarCommonHelper extends AppHelper {
  * getWeekName
  * 曜日名称をカラム列番号に合わせて取り出す
  *
- * @param $cnt
+ * @param int $cnt cnt
  * @return string week name
  */
 	public function getWeekName($cnt) {

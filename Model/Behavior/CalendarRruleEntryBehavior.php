@@ -55,6 +55,7 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 		if (isset($model->rrule)) {	//behaviorメソッドでrruleを渡すための工夫
 			unset($model->rrule);
 		}
+
 		$model->rrule = $planParams['rrule'];	//引数ではなく、$modelのインスタンス変数としてセットする。
 
 		if (!is_array($model->rrule)) {	//$rrulea文字列を解析し配列化する。
@@ -64,17 +65,20 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 			$model->rrule = $model->parseRrule($model->rrule);
 		}
 
+		//CakeLog::debug("DBG: In insertRrule() rrule array[" . print_r($model->rrule, true) . "]");
+
 		if (!(isset($model->CalendarEvent) && is_callable($model->CalendarEvent->create))) {
 			$model->loadModels(['CalendarEvent' => 'Calendars.CalendarEvent']);
 		}
 		$params = array(
 			'conditions' => array('CalendarEvent.id' => $eventData['CalendarEvent']['id']),
-			'recursive' => (-1),
-			'fields' => array('CalendarEvent.*'),
+			'recursive' => 0, //(-1),
+			//'fields' => array('CalendarEvent.*'),
 			'callbacks' => false
 		);
-		$rruleData = $model->CalendarEvent->find('all', $params);
-		if (!is_array($startEventData) || !isset($startEventData['CalendarEvent'])) {
+
+		$eventData = $model->CalendarEvent->find('first', $params);
+		if (!is_array($eventData) || !isset($eventData['CalendarEvent'])) {
 			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
@@ -90,7 +94,7 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 		}
 
 		//rruleのin/outは、$modelのインスタンス変数をつかっておこなう。
-		$this->insertPriodEntry($model, $planParams, $rruleData, $startEventData);
+		$this->insertPriodEntry($model, $planParams, $rruleData, $eventData);
 	}
 
 /**
@@ -104,23 +108,56 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
  */
 	public function insertPriodEntry(Model &$model, $planParams, $rruleData, $startEventData) {
 		$model->rrule['INDEX'] = 1;
+		//CakeLog::debug("DBG: In insertPriodEntry(). i set model->rrule[INDEX] to 1.");
+		//
+
 		switch ($model->rrule['FREQ']) {
 			case 'YEARLY':
-				$this->insertYearly($model, $planParams, $rruleData, $startEventData, 1);
+				if (!$model->Behaviors->hasMethod('insertYearly')) {
+					$model->Behaviors->load('Calendars.CalendarYearlyEntry');
+				}
+				$model->insertYearly($planParams, $rruleData, $startEventData, 1);
 				break;
 			case 'MONTHLY':
-				if (isset($model->rrule['BYMONTHDAY'])) {	//指定月のx日、y日
-					$this->insertMonthlyByMonthday($model, $planParams, $rruleData, $startEventData, 1);
-				} else {	//第ｘ週ｙ曜日
-					$this->insertMonthlyByDay($model, $planParams, $rruleData, $startEventData, 1);
-				}
+				$this->_insertMonthlyPriodEntry($model, $planParams, $rruleData, $startEventData);
 				break;
 			case 'WEEKLY':
-				$this->insertWeekly($model, $planParams, $rruleData, $startEventData, 1);
+				if (!$model->Behaviors->hasMethod('insertWeekly')) {
+					$model->Behaviors->load('Calendars.CalendarWeeklyEntry');
+				}
+				$model->insertWeekly($planParams, $rruleData, $startEventData, 1);
 				break;
 			case 'DAILY':
-				$this->insertDaily($model, $planParams, $rruleData, $startEventData);
+				if (!$model->Behaviors->hasMethod('insertDaily')) {
+					$model->Behaviors->load('Calendars.CalendarDailyEntry');
+				}
+
+				//CakeLog::debug("DBGDBG: In insertPriodEntry() DAILY case. before insertDaily[" . print_r($planParams, true) . "] rruleData[" . print_r($rruleData, true) . "] startEventData[" . print_r($startEventData) . "]");
+
+				$model->insertDaily($planParams, $rruleData, $startEventData);
 				break;
+		}
+	}
+
+/**
+ * _insertMonthlyPriodEntry
+ *
+ * 月用周期性登録
+ *
+ * @param Model &$model 実際のモデル名
+ * @param array &$planParams planParams
+ * @param array &$rruleData rruleData
+ * @param array &$startEventData eventデータ
+ * @return void
+ */
+	protected function _insertMonthlyPriodEntry(Model &$model, &$planParams, &$rruleData, &$startEventData) {
+		if (!$model->Behaviors->hasMethod('insertMonthlyByMonthday')) {
+			$model->Behaviors->load('Calendars.CalendarMonthlyEntry');
+		}
+		if (isset($model->rrule['BYMONTHDAY'])) {	//指定月のx日、y日
+			$model->insertMonthlyByMonthday($planParams, $rruleData, $startEventData, 1);
+		} else {	//第ｘ週ｙ曜日
+			$model->insertMonthlyByDay($planParams, $rruleData, $startEventData, 1);
 		}
 	}
 }

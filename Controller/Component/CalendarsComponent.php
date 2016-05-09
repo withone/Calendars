@@ -119,6 +119,69 @@ class CalendarsComponent extends Component {
 	const	CALENDAR_DEFAULT_MAIL_SEND_TIME = 60;	//メール通知タイミング初期値(60分前=1時間前)
 
 /**
+ * 繰返し周期
+ *
+ * @var string
+ */
+	const CALENDAR_REPEAT_FREQ_DAILY = 'DAILY';
+	const CALENDAR_REPEAT_FREQ_WEEKLY = 'WEEKLY';
+	const CALENDAR_REPEAT_FREQ_MONTHLY = 'MONTHLY';
+	const CALENDAR_REPEAT_FREQ_YEARLY = 'YEARLY';
+
+/**
+ * 繰返し周期(日単位)の日にち間隔
+ *
+ * @var string
+ */
+	const CALENDAR_RRULE_INTERVAL_DAILY_MIN = 1;	//最小:1日おき
+	const CALENDAR_RRULE_INTERVAL_DAILY_MAX = 6;	//最大:6日おき
+
+/**
+ * 繰返し周期(週単位)の週の間隔
+ *
+ * @var string
+ */
+	const CALENDAR_RRULE_INTERVAL_WEEKLY_MIN = 1;	//最小:1週おき
+	const CALENDAR_RRULE_INTERVAL_WEEKLY_MAX = 6;	//最大:6週おき
+
+/**
+ * 繰返し周期(年単位)の年の間隔
+ *
+ * @var string
+ */
+	const CALENDAR_RRULE_INTERVAL_YEARLY_MIN = 1;	//最小:1年おき
+	const CALENDAR_RRULE_INTERVAL_YEARLY_MAX = 12;	//最大:12年おき
+
+/**
+ * 曜日
+ *
+ * @var string
+ */
+	const CALENDAR_REPEAT_WDAY = 'SU|MO|TU|WE|TH|FR|SA';
+
+/**
+ * 繰返し周期(月単位)の月の間隔
+ *
+ * @var string
+ */
+	const CALENDAR_RRULE_INTERVAL_MONTHLY_MIN = 1;	//最小:1ヶ月おき
+	const CALENDAR_RRULE_INTERVAL_MONTHLY_MAX = 11;	//最大:11ヶ月おき
+
+/**
+ * 繰返しの終了
+ *
+ * @var string
+ */
+	const CALENDAR_RRULE_TERM_COUNT = 'COUNT';
+	const CALENDAR_RRULE_TERM_UNTIL = 'UNTIL';
+
+/**
+ * 繰返しエラー発生キーワード
+ *
+ */
+	const CALENDAR_RRULE_ERROR_HAPPEND = 'calendar_rrule_error_happend';
+
+/**
  * カレンダータイムゾーン情報	FIXME: 「システム管理」＞「一般設定」の「タイムゾーン一覧」に統合・一元化すること。
  *
  * @var array

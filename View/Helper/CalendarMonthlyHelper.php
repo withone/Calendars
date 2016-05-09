@@ -445,5 +445,4 @@ class CalendarMonthlyHelper extends AppHelper {
 		return $html;
 	}
 
-
 }

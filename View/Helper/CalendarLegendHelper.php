@@ -174,7 +174,7 @@ class CalendarLegendHelper extends AppHelper {
 		}
 		$html = '<li><div class="calendar-plan-mark ' . $calendarPlanMark . '">';
 		if ($icon != '') {
-			$html .= '<span class="glyphicon glyphicon-' . $icon .'" aria-hidden="true"></span>';
+			$html .= '<span class="glyphicon glyphicon-' . $icon . '" aria-hidden="true"></span>';
 		}
 		$html .= $spaceName;
 		$html .= '</div></li>';

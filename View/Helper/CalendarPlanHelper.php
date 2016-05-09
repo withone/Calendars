@@ -373,4 +373,67 @@ class CalendarPlanHelper extends AppHelper {
 		}
 		return array($cancelOptions, $saveTempOptions, $saveOptions);
 	}
+
+/**
+ * makeOptionsOfWdayInNthWeek
+ *
+ * 第N週M曜日のオプション配列生成
+ *
+ * @param string $firstValue 最初の値
+ * @param string $firstLabel 最初の文字列
+ * @return array 配列
+ */
+	public function makeOptionsOfWdayInNthWeek($firstValue, $firstLabel) {
+		$options = array();
+		$options[$firstValue] = $firstLabel;
+		$weeks = array (1, 2, 3, 4, -1);
+		$wdays = explode('|', CalendarsComponent::CALENDAR_REPEAT_WDAY);
+		foreach ($weeks as $week) {
+			foreach ($wdays as $idx => $wday) {
+				$key = $week . $wday;
+				if ($week > 0) {
+					$options[$key] = sprintf(__d('calendars', '第%d週'), $week) . $this->getWdayString($idx);
+				} else {
+					$options[$key] = __d('calendars', '最終週') . $this->getWdayString($idx);
+				}
+			}
+		}
+		return $options;
+	}
+
+/**
+ * getWdayString
+ *
+ * n曜日の文字列取得
+ *
+ * @param int $index 曜日のindex 0=日曜日,1=月曜日, ... , 6=土曜日
+ * @return string 曜日の文字列
+ */
+	public function getWdayString($index) {
+		$string = '';
+		switch ($index) {
+			case 0:
+				$string = __d('calendars', '日曜日');
+				break;
+			case 1:
+				$string = __d('calendars', '月曜日');
+				break;
+			case 2:
+				$string = __d('calendars', '火曜日');
+				break;
+			case 3:
+				$string = __d('calendars', '水曜日');
+				break;
+			case 4:
+				$string = __d('calendars', '木曜日');
+				break;
+			case 5:
+				$string = __d('calendars', '金曜日');
+				break;
+			default:	/* 6 */
+				$string = __d('calendars', '土曜日');
+				break;
+		}
+		return $string;
+	}
 }

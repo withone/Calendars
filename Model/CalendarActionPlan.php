@@ -50,6 +50,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		'Calendars.CalendarPlanTimeValidate',	//予定（時間関連）バリデーション専用
 		'Calendars.CalendarPlanRruleValidate',	//予定（Rrule関連）バリデーション専用
 		'Calendars.CalendarPlanValidate',	//予定バリデーション専用
+		'Calendars.CalendarRruleHandle',	//concatRRule()など
 	);
 	// @codingStandardsIgnoreStart
 	// $_schemaはcakePHP2の予約語だが、宣言するとphpcsが警告を出すので抑止する。
@@ -249,9 +250,11 @@ class CalendarActionPlan extends CalendarsAppModel {
 				'rule1' => array(
 					'rule' => array('checkRrule'),
 					'required' => false,
-					'message' => __d('calendars', '繰返し規則指定が不正です'),
+					//'message' => __d('calendars', '繰返し規則指定が不正です'),
+					'message' => CalendarsComponent::CALENDAR_RRULE_ERROR_HAPPEND,
 				),
 			),
+			/*
 			'rrule_count' => array(
 				'rule1' => array(
 					'rule' => array('naturalNumber', false),	//自然数（１以上の整数）
@@ -274,6 +277,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'message' => __d('calendars', '終了日による指定、または、繰返しの終了日が不正です'),
 				),
 			),
+			*/
+			/*
 			'enable_email' => array(
 				'rule1' => array(
 					'rule' => array('inList', array(0, 1)),
@@ -288,6 +293,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'message' => __d('calendars', 'メールの通知タイミングが不正です'),
 				),
 			),
+			*/
 		));
 	}
 
@@ -464,10 +470,11 @@ class CalendarActionPlan extends CalendarsAppModel {
 		$this->begin();
 
 		try {
+
+			//$this->planTime
+
 			$planParam = $this->convertToPlanParamFormat($data);
 
-			//CakeLog::debug("DBGDBG: data[" . print_r($data, true), "]");
-			//CakeLog::debug("DBGDBG: insertPlan()を発行する. planParam[" . print_r($planParam, true), "]");
 			$this->insertPlan($planParam);
 
 			$this->_enqueueEmail($data);
@@ -567,149 +574,6 @@ class CalendarActionPlan extends CalendarsAppModel {
 	}
 
 /**
- * _setAndMergeDateTime
- *
- * 日付時刻系のパラメータを整形し、予定パラメータにマージして返す
- *
- * @param array $planParam merge前の予定パラメータ
- * @param array $data POSTされたデータ
- * @return array 成功時 整形,merged後の予定パラメータ. 失敗時 例外をthrowする.
- * @throws InternalErrorException
- */
-	protected function _setAndMergeDateTime($planParam, $data) {
-		if ($data[$this->alias]['is_detail']) {
-			//詳細画面からのデータ
-			$planParam = $this->_setAndMergeDateTimeDetail($planParam, $data);
-		} else {
-			//簡易画面からのデータ
-			$planParam = $this->_setAndMergeDateTimeEasy($planParam, $data);
-		}
-		return $planParam;
-	}
-
-/**
- * _setAndMergeDateTimeDetail
- *
- * 詳細画面系の日付時刻系のパラメータを整形し、予定パラメータにマージして返す
- *
- * @param array $planParam merge前の予定パラメータ
- * @param array $data POSTされたデータ
- * @return array 成功時 整形,merged後の予定パラメータ. 失敗時 例外をthrowする.
- * @throws InternalErrorException
- */
-	protected function _setAndMergeDateTimeDetail($planParam, $data) {
-		//詳細画面からのデータ
-		//時間指定なしの場合
-		//  [detail_start_datetime] => 2016-03-06 　ユーザ系日付（から）
-		//  [detail_end_datetime] => 2016-03-08		ユーザ系日付（まで）
-		//時間指定有の場合
-		//  [detail_start_datetime] => 2016-03-06 09:00		ユーザ系日付時刻（秒はなし）（から）
-		//  [detail_end_datetime] => 2016-03-08 12:00		ユーザ系日付時刻（秒はなし）（まで）
-
-		if ($data[$this->alias]['enable_time']) {
-			$planParam['is_allday'] = 0;
-			//時間指定あり
-			$nctm = new NetCommonsTime();
-
-			$serverStartDatetime = $nctm->toServerDatetime($data[$this->alias]['detail_start_datetime'] . ':00', $data[$this->alias]['timezone_offset']);
-			$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($serverStartDatetime, 0, 10));
-			$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($serverStartDatetime, 11, 8));
-			$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
-
-			$serverEndDatetime = $nctm->toServerDatetime($data[$this->alias]['detail_end_datetime'] . ':00', $data[$this->alias]['timezone_offset']);
-			$planParam['end_date'] = CalendarTime::stripDashColonAndSp(substr($serverEndDatetime, 0, 10));
-			$planParam['end_time'] = CalendarTime::stripDashColonAndSp(substr($serverEndDatetime, 11, 8));
-			$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
-		} else {
-			$planParam['is_allday'] = 1;
-			//ユーザー系の開始日と終了日とタイムゾーンを、サーバ系の開始日の00:00:00から終了翌日の00:00:00に変換する
-			list($serverStartDate, $serverEndNextDate) = (new CalendarTime())->convUserFromTo2SvrFromTo($data[$this->alias]['detail_start_datetime'], $data[$this->alias]['detail_end_datetime'], $data[$this->alias]['timezone_offset']);
-
-			$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($serverStartDate, 0, 10));
-			$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($serverStartDate, 11, 8));
-			$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
-
-			$planParam['end_date'] = CalendarTime::stripDashColonAndSp(substr($serverEndNextDate, 0, 10));
-			$planParam['end_time'] = CalendarTime::stripDashColonAndSp(substr($serverEndNextDate, 11, 8));
-			$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
-		}
-		return $planParam;
-	}
-
-/**
- * _setAndMergeDateTimeEasy
- *
- * 簡易画面系の日付時刻系のパラメータを整形し、予定パラメータにマージして返す
- *
- * @param array $planParam merge前の予定パラメータ
- * @param array $data POSTされたデータ
- * @return array 成功時 整形,merged後の予定パラメータ. 失敗時 例外をthrowする.
- * @throws InternalErrorException
- */
-	protected function _setAndMergeDateTimeEasy($planParam, $data) {
-		//簡易画面からのデータ
-		//[easy_start_date] => 2016-03-01  <= 日付だけなので、User系
-		//[easy_hour_minute_from] => 2016-02-29 16:00:00 <= サーバ系
-		//[easy_hour_minute_to] => 2016-02-29 17:00:00 <= サーバ系
-
-		if ($data[$this->alias]['enable_time']) {
-			$planParam['is_allday'] = 0;
-			//その日の時間指定あり
-			$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_from'], 0, 10));
-			$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_from'], 11, 8));
-			$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
-
-			$planParam['end_date'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_to'], 0, 10));
-			$planParam['end_time'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_to'], 11, 8));
-			$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
-
-		} else {
-			$planParam['is_allday'] = 1;
-			//その日の終日
-			list($serverStartDateZero, $serverNextDateZero) = (new CalendarTime())->convUserDate2SvrFromToDateTime($data[$this->alias]['easy_start_date'], $data[$this->alias]['timezone_offset']);
-
-			$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($serverStartDateZero, 0, 10));
-			$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($serverStartDateZero, 11, 8));
-			$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
-
-			$planParam['end_date'] = CalendarTime::stripDashColonAndSp(substr($serverNextDateZero, 0, 10));
-			$planParam['end_time'] = CalendarTime::stripDashColonAndSp(substr($serverNextDateZero, 11, 8));
-			$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
-		}
-		return $planParam;
-	}
-
-/**
- * _setAndMergeRrule
- *
- * Rruleのパラメータを整形し、予定パラメータにマージして返す
- *
- * @param array $planParam merge前の予定パラメータ
- * @param array $data POSTされたデータ
- * @return array 成功時 整形,merged後の予定パラメータ. 失敗時 例外をthrowする.
- * @throws InternalErrorException
- */
-	protected function _setAndMergeRrule($planParam, $data) {
-		$planParam['rrule'] = '';	//初期化
-
-		if ($data[$this->alias]['is_repeat']) {
-			/*
-			[repeat_freq] =>
-			[rrule_interval] =>
-			[rrule_byday] =>
-			[bymonthday] =>
-			[rrule_bymonth] =>
-			[rrule_term] =>
-			[rrule_count] =>
-			[rrule_until] =>
-			*/
-			//FIXME: Rruleの各項目よりrrule配列をつくり、それをconcatRRule()などをつくって、シリアル化する。
-			//
-		}
-		return $planParam;
-	}
-
-/**
  * enqueueEmail
  *
  * メール通知がonの場合、通知時刻等を指定したデータをMailキューに登録する。
@@ -723,5 +587,24 @@ class CalendarActionPlan extends CalendarsAppModel {
 		//	$[email_send_timing] => 60
 		//	FIXME: email_send_timingの値をつかって、Mailキューに登録する。
 		//}
+	}
+
+/**
+ * proofreadValidationErrors
+ *
+ * validationErrors配列の内、対象項目とmessageを動的に校正する。(主にrruleの複合validate対応)
+ *
+ * @param Model &$model モデル
+ * @return array 
+ */
+	public function proofreadValidationErrors(&$model) {
+		$msg = Hash::get($model->validationErrors, 'repeat_freq.0');
+		if ($msg === CalendarsComponent::CALENDAR_RRULE_ERROR_HAPPEND) {
+			unset($model->validationErrors['repeat_freq']);
+			//CakeLog::debug("DBG: proofread count[" . count($model->calendarProofreadValidationErrors) . "]");
+			if (count($model->calendarProofreadValidationErrors) > 0) {
+				$model->validationErrors = Hash::merge($model->validationErrors, $model->calendarProofreadValidationErrors);
+			}
+		}
 	}
 }

@@ -18,6 +18,29 @@
 class CalendarTime {
 
 /**
+ * dateWdayIdxWithUserTz
+ *
+ * ユーザタイムゾーンでのdate('w', タイムスタンプ)を実行する
+ *
+ * @param int $timestamp UNIXタイムスタンプ
+ * @param string $userTz ユーザータイムゾーン(ex."Asia/Tokyo")
+ * @return string タイムスタンプを、ユーザタイムゾーンでの曜日になおし、数字文字"0"(SU),"1"(MO),...,"6"(SA)を返す 
+ */
+	public static function dateWdayIdxWithUserTz($timestamp, $userTz) {
+		//デフォルトタイムゾーンを退避する
+		$defaultTz = date_default_timezone_get();
+
+		//ユーザタイムゾーンでの曜日のindex("0"-"6")を取得する.
+		date_default_timezone_set($userTz);
+		$wIdx = date('w', $timestamp);
+
+		//デフォルトタイムゾーンに戻しておく。
+		date_default_timezone_set($defaultTz);
+
+		return $wIdx;
+	}
+
+/**
  * convUserFromTo2SvrFromTo
  *
  * ユーザー系の開始日と終了日とタイムゾーンを、サーバ系の開始日の00:00:00から終了翌日の00:00:00に変換し返す
@@ -304,7 +327,8 @@ class CalendarTime {
  * @param string  $format format default:date('YmdHis')
  * @return string timezone str
  */
-	public static function timezoneDate($time = null, $insertFlag = 1, $format = null) {
+	/*
+	//public static function timezoneDate($time = null, $insertFlag = 1, $format = null) {
 		$_defaultTZ = Session::read('Calendars._timezoneOffset');
 		$timeNullFlag = false;
 		if ($time === null) {	//$time===null.つまり、画面以外のI/Fから渡された。
@@ -323,6 +347,7 @@ class CalendarTime {
 
 		return self::getFormatedTimezoneDate($time, $format, $timezoneOffset);
 	}
+	*/
 
 /**
  * タイムゾーン等の設定

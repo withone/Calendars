@@ -32,8 +32,8 @@
 	<?php
 
 		if (isset($event['CalendarEvent']['room_id'])) {
-			//CakeLog::debug("DBG: event room_id[" . $event['CalendarEvent']['room_id'] . "]");
-			$myself = $event['CalendarEvent']['room_id'];	//FIXME: 本当は、RoomsをTreeビヘイビアのparent()を使って空間IDに変換する必要あり。要改修。
+			CakeLog::debug("DBG: event room_id[" . $event['CalendarEvent']['room_id'] . "]");
+			$myself = $event['CalendarEvent']['room_id'];	//FIXME: 本当は、RoomsをTreeビヘイビアのparend()を使って空間IDに変換する必要あり。要改修。
 		}
 		echo $this->CalendarExposeTarget->makeSelectExposeTargetHtml($frameId, $languageId, $vars, $frameSetting, $exposeRoomOptions, $myself);
 	?>
@@ -124,7 +124,7 @@
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD',
 	)));
-
+//aaaa
 	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_start_datetime',
 	array(
 		'div' => false,
@@ -365,19 +365,21 @@
 
 					<ul class="list-inline">
 <?php
-					$periodTypeIndex = CalendarsComponent::CALENDAR_REPEAT_FREQ_DAILY;	//input radio をon状態にする indexキー (DAILY=日単位,WEEKLY=週単位,..)
+					$periodTypeIndex = 0;		//input radio をon状態にする index番号 (0=日単位,1=週単位)
+												//備忘: ここの即値をあとでdefineかconstにすること。
+												//備忘: ここの即値をあとでdefineかconstにすること。
 					$dailyDisplayClass = $weeklyDisplayClass = $monthlyDisplayClass = $yearlyDisplayClass = 'hidden';
 					switch ($periodTypeIndex) {
-					case CalendarsComponent::CALENDAR_REPEAT_FREQ_DAILY:
+					case 0:
 						$dailyDisplayClass = 'show';
 						break;
-					case CalendarsComponent::CALENDAR_REPEAT_FREQ_WEEKLY:
+					case 1:
 						$weeklyDisplayClass = 'show';
 						break;
-					case CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY:
+					case 2:
 						$monthlyDisplayClass = 'show';
 						break;
-					case CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY:
+					case 3:
 						$yearlyDisplayClass = 'show';
 						break;
 					}
@@ -386,11 +388,10 @@
 								'legend' => false,
 								'type' => 'radio',
 								'options' => array(
-									CalendarsComponent::CALENDAR_REPEAT_FREQ_DAILY => __d('calendars', '日単位'),
-									CalendarsComponent::CALENDAR_REPEAT_FREQ_WEEKLY => __d('calendars', '週単位'),
-									CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY => __d('calendars', '月単位'),
-									CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY => __d('calendars', '年単位'),
-								),
+									__d('calendars', '日単位'),
+									__d('calendars', '週単位'),
+									__d('calendars', '月単位'),
+									__d('calendars', '年単位')),
 								'before' => "<li>",
 								'after' => '</li>',
 								'separator' => "</li><li>",
@@ -398,10 +399,9 @@
 								'label' => false,
 								'class' => '',
 								'ng-model' => 'selectRepeatPeriodArray[' . $frameId . ']',
-								'ng-init' => 'setInitRepeatPeriod(' . $frameId . ',"' . $periodTypeIndex . '")',
+								'ng-init' => 'setInitRepeatPeriod(' . $frameId . ',' . $periodTypeIndex . ')',
 								'ng-change' => 'changePeriodType(' . $frameId . ')',
 					));
-
 ?>
 					</ul>
 				</div><!-- col-sm-12終わり-->
@@ -412,22 +412,23 @@
 ?>
 				<div class="col-xs-6 col-sm-5">
 <?php
-					$options = array();
-					foreach (range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_DAILY_MIN, CalendarsComponent::CALENDAR_RRULE_INTERVAL_DAILY_MAX) as $num) {
-						$options[$num] = sprintf(__d('calendars', '%d日'), $num);
-					}
+					$options = array(
+						'1' => __d('calendars', '1日'),
+						'2' => __d('calendars', '2日'),
+						'3' => __d('calendars', '3日'),
+						'4' => __d('calendars', '4日'),
+						'5' => __d('calendars', '5日'),
+						'6' => __d('calendars', '6日'),
+					);
 
-					echo $this->NetCommonsForm->select(
-						'CalendarActionPlan.rrule_interval.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_DAILY, $options, array(
-						'value' => sprintf(__d('calendars', '%d日'), 1),		//valueは初期値
+					//////echo $this->NetCommonsForm->select('CalendarActionPlan.rrule_interval[DAILY]', $options, array(
+					echo $this->NetCommonsForm->select('CalendarActionPlan.rrule_interval', $options, array(
+						'value' => __d('calendars', '1日'),		//valueは初期値
 						'class' => 'form-control',
 						'empty' => false,
 						'required' => true,
 						'div' => false,
 					));
-
-					echo $this->NetCommonsForm->error(
-						'CalendarActionPlan.rrule_interval.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_DAILY, null, array('div' => true));
 ?>
 				</div>
 				<div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div>
@@ -438,13 +439,17 @@
 ?>
 				<div class="col-xs-6 col-sm-5">
 <?php
-					$options = array();
-					foreach (range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_WEEKLY_MIN, CalendarsComponent::CALENDAR_RRULE_INTERVAL_WEEKLY_MAX) as $num) {
-						$options[$num] = sprintf(__d('calendars', '%d週'), $num);
-					}
-					echo $this->NetCommonsForm->select(
-						'CalendarActionPlan.rrule_interval.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_WEEKLY, $options, array(
-						'value' => sprintf(__d('calendars', '%d週'), 1),		//valueは初期値
+					$options = array(
+						'1' => __d('calendars', '1週'),
+						'2' => __d('calendars', '2週'),
+						'3' => __d('calendars', '3週'),
+						'4' => __d('calendars', '4週'),
+						'5' => __d('calendars', '5週'),
+						'6' => __d('calendars', '6週'),
+					);
+
+					echo $this->NetCommonsForm->select('CalendarCompRrule.weekly', $options, array(
+						'value' => __d('calendars', '1週'),		//valueは初期値
 						'class' => 'form-control',
 						'empty' => false,
 						'required' => true,
@@ -459,19 +464,20 @@
 				<div class="col-xs-12 col-sm-12">
 
 <?php
-					$options = array();
-					$wdays = explode('|', CalendarsComponent::CALENDAR_REPEAT_WDAY);
-					foreach ($wdays as $idx => $wday) {
-						$options[$wday] = $this->CalendarPlan->getWdayString($idx);
-					}
-					echo $this->NetCommonsForm->input(
-						'CalendarActionPlan.rrule_byday.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_WEEKLY, array(
-						'label' => false,
-						'div' => false,
-						'multiple' => 'checkbox',
-						'options' => $options,
-						'class' => 'text-left calendar-choice-day-of-the-week_' . $frameId,
-					));
+	//第一引数(フィールド名)の最後に、.(ドット)をつけると、複数同じフィールド名のチェックボックスがあると、
+	//cakePHP側では配列でデータを受けるようになる、とのこと。。要確認
+	//
+/* aaaa
+	echo $this->NetCommonsForm->input('dayOfTheWeek.', array(
+		//'type' => 'checkbox',
+		//'checked' => false,
+		'label' => false,
+		'div' => false,
+		'multiple' => 'checkbox',
+		'options' => array('日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'),
+		'class' => 'text-left calendar-choice-day-of-the-week_' . $frameId,
+	));
+*/
 ?>
 				</div><!--col-sm-12おわり-->
 				</div><!-- row form-group終わり-->
@@ -481,18 +487,28 @@
 ?>
 				<div class="col-xs-8 col-sm-5">
 <?php
-					$options = array();
-					foreach (range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_MONTHLY_MIN, CalendarsComponent::CALENDAR_RRULE_INTERVAL_MONTHLY_MAX) as $num) {
-						$options[$num] = sprintf(__d('calendars', '%dヶ月'), $num);
-					}
-					echo $this->NetCommonsForm->select(
-						'CalendarActionPlan.rrule_interval.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY, $options, array(
-						'value' => sprintf(__d('calendars', '%dヶ月'), 1),		//valueは初期値
+					$options = array(
+						'1' => __d('calendars', '1ヶ月'),
+						'2' => __d('calendars', '2ヶ月'),
+						'3' => __d('calendars', '3ヶ月'),
+						'4' => __d('calendars', '4ヶ月'),
+						'5' => __d('calendars', '5ヶ月'),
+						'6' => __d('calendars', '6ヶ月'),
+						'7' => __d('calendars', '7ヶ月'),
+						'8' => __d('calendars', '8ヶ月'),
+						'9' => __d('calendars', '9ヶ月'),
+						'10' => __d('calendars', '10ヶ月'),
+						'11' => __d('calendars', '11ヶ月'),
+					);
+/* aaaaa
+					echo $this->NetCommonsForm->select('CalendarCompRrule.monthly', $options, array(
+						'value' => __d('calendars', '1ヶ月'),	//valueは初期値
 						'class' => 'form-control',
 						'empty' => false,
 						'required' => true,
 						'div' => false,
 					));
+*/
 ?>
 				</div>
 				<div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div>
@@ -501,20 +517,59 @@
 				<div class="col-xs-8 col-sm-5">
 
 <?php
-					$options = $this->CalendarPlan->makeOptionsOfWdayInNthWeek('', __d('calendars', '-曜日指定-'));
+	//ここに、-曜日指定- と -日付指定- のselectを、ajsでかく！
 
-					echo $this->NetCommonsForm->select(
-						'CalendarActionPlan.rrule_byday.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY, $options, array(
+					$options = array(
+						'' => __d('calendars', '-曜日指定-'),
+						'0_0' => __d('calendars', '第1週日曜日'),
+						'0_1' => __d('calendars', '第1週月曜日'),
+						'0_2' => __d('calendars', '第1週火曜日'),
+						'0_3' => __d('calendars', '第1週水曜日'),
+						'0_4' => __d('calendars', '第1週木曜日'),
+						'0_5' => __d('calendars', '第1週金曜日'),
+						'0_6' => __d('calendars', '第1週土曜日'),
+						'1_0' => __d('calendars', '第2週日曜日'),
+						'1_1' => __d('calendars', '第2週月曜日'),
+						'1_2' => __d('calendars', '第2週火曜日'),
+						'1_3' => __d('calendars', '第2週水曜日'),
+						'1_4' => __d('calendars', '第2週木曜日'),
+						'1_5' => __d('calendars', '第2週金曜日'),
+						'1_6' => __d('calendars', '第2週土曜日'),
+						'2_0' => __d('calendars', '第3週日曜日'),
+						'2_1' => __d('calendars', '第3週月曜日'),
+						'2_2' => __d('calendars', '第3週火曜日'),
+						'2_3' => __d('calendars', '第3週水曜日'),
+						'2_4' => __d('calendars', '第3週木曜日'),
+						'2_5' => __d('calendars', '第3週金曜日'),
+						'2_6' => __d('calendars', '第3週土曜日'),
+						'3_0' => __d('calendars', '第4週日曜日'),
+						'3_1' => __d('calendars', '第4週月曜日'),
+						'3_2' => __d('calendars', '第4週火曜日'),
+						'3_3' => __d('calendars', '第4週水曜日'),
+						'3_4' => __d('calendars', '第4週木曜日'),
+						'3_5' => __d('calendars', '第4週金曜日'),
+						'3_6' => __d('calendars', '第4週土曜日'),
+						'4_0' => __d('calendars', '最終週日曜日'),
+						'4_1' => __d('calendars', '最終週月曜日'),
+						'4_2' => __d('calendars', '最終週火曜日'),
+						'4_3' => __d('calendars', '最終週水曜日'),
+						'4_4' => __d('calendars', '最終週木曜日'),
+						'4_5' => __d('calendars', '最終週金曜日'),
+						'4_6' => __d('calendars', '最終週土曜日'),
+					);
+/* aaaaaa
+					echo $this->NetCommonsForm->select('CalendarCompRrule.dayofweek', $options, array(
 						//'' => __d('calendars', '-曜日指定-'),
 						'class' => 'form-control',
 						'empty' => false,
 						//'required' => true,
 						'div' => false,
-						'label' => false,		//FIXME: label falseがいるかどうかは、要確認。
 						'ng-model' => 'monthlyDayOfTheWeek[' . $frameId . ']',
-						'ng-change' => 'changeMonthlyDayOfTheWeek(' . $frameId . ')',
+						'ng-change' => 'changeMonthyDayOfTheWeek(' . $frameId . ')',
 					));
+*/
 ?>
+
 
 				</div><!--col-sm-5おわり-->
 
@@ -524,14 +579,42 @@
 				<div class="col-xs-8 col-sm-5">
 
 <?php
-					$options = array();
-					$options[''] = __d('calendars', '-日付指定-');
-					for ($num = 1; $num <= 31; ++$num) {
-						$options[$num] = sprintf(__d('calendars', '%d日'), $num);
-					}
-
-					echo $this->NetCommonsForm->select(
-						'CalendarActionPlan.rrule_bymonthday.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY, $options, array(
+					$options = array(
+						'' => __d('calendars', '-日付指定-'),
+						'1' => __d('calendars', '1日'),
+						'2' => __d('calendars', '2日'),
+						'3' => __d('calendars', '3日'),
+						'4' => __d('calendars', '4日'),
+						'5' => __d('calendars', '5日'),
+						'6' => __d('calendars', '6日'),
+						'7' => __d('calendars', '7日'),
+						'8' => __d('calendars', '8日'),
+						'9' => __d('calendars', '9日'),
+						'10' => __d('calendars', '10日'),
+						'11' => __d('calendars', '11日'),
+						'12' => __d('calendars', '12日'),
+						'13' => __d('calendars', '13日'),
+						'14' => __d('calendars', '14日'),
+						'15' => __d('calendars', '15日'),
+						'16' => __d('calendars', '16日'),
+						'17' => __d('calendars', '17日'),
+						'18' => __d('calendars', '18日'),
+						'19' => __d('calendars', '19日'),
+						'20' => __d('calendars', '20日'),
+						'21' => __d('calendars', '21日'),
+						'22' => __d('calendars', '22日'),
+						'23' => __d('calendars', '23日'),
+						'24' => __d('calendars', '24日'),
+						'25' => __d('calendars', '25日'),
+						'26' => __d('calendars', '26日'),
+						'27' => __d('calendars', '27日'),
+						'28' => __d('calendars', '28日'),
+						'29' => __d('calendars', '29日'),
+						'30' => __d('calendars', '30日'),
+						'31' => __d('calendars', '31日'),
+					);
+/* aaaaa
+					echo $this->NetCommonsForm->select('CalendarCompRrule.date', $options, array(
 						//'' => __d('calendars', '-日付指定-'),
 						'class' => 'form-control',
 						'empty' => false,
@@ -541,6 +624,7 @@
 						'ng-model' => 'monthlyDate[' . $frameId . ']',
 						'ng-change' => 'changeMonthlyDate(' . $frameId . ')',
 					));
+*/
 ?>
 
 				</div><!--col-sm-5おわり-->
@@ -550,18 +634,29 @@
 ?>
 				<div class="col-xs-8 col-sm-5">
 <?php
-					$options = array();
-					foreach (range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_YEARLY_MIN, CalendarsComponent::CALENDAR_RRULE_INTERVAL_YEARLY_MAX) as $num) {
-						$options[$num] = sprintf(__d('calendars', '%d年'), $num);
-					}
-					echo $this->NetCommonsForm->select(
-						'CalendarActionPlan.rrule_interval.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY, $options, array(
-						'value' => sprintf(__d('calendars', '%d年'), 1),		//valueは初期値
+					$options = array(
+						'1' => __d('calendars', '1年'),
+						'2' => __d('calendars', '2年'),
+						'3' => __d('calendars', '3年'),
+						'4' => __d('calendars', '4年'),
+						'5' => __d('calendars', '5年'),
+						'6' => __d('calendars', '6年'),
+						'7' => __d('calendars', '7年'),
+						'8' => __d('calendars', '8年'),
+						'9' => __d('calendars', '9年'),
+						'10' => __d('calendars', '10年'),
+						'11' => __d('calendars', '11年'),
+						'12' => __d('calendars', '12年'),
+					);
+/* aaaaaa
+					echo $this->NetCommonsForm->select('CalendarCompRrule.yearly', $options, array(
+						'value' => __d('calendars', '1年'),		//valueは初期値
 						'class' => 'form-control',
 						'empty' => false,
 						'required' => true,
 						'div' => false,
 					));
+*/
 ?>
 				</div><!-- col-sm-8おわり -->
 				<div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div>
@@ -570,43 +665,23 @@
 				<div class="col-xs-12 col-sm-12">
 
 <?php
-					$options = array();
-					foreach (range(1, 12) as $num) {
-						$options[$num] = sprintf(__d('calendars', '%d月'), $num);
-					}
-					echo $this->NetCommonsForm->input(
-						'CalendarActionPlan.rrule_bymonth.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY, array(
-						'label' => false,
-						'div' => false,
-						'multiple' => 'checkbox',
-						'options' => $options,
-						'class' => 'text-left calendar-choice-month_' . $frameId,
-					));
+	//第一引数(フィールド名)の最後に、.(ドット)をつけると、複数同じフィールド名のチェックボックスがあると、
+	//cakePHP側では配列でデータを受けるようになる、とのこと。。要確認
+	//
+/* aaaaa
+	echo $this->NetCommonsForm->input('month.', array(
+		//'type' => 'checkbox',
+		//'checked' => false,
+		'label' => false,
+		'div' => false,
+		'multiple' => 'checkbox',
+		'options' => array('1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'),
+		'class' => 'text-left calendar-choice-month_' . $frameId,
+	));
+*/
 ?>
 
 				</div><!--col-sm-12おわり-->
-
-				<div class="clearfix"></div>
-
-				<div class="col-xs-8 col-sm-5">
-<?php
-					$options = $this->CalendarPlan->makeOptionsOfWdayInNthWeek('', __d('calendars', '開始日と同日'));
-
-					echo $this->NetCommonsForm->select(
-						'CalendarActionPlan.rrule_byday.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY, $options, array(
-						//'' => __d('calendars', '開始日と同日'),
-						'class' => 'form-control',
-						'empty' => false,
-						//'required' => true,
-						'div' => false,
-						'label' => false,		//FIXME: label falseがいるかどうかは、要確認。
-
-						'ng-model' => 'yearlyDayOfTheWeek[' . $frameId . ']',
-						'ng-change' => 'changeYearlyDayOfTheWeek(' . $frameId . ')',
-
-					));
-?>
-				</div><!--col-sm-5おわり-->
 				</div><!-- row form-group終わり-->
 
 
@@ -616,17 +691,19 @@
 				<div class="clearfix"></div>
 
 
+
 				<div class="col-xs-12 col-sm-12">
 
 					<ul class="list-inline">
 <?php
-					$repeatEndTypeIndex = CalendarsComponent::CALENDAR_RRULE_TERM_COUNT;	//input radio をon状態にする index文字列 (COUNT=回数指定,UNTIL=終了日指定)
+					$repeatEndTypeIndex = 0;	//input radio をon状態にする index番号 (0=回数指定,1=終了日指定)
+												//備忘: ここの即値をあとでdefineかconstにすること。
 					$countDisplayClass = $endDateDisplayClass = 'hidden';
 					switch ($repeatEndTypeIndex) {
-					case CalendarsComponent::CALENDAR_RRULE_TERM_COUNT:
+					case 0:
 						$countDisplayClass = 'show';
 						break;
-					case CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL:
+					case 1:
 						$endDataDisplayClass = 'show';
 						break;
 					}
@@ -635,8 +712,8 @@
 								'legend' => false,
 								'type' => 'radio',
 								'options' => array(
-									CalendarsComponent::CALENDAR_RRULE_TERM_COUNT => __d('calendars', '繰返し回数を指定する'),
-									CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL => __d('calendars', '繰返しの終了日を指定する'),
+									__d('calendars', '繰返し回数を指定する'),
+									__d('calendars', '繰返しの終了日を指定する'),
 								),
 								'before' => "<li>",
 								'after' => '</li>',
@@ -645,7 +722,7 @@
 								'label' => false,
 								'class' => '',
 								'ng-model' => 'selectRepeatEndType[' . $frameId . ']',
-								'ng-init' => 'setInitRepeatEndType(' . $frameId . ',"' . $repeatEndTypeIndex . '")',
+								'ng-init' => 'setInitRepeatEndType(' . $frameId . ',' . $repeatEndTypeIndex . ')',
 								'ng-change' => 'changeRepeatEndType(' . $frameId . ')',
 					));
 
@@ -661,6 +738,7 @@
 						<div class="col-xs-4 col-sm-4">
 <?php
 						$initValue = '3';		//初期値
+
 						echo $this->NetCommonsForm->input('CalendarActionPlan.rrule_count', array(
 							'type' => 'text',
 							'label' => false,
@@ -673,7 +751,6 @@
 							//'ng-change' => "changeRepeatCount(".$frameId.")",
 							//'style' => 'float: left',
 						));
-
 ?>
 						</div><!--col-sm-4おわり-->
 						<div class="col-sm-1 calendar-detailedit-addchar">
@@ -706,7 +783,6 @@
 										//'ng-model' => 'endDate['.$frameId.']',
 										//'ng-change' => 'changeEndDate('.$frameId.')',
 									));
-
 ?>
 							<div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
 							</div><!--input-groupおわり-->
@@ -742,7 +818,7 @@
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
 
 
-<?php echo $this->NetCommonsForm->input('CalendarActionPlan.enable_mail', array(
+<?php echo $this->NetCommonsForm->input('enablemail', array(
 		'type' => 'checkbox',
 		'checked' => false,
 		'label' => false,
@@ -783,9 +859,9 @@
 			'9999' => __d('calendars', '今すぐ'),
 		);
 
-		echo $this->NetCommonsForm->label('CalendarActionPlan.email_send_timing', __d('calendars', 'メール通知タイミング'));
+		echo $this->NetCommonsForm->label('CalendarCompDtstartend' . Inflector::camelize('room_id'), __d('calendars', 'メール通知タイミング'));
 
-		echo $this->NetCommonsForm->select('CalendarActionPlan.email_send_timing', $options, array(
+		echo $this->NetCommonsForm->select('CalendarCompDtstartend.room_id', $options, array(
 			'value' => __d('calendars', '0分前'),		//valueは初期値
 			'class' => 'form-control',
 			'empty' => false,

@@ -328,7 +328,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 						substr($planParams['dtstart'], 6, 2),
 						substr($planParams['dtstart'], 0, 4));
 			$rruleArr['UNTIL'] = date('Ymd', $timestamp) . 'T' . substr($planParams['dtstart'], 8);	//UNTILを自分の直前までにする。
-			$rruleBeforeStr = $this->concatRRule($rruleArr);
+			$rruleBeforeStr = $this->concatRRule($model, $rruleArr);
 
 			//今のrruleDataデータのrrule文字列を書き換える。
 			$rruleDataBefore = $rruleData;

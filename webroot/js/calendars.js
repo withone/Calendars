@@ -3,11 +3,25 @@
  * @author info@allcreator.net (Allcreator Co.)
  */
 
+/**
+ * angularJS, NonANgularJS共通で使う、プラグイン名前空間
+ */
+var CalendarJS = {};  //専用空間
+
+CalendarJS = {};  //専用空間
+CalendarJS.variables = {
+  REPEAT_FREQ_DAILY: 'DAILY',
+  REPEAT_FREQ_WEEKLY: 'WEEKLY',
+  REPEAT_FREQ_MONTHLY: 'MONTHLY',
+  REPEAT_FREQ_YEARLY: 'YEARLY',
+
+  RRULE_TERM_COUNT: 'COUNT',
+  RRULE_TERM_UNTIL: 'UNTIL'
+};
 
 /**
  * angularJSをつかったJavaScriptプログラム(後半に、"NonAngularJS"コードあり)
  */
-
 
 /**
  * YYYY-MM形式の年月を、言語別のフォーマットに変形するフィルター
@@ -308,6 +322,7 @@ NetCommonsApp.controller('CalendarsDetailEdit',
       $scope.useTime = [];
       $scope.monthlyDayOfTheWeek = [];
       $scope.monthlyDate = [];
+      $scope.yearlyDayOfTheWeek = [];
       $scope.selectRepeatEndType = [];
       $scope.useNoticeMail = [];
 
@@ -398,38 +413,42 @@ NetCommonsApp.controller('CalendarsDetailEdit',
 
       $scope.setInitRepeatPeriod = function(frameId, idx) {
         //これで、画面をリフレッシュ
+		console.log(frameId + '/' + idx);
         $scope.selectRepeatPeriodArray[frameId] = idx;
       };
 
       $scope.changePeriodType = function(frameId) {
+		//console.log('DBG: changePeriodType() called.  frameId[' + frameId + ']');
+        //console.log('DBG: selectRepeatPeriodArray[' + frameId + '] = [' + $scope.selectRepeatPeriodArray[frameId] + ']');
+
         var elmDaily = $('.calendar-daily-info_' + frameId);
         var elmWeekly = $('.calendar-weekly-info_' + frameId);
         var elmMonthly = $('.calendar-monthly-info_' + frameId);
         var elmYearly = $('.calendar-yearly-info_' + frameId);
 
         switch ($scope.selectRepeatPeriodArray[frameId]) {
-          case '0':
+          case CalendarJS.variables.REPEAT_FREQ_DAILY:
             console.log('日単位');
             elmDaily.removeClass('hidden').addClass('show');
             elmWeekly.removeClass('show').addClass('hidden');
             elmMonthly.removeClass('show').addClass('hidden');
             elmYearly.removeClass('show').addClass('hidden');
             break;
-          case '1':
+          case CalendarJS.variables.REPEAT_FREQ_WEEKLY:
             console.log('週単位');
             elmDaily.removeClass('show').addClass('hidden');
             elmWeekly.removeClass('hidden').addClass('show');
             elmMonthly.removeClass('show').addClass('hidden');
             elmYearly.removeClass('show').addClass('hidden');
             break;
-          case '2':
+          case CalendarJS.variables.REPEAT_FREQ_MONTHLY:
             console.log('月単位');
             elmDaily.removeClass('show').addClass('hidden');
             elmWeekly.removeClass('show').addClass('hidden');
             elmMonthly.removeClass('hidden').addClass('show');
             elmYearly.removeClass('show').addClass('hidden');
             break;
-          case '3':
+          case CalendarJS.variables.REPEAT_FREQ_YEARLY:
             console.log('年単位');
             elmDaily.removeClass('show').addClass('hidden');
             elmWeekly.removeClass('show').addClass('hidden');
@@ -443,7 +462,7 @@ NetCommonsApp.controller('CalendarsDetailEdit',
         console.log('useTime[' + $scope.useTime + ']');
       };
 
-      $scope.changeMonthyDayOfTheWeek = function(frameId) {
+      $scope.changeMonthlyDayOfTheWeek = function(frameId) {
         if ($scope.monthlyDayOfTheWeek[frameId] !== '') {
           $scope.monthlyDate[frameId] = '';
         }
@@ -455,6 +474,10 @@ NetCommonsApp.controller('CalendarsDetailEdit',
         }
       };
 
+      $scope.changeYearlyDayOfTheWeek = function(frameId) {
+        //yearlyの方は、monthlyと違いDateの方がない.つまり DayOfTheWeekとDateをトグルする必要がないので、なにもしない。
+      };
+
       $scope.setInitRepeatEndType = function(frameId, idx) {
         $scope.selectRepeatEndType[frameId] = idx;  //画面をリフレッシュ
       };
@@ -464,12 +487,12 @@ NetCommonsApp.controller('CalendarsDetailEdit',
         var elmEndDate = $('.calendar-repeat-end-enddate-info_' + frameId);
 
         switch ($scope.selectRepeatEndType[frameId]) {
-          case '0':
+          case CalendarJS.variables.RRULE_TERM_COUNT:
             console.log('回数指定');
             elmCount.removeClass('hidden').addClass('show');
             elmEndDate.removeClass('show').addClass('hidden');
             break;
-          case '1':
+          case CalendarJS.variables.RRULE_TERM_UNTIL:
             console.log('終了日指定');
             elmCount.removeClass('show').addClass('hidden');
             elmEndDate.removeClass('hidden').addClass('show');
@@ -617,7 +640,7 @@ NetCommonsApp.controller('CalendarFrameSettings', [
 /**
  * angularJSに依存しないJavaScriptプログラム(NonAngularJS)
  */
-var CalendarJS = {};  //専用空間
+//var CalendarJS = {};  //専用空間
 
 $(function() {
   var expr = '.calendar-col-week, .calendar-easy-edit,';

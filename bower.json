@@ -9,8 +9,4 @@
     "NetCommons Community"
   ],
   "license": "NetCommons License",
-  "dependencies": {
-    "visualcaptcha.jquery": "~0.0.5",
-    "angular-nvd3":"~0.1.1"
-  }
 }

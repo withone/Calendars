@@ -11,6 +11,7 @@
 
 App::uses('ModelBehavior', 'Model');
 App::uses('CalendarCompRrule', 'Calendars.Model');
+App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');
 
 /**
  * CalendarRruleHandleBehavior
@@ -18,7 +19,7 @@ App::uses('CalendarCompRrule', 'Calendars.Model');
  * @author Allcreator <info@allcreator.net>
  * @package NetCommons\Calendars\Model\Behavior
  */
-class CalendarRruleHandleBehavior extends ModelBehavior {
+class CalendarRruleHandleBehavior extends CalendarAppBehavior {
 
 /**
  * Default settings
@@ -35,10 +36,11 @@ class CalendarRruleHandleBehavior extends ModelBehavior {
 /**
  * Rruleパース
  *
+ * @param Model &$model モデル
  * @param string $rruleStr rrule文字列
  * @return $resultArray rrule配列
  */
-	public function &parseRrule($rruleStr = '') {
+	public function &parseRrule(&$model, $rruleStr = '') {
 		$resultArray = array();
 		if ($rruleStr === '') {
 			$rruleStr = 'FREQ=NONE';
@@ -50,7 +52,7 @@ class CalendarRruleHandleBehavior extends ModelBehavior {
 		foreach ($array as $rrule) {
 			list($key, $val) = explode('=', $rrule);
 			if ($key === 'FREQ' || $key === 'COUNT' || $key === 'UNTIL') {
-				parseRruleFreqCountUntil($key, $val, $resultArray);
+				$this->parseRruleFreqCountUntil($key, $val, $resultArray);
 				continue;
 			}
 			if ($key === 'INTERVAL') {
@@ -70,7 +72,7 @@ class CalendarRruleHandleBehavior extends ModelBehavior {
  * @param string &$resultArray resultArray
  * @return void
  */
-	public function parseRruleUntil($key, $val, &$resultArray) {
+	public function parseRruleFreqCountUntil($key, $val, &$resultArray) {
 		$resultArray[$key] = $val;
 		if ($key === 'UNTIL') {
 			if (preg_match('/^([0-9]{8})[^0-9]*([0-9]{6})/i', $val, $matches)) {
@@ -105,10 +107,11 @@ class CalendarRruleHandleBehavior extends ModelBehavior {
 /**
  * Rrule文字列化処理
  *
+ * @param Model &$model モデル
  * @param array $rrule rrule配列
  * @return $result 成功時rrule文字列. 失敗時false
  */
-	public function concatRRule($rrule) {
+	public function concatRRule(&$model, $rrule) {
 		if (empty($rrule)) {
 			return '';
 		}
@@ -118,10 +121,10 @@ class CalendarRruleHandleBehavior extends ModelBehavior {
 				$result = array();
 				break;
 			case 'YEARLY':
-				$this->concatRRuleYearly($rrule);
+				$result = $this->concatRRuleYearly($rrule);
 				break;
 			case 'MONTHLY':
-				$this->concatRRuleMonthly($rrule);
+				$result = $this->concatRRuleMonthly($rrule);
 				break;
 			case 'WEEKLY':
 				$result = array('FREQ=WEEKLY');

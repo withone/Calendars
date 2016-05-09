@@ -63,10 +63,11 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		//
 		//eventDataの開始・終了の日付と時刻を更新するしてから、insertYearly()を再帰callする。
 		//
-		$eventData['CalendarEvent']['start_date'] = CalendarTime::timezoneDate($startDateTime, 1, 'Ymd');
-		$eventData['CalendarEvent']['start_time'] = CalendarTime::timezoneDate($startDateTime, 1, 'His');
-		$eventData['CalendarEvent']['end_date'] = CalendarTime::timezoneDate($endDateTime, 1, 'Ymd');
-		$eventData['CalendarEvent']['end_time'] = CalendarTime::timezoneDate($endDateTime, 1, 'His');
+		//NC3では内部はサーバ系日付時刻なので、timezoneDateはつかわず、YmdHisを単純にYmdとHisに分割する。
+		$eventData['CalendarEvent']['start_date'] = substr($startDateTime, 0, 8);
+		$eventData['CalendarEvent']['start_time'] = substr($startDateTime, 8);
+		$eventData['CalendarEvent']['end_date'] = substr($endDateTime, 0, 8);
+		$eventData['CalendarEvent']['end_time'] = substr($endDateTime, 8);
 		if (!empty($model->rrule['BYDAY']) && count($model->rrule['BYDAY']) > 0) {
 			return $this->insertYearly($model, $planParams, $rruleData, $eventData);	//insertYearly()の再帰call ケース1
 		} else {
@@ -83,9 +84,10 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * @return array array($startDate, $startTime, $endDate, $endTime, $diffNum)を返す
  */
 	public function setStartEndDateAndTime(Model &$model, $eventData, $first) {
-		//サーバー系からユーザ系時刻のYmdHisに直す。
-		$sTime = CalendarTime::timezoneDate($eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'], 0, 'YmdHis');
-		$eTime = CalendarTime::timezoneDate($eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'], 0, 'YmdHis');
+		//NC2ではtimezoneDateをつかいサーバー系からユーザ系時刻のYmdHisに直していたが、
+		//NC3では内部はサーバー系時刻になっているのでtimezoneDateはつかわない。
+		$sTime = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time']; //catしてYmdHisにする
+		$eTime = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time']; //catしてYmdHisにする
 
 		//開始日付(00:00:00)と終了日付(00:00:00)の累積秒および、その「差分日数」を計算する。
 		$startTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), substr($sTime, 6, 2), substr($sTime, 0, 4));	//FIXME:
@@ -286,8 +288,11 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		$eTime = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'];
 
 		$timestamp = mktime(0, 0, 0, substr($sTime, 4, 2), 1, substr($sTime, 0, 4));	//開始日の同年同月1日のtimestamp //FIXME:
+		//getByday()の中でユーザタイムゾーンを使うので、取得しておく。
+		$nctm = new NetCommonsTime();
+		$userTz = $nctm->getUserTimezone(); //NetCommonsTimeよりユーザタイムゾーン("Asia/Tokyo"等）を取得
 
-		$byday = CalendarSupport::getByday($timestamp, $week, $wdayNum);
+		$byday = CalendarSupport::getByday($timestamp, $week, $wdayNum, $userTz);
 
 		//call復帰条件のチェック
 		if ($first && $sTime >= $byday) {
@@ -297,7 +302,7 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		}
 
 		$startDate = $startTime = $endDate = $endTime = '';
-		$this->setStartDateTiemAndEndDateTime($sTime, $eTime, $startDate, $startTime, $endDate, $endTime);
+		$this->setStartDateTiemAndEndDateTime($sTime, $eTime, $byday, $startDate, $startTime, $endDate, $endTime);
 
 		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $eventData['CalendarEvent']['timezone_offset'])) {
 			//繰返しがとまったので、復帰する。

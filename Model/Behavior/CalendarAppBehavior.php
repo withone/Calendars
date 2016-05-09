@@ -76,9 +76,9 @@ class CalendarAppBehavior extends ModelBehavior {
 	public function insert(Model &$model, $planParams, $rruleData, $eventData, $startTime, $endTime) {
 		$this->loadEventAndRruleModels($model);
 		$params = array(
-			'conditions' => array('CalendarsRrule.id' => $eventData['CalendarEvent']['calendar_rrule_id']),
+			'conditions' => array('CalendarRrule.id' => $eventData['CalendarEvent']['calendar_rrule_id']),
 			'recursive' => (-1),
-			'fields' => array('CalendarsRrule.*'),
+			'fields' => array('CalendarRrule.*'),
 			'callbacks' => false
 		);
 		if (empty($this->rruleData)) {
@@ -92,8 +92,11 @@ class CalendarAppBehavior extends ModelBehavior {
 			$this->rruleData = $rruleData;	//CalendarRruleのデータを記録し、２度目以降に備える。
 		}
 
-		$insertStartTime = CalendarTime::timezoneDate($startTime, 1, 'YmdHis');
-		$insertEndTime = CalendarTime::timezoneDate($endTime, 1, 'YmdHis');
+		//NC3では内部はサーバー系日付時刻になっているのでtimezoneDateはつかわない.
+		//また、引数$starTime, $endTimeはすでに、YmdHis形式で渡されることになっているので、
+		//$insertStartTime, $insertEndTimeにそのまま代入する。
+		$insertStartTime = $startTime;
+		$insertEndTime = $endTime;
 
 		$rEventData = $this->setReventData($eventData, $insertStartTime, $insertEndTime); //eventDataをもとにrEventDataをつくり、モデルにセット
 
@@ -111,7 +114,7 @@ class CalendarAppBehavior extends ModelBehavior {
 
 		$rEventData['CalendarEvent']['id'] = $model->CalendarEvent->id; //採番されたidをeventDataにセ>
 
-		if ($rEventData['CalendarEventContent']['linked_model'] !== '') { //関連コンテンツの登録
+		if (isset($rEventData['CalendarEventContent']) && $rEventData['CalendarEventContent']['linked_model'] !== '') { //関連コンテンツの登録
 			if (!(isset($this->CalendarEventContent))) {
 				$model->loadModels(['CalendarEventContent' => 'Calendar.CalendarEventContent']);
 			}
@@ -165,13 +168,14 @@ class CalendarAppBehavior extends ModelBehavior {
  *
  * @param string $sTime sTime文字列(年月日時分秒）
  * @param string $eTime eTime文字列(年月日時分秒）
+ * @param string $byday byday
  * @param string &$startDate 生成したstartDate文字列
  * @param string &$startTime 生成したstartTime文字列
  * @param string &$endDate 生成したendDate伯父列
  * @param string &$endTime 生成したendTime文字列
  * @return void
  */
-	public function setStartDateTiemAndEndDateTime($sTime, $eTime, &$startDate, &$startTime, &$endDate, &$endTime) {
+	public function setStartDateTiemAndEndDateTime($sTime, $eTime, $byday, &$startDate, &$startTime, &$endDate, &$endTime) {
 		$startTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), substr($sTime, 6, 2), substr($sTime, 0, 4));
 		$endTimestamp = mktime(0, 0, 0, substr($eTime, 4, 2), substr($eTime, 6, 2), substr($eTime, 0, 4));
 

@@ -48,13 +48,21 @@ class CalendarSupport {
  */
 	public static function isRepeatable($rrule, $startDateTime, $timezoneOffset, $calendarWeek = '') {
 		if (isset($rrule['UNTIL'])) {
-			$until = self::calendarDateFormat((substr($rrule['UNTIL'], 0, 8) . substr($rrule['UNTIL'], -6)), $timezoneOffset, 0, $calendarWeek);
+			////$until = self::calendarDateFormat((substr($rrule['UNTIL'], 0, 8) . substr($rrule['UNTIL'], -6)), $timezoneOffset, 0, $calendarWeek);
+			//NC3では、rrule['UNTIL']はサーバ系(UTC)になっている。また、$startDateTimeもサーバ系(UTC)になっている。
+			//なので、calendarDateFormatをつかってTZ考慮したcalendarDateFormatはつかわなくてＯＫ。
+			$until = substr($rrule['UNTIL'], 0, 8) . substr($rrule['UNTIL'], -6);
+
+			CakeLog::debug("DBG: In isRepeatable(). startDateTime[" . $startDateTime . "] until[" . $until . "]");
 			if ($startDateTime >= $until) {
+				CakeLog::debug("DBG: isRepeatable() return FALSE! startDateTime[" . $startDateTime . "] >= until[" . $until . "]");
 				return false;
 			}
 		} else {
 			$count = isset($rrule['COUNT']) ? intval($rrule['COUNT']) : 3;	//初期値は３回繰り返す
+			CakeLog::debug("DBG: In isRepeatable(COUNT case). rrule[INDEX][" . $rrule['INDEX'] . "] count[" . $count . "]");
 			if ($rrule['INDEX'] > $count) {
+				CakeLog::debug("DBG: isRepeatable(COUNT case) return FALSE! rrule[INDEX][" . $rrule['INDEX'] . "] > count[" . $count . "]");
 				return false;
 			}
 		}
@@ -72,7 +80,8 @@ class CalendarSupport {
  * @param int $toFlag 「まで」フラグ 1:「まで」有り 0:「まで」無し 初期値は0
  * @return string 書式化された日付時刻文字列
  */
-	public static function calendarDateFormat($time, $timezoneOffset = null, $insertFlag = 0, $calendarWeek = '', $timeFormat = 'YmdHis', $toFlag = 0) {
+	/*
+	//public static function calendarDateFormat($time, $timezoneOffset = null, $insertFlag = 0, $calendarWeek = '', $timeFormat = 'YmdHis', $toFlag = 0) {
 		if (isset($timezoneOffset)) {
 
 			//タイムゾーンを考慮した日付時刻文字列にする
@@ -100,6 +109,7 @@ class CalendarSupport {
 		$week = date('w', $timestamp);
 		return date(sprintf($timeFormat, $weekNameArray[$week]), $timestamp);
 	}
+	*/
 
 /**
  * タイムゾーンつきの日付をフォーマットする
@@ -128,21 +138,36 @@ class CalendarSupport {
  * @param int $timestamp timestamp
  * @param int $week week
  * @param int $wdayNum wdayNum
+ * @param string $userTz ユーザタイムゾーン(ex.Asia/Tokyo)
  * @return string $byday 生成されたbyday
  */
-	public static function getByday($timestamp, $week, $wdayNum) {
+	public static function getByday($timestamp, $week, $wdayNum, $userTz) {
 		$year = date('Y', $timestamp);
 		$month = date('m', $timestamp);
+		CakeLog::debug("DBG: In getByday(). year[" . $year . "] month[" . $month . "]");
 		if ($week === -1) {
-			//ここに飛び込むのは、BYDAYが'-1SA'といった値-1+曜日の書式のときのみ。
-			//過去にこういう-1をつけたデータがあり、互換性・移植のためのこしていると推測できる。
-			//
+			//ここに飛び込むのは、BYDAYが'-1SA'といった値-1+曜日の書式のとき
+
+			$lastDay = date("t", $timestamp);	//FIXME: defualtTZをユーザ系にしたdate()にすべきでは？
+
 			$timestamp = mktime(0, 0, 0, $month, $lastDay, $year);
-			$wLastDay = date('w', $timestamp);
+
+			//NC2のdate('w', $timestamp)はユーザTZを前提にしているので、date()を一時的に、UserTZ
+			////$wLastDay = date('w', $timestamp);
+			$wLastDay = CalendarTime::dateWdayIdxWithUserTz($timestamp, $userTz);
+
+			CakeLog::debug("DBG: getByday week=[-1] case. dateWdayIdxWithUserTz(" . $timestamp . "," . $userTz . ") returned wLastDay[" . $wLastDay . "]");
+
 			$wLastDay = ($wdayNum <= $wLastDay ? $wLastDay : 7 + $wLastDay);
 			$timestamp = mktime(0, 0, 0, $month, $lastDay - $wLastDay + $wdayNum, $year);
 		} else {
-			$w1Day = date('w', $timestamp);		//開始日の同年同月1日の曜日(0-6) a を取り出す。
+
+			//NC2のdate('w', $timestamp)はユーザTZを前提にしているので、date()ではなく,hdateWdayIdxWithUserTz()を使う.
+			////$w1Day = date('w', $timestamp);		//開始日の同年同月1日の曜日(0-6) a を取り出す。
+
+			$w1Day = CalendarTime::dateWdayIdxWithUserTz($timestamp, $userTz);
+			CakeLog::debug("DBG: getByday week=[" . $week . "] case. dateWdayIdxWithUserTz(" . $timestamp . "," . $userTz . ") returned w1Day[" . $w1Day . "]");
+
 			$w1Day = ($w1Day <= $wdayNum ? 7 + $w1Day : $w1Day);	// aが指定曜日以前ならaに1週加算。
 			$day = $week * 7 + $wdayNum + 1;	//1日が日曜日スタートとした場合の第x週第x日の「日」を計算
 			$timestamp = mktime(0, 0, 0, $month, $day - $w1Day, $year);	//$day-$w1Dayで実際の1日が実曜日スタートになるよう調整した日のタイムスタンプ b を計算。

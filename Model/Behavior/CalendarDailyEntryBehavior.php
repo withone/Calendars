@@ -43,30 +43,42 @@ class CalendarDailyEntryBehavior extends CalendarAppBehavior {
  * @return array $result 結果
  */
 	public function insertDaily(Model &$model, $planParams, $rruleData, $eventData) {
+		//CakeLog::debug("DBGX: insertDaily() start");
+
+		//CakeLog::debug("DBGDBG: model->rrule[INDEX] before INC value[" . $model->rrule['INDEX'] . "]");
 		$model->rrule['INDEX']++;
+		//CakeLog::debug("DBGDBG: model->rrule[INDEX] after INC value[" . $model->rrule['INDEX'] . "]");
 
 		//インターバル日数を加算した開始日の計算
-		$time = CalendarTime::timezoneDate(($eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time']), 0, 'YmdHis');
+		////NC3ではすでにサーバー系日付時刻になおっているから、timezoneDateは呼ばない.
+		$time = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time']; //catしてYmdHisにする
+
 		$timestamp = mktime(substr($time, 8, 2), substr($time, 10, 2), substr($time, 12, 2),
 							substr($time, 4, 2), substr($time, 6, 2) + $model->rrule['INTERVAL'], substr($time, 0, 4));
 		$startDate = date('Ymd', $timestamp);
 		$startTime = date('His', $timestamp);
 
+		//CakeLog::debug("DBGX: CalendarEvent[start_date]+[start_time][" . $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'] . "] >> time[" . $time . "] >> timestamp[" . $timestamp . "] startDate[" . $startDate . "] startTime[" . $startTime . "]");
+
 		//インターバル日数を加算した終了日の計算
-		$time = CalendarTime::timezoneDate(($eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time']), 0, 'YmdHis');
+		////NC3ではすでにサーバー系日付時刻になおっているから、timezoneDateは呼ばない.
+		$time = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time']; //catしてYmdHisにする
 		$timestamp = mktime(substr($time, 8, 2), substr($time, 10, 2), substr($time, 12, 2),
 							substr($time, 4, 2), substr($time, 6, 2) + $model->rrule['INTERVAL'], substr($time, 0, 4));
 		$endDate = date('Ymd', $timestamp);
 		$endTime = date('His', $timestamp);
 
-		if (!CalendarSupport::isRepeatable($model->rrule, ($eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time']), $eventData['CalendarEvent']['timezone_offset'])) {
+		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $eventData['CalendarEvent']['timezone_offset'])) {
 			return true;
 		}
 
+		//CakeLog::debug("DBGX: insert() startDateTime[" . $startDate . $startTime . "] endDateTime[" . $endDate . $endTime . "]");
 		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData, ($startDate . $startTime), ($endDate . $endTime));
 		if ($rEventData['CalendarEvent']['id'] === null) {
 			return false;
 		}
+
+		//CakeLog::debug("DBGDBG: insertDaily()を再帰CALLします。planParams[" . print_r($planParams, true) . "] rruleData[" . print_r($rruleData, true) . "] rEventData[" . print_r($rEventData, true) . "]");
 		return $this->insertDaily($model, $planParams, $rruleData, $rEventData);
 	}
 }

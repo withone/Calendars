@@ -48,7 +48,8 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 		$model->rrule['INDEX']++;
 
 		//開始日付時刻の処理
-		$sTime = CalendarTime::timezoneDate($eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'], 0, 'YmdHis');
+		//NC3は内部はサーバー系時刻なのでtimezoneDateはつかわない
+		$sTime = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time']; //catしてYmdHisにする
 		$startTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), substr($sTime, 6, 2), substr($sTime, 0, 4));	//FIXME: UTCなので00:00:00(0,0,0)でいいか要確認。
 
 		//インターバル月数の計算
@@ -71,7 +72,8 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 		}
 
 		//終了日付時刻の処理
-		$eTime = CalendarTime::timezoneDate($eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'], 0, 'YmdHis');
+		//NC3は内部はサーバー系時刻なのでtimezoneDateはつかわない
+		$eTime = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time']; //catしてYmdHisにする
 		$endTimestamp = mktime(0, 0, 0, substr($eTime, 4, 2), substr($eTime, 6, 2), substr($eTime, 0, 4));
 
 		//開始日と終了日の差分日数の計算
@@ -98,7 +100,7 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 			return false;
 		}
 
-		return $this->insertMonthlyByMonthday($model, $planParams, $rruleData, $rEventData, $bymonthday, $first);
+		return $this->insertMonthlyByMonthday($model, $planParams, $rruleData, $rEventData, $bymonthday);
 	}
 
 /**
@@ -112,19 +114,21 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
  * @return mixed boolean true:登録せず終了 false:失敗、array 登録成功: array(登録した開始年月日時分秒, 登録した終了年月日時分秒)
  */
 	public function insertMonthlyByDay(Model &$model, $planParams, $rruleData, $eventData, $first = 0) {
+		CakeLog::debug("DBG: insertMonthlyByDay() start.");
 		$model->rrule['INDEX']++;
 
 		$this->setStimeEtimeAndByday($model->rrule, $eventData, $first, $sTime, $eTime, $byday);
-
+		CakeLog::debug("DBG: setStimeEtimeAndByday(first[" . $first . "]) kekka. sTime[" . $sTime . "] eTime[" . $eTime . "] byday[" . $byday, "]");
 		//call復帰条件のチェック
 		if ($first && $sTime >= $byday) {
+			CakeLog::debug("DBG: first[" . $first . "] is TRUE and sTime[" . $sTime . "] >= byday[" . $byday, "]. i DEC and ReCall.");
 			//開始日(対象日？）が繰返しENDのb(第x週第y曜日の実日）を超したら、行き過ぎなので、INDEXをデクリメントして、自分を再帰callする。
 			$model->rrule['INDEX']--;
-			return $this->insertMonthlyByDay($model, $planParams, $rruleData, $eventData, $first);
+			return $this->insertMonthlyByDay($model, $planParams, $rruleData, $eventData);
 		}
 
 		$startDate = $startTime = $endDate = $endTime = '';
-		$this->setStartDateTiemAndEndDateTime($sTime, $eTime, $startDate, $startTime, $endDate, $endTime);
+		$this->setStartDateTiemAndEndDateTime($sTime, $eTime, $byday, $startDate, $startTime, $endDate, $endTime);
 
 		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $eventData['CalendarEvent']['timezone_offset'])) {
 			//繰り返しがとまったので、復帰いたします。
@@ -136,7 +140,7 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 			return false;
 		}
 
-		return $this->insertMonthlyByDay($model, $planParams, $rruleData, $rEventData, $first);
+		return $this->insertMonthlyByDay($model, $planParams, $rruleData, $rEventData);
 	}
 
 /**
@@ -157,12 +161,18 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 		//よって、weekには、、最後２文字を取り除いた、第x月曜、第y土曜のx、yが取り出せる。
 		$week = intval(substr($rrule['BYDAY'][0], 0, -2));
 
-		$sTime = CalendarTime::timezoneDate(($eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time']), 0, 'YmdHis');
-		$eTime = CalendarTime::timezoneDate(($eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time']), 0, 'YmdHis');
+		//NC3は内部はサーバー系時刻なのでtimezoneDateはつかわない
+		$sTime = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time']; //catしてYmdHisにする
+		$eTime = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time']; //catしてYmdHisにする
 
 		//開始日の同年インターバル月数考慮月1日のtimestamp
 		$timestamp = mktime(0, 0, 0, substr($sTime, 4, 2) + ($first ? 0 : $rrule['INTERVAL']), 1, substr($sTime, 0, 4));
+		CakeLog::debug("DBG: 開始日の同年インターバル月数考慮月1日のtimestamp取得. timestamp[" . $timestamp . "]");
 
-		$byday = CalendarSupport::getByday($timestamp, $week, $wdayNum);
+		//getByday()の中でユーザタイムゾーンを使うので、取得しておく。
+		$nctm = new NetCommonsTime();
+		$userTz = $nctm->getUserTimezone(); //NetCommonsTimeよりユーザタイムゾーン("Asia/Tokyo"等）を取得
+
+		$byday = CalendarSupport::getByday($timestamp, $week, $wdayNum, $userTz);
 	}
 }

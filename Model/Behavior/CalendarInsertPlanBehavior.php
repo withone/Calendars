@@ -66,8 +66,11 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 
 		$this->arrangeData($planParams);
 
+		//CakeLog::debug("DBG: before insertRruleData()");
 		$rruleData = $this->insertRruleData($model, $planParams); //rruleDataの１件登録
+		//CakeLog::debug("DBG: after insertRruleData()");
 
+		CakeLog::debug("DBG: insertEventData() startDateTime[" . $planParams['start_date'] . $planParams['start_time'] . "] endDateTime[" . $planParams['end_date'] . $planParams['end_time'] . "]");
 		$eventData = $this->insertEventData($model, $planParams, $rruleData);	//eventDataの１件登録
 		if (!isset($eventData['CalendarEvent']['id'])) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
@@ -93,7 +96,9 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 			if (!$model->Behaviors->hasMethod('insertRrule')) {
 				$model->Behaviors->load('Calendars.CalendarRruleEntry');
 			}
-			$model->insertRrule($model, $planParams, $rruleData, $eventData);	//FIXME: TZ関係の見直しを行うこと。
+			//CakeLog::debug("DBG: before insertRrule()");
+			$model->insertRrule($planParams, $rruleData, $eventData);
+			//CakeLog::debug("DBG: after insertRrule()");
 		}
 		return $eventId;
 	}
