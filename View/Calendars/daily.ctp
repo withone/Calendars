@@ -30,6 +30,13 @@
 		echo $this->element('Calendars.Calendars/daily_list', array('frameId' => $frameId, 'languageId' => $languageId, 'vars' => $vars));
 	}
 	echo $this->CalendarLegend->getCalendarLegend($vars);
+	
+	
 ?>
+<div class="row text-center calendar-backto-btn">
+	<?php
+		echo $this->BackTo->indexLinkButton(__d('calendars','最初の画面に戻る'));
+	?>
+</div>
 </form>
 </article>
