@@ -47,8 +47,8 @@
 	<div class="btn-group" role="group">
 <?php if ($active === 'list'): ?>
 	<a class="btn btn-default active" href='#' onclick='return false;'>
- <?php else: ?>
-	<a class='btn btn-default' href="<?php echo $dailyLink; ?>">
+<?php else: ?>
+  <a class='btn btn-default' href="<?php echo $dailyLink; ?>">
 <?php endif; ?>
 <?php echo __d('calendars', '予定一覧'); ?></a>
 	</a>
@@ -57,8 +57,8 @@
 
 <?php if ($active === 'timeline'): ?>
 	<a class="btn btn-default active" href='#' onclick='return false;'>
- <?php else: ?>
-	<a class="btn btn-default" href="<?php echo $timelineLink; ?>">
+<?php else: ?>
+  <a class="btn btn-default" href="<?php echo $timelineLink; ?>">
 <?php endif; ?>
 <?php echo __d('calendars', 'タイムライン'); ?></a>
 	</a>

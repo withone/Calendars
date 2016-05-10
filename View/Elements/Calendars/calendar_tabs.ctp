@@ -40,8 +40,8 @@
 <?php if ($active === 'lmonthly'): ?>
 	<li class='active'>
 		<a href='#' onclidk='return false;'>
-  <?php else: ?>
-	<li>
+<?php else: ?>
+  <li>
 		<a href="<?php echo $lmonthlyLink; ?>">
 <?php endif; ?>
 
@@ -51,8 +51,8 @@
 <?php if ($active === 'weekly'): ?>
 	<li class='active'>
 		<a href='#' onclidk='return false;'>
-  <?php else: ?>
-	<li>
+<?php else: ?>
+  <li>
 		<a href="<?php echo $weeklyLink; ?>">
 <?php endif; ?>
 
@@ -62,7 +62,7 @@
 <?php if ($active === 'daily'): ?> 
 	<li class='active'>
 	<a href='#' onclick='return false;'>
- <?php else: ?>
+<?php else: ?>
 		<li>
 		<a href="<?php echo $dailyLink; ?>">
 <?php endif; ?>

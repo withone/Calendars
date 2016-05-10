@@ -52,8 +52,8 @@
 <?php if ($currentSort === 'time'): ?>
 	<li class='active'>
 		<a href='#' onclidk='return false;'>
-  <?php else: ?>
-	<li>
+<?php else: ?>
+		<li>
 		<a href="<?php echo $timeLink; ?>">
 <?php endif; ?>
 
@@ -63,8 +63,8 @@
 <?php if ($currentSort === 'member'): ?>
 	<li class='active'>
 		<a href='#' onclidk='return false;'>
-  <?php else: ?>
-	<li>
+<?php else: ?>
+		<li>
 		<a href="<?php echo $memberLink; ?>">
 <?php endif; ?>
 
