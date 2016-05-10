@@ -3,12 +3,20 @@
  * @author info@allcreator.net (Allcreator Co.)
  */
 
+
 /**
  * angularJS, NonANgularJS共通で使う、プラグイン名前空間
  */
 var CalendarJS = {};  //専用空間
 
 CalendarJS = {};  //専用空間
+
+
+/**
+ * CalendarJS.variables
+ *
+ * @type {Object.<string>}
+ */
 CalendarJS.variables = {
   REPEAT_FREQ_DAILY: 'DAILY',
   REPEAT_FREQ_WEEKLY: 'WEEKLY',
@@ -22,6 +30,7 @@ CalendarJS.variables = {
 /**
  * angularJSをつかったJavaScriptプログラム(後半に、"NonAngularJS"コードあり)
  */
+
 
 /**
  * YYYY-MM形式の年月を、言語別のフォーマットに変形するフィルター
@@ -138,7 +147,7 @@ NetCommonsApp.factory('ConfirmRepeat', ['NetCommonsModal',
 ]);
 
 NetCommonsApp.controller('CalendarSchedule', function($scope) {
-  $scope.initialize = function (data) {
+  $scope.initialize = function(data) {
     $scope.isCollapsed = data.isCollapsed;
   };
 });
@@ -413,14 +422,11 @@ NetCommonsApp.controller('CalendarsDetailEdit',
 
       $scope.setInitRepeatPeriod = function(frameId, idx) {
         //これで、画面をリフレッシュ
-		console.log(frameId + '/' + idx);
+        console.log(frameId + '/' + idx);
         $scope.selectRepeatPeriodArray[frameId] = idx;
       };
 
       $scope.changePeriodType = function(frameId) {
-		//console.log('DBG: changePeriodType() called.  frameId[' + frameId + ']');
-        //console.log('DBG: selectRepeatPeriodArray[' + frameId + '] = [' + $scope.selectRepeatPeriodArray[frameId] + ']');
-
         var elmDaily = $('.calendar-daily-info_' + frameId);
         var elmWeekly = $('.calendar-weekly-info_' + frameId);
         var elmMonthly = $('.calendar-monthly-info_' + frameId);
@@ -475,7 +481,8 @@ NetCommonsApp.controller('CalendarsDetailEdit',
       };
 
       $scope.changeYearlyDayOfTheWeek = function(frameId) {
-        //yearlyの方は、monthlyと違いDateの方がない.つまり DayOfTheWeekとDateをトグルする必要がないので、なにもしない。
+        //yearlyの方は、monthlyと違いDateの方がない.つまり
+        //DayOfTheWeekとDateをトグルする必要がないので、なにもしない。
       };
 
       $scope.setInitRepeatEndType = function(frameId, idx) {
