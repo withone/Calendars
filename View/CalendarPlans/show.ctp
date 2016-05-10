@@ -1,3 +1,5 @@
+<?php
+?>
 <?php echo $this->element('Calendars.scripts'); ?>
 
 <article ng-controller="CalendarsDetailEdit" class="block-setting-body">
@@ -16,40 +18,58 @@
 <?php /* CakeLog::debug("event[" . print_r($event, true) . "]"); */ ?>
 
 <div name="dispTitle">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
+<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box h3">
 
 	<!-- <label><?php echo __d('calendars', '件名'); ?></label> -->
 	<div class="clearfix"></div>
-<h3>
+
 	<?php echo $this->TitleIcon->titleIcon($event['CalendarEvent']['title_icon']); ?>
 	<span><?php echo h($event['CalendarEvent']['title']); ?></span>
-</h3>
-	<div class="clearfix"></div>
+	<!-- <div class="clearfix"></div> -->
 </div><!-- col-sm-10おわり -->
 </div><!-- おわり-->
-
-
-<!-- <div name="showStartDatetime"> -->
-<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
+<div class="col-xs-12 col-sm-10 col-sm-offset-1">
 	<label><?php echo __d('calendars', '日時'); ?></label>
-	<div class="clearfix"></div>
-	<span>
+</div>
+
+<div name="showStartDatetime">
+<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+	<!-- <label><?php echo __d('calendars', '日時'); ?></label> -->
+	<!-- <div class="clearfix"></div> -->
+	<!-- <span> -->
 	<?php
 		$startUserDateWdayTime = $this->CalendarPlan->makeDatetimeWithUserSiteTz($event['CalendarEvent']['dtstart'], $event['CalendarEvent']['is_allday']);
 		echo h($startUserDateWdayTime);
+	?>
+	<!-- </span>-->
+</div><!-- col-sm-10おわり -->
+</div><!-- おわり-->
+
+<div name="showEndDatetime">
+<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+	<!-- <label><?php echo __d('calendars', '終了日時'); ?></label> -->
+	<!-- <div class="clearfix"></div>-->
+	<!-- <span> -->
+	<?php
 		if ($event['CalendarEvent']['is_allday']) {
-		//	echo h($startUserDateWdayTime);	//終日指定の時は、開始日時と同じものを表示する
+			//echo h($startUserDateWdayTime);	//終日指定の時は、開始日時と同じものを表示する
 		} else {
 			echo '&nbsp&nbsp';
 			echo __d('calendars', '－');
 			echo '&nbsp&nbsp';
+
 			$endUserDateWdayTime = $this->CalendarPlan->makeDatetimeWithUserSiteTz($event['CalendarEvent']['dtend'], $event['CalendarEvent']['is_allday']);
 			echo h($endUserDateWdayTime);
 		}
 	?>
-	</span>
-	<div class="clearfix"></div>
-	<?php echo __d('calendars', '※繰返し予定:'); ?>
+	<!--</span> -->
+</div><!-- col-sm-10おわり -->
+</div><!-- おわり-->
+
+<div name="repeat">
+<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+	<label style="font-weight:normal;"><?php echo __d('calendars', '※繰返し予定：'); ?></label>
+	<!-- <div class="clearfix"></div> -->
 
 	<span><?php echo h($event['CalendarRrule']['rrule']); ?></span><!-- FIXME: -->
 <!--
@@ -57,8 +77,10 @@
 	<div>2016年2月29日まで</div>
 -->
 </div><!-- col-sm-10おわり -->
-<!-- </div> --><!-- おわり-->
-<!-- <div name="dispRoomForOpen"> -->
+</div><!-- おわり-->
+
+
+<div name="dispRoomForOpen">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
 	<label><?php echo __d('calendars', '公開対象'); ?></label>
 	<div class="clearfix"></div>
@@ -67,7 +89,7 @@
 	?>
 <div class="clearfix"></div>
 </div><!-- col-sm-10おわり -->
-<!--</div>--<!-- おわり-->
+</div><!-- おわり-->
 
 <div name="sharePersons">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
@@ -152,7 +174,7 @@
 <!--
 <button name="cancel" onclick="location.href = '/faqs/faq_blocks/index/5?frame_id=11'" ng-click="sending=true" ng-disabled="sending" class="btn btn-default btn-workflow " type="button">
 	<span class="glyphicon glyphicon-remove"></span>
-	<?php echo __d('calendars', '戻る'); ?>
+	<?php echo __d('calendars', 'キャンセル'); ?>
 </button>
 <?php
 	echo "<button type='button' ng-click=\"showRepeatConfirm('" . $frameId . "','" . $isRepeat . "','edit')\" class='btn btn-primary btn-workflow' title='" . __d('calendars', '編集') . "'>";
@@ -161,10 +183,11 @@
 </button>
 -->
 
+<div class="row">
 <?php
 	echo $this->CalendarPlan->makeShowDetailEditBtnHtml($vars, $event['CalendarEvent']['id']);
 ?>
-
+</div>
 <!-- <hr style="margin-top:0.2em; margin-bottom:0.2em" /> -->
 <!-- 削除は、詳細登録へ移動
 <hr />
@@ -260,5 +283,8 @@ for(var i=0; i < mock.elms2.length; ++i) {
     mock.elms2[i].addEventListener('change', mock.fnc2 );
 }
 
-</script>
 
+
+
+
+</script>
