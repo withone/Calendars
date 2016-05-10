@@ -111,7 +111,7 @@
 <div class="col-xs-12 col-sm-5 col-sm-offset-1">
 
 <div ng-show="<?php echo '!' . $useTime; ?>" style="float:left"><!--表示条件１START-->
-<div class="input-group"><!-- 表示条件１のinput-group -->
+<!--<div class="input-group">--><!-- 表示条件１のinput-group -->
 
 <?php
 	echo $this->element('NetCommons.datetimepicker');	//これを頭にいれること！
@@ -141,13 +141,13 @@
 		//'ng-style' => "{float: 'left'}",
 	));
 ?>
-	<div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
+	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>-->
 
-</div><!-- 表示条件１のinput-groupおわり -->
+<!--</div>--><!-- 表示条件１のinput-groupおわり -->
 </div><!--ng-show 表示条件１END-->
 
 <div ng-show="<?php echo $useTime; ?>"><!--表示条件２START-->
-<div class="input-group"><!-- 表示条件２のinput-group -->
+<!-- <div class="input-group">--><!-- 表示条件２のinput-group -->
 
 <?php
 	$ngModel = 'startDatetime[' . $frameId . ']';
@@ -169,9 +169,9 @@
 		//'ng-show' => '!' . $useTime, //'!' . $useTime,	//表示条件を表示条件１の逆にする。
 	));
 ?>
-	<div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><i class="glyphicon glyphicon-time"></i></div>
+	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><i class="glyphicon glyphicon-time"></i></div> -->
 
-</div><!-- 表示条件２のinput-groupおわり -->
+<!-- </div>--><!-- 表示条件２のinput-groupおわり -->
 </div><!--ng-show 表示条件２END-->
 
 </div><!--class="col-sm-5"おわり-->
@@ -190,7 +190,7 @@
 <div class="col-xs-12 col-sm-5 col-sm-offset-1">
 
 <div ng-show="<?php echo '!' . $useTime; ?>" style="float:left"><!--表示条件１START-->
-<div class="input-group"><!-- 表示条件１のinput-group -->
+<!-- <div class="input-group">--><!-- 表示条件１のinput-group -->
 
 <?php
 	////echo $this->element('NetCommons.datetimepicker');	//すでに、From側で組み込み済なのでcommentout
@@ -219,13 +219,13 @@
 		//'ng-style' => "{float: 'left'}",
 	));
 ?>
-	<div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
+	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div> -->
 
-</div><!-- 表示条件１のinput-groupおわり -->
+<!--</div>--><!-- 表示条件１のinput-groupおわり -->
 </div><!-- ng-show 表示条件１END-->
 
 <div ng-show="<?php echo $useTime; ?>"><!--表示条件２START-->
-<div class="input-group"><!-- 表示条件２のinput-group -->
+<!--<div class="input-group">--><!-- 表示条件２のinput-group -->
 
 <?php
 	$ngModel = 'endDatetime[' . $frameId . ']';
@@ -247,9 +247,9 @@
 		//'ng-show' => '!' . $useTime, //'!' . $useTime,	//表示条件を表示条件１の逆にする。
 	));
 ?>
-	<div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><i class="glyphicon glyphicon-time"></i></div>
+	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><i class="glyphicon glyphicon-time"></i></div> -->
 
-</div><!-- 表示条件２のinput-groupおわり -->
+<!--</div>--><!-- 表示条件２のinput-groupおわり -->
 </div><!-- ng-show 表示条件２END-->
 
 </div><!-- form-group name="inputStartEndDateTime"おわり -->
@@ -689,8 +689,8 @@
 	echo "<div class='col-xs-12 col-sm-12 calendar-repeat-end-enddate-info_" . $frameId . " " . $endDateDisplayClass . "' name='endDateInfo'>";
 ?>
 					<div class="row form-group">
-						<div class="col-xs-12 col-sm-5">
-							<div class="input-group">
+						<div class="col-xs-12 col-sm-3">
+							<!-- <div class="input-group"> -->
 <?php
 									$date = '';
 									$pickerOpt = str_replace('"', "'", json_encode(array(
@@ -708,8 +708,8 @@
 									));
 
 ?>
-							<div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
-							</div><!--input-groupおわり-->
+							<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div> -->
+							<!-- </div>--><!--input-groupおわり-->
 						</div><!--col-sm-4おわり-->
 						<div class="col-xs-8 col-sm-4 calendar-detailedit-addchar">
 							<?php echo __d('calendars', 'まで繰り返す'); ?>

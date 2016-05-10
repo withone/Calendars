@@ -1,5 +1,3 @@
-<?php
-?>
 <?php echo $this->element('Calendars.scripts'); ?>
 
 <article ng-controller="CalendarsDetailEdit" class="block-setting-body">
@@ -7,7 +5,7 @@
 
 <article class="block-setting-body">
 
-<div class='col-xs-12 col-sm-10 col-sm-offset-1 h3'><?php echo __d('calendars', 'カレンダー'); ?></div>
+<!-- <div class='col-xs-12 col-sm-10 col-sm-offset-1 h3'><?php echo __d('calendars', 'カレンダー'); ?></div> -->
 
 <!-- <div class="panel panel-default"> -->
 
@@ -20,17 +18,47 @@
 <div name="dispTitle">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
 
-	<label><?php echo __d('calendars', '件名'); ?></label>
+	<!-- <label><?php echo __d('calendars', '件名'); ?></label> -->
 	<div class="clearfix"></div>
-
+<h3>
 	<?php echo $this->TitleIcon->titleIcon($event['CalendarEvent']['title_icon']); ?>
 	<span><?php echo h($event['CalendarEvent']['title']); ?></span>
+</h3>
 	<div class="clearfix"></div>
 </div><!-- col-sm-10おわり -->
 </div><!-- おわり-->
 
 
-<div name="dispRoomForOpen">
+<!-- <div name="showStartDatetime"> -->
+<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
+	<label><?php echo __d('calendars', '日時'); ?></label>
+	<div class="clearfix"></div>
+	<span>
+	<?php
+		$startUserDateWdayTime = $this->CalendarPlan->makeDatetimeWithUserSiteTz($event['CalendarEvent']['dtstart'], $event['CalendarEvent']['is_allday']);
+		echo h($startUserDateWdayTime);
+		if ($event['CalendarEvent']['is_allday']) {
+		//	echo h($startUserDateWdayTime);	//終日指定の時は、開始日時と同じものを表示する
+		} else {
+			echo '&nbsp&nbsp';
+			echo __d('calendars', '－');
+			echo '&nbsp&nbsp';
+			$endUserDateWdayTime = $this->CalendarPlan->makeDatetimeWithUserSiteTz($event['CalendarEvent']['dtend'], $event['CalendarEvent']['is_allday']);
+			echo h($endUserDateWdayTime);
+		}
+	?>
+	</span>
+	<div class="clearfix"></div>
+	<?php echo __d('calendars', '※繰返し予定:'); ?>
+
+	<span><?php echo h($event['CalendarRrule']['rrule']); ?></span><!-- FIXME: -->
+<!--
+	<div><span style="margin-right: 1em">毎週</span><span>月曜日,火曜日</span></div>
+	<div>2016年2月29日まで</div>
+-->
+</div><!-- col-sm-10おわり -->
+<!-- </div> --><!-- おわり-->
+<!-- <div name="dispRoomForOpen"> -->
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
 	<label><?php echo __d('calendars', '公開対象'); ?></label>
 	<div class="clearfix"></div>
@@ -39,7 +67,7 @@
 	?>
 <div class="clearfix"></div>
 </div><!-- col-sm-10おわり -->
-</div><!-- おわり-->
+<!--</div>--<!-- おわり-->
 
 <div name="sharePersons">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
@@ -60,35 +88,6 @@
 </div><!-- おわり-->
 
 
-<div name="showStartDatetime">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
-	<label><?php echo __d('calendars', '開始日時'); ?></label>
-	<div class="clearfix"></div>
-	<span>
-	<?php
-		$startUserDateWdayTime = $this->CalendarPlan->makeDatetimeWithUserSiteTz($event['CalendarEvent']['dtstart'], $event['CalendarEvent']['is_allday']);
-		echo h($startUserDateWdayTime);
-	?>
-	</span>
-</div><!-- col-sm-10おわり -->
-</div><!-- おわり-->
-
-<div name="showEndDatetime">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
-	<label><?php echo __d('calendars', '終了日時'); ?></label>
-	<div class="clearfix"></div>
-	<span>
-	<?php
-		if ($event['CalendarEvent']['is_allday']) {
-			echo h($startUserDateWdayTime);	//終日指定の時は、開始日時と同じものを表示する
-		} else {
-			$endUserDateWdayTime = $this->CalendarPlan->makeDatetimeWithUserSiteTz($event['CalendarEvent']['dtend'], $event['CalendarEvent']['is_allday']);
-			echo h($endUserDateWdayTime);
-		}
-	?>
-	</span>
-</div><!-- col-sm-10おわり -->
-</div><!-- おわり-->
 
 <div name="showLocation">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
@@ -128,18 +127,6 @@
 </div><!-- col-sm-10おわり -->
 </div><!-- おわり-->
 
-<div name="repeat">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
-	<label><?php echo __d('calendars', '繰返し'); ?></label>
-	<div class="clearfix"></div>
-
-	<span><?php echo h($event['CalendarRrule']['rrule']); ?></span><!-- FIXME: -->
-<!--
-	<div><span style="margin-right: 1em">毎週</span><span>月曜日,火曜日</span></div>
-	<div>2016年2月29日まで</div>
--->
-</div><!-- col-sm-10おわり -->
-</div><!-- おわり-->
 
 <div name="writer">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
@@ -165,7 +152,7 @@
 <!--
 <button name="cancel" onclick="location.href = '/faqs/faq_blocks/index/5?frame_id=11'" ng-click="sending=true" ng-disabled="sending" class="btn btn-default btn-workflow " type="button">
 	<span class="glyphicon glyphicon-remove"></span>
-	<?php echo __d('calendars', 'キャンセル'); ?>
+	<?php echo __d('calendars', '戻る'); ?>
 </button>
 <?php
 	echo "<button type='button' ng-click=\"showRepeatConfirm('" . $frameId . "','" . $isRepeat . "','edit')\" class='btn btn-primary btn-workflow' title='" . __d('calendars', '編集') . "'>";
@@ -272,10 +259,6 @@ mock.fnc2 =  function(evt) {
 for(var i=0; i < mock.elms2.length; ++i) {
     mock.elms2[i].addEventListener('change', mock.fnc2 );
 }
-
-
-
-
 
 </script>
 
