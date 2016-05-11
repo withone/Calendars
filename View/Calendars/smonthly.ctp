@@ -8,7 +8,7 @@
 
 <!--<form>-->
 
-<?php echo $this->element('NetCommons.datetimepicker'); ?>
+<?php //echo $this->element('NetCommons.datetimepicker'); ?>
  
 <!-- <?php
 	echo $this->element('Calendars.Calendars/turn_calendar', array(

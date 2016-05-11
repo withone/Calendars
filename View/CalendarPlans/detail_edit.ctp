@@ -114,7 +114,7 @@
 <!--<div class="input-group">--><!-- 表示条件１のinput-group -->
 
 <?php
-	echo $this->element('NetCommons.datetimepicker');	//これを頭にいれること！
+	//echo $this->element('NetCommons.datetimepicker');	//これを頭にいれること！
 
 	$date = '';
 	$ngModel = 'startDate[' . $frameId . ']';
