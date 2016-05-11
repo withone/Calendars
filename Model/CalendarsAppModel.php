@@ -170,19 +170,19 @@ class CalendarsAppModel extends AppModel {
 		//CakeLog::debug("DBGY: data[" . $this->alias . "]=[" . print_r($data[$this->alias], true), "]");
 
 		$rrule = array();
-		//$wdayArray = explode('|', CalendarsComponent::CALENDAR_REPEAT_WDAY);
-
-		$repeatFreq = $data[$this->alias]['repeat_freq'];
-		$rruleInterval = $data[$this->alias]['rrule_interval'];
-
-		$rruleByday = $data[$this->alias]['rrule_byday'];
-		$rruleBymonthday = $data[$this->alias]['rrule_bymonthday'];
-
-		$rruleBymonth = $data[$this->alias]['rrule_bymonth'];
-
-		$rruleTerm = $data[$this->alias]['rrule_term'];
 
 		if ($data[$this->alias]['is_repeat']) {
+			//$wdayArray = explode('|', CalendarsComponent::CALENDAR_REPEAT_WDAY);
+			$repeatFreq = $data[$this->alias]['repeat_freq'];
+			$rruleInterval = $data[$this->alias]['rrule_interval'];
+
+			$rruleByday = $data[$this->alias]['rrule_byday'];
+			$rruleBymonthday = $data[$this->alias]['rrule_bymonthday'];
+
+			$rruleBymonth = $data[$this->alias]['rrule_bymonth'];
+
+			$rruleTerm = $data[$this->alias]['rrule_term'];
+
 			//validateはすでに終わっているので、以下では、データ加工のみに集中する。
 
 			//
