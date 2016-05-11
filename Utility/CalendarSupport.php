@@ -53,16 +53,20 @@ class CalendarSupport {
 			//なので、calendarDateFormatをつかってTZ考慮したcalendarDateFormatはつかわなくてＯＫ。
 			$until = substr($rrule['UNTIL'], 0, 8) . substr($rrule['UNTIL'], -6);
 
-			CakeLog::debug("DBG: In isRepeatable(). startDateTime[" . $startDateTime . "] until[" . $until . "]");
+			CakeLog::debug("DBG:
+				In isRepeatable(). startDateTime[" . $startDateTime . "] until[" . $until . "]");
 			if ($startDateTime >= $until) {
-				CakeLog::debug("DBG: isRepeatable() return FALSE! startDateTime[" . $startDateTime . "] >= until[" . $until . "]");
+				CakeLog::debug("DBG: isRepeatable() return FALSE!
+					 startDateTime[" . $startDateTime . "] >= until[" . $until . "]");
 				return false;
 			}
 		} else {
 			$count = isset($rrule['COUNT']) ? intval($rrule['COUNT']) : 3;	//初期値は３回繰り返す
-			CakeLog::debug("DBG: In isRepeatable(COUNT case). rrule[INDEX][" . $rrule['INDEX'] . "] count[" . $count . "]");
+			CakeLog::debug("DBG: In isRepeatable(COUNT case).
+				 rrule[INDEX][" . $rrule['INDEX'] . "] count[" . $count . "]");
 			if ($rrule['INDEX'] > $count) {
-				CakeLog::debug("DBG: isRepeatable(COUNT case) return FALSE! rrule[INDEX][" . $rrule['INDEX'] . "] > count[" . $count . "]");
+				CakeLog::debug("DBG: isRepeatable(COUNT case) return FALSE!
+					 rrule[INDEX][" . $rrule['INDEX'] . "] > count[" . $count . "]");
 				return false;
 			}
 		}
@@ -98,7 +102,8 @@ class CalendarSupport {
 						intval(substr($time, 4, 2)), intval(substr($time, 6, 2)), intval(substr($time, 0, 4)));
 			$timestamp = $timestamp - 1;
 		} else {
-			$timestamp = mktime(intval(substr($time, 8, 2)), intval(substr($time, 10, 2)), intval(substr($time, 12, 2)),
+			$timestamp = mktime(intval(substr($time, 8, 2)),
+				 intval(substr($time, 10, 2)), intval(substr($time, 12, 2)),
 						intval(substr($time, 4, 2)), intval(substr($time, 6, 2)), intval(substr($time, 0, 4)));
 		}
 		if ($calendarWeek === '') {
@@ -128,8 +133,9 @@ class CalendarSupport {
 		if ($insertFlag) {
 			$timezoneOffset = -1 * $timezoneOffset;
 		}
-		return date('YmdHis', mktime(intval(substr($time, 8, 2)) + $timezoneOffset, intval(substr($time, 10, 2)) + $timezoneMiniteOffset, intval(substr($time, 12, 2)),
-						intval(substr($time, 4, 2)), intval(substr($time, 6, 2)), intval(substr($time, 0, 4))));
+		return date('YmdHis', mktime(intval(substr($time, 8, 2)) + $timezoneOffset,
+			intval(substr($time, 10, 2)) + $timezoneMiniteOffset, intval(substr($time, 12, 2)),
+				intval(substr($time, 4, 2)), intval(substr($time, 6, 2)), intval(substr($time, 0, 4))));
 	}
 
 /**
@@ -148,7 +154,8 @@ class CalendarSupport {
 		if ($week === -1) {
 			//ここに飛び込むのは、BYDAYが'-1SA'といった値-1+曜日の書式のとき
 
-			$lastDay = date("t", $timestamp);	//FIXME: defualtTZをユーザ系にしたdate()にすべきでは？
+			$lastDay = date("t", $timestamp);
+			//FIXME: defualtTZをユーザ系にしたdate()にすべきでは？
 
 			$timestamp = mktime(0, 0, 0, $month, $lastDay, $year);
 
@@ -156,7 +163,9 @@ class CalendarSupport {
 			////$wLastDay = date('w', $timestamp);
 			$wLastDay = CalendarTime::dateWdayIdxWithUserTz($timestamp, $userTz);
 
-			CakeLog::debug("DBG: getByday week=[-1] case. dateWdayIdxWithUserTz(" . $timestamp . "," . $userTz . ") returned wLastDay[" . $wLastDay . "]");
+			CakeLog::debug("DBG: getByday week=[-1] case.
+				dateWdayIdxWithUserTz(" . $timestamp . "," . $userTz . ") returned
+					 wLastDay[" . $wLastDay . "]");
 
 			$wLastDay = ($wdayNum <= $wLastDay ? $wLastDay : 7 + $wLastDay);
 			$timestamp = mktime(0, 0, 0, $month, $lastDay - $wLastDay + $wdayNum, $year);
@@ -166,13 +175,20 @@ class CalendarSupport {
 			////$w1Day = date('w', $timestamp);		//開始日の同年同月1日の曜日(0-6) a を取り出す。
 
 			$w1Day = CalendarTime::dateWdayIdxWithUserTz($timestamp, $userTz);
-			CakeLog::debug("DBG: getByday week=[" . $week . "] case. dateWdayIdxWithUserTz(" . $timestamp . "," . $userTz . ") returned w1Day[" . $w1Day . "]");
+			CakeLog::debug("DBG: getByday week=[" . $week . "] case. 
+				dateWdayIdxWithUserTz(" . $timestamp . ", " . $userTz . ") returned w1Day[" . $w1Day . "]");
 
-			$w1Day = ($w1Day <= $wdayNum ? 7 + $w1Day : $w1Day);	// aが指定曜日以前ならaに1週加算。
-			$day = $week * 7 + $wdayNum + 1;	//1日が日曜日スタートとした場合の第x週第x日の「日」を計算
-			$timestamp = mktime(0, 0, 0, $month, $day - $w1Day, $year);	//$day-$w1Dayで実際の1日が実曜日スタートになるよう調整した日のタイムスタンプ b を計算。
+			// aが指定曜日以前ならaに1週加算。
+			$w1Day = ($w1Day <= $wdayNum ? 7 + $w1Day : $w1Day);
+
+			//1日が日曜日スタートとした場合の第x週第x日の「日」を計算
+			$day = $week * 7 + $wdayNum + 1;
+
+			//$day-$w1Dayで実際の1日が実曜日スタートになるよう調整した日のタイムスタンプ b を計算。
+			$timestamp = mktime(0, 0, 0, $month, $day - $w1Day, $year);
 		}
-		$byday = date('YmdHis', $timestamp); // b(第x週第y曜日の実際の日)を日付時刻文字列型に変換	//bbbbbb
+		// b(第x週第y曜日の実際の日)を日付時刻文字列型に変換
+		$byday = date('YmdHis', $timestamp);
 		return $byday;
 	}
 }

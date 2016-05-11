@@ -58,8 +58,11 @@ class CalendarTime {
 		$serverStartDate = $nctm->toServerDatetime($startDateZero, $userTimezoneOffset);
 
 		//To日付の翌日00:00:00をEndにセット
-		list($yearOfEndNextDay, $monthOfEndNextDay, $endNextDay) = CalendarTime::getNextDay(intval(substr($userYmdTo, 0, 4)), intval(substr($userYmdTo, 5, 2)), intval(substr($userYmdTo, 8, 2)));
-		$serverEndNextDate = $nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00", $yearOfEndNextDay, $monthOfEndNextDay, $endNextDay), $userTimezoneOffset);
+		list($yearOfEndNextDay, $monthOfEndNextDay, $endNextDay) = CalendarTime::
+			getNextDay(intval(substr($userYmdTo, 0, 4)), intval(substr($userYmdTo, 5, 2)),
+			intval(substr($userYmdTo, 8, 2)));
+		$serverEndNextDate = $nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00",
+			$yearOfEndNextDay, $monthOfEndNextDay, $endNextDay), $userTimezoneOffset);
 
 		return array($serverStartDate, $serverEndNextDate);
 	}
@@ -77,8 +80,11 @@ class CalendarTime {
 		$nctm = new NetCommonsTime();
 		$startDateZero = $userYmd . ' 00:00:00';
 		$serverStartDateZero = $nctm->toServerDatetime($startDateZero, $userTimezoneOffset);
-		list($yearOfNextDay, $monthOfNextDay, $nextDay) = CalendarTime::getNextDay(intval(substr($startDateZero, 0, 4)), intval(substr($startDateZero, 5, 2)), intval(substr($startDateZero, 8, 2 )));
-		$serverNextDateZero = $nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00", $yearOfNextDay, $monthOfNextDay, $nextDay), $userTimezoneOffset);
+		list($yearOfNextDay, $monthOfNextDay, $nextDay) = CalendarTime::
+			getNextDay(intval(substr($startDateZero, 0, 4)), intval(substr($startDateZero, 5, 2)),
+			intval(substr($startDateZero, 8, 2 )));
+		$serverNextDateZero = $nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00", $yearOfNextDay,
+			$monthOfNextDay, $nextDay), $userTimezoneOffset);
 
 		return array($serverStartDateZero, $serverNextDateZero);
 	}
@@ -94,7 +100,8 @@ class CalendarTime {
 	public static function addDashColonAndSp($data) {
 		//YYYYMMDDhhmmss
 		if (preg_match("/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/", $data, $matches) === 1) {
-			return sprintf("%04d-%02d-%02d %02d:%02d:%02d", $matches[1], $matches[2], $matches[3], $matches[4], $matches[5], $matches[6]);
+			return sprintf("%04d-%02d-%02d %02d:%02d:%02d", $matches[1], $matches[2], $matches[3],
+				$matches[4], $matches[5], $matches[6]);
 		}
 		//YYYYMMDD
 		if (preg_match("/^(\d{4})(\d{2})(\d{2})$/", $data, $matches) === 1) {
@@ -140,7 +147,8 @@ class CalendarTime {
 			//datetimepickerには24:00という表記は存在しないので、翌日の00:00をセットする。
 			$ymd = substr($ymdHis, 0, 10);	//YYYY-MM-DD
 			$fromYmdHi = sprintf("%s 23:00", $ymd);
-			list($yearOfNextDay, $monthOfNextDay, $nextDay) = self::getNextDay(intval(substr($ymdHis, 0, 4)), intval(substr($ymdHis, 5, 2)), intval(substr($ymdHis, 8, 2 )));
+			list($yearOfNextDay, $monthOfNextDay, $nextDay) = self::getNextDay(intval(
+				substr($ymdHis, 0, 4)), intval(substr($ymdHis, 5, 2)), intval(substr($ymdHis, 8, 2 )));
 			$toYmdHi = sprintf("%04d-%02d-%02d 00:00", $yearOfNextDay, $monthOfNextDay, $nextDay);
 		}
 		return array($ymd, $fromYmdHi, $toYmdHi);
@@ -169,8 +177,10 @@ class CalendarTime {
  * @return array 次日の年と月と日を配列で返す。
  */
 	public static function getNextDay($year, $month, $day) {
-		//mktimeのday引数の「その月の日数より大きい値は、翌月以降の該当する日を表す」仕様を応用して次日の年月日を求める。
-		list($yearOfNextDay, $monthOfNextDay, $nextDay) = explode('/', date('Y/m/d', mktime(0, 0, 0, $month, $day + 1, $year)));
+		//mktimeのday引数の「その月の日数より大きい値は、
+		//翌月以降の該当する日を表す」仕様を応用して次日の年月日を求める。
+		list($yearOfNextDay, $monthOfNextDay, $nextDay) =
+			explode('/', date('Y/m/d', mktime(0, 0, 0, $month, $day + 1, $year)));
 		return array($yearOfNextDay, $monthOfNextDay, $nextDay);
 	}
 
@@ -236,7 +246,8 @@ class CalendarTime {
  * @return int 曜日(0-6)
  */
 	public static function getWday($year, $month, $day) {
-		$julianDay = gregoriantojd($month, $day, $year);	//指定年月日のグレゴリウス日をユリウス積算日に変換
+		//指定年月日のグレゴリウス日をユリウス積算日に変換
+		$julianDay = gregoriantojd($month, $day, $year);
 		$wDay = jddayofweek($julianDay);	//ユリウス積算日から曜日を返す
 		return $wDay;
 	}
@@ -251,11 +262,14 @@ class CalendarTime {
  * @return array 前月、次月、今月の月カレンダー情報の配列
  */
 	public static function getMonthlyInfo($year, $month) {
-		$julian1stDay = gregoriantojd($month, 1, $year);	//当月１日のグレゴリウス日をユリウス積算日に変換
+		//当月１日のグレゴリウス日をユリウス積算日に変換
+		$julian1stDay = gregoriantojd($month, 1, $year);
 		$wdayOf1stDay = jddayofweek($julian1stDay);	//ユリウス積算日から曜日を返す
 
-		$daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year); //指定した年とカレンダーについて月の日数を返す(グレゴリオ暦)
-		$julianLastDay = gregoriantojd($month, $daysInMonth, $year);	//当月末日のグレゴリウス日をユリウス積算日に変換
+		//指定した年とカレンダーについて月の日数を返す(グレゴリオ暦)
+		$daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+		//当月末日のグレゴリウス日をユリウス積算日に変換
+		$julianLastDay = gregoriantojd($month, $daysInMonth, $year);
 		$wdayOfLastDay = jddayofweek($julianLastDay);	//ユリウス積算日から曜日を返す
 
 		$numOfWeek = ceil(($daysInMonth + $wdayOf1stDay) / 7);	//当月の週数
@@ -304,7 +318,8 @@ class CalendarTime {
  */
 	public static function transFromYmdHisToArray($strYmdHis) {
 		$tmArray = array();
-		if (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2}) (\d{1,2}):(\d{1,2}):(\d{1,2})$/', $strYmdHis, $matches) !== 1) {
+		if (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2}) (\d{1,2}):(\d{1,2}):(\d{1,2})$/',
+			$strYmdHis, $matches) !== 1) {
 			return false;
 		}
 		$tmArray['year'] = $matches[1];
@@ -336,7 +351,9 @@ class CalendarTime {
 			list($time, $timezoneOffset) = self::getTimezoneOffsetAndMinitueOffsetEtc($insertFlag);
 		}
 		if ($insertFlag) { // 登録時　サーバのタイムゾーンを引く
-			$timezoneOffset = self::getTimezoneOffsetWithSummerTimeWhenInsert($timeNullFlag, $_defaultTZ, $timezoneOffset);
+			$timezoneOffset =
+				self::getTimezoneOffsetWithSummerTimeWhenInsert(
+					$timeNullFlag, $_defaultTZ, $timezoneOffset);
 		} else {
 			// 表示時　会員のタイムゾーンを足す（ログインしていない場合、デフォルトタイムゾーン）
 			$timezoneOffset = Session::read('Calendars._timezoneOffset');
@@ -370,7 +387,8 @@ class CalendarTime {
 			//_server_TZだけ引く。つまり、サーバTZをつかい、LOCAL時間からUTC時間に変換する。
 			$timezoneOffset = -1 * $timezoneOffset;
 			$timezoneMinuteOffset = -1 * $timezoneMinuteOffset;
-			$intTime = mktime(date('H') + $timezoneOffset, date('i') + $timezoneMinuteOffset, date('s'), date('m'), date('d'), date('Y'));
+			$intTime = mktime(date('H') + $timezoneOffset, date('i') + $timezoneMinuteOffset,
+				date('s'), date('m'), date('d'), date('Y'));
 			$time = date('YmdHis', $intTime);
 		}
 		return array($time, $timezoneOffset);
@@ -384,7 +402,8 @@ class CalendarTime {
  * @param float $timezoneOffset timezoneOffset
  * @return float $timezoneOffset 計算した結果のtimezoneOffset
  */
-	public static function getTimezoneOffsetWithSummerTimeWhenInsert($timeNullFlag, $_defaultTZ, $timezoneOffset) {
+	public static function getTimezoneOffsetWithSummerTimeWhenInsert($timeNullFlag, $_defaultTZ,
+		$timezoneOffset) {
 		$summertimeOffset = 0; // サマータイムも取得できれば考慮する
 		if (date('I')) {
 			$summertimeOffset = -1;
@@ -417,12 +436,14 @@ class CalendarTime {
 			$timezoneMinuteOffset = ($timezoneOffset > 0) ? 30 : -30;			// 0.5minute
 		}
 		if (strlen($time) === 6) {	//時分秒
-			$intTime = mktime(intval(substr($time, 0, 2)) + $timezoneOffset, intval(substr($time, 2, 2)) + $timezoneMinuteOffset, intval(substr($time, 4, 2)));
+			$intTime = mktime(intval(substr($time, 0, 2)) + $timezoneOffset,
+				intval(substr($time, 2, 2)) + $timezoneMinuteOffset, intval(substr($time, 4, 2)));
 			if ($format === null) {
 				$format = 'His';
 			}
 		} elseif (strlen($time) === 14) {	//年月日時分秒
-			$intTime = mktime(intval(substr($time, 8, 2)) + $timezoneOffset, intval(substr($time, 10, 2)) + $timezoneMinuteOffset, intval(substr($time, 12, 2)),
+			$intTime = mktime(intval(substr($time, 8, 2)) + $timezoneOffset,
+				intval(substr($time, 10, 2)) + $timezoneMinuteOffset, intval(substr($time, 12, 2)),
 							intval(substr($time, 4, 2)), intval(substr($time, 6, 2)), intval(substr($time, 0, 4)));
 			if ($format == null) {
 				$format = 'YmdHis';

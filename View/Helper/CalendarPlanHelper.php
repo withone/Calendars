@@ -45,9 +45,11 @@ class CalendarPlanHelper extends AppHelper {
 	public function makeDatetimeWithUserSiteTz($YmdHis, $isAllday) {
 		$nctm = new NetCommonsTime();
 		$serverDatetime = CalendarTime::addDashColonAndSp($YmdHis);
-		$userDatetime = $nctm->toUserDatetime($serverDatetime);	//toUserDatetime()が内部でユーザTZorサイトTZを使う.
+		//toUserDatetime()が内部でユーザTZorサイトTZを使う.
+		$userDatetime = $nctm->toUserDatetime($serverDatetime);
 		$tma = CalendarTime::transFromYmdHisToArray($userDatetime);
-		$unixtm = mktime(intval($tma['hour']), intval($tma['min']), intval($tma['sec']), intval($tma['month']), intval($tma['day']), intval($tma['year']));
+		$unixtm = mktime(intval($tma['hour']), intval($tma['min']), intval($tma['sec']),
+			intval($tma['month']), intval($tma['day']), intval($tma['year']));
 
 		$html = sprintf(__d('calendars', '%s年%s月%s日'), $tma['year'], $tma['month'], $tma['day']);
 		$wdayArray = $this->CalendarCommon->getWdayArray();
@@ -78,10 +80,12 @@ class CalendarPlanHelper extends AppHelper {
 			'frame_id' => Current::read('Frame.id'),
 		);
 		if (isset($vars['return_style'])) {
-			$urlOptions['style'] = $vars['return_style'];	//cancel時の戻り先としてstyleを指定する。
+			//cancel時の戻り先としてstyleを指定する。
+			$urlOptions['style'] = $vars['return_style'];
 		}
 		if (isset($vars['return_sort'])) {
-			$urlOptions['sort'] = $vars['return_sort'];	//cancel時の戻り先としてsortオプションがあればそれもセットで指定する.
+			//cancel時の戻り先としてsortオプションがあればそれもセットで指定する.
+			$urlOptions['sort'] = $vars['return_sort'];
 		}
 		$cancelUrl = NetCommonsUrl::actionUrl($urlOptions);
 
@@ -103,7 +107,8 @@ class CalendarPlanHelper extends AppHelper {
 		);
 		*/
 
-		$html .= "<button class='btn btn-default calendar-detail-edit' type='button' data-url='" . $cancelUrl . "'>";
+		$html .= "<button class='btn btn-default calendar-detail-edit'
+		 type='button' data-url='" . $cancelUrl . "'>";
 		$html .= "<span class='glyphicon glyphicon-remove'></span>";
 		$html .= __d('calendars', 'キャンセル');
 		$html .= '</button>';
@@ -118,7 +123,8 @@ class CalendarPlanHelper extends AppHelper {
 			'event' => $eventId,
 			'frame_id' => Current::read('Frame.id'),
 		));
-		$html .= "<button class='btn btn-primary calendar-detail-edit calendar-margin-left-adjust' data-url='" . $detailEditUrl . "'>";
+		$html .= "<button class='btn btn-primary calendar-detail-edit calendar-margin-left-adjust'
+		 data-url='" . $detailEditUrl . "'>";
 		$html .= "<span class='glyphicon glyphicon-edit'></span>";
 		$html .= '</button>';
 		return $html;
@@ -140,12 +146,14 @@ class CalendarPlanHelper extends AppHelper {
 			'year' => $vars['year'],
 			'month' => $vars['month'],
 			'day' => $vars['day'],
-			'block_id' => Current::read('Block.id'),	//これを付けないと、遷移先画面でBlock.idがない、と出る。
+			//これを付けないと、遷移先画面でBlock.idがない、と出る。
+			'block_id' => Current::read('Block.id'),
 			'frame_id' => Current::read('Frame.id'),
 		));
 
 		$html = '';
-		$html .= "<div class='btn btn-success calendar-detail-edit' data-url='" . $url . "'>" . __d('calendars', '詳細な登録') . '</div>';
+		$html .= "<div class='btn btn-success calendar-detail-edit' data-url='" . $url . "
+			'>" . __d('calendars', '詳細な登録') . '</div>';
 		return $html;
 	}
 
@@ -253,15 +261,19 @@ class CalendarPlanHelper extends AppHelper {
 		$html = '';
 		$html .= "<div class='row'>";
 		$wDay = CalendarTime::getWday($vars['year'], $vars['month'], $vars['day']);
-		$textColor = $this->CalendarCommon->makeTextColor($vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $wDay);
+		$textColor = $this->CalendarCommon->makeTextColor(
+			$vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $wDay);
 		$html .= "<div class='col-xs-6 col-xs-offset-3 text-center'>";
 		$html .= "<div class='calendar-inline {$textColor}'>";
 		$html .= "<span class='h5'>" . h($vars['year']) . __d('calendars', '年') . "</span>";
 		$html .= "<br class='visible-xs' />";
-		$html .= "<span class='h3'>" . h($vars['month']) . __d('calendars', '月') . h($vars['day']) . __d('calendars', '日') . '</span>';
+		$html .= "<span class='h3'>";
+		$html .= h($vars['month']) . __d('calendars', '月') . h($vars['day']);
+		$html .= __d('calendars', '日') . '</span>';
 		$html .= "<br class='visible-xs' />";
 
-		$holidayTitle = $this->CalendarCommon->getHolidayTitle($vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $wDay);
+		$holidayTitle = $this->CalendarCommon->getHolidayTitle($vars['year'], $vars['month'],
+			$vars['day'], $vars['holidays'], $wDay);
 		$html .= "<span class='h5'>" . h($holidayTitle) . "</span></div>";
 		$html .= '</div>';
 		$html .= '</div>';
@@ -286,7 +298,8 @@ class CalendarPlanHelper extends AppHelper {
 			$url = $this->CalendarUrl->makeEasyEditUrl($year, $month, $day, $vars);
 			$html .= "<div class='row' style='margin-top: 0.5em'>";
 			$html .= "<div class='col-xs-12 text-right'>";
-			$html .= "<div class='btn btn-default calendar-easy-edit-area' data-url='" . $url . "'><span class='glyphicon glyphicon-plus'></span></div>";
+			$html .= "<div class='btn btn-default calendar-easy-edit-area' data-url='" . $url . "'>";
+			$html .= "<span class='glyphicon glyphicon-plus'></span></div>";
 			$html .= '</div>';
 			$html .= '</div>';
 		}
