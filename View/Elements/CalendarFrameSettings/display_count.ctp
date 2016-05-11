@@ -10,7 +10,8 @@
  */
 ?>
 <div class="form-group" ng-show="isShowDisplayCount">
-	<?php echo $this->NetCommonsForm->label('CalendarFrameSetting.display_count', __d('calendars', '表示日数'), 'col-xs-12 col-sm-3'); ?>
+	<?php echo $this->NetCommonsForm->label('CalendarFrameSetting.display_count',
+		__d('calendars', '表示日数'), array('class' => 'col-xs-12 col-sm-3')); ?>
 	<div class="col-xs-12 col-sm-9">
 		<?php
 		$options = array();

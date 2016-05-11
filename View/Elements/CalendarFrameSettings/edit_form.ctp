@@ -27,7 +27,8 @@
 ?>
 
 <div class="form-group">
-<?php echo $this->NetCommonsForm->label('CalendarFrameSetting.display_type', __d('calendars', '表示方法'), 'col-xs-12 col-sm-3'); ?>
+<?php echo $this->NetCommonsForm->label('CalendarFrameSetting.display_type',
+	__d('calendars', '表示方法'), array('class' => 'col-xs-12 col-sm-3')); ?>
 <div class="col-xs-12 col-sm-9">
 <?php
 	echo $this->NetCommonsForm->input('CalendarFrameSetting.display_type', array(
