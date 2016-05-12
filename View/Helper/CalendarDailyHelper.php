@@ -114,17 +114,13 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 		$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
 		if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !==
 			$plan['CalendarEvent']['toTime']) {
-			$html .= "<p class='calendar-daily-nontimeline-plan calendar-plan-time small'>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</p>';
-			//$html .= "<span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small></span>';
+			$html .= '<p class="calendar-daily-nontimeline-plan calendar-plan-time small">';
+			$html .= $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</p>';
 		}
-		$spaceName = $this->getSpaceName($vars, $plan['CalendarEvent']['room_id'], $plan['CalendarEvent']['language_id']);
+		$spaceName = $this->getSpaceName(
+			$vars, $plan['CalendarEvent']['room_id'], $plan['CalendarEvent']['language_id']);
 		$html .= '<p class="calendar-plan-spacename small">' . $spaceName . '</p>';
 
-		//$html .= "<span class='calendar-plan-mark {$calendarPlanMark}'></span>";
-		//$html .= '<span>' . $plan['CalendarEvent']['title'] . '</span>';
-		//$html .= "<p class='calendar-plan-clickable text-left calendar-plan-show calendar-daily-nontimeline-plan' data-url='" . $url . "'>";
-		//$html .= '<h3 class="calendar-plan-tittle"><p class="calendar-plan-clickable text-left calendar-plan-show calendar-daily-nontimeline-plan" data-url="' . $url . '">' . $plan['CalendarEvent']['title'] . '</p></h3>';
-		//$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>' . $plan['CalendarEvent']['title'] . '</a></h3>';
 		$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>';
 
 		//タイトルアイコン
@@ -134,10 +130,12 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 
 		$html .= '</p>';
 		if ($plan['CalendarEvent']['location'] != '') {
-			$html .= '<p class="calendar-plan-place small">' . __d('calendars', '場所の詳細:') . $plan['CalendarEvent']['location'] . '</p>';
+			$html .= '<p class="calendar-plan-place small">' . __d('calendars', '場所の詳細:');
+			$html .= $plan['CalendarEvent']['location'] . '</p>';
 		}
 		if ($plan['CalendarEvent']['contact']) {
-			$html .= '<p class="calendar-plan-address small">' . __d('calendars', '連絡先:') . $plan['CalendarEvent']['contact'] . '</p>';
+			$html .= '<p class="calendar-plan-address small">' . __d('calendars', '連絡先:');
+			$html .= $plan['CalendarEvent']['contact'] . '</p>';
 		}
 		return $html;
 	}

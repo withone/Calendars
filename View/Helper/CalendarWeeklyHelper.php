@@ -51,7 +51,8 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		foreach ($plans as $plan) {
 			//仕様
 			//予定が１件以上あるとき）
-			if ($vars['currentRoomId'] != $plan['CalendarEvent']['room_id']) { //※roomIdが一致するデータ
+			//※roomIdが一致するデータ
+			if ($vars['currentRoomId'] != $plan['CalendarEvent']['room_id']) {
 				continue;
 			}
 
@@ -154,11 +155,15 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 			if ($this->CalendarCommon->isToday($vars, $years[$i], $months[$i], $days[$i])) {
 				$tdColor[$i] = 'calendar-weekly-tbl-td-today-head-top';
 			}
-			$textColor = $this->CalendarCommon->makeTextColor($years[$i], $months[$i], $days[$i], $vars['holidays'], $wDay[$i]);
-			$holidayTitle = $this->CalendarCommon->getHolidayTitle($years[$i], $months[$i], $days[$i], $vars['holidays'], $i);
+			$textColor = $this->CalendarCommon->makeTextColor(
+				$years[$i], $months[$i], $days[$i], $vars['holidays'], $wDay[$i]);
+			$holidayTitle = $this->CalendarCommon->getHolidayTitle(
+				$years[$i], $months[$i], $days[$i], $vars['holidays'], $i);
 
 			$html .= '<td class="calendar-weekly-col-day-head ' . $tdColor[$i] . '">';
-			$html .= '<span class="calendar-day calendar-daily-disp ' . $textColor . '" data-url="' . $url . '">';
+			$html .= '<span class=';
+			$html .= '"calendar-day calendar-daily-disp ';
+			$html .= $textColor . '" data-url="' . $url . '">';
 			$html .= $days[$i] . '<small>(' . $this->CalendarCommon->getWeekName($i) . ')</small>';
 			$html .= '</span>';
 			$html .= '<small class="calendar-weekly-holiday ' . $textColor . '">';

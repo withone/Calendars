@@ -38,7 +38,8 @@ class CalendarCommonHelper extends AppHelper {
  */
 	public function getWdayArray() {
 		return array(__d('calendars', '日'), __d('calendars', '月'), __d('calendars', '火'),
-			__d('calendars', '水'), __d('calendars', '木'), __d('calendars', '金'), __d('calendars', '土'),
+			__d('calendars', '水'), __d('calendars', '木'), __d('calendars', '金'),
+			__d('calendars', '土'),
 		);
 	}
 
@@ -123,7 +124,8 @@ class CalendarCommonHelper extends AppHelper {
  */
 	public function isToday($vars, $year, $month, $day) {
 		//今日
-		if ($year == $vars['today']['year'] && $month == $vars['today']['month'] && $day == $vars['today']['day']) {
+		if ($year == $vars['today']['year'] && $month == $vars['today']['month'] &&
+			$day == $vars['today']['day']) {
 			return true;
 		}
 		return false;
@@ -172,17 +174,20 @@ class CalendarCommonHelper extends AppHelper {
  * @return mixed 指定日の開始時間、終了時間および指定日で表示すべき予定群の配列
  */
 	public function preparePlanSummaries(&$vars, &$nctm, $year, $month, $day) {
-		$beginOfDay = CalendarTime::dt2CalDt($nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00", $year, $month, $day)));
+		$beginOfDay = CalendarTime::dt2CalDt($nctm->toServerDatetime(
+			sprintf("%04d-%02d-%02d 00:00:00", $year, $month, $day)));
 		list($yearOfNextDay, $monthOfNextDay, $nextDay) = CalendarTime::getNextDay($year, $month, $day);
 		$endOfDay = CalendarTime::dt2CalDt(
-			$nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00", $yearOfNextDay, $monthOfNextDay, $nextDay)));
+			$nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00", $yearOfNextDay,
+				$monthOfNextDay, $nextDay)));
 
 		$plansOfDay = array();
 		$fromTimeOfDay = CalendarTime::getHourColonMin($nctm->toUserDatetime($beginOfDay));
 		$toTimeOfDay = CalendarTime::getHourColonMin($nctm->toUserDatetime($endOfDay));
 
 		foreach ($vars['plans'] as $plan) {
-			$thisDayPlan = $this->_getPlanIfMatchThisDay($vars, $plan, $beginOfDay, $endOfDay, $fromTimeOfDay, $toTimeOfDay, $nctm);
+			$thisDayPlan = $this->_getPlanIfMatchThisDay($vars, $plan, $beginOfDay, $endOfDay,
+				$fromTimeOfDay, $toTimeOfDay, $nctm);
 			if ($thisDayPlan) {
 				$plansOfDay[] = $thisDayPlan;
 				continue;
@@ -206,12 +211,16 @@ class CalendarCommonHelper extends AppHelper {
  * @param array &$planOfThisDay この日の表示対象の予定候補.条件に一致したら値をセットして返す。
  * @return  void
  */
-	protected function _includeToTimeOfDay(&$vars, $plan, $beginOfDay, $endOfDay, $fromTimeOfDay, $toTimeOfDay, &$nctm, &$planOfThisDay) {
-		if (($planOfThisDay === false) && $beginOfDay < $plan['CalendarEvent']['dtend'] && $plan['CalendarEvent']['dtend'] <= $endOfDay) {
+	protected function _includeToTimeOfDay(&$vars, $plan, $beginOfDay, $endOfDay, $fromTimeOfDay,
+		$toTimeOfDay, &$nctm, &$planOfThisDay) {
+		if (($planOfThisDay === false) && $beginOfDay < $plan['CalendarEvent']['dtend'] &&
+			$plan['CalendarEvent']['dtend'] <= $endOfDay) {
 			//予定の終了日時が、この日に含まれる時
 			$plan['CalendarEvent']['fromTime'] = CalendarTime::getHourColonMin(
-				$nctm->toUserDatetime((($beginOfDay <= $plan['CalendarEvent']['dtstart']) ? $plan['CalendarEvent']['dtstart'] : $beginOfDay)));
-			$plan['CalendarEvent']['toTime'] = CalendarTime::getHourColonMin($nctm->toUserDatetime($plan['CalendarEvent']['dtend']));
+				$nctm->toUserDatetime((($beginOfDay <= $plan['CalendarEvent']['dtstart']) ?
+					$plan['CalendarEvent']['dtstart'] : $beginOfDay)));
+			$plan['CalendarEvent']['toTime'] = CalendarTime::getHourColonMin(
+				$nctm->toUserDatetime($plan['CalendarEvent']['dtend']));
 			$planOfThisDay = $plan;
 		}
 	}
@@ -230,32 +239,41 @@ class CalendarCommonHelper extends AppHelper {
  * @param object &$nctm NetCommonsTimeオブジェクトへの参照
  * @return mixed 該当するなら、拡張予定データを返す。該当しないならfalseを返す。
  */
-	protected function _getPlanIfMatchThisDay(&$vars, $plan, $beginOfDay, $endOfDay, $fromTimeOfDay, $toTimeOfDay, &$nctm) {
+	protected function _getPlanIfMatchThisDay(&$vars, $plan, $beginOfDay, $endOfDay,
+		$fromTimeOfDay, $toTimeOfDay, &$nctm) {
 		//begin-end, dtstart-dtendともに、[begin, end）、[dtstart, dtend）つまり、以上-未満、であることに注意すること。
 		//
 		$planOfThisDay = false;	//「この日の予定ではない」が初期値
 
-		if ($beginOfDay <= $plan['CalendarEvent']['dtstart'] && $plan['CalendarEvent']['dtstart'] < $endOfDay) {
+		if ($beginOfDay <= $plan['CalendarEvent']['dtstart'] &&
+			$plan['CalendarEvent']['dtstart'] < $endOfDay) {
 			//予定の開始日時が、この日に含まれる時
-			$plan['CalendarEvent']['fromTime'] = CalendarTime::getHourColonMin($nctm->toUserDatetime($plan['CalendarEvent']['dtstart']));
+			$plan['CalendarEvent']['fromTime'] = CalendarTime::getHourColonMin(
+				$nctm->toUserDatetime($plan['CalendarEvent']['dtstart']));
 			$plan['CalendarEvent']['toTime'] = CalendarTime::getHourColonMin(
-				$nctm->toUserDatetime((($plan['CalendarEvent']['dtend'] <= $endOfDay) ? $plan['CalendarEvent']['dtend'] : $endOfDay)));
+				$nctm->toUserDatetime((($plan['CalendarEvent']['dtend'] <= $endOfDay) ?
+					$plan['CalendarEvent']['dtend'] : $endOfDay)));
 			$planOfThisDay = $plan;
 		}
 
 		// 予定の終了日時が、この日に含まれる時、予定を返す。
-		$this->_includeToTimeOfDay($vars, $plan, $beginOfDay, $endOfDay, $fromTimeOfDay, $toTimeOfDay, $nctm, $planOfThisDay);
+		$this->_includeToTimeOfDay($vars, $plan, $beginOfDay, $endOfDay, $fromTimeOfDay,
+			$toTimeOfDay, $nctm, $planOfThisDay);
 		/*
-		if (($planOfThisDay === false) && $beginOfDay < $plan['CalendarEvent']['dtend'] && $plan['CalendarEvent']['dtend'] <= $endOfDay) {
+		if (($planOfThisDay === false) && $beginOfDay < $plan['CalendarEvent']['dtend'] &&
+			$plan['CalendarEvent']['dtend'] <= $endOfDay) {
 			//予定の終了日時が、この日に含まれる時
 			$plan['CalendarEvent']['fromTime'] = CalendarTime::getHourColonMin(
-				$nctm->toUserDatetime((($beginOfDay <= $plan['CalendarEvent']['dtstart']) ? $plan['CalendarEvent']['dtstart'] : $beginOfDay)));
-			$plan['CalendarEvent']['toTime'] = CalendarTime::getHourColonMin($nctm->toUserDatetime($plan['CalendarEvent']['dtend']));
+				$nctm->toUserDatetime((($beginOfDay <= $plan['CalendarEvent']['dtstart']) ?
+					$plan['CalendarEvent']['dtstart'] : $beginOfDay)));
+			$plan['CalendarEvent']['toTime'] = CalendarTime::getHourColonMin(
+				$nctm->toUserDatetime($plan['CalendarEvent']['dtend']));
 			$planOfThisDay = $plan;
 		}
 		*/
 		//FIXME: ここも上記のようにサブルーチン化すべきか。。
-		if (($planOfThisDay === false) && $plan['CalendarEvent']['dtstart'] <= $beginOfDay && $endOfDay <= $plan['CalendarEvent']['dtend']) {
+		if (($planOfThisDay === false) && $plan['CalendarEvent']['dtstart'] <= $beginOfDay &&
+			$endOfDay <= $plan['CalendarEvent']['dtend']) {
 			//この日が、予定の期間(開始日時-終了日時)に包含される時
 			$plan['CalendarEvent']['fromTime'] = $fromTimeOfDay;
 			$plan['CalendarEvent']['toTime'] = $toTimeOfDay;

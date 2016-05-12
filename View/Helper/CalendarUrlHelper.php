@@ -73,7 +73,8 @@ class CalendarUrlHelper extends AppHelper {
 			'year' => $year,
 			'month' => $month,
 			'day' => $day,
-			'block_id' => Current::read('Block.id'),	//これがないと、遷移先でブロックIDがない、とでる。
+			//これがないと、遷移先でブロックIDがない、とでる。↓
+			'block_id' => Current::read('Block.id'),
 			'frame_id' => Current::read('Frame.id'),
 		);
 		if (isset($vars['return_style'])) {
@@ -140,7 +141,8 @@ class CalendarUrlHelper extends AppHelper {
 			'back_month' => $backMonth,
 			'frame_id' => Current::read('Frame.id'),
 		);
-		$options['return_style'] = 'smallmonthly';	//ここは固定的にカレンダー月（縮小）が戻り先となる。
+		//ここは固定的にカレンダー月（縮小）が戻り先となる。
+		$options['return_style'] = 'smallmonthly';
 		$url = NetCommonsUrl::actionUrl($options);
 		return $url;
 	}

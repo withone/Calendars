@@ -89,7 +89,8 @@ class CalendarPermissionHelper extends AppHelper {
 				'disabled' => (bool)$role['fixed']
 			);
 			if (! $options['disabled']) {
-				$options['ng-click'] = 'clickRole($event, \'' . $permission . '\', \'' . Inflector::variable($roleKey) . '\')';
+				$options['ng-click'] =
+					'clickRole($event, \'' . $permission . '\', \'' . Inflector::variable($roleKey) . '\')';
 			}
 			$html .= $this->NetCommonsForm->checkbox($fieldName . '.' . $roleKey . '.value', $options);
 			$html .= '</td>';
