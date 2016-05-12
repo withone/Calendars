@@ -62,12 +62,14 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		$thisDayUrl = $this->_getUrl('now', $type, $vars);
 
 		$html = '';
-		$html .= '<div class="row"><div class="col-xs-12 col-sm-2 col-sm-push-10"><div class="pull-right">';
+		$html .= '<div class="row"><div class="col-xs-12 col-sm-2 col-sm-push-10">';
+		$html .= '<div class="pull-right">';
 
 		$url = $this->CalendarUrl->makeEasyEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
 
 		$html .= '<a class="btn btn-success" href="' . $url . '">';
-		$html .= '<span class="glyphicon glyphicon-plus" tooltip="' . __d('net_commons', 'Add') . '"></span>';
+		$html .= '<span class="glyphicon glyphicon-plus" tooltip="';
+		$html .= __d('net_commons', 'Add') . '"></span>';
 		$html .= '</a></div></div>';
 
 		$html .= '<div class="col-xs-12 col-sm-10 col-sm-pull-2">';

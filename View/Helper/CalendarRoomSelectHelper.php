@@ -46,12 +46,14 @@ class CalendarRoomSelectHelper extends AppHelper {
 			if ($space['Space']['type'] == Space::PRIVATE_SPACE_TYPE) {
 				$html .= $this->_getSpaceListElm($title, $space);
 			} else {
-				$panelBody = $this->roomSelector($roomTreeList[$space['Space']['id']], $rooms[$space['Space']['id']]);
+				$panelBody = $this->roomSelector(
+					$roomTreeList[$space['Space']['id']], $rooms[$space['Space']['id']]);
 				$html .= $this->_getSpaceAccordionElm($title, $openStatusParam, $panelBody);
 			}
 		}
 		// 全会員
-		$html .= $this->_getSpaceListElm(__d('calendars', '全会員'), array('Room' => array('id' => Room::ROOM_PARENT_ID)));
+		$html .= $this->_getSpaceListElm(
+			__d('calendars', '全会員'), array('Room' => array('id' => Room::ROOM_PARENT_ID)));
 		return $html;
 	}
 
@@ -69,7 +71,9 @@ class CalendarRoomSelectHelper extends AppHelper {
 		//$html = '<accordion-group is-open="' . $openStatusParam . '"><accordion-heading>';
 		$html = '<uib-accordion-group is-open="' . $openStatusParam . '"><uib-accordion-heading>';
 		$html .= $title;
-		$html .= '<i class="pull-right glyphicon" ng-class="{\'glyphicon-chevron-down\': ' . $openStatusParam . ', \'glyphicon-chevron-right\': !' . $openStatusParam . '}"></i>';
+		$html .= '<i class="pull-right glyphicon" ';
+		$html .= 'ng-class="{\'glyphicon-chevron-down\': ' . $openStatusParam . ',
+			 \'glyphicon-chevron-right\': !' . $openStatusParam . '}"></i>';
 		//$html .= '</accordion-heading>';
 		$html .= '</uib-accordion-heading>';
 		$html .= $panelBody;
@@ -110,16 +114,20 @@ class CalendarRoomSelectHelper extends AppHelper {
 		$settingId = $this->_View->viewVars['settingId'];
 		$ngModel = $this->__getNgModelName($roomId);
 
-		$ngClassForIcon = $this->__getNgClass($roomId, 'glyphicon-eye-open', 'glyphicon-eye-close', array('glyphicon'));
-		$ngClassForBtn = $this->__getNgClass($roomId, 'active', '', array('btn', 'btn-default', 'btn-xs'));
+		$ngClassForIcon = $this->__getNgClass(
+			$roomId, 'glyphicon-eye-open', 'glyphicon-eye-close', array('glyphicon'));
+		$ngClassForBtn = $this->__getNgClass(
+			$roomId, 'active', '', array('btn', 'btn-default', 'btn-xs'));
 
 		$html = '';
 		// トグルボタンにしたいがこれをやるとng-modelが機能しなくなる....FUJI
 		//$html = '<div class="btn-group" data-toggle="buttons">';
-		$html .= $this->NetCommonsForm->hidden('CalendarFrameSettingSelectRoom.' . $roomId . '.room_id', array('value' => ''));
+		$html .= $this->NetCommonsForm->hidden(
+			'CalendarFrameSettingSelectRoom.' . $roomId . '.room_id', array('value' => ''));
 		$html .= '<label ' . $ngClassForBtn . '>';
 		$html .= '<i ' . $ngClassForIcon . '></i>';
-		$html .= $this->NetCommonsForm->checkbox('CalendarFrameSettingSelectRoom.' . $roomId . '.room_id', array(
+		$html .= $this->NetCommonsForm->checkbox(
+			'CalendarFrameSettingSelectRoom.' . $roomId . '.room_id', array(
 			'div' => false,
 			'label' => false,
 			'hiddenField' => false,
@@ -131,7 +139,9 @@ class CalendarRoomSelectHelper extends AppHelper {
 		));
 		$html .= '</label>';
 
-		$html .= $this->NetCommonsForm->hidden('CalendarFrameSettingSelectRoom.' . $roomId . '.calendar_frame_setting_id', array('value' => $settingId));
+		$html .= $this->NetCommonsForm->hidden(
+			'CalendarFrameSettingSelectRoom.' . $roomId . '.calendar_frame_setting_id',
+				array('value' => $settingId));
 		// トグルボタンにしたいがこれをやるとng-modelが機能しなくなる....FUJI
 		//$html .= '</div>';
 		return $html;
@@ -166,7 +176,9 @@ class CalendarRoomSelectHelper extends AppHelper {
 			$defaultClass .= '\'' . $cls . '\', ';
 		}
 		$ngModel = $this->__getNgModelName($roomId);
-		$ngClass = 'ng-class="[' . $defaultClass . '{\'' . $trueClass . '\': (' . $ngModel . '==\'' . $roomId . '\'), \'' . $falseClass . '\': !(' . $ngModel . '==\'' . $roomId . '\')}]"';
+		$ngClass = 'ng-class="[' . $defaultClass . '{\'' .
+			$trueClass . '\': (' . $ngModel . '==\'' . $roomId . '\'), \'' .
+			$falseClass . '\': !(' . $ngModel . '==\'' . $roomId . '\')}]"';
 		//$ngClass = 'ng-class="{\'' . $trueClass . '\': (' . $ngModel .  '==\'' . $roomId . '\'), \'' . $falseClass . '\': !(' . $ngModel . '==\'' . $roomId . '\')}"';
 		return $ngClass;
 	}
@@ -183,7 +195,8 @@ class CalendarRoomSelectHelper extends AppHelper {
 			foreach ($roomTreeList as $roomId => $tree) {
 				if (Hash::get($rooms, $roomId)) {
 					$nest = substr_count($tree, Room::$treeParser);
-					$ngClass = $this->__getNgClass($roomId, 'list-group-item-success', '', array('list-group-item'));
+					$ngClass = $this->__getNgClass(
+						$roomId, 'list-group-item-success', '', array('list-group-item'));
 
 					$html .= '<li ' . $ngClass . '>';
 					$html .= $this->_getRoomSelectCheckbox($roomId);

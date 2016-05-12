@@ -98,17 +98,22 @@ class CalendarDailyTimelineHelper extends CalendarMonthlyHelper {
 		$id = 'plan' . (string)$cnt;
 		//print_r($id);
 
-		if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
-			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
+		if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !==
+			$plan['CalendarEvent']['toTime']) {
+			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName(
+				$vars, $plan['CalendarEvent']['room_id']);
 			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
 
 			$html .= "<div class='calendar-daily-timeline-slit-deco {$calendarPlanMark}' id='" . $id . "'>";
 
 			$html .= "<div class='calendar-common-margin-padding'>";
 
-			$html .= "<div><p class='calendar-plan-clickable text-left calendar-plan-show' data-url='" . $url . "'>";
+			$html .= "<div><p class='calendar-plan-clickable text-left calendar-plan-show' ";
+			$html .= "data-url='" . $url . "'>";
 
-			$html .= "<small style='float:left'>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small>';
+			$html .= "<small style='float:left'>";
+			$html .= $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'];
+			$html .= '</small>';
 
 			// ワークフロー（一時保存/承認待ち、など）のマーク
 			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
@@ -155,10 +160,10 @@ class CalendarDailyTimelineHelper extends CalendarMonthlyHelper {
 		$hour = "";
 		$html = '';
 		for ($i=2; $i < 22 ; $i++) { //2時から22時まで
-			$html .= "<tr>";
-			$html .= "<td class='calendar-daily-timeline-col-periodtime calendar-tbl-td-pos'>";
-			$html .= "<div class='row'>";
-			$html .= "<div class='col-xs-12'>";
+			$html .= '<tr>';
+			$html .= '<td class="calendar-daily-timeline-col-periodtime calendar-tbl-td-pos">';
+			$html .= '<div class="row">';
+			$html .= '<div class="col-xs-12">';
 
 			$hour = str_pad($i, 2, 0, STR_PAD_LEFT);
 
@@ -167,7 +172,8 @@ class CalendarDailyTimelineHelper extends CalendarMonthlyHelper {
 			$html .= "</div>";
 			$html .= "<div class='clearfix'></div>";
 			$html .= "<div class='col-xs-12'>";
-			$html .= "<p class='calendar-plan-clickable text-right'><small><span class='glyphicon glyphicon-plus'></span></small></p>";
+			$html .= "<p class='calendar-plan-clickable text-right'><small>";
+			$html .= "<span class='glyphicon glyphicon-plus'></span></small></p>";
 			$html .= "</div>";
 			$html .= "<div class='clearfix'></div>";
 			$html .= "</div>";

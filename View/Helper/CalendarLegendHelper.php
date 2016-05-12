@@ -165,7 +165,8 @@ class CalendarLegendHelper extends AppHelper {
  * @param string $icon 表示アイコン
  * @return string 凡例HTML
  */
-	protected function _getLegend($vars, $roomId, $spaceName = '', $calendarPlanMark = '', $icon = '') {
+	protected function _getLegend($vars, $roomId, $spaceName = '', $calendarPlanMark = '',
+		$icon = '') {
 		if ($calendarPlanMark == '') {
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $roomId);
 		}
