@@ -78,9 +78,11 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		$url = '';
 		$html = '';
 		$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
-		$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
+		$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName(
+			$vars, $plan['CalendarEvent']['room_id']);
 		// 大枠
-		$html .= '<div class="row"><div class="col-xs-12">';
+		$html .= '<div class="row">';
+		$html .= '<div class="col-xs-12">';
 		// スペースごとの枠
 		$html .= '<div class="calendar-plan-mark ' . $calendarPlanMark . '">';
 		// ステータスラベル
@@ -88,7 +90,8 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
 		$html .= '</div>';
 		// 時間
-		if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
+		if ($fromTime !== $plan['CalendarEvent']['fromTime'] ||
+			$toTime !== $plan['CalendarEvent']['toTime']) {
 			$html .= '<p class="calendar-plan-time small">';
 			$html .= $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'];
 			$html .= '</p>';

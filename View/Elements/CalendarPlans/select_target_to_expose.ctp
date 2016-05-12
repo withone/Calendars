@@ -6,7 +6,7 @@
 
 		$selectedIdx = 2;	//ここでは、idx=2 つまり　デザインチームを初期値とする。
 
-		q
+		//q
 
 
 		$options = array(
@@ -73,7 +73,7 @@
 <?php
 	//'CalendarEvent'.Inflector::camelize('start_year'),
 
-	echo $this->element('NetCommons.datetimepicker');
+	//echo $this->element('NetCommons.datetimepicker');
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD',
 		//'minDate' => 2001, //HolidaysAppController::HOLIDAYS_DATE_MIN,

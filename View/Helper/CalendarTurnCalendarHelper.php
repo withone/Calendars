@@ -235,7 +235,8 @@ class CalendarTurnCalendarHelper extends AppHelper {
 				);
 				break;
 			case 'week':
-				$prevtimestamp = mktime(0, 0, 0, $vars['month'], ($vars['day'] - 7 ), $vars['year']);
+				$prevtimestamp =
+					mktime(0, 0, 0, $vars['month'], ($vars['day'] - 7 ), $vars['year']);
 				$ret = array(
 					'year' => sprintf("%04d", date('Y', $prevtimestamp)),
 					'month' => sprintf("%02d", date('m', $prevtimestamp)),
@@ -243,12 +244,14 @@ class CalendarTurnCalendarHelper extends AppHelper {
 				);
 				break;
 			case 'day':
-				$prevtimestamp = mktime(0, 0, 0, $vars['month'], ($vars['day'] - 1 ), $vars['year']);
+				$prevtimestamp =
+					mktime(0, 0, 0, $vars['month'], ($vars['day'] - 1 ), $vars['year']);
 				$ret = array(
 					'year' => sprintf("%04d", date('Y', $prevtimestamp)),
 					'month' => sprintf("%02d", date('m', $prevtimestamp)),
 					'day' => date('d', $prevtimestamp),
 				);
+				break;
 		}
 		return $ret;
 	}
@@ -264,10 +267,12 @@ class CalendarTurnCalendarHelper extends AppHelper {
 	protected function _getNextDate($type, $vars) {
 		$ret = array();
 		switch($type) {
-			case 'month':
+			case 'day':
+				$prevtimestamp = mktime(0, 0, 0, $vars['month'], ($vars['day'] + 1 ), $vars['year']);
 				$ret = array(
-					'year' => sprintf("%04d", $vars['mInfo']['yearOfNextMonth']),
-					'month' => sprintf("%02d", $vars['mInfo']['nextMonth']),
+					'year' => sprintf("%04d", date('Y', $prevtimestamp)),
+					'month' => sprintf("%02d", date('m', $prevtimestamp)),
+					'day' => date('d', $prevtimestamp),
 				);
 				break;
 			case 'week':
@@ -278,13 +283,12 @@ class CalendarTurnCalendarHelper extends AppHelper {
 					'day' => date('d', $prevtimestamp),
 				);
 				break;
-			case 'day':
-				$prevtimestamp = mktime(0, 0, 0, $vars['month'], ($vars['day'] + 1 ), $vars['year']);
+			case 'month':
 				$ret = array(
-					'year' => sprintf("%04d", date('Y', $prevtimestamp)),
-					'month' => sprintf("%02d", date('m', $prevtimestamp)),
-					'day' => date('d', $prevtimestamp),
+					'year' => sprintf("%04d", $vars['mInfo']['yearOfNextMonth']),
+					'month' => sprintf("%02d", $vars['mInfo']['nextMonth']),
 				);
+				break;
 		}
 		return $ret;
 	}

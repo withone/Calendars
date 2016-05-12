@@ -80,8 +80,8 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 			$cnt++; //プラン件数カウント
 			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
 			$html .= "<div class='calendar-schedule-row'>"; //１プランの開始
-
-			if ($prevUser != $plan['TrackableCreator']['username']) {
+			//if ($prevUser != $plan['TrackableCreator']['username']) {
+			if ($prevUser != $plan['TrackableCreator']['handlename']) {
 				if ($prevUser != '') {
 					//print_r($prevUser);
 					$html .= '</tbody></table></div></div>';
@@ -95,7 +95,8 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 				$html .= '<div class="col-xs-12 col-sm-10">';
 				$html .= '<table class="table table-hover calendar-tablestyle"><tbody>';
 			}
-			$prevUser = $plan['TrackableCreator']['username'];
+			//$prevUser = $plan['TrackableCreator']['username'];
+			$prevUser = $plan['TrackableCreator']['handlename'];
 			$html .= '<tr><td>';
 			// 1プラン-----
 			//予定が１件以上あるとき）

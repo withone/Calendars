@@ -328,17 +328,20 @@ class CalendarPlanHelper extends AppHelper {
 			'frame_id' => Current::read('Frame.id'),
 		);
 		if (isset($vars['return_style'])) {
-			$options['style'] = $vars['return_style'];	//cancel時の戻り先としてstyleを指定する。
+			//cancel時の戻り先としてstyleを指定する。
+			$options['style'] = $vars['return_style'];
 		}
 		if (isset($vars['return_sort'])) {
-			$options['sort'] = $vars['return_sort'];	//cancel時の戻り先としてsortオプションがあればそれもセットで指定する.
+			//cancel時の戻り先としてsortオプションがあればそれもセットで指定する.
+			$options['sort'] = $vars['return_sort'];
 		}
 		$cancelUrl = NetCommonsUrl::actionUrl($options);
 
 		//キャンセル、一時保存、決定ボタンのoption生成
 		list($cancelOptions, $saveTempOptions, $saveOptions) = $this->_generateBtnOptions($status);
 
-		return $this->Button->cancelAndSaveAndSaveTemp($cancelUrl, $cancelOptions, $saveTempOptions, $saveOptions);
+		return $this->Button->cancelAndSaveAndSaveTemp($cancelUrl, $cancelOptions,
+			$saveTempOptions, $saveOptions);
 	}
 
 /**
@@ -361,7 +364,8 @@ class CalendarPlanHelper extends AppHelper {
 			'name' => 'save_' . WorkflowComponent::STATUS_IN_DRAFT,
 			'ng-class' => '{disabled: sending}'
 		);
-		if (Current::permission('content_publishable') && ($status === WorkflowComponent::STATUS_APPROVED)) {
+		if (Current::permission('content_publishable') &&
+			($status === WorkflowComponent::STATUS_APPROVED)) {
 			$saveTempOptions = array(
 				'name' => 'save_' . WorkflowComponent::STATUS_DISAPPROVED,
 				'label' => __d('net_commons', 'Disapproval'),

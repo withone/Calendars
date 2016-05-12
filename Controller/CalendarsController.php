@@ -260,11 +260,11 @@ class CalendarsController extends CalendarsAppController {
 			'conditions' => array('frame_key' => Current::read('Frame.key')),
 		));
 
-		//開始位置（今日/前日）
-		$vars['start_pos'] = $frameSetting['CalendarFrameSetting']['start_pos'];
-
 		//表示日数（n日分）
 		$vars['display_count'] = $frameSetting['CalendarFrameSetting']['display_count'];
+
+		//開始位置（今日/前日）
+		$vars['start_pos'] = $frameSetting['CalendarFrameSetting']['start_pos'];
 
 		$vars['isCollapsed'] = array_fill(0, $vars['display_count'] + 1, true);
 

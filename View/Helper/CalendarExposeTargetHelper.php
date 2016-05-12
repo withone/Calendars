@@ -42,7 +42,8 @@ class CalendarExposeTargetHelper extends AppHelper {
  * @param int $myself 自分自身のroom_id
  * @return string HTML
  */
-	public function makeSelectExposeTargetHtml($frameId, $languageId, $vars, $frameSetting, $options, $myself) {
+	public function makeSelectExposeTargetHtml($frameId, $languageId, $vars,
+		$frameSetting, $options, $myself) {
 		//option配列イメージ
 		/*
 		$options = array(
@@ -57,7 +58,8 @@ class CalendarExposeTargetHelper extends AppHelper {
 
 		//CakeLog::debug("DBG: Current_room_id[" . Current::read('Room.id') . "]");
 
-		$html = $this->NetCommonsForm->label('CalendarActionPlan.plan_room_id' . Inflector::camelize('room_id'),
+		$html = $this->NetCommonsForm->label(
+			'CalendarActionPlan.plan_room_id' . Inflector::camelize('room_id'),
 			__d('calendars', '公開対象') . $this->_View->element('NetCommons.required'));
 
 		$value = ($myself) ? $myself : Current::read('Room.id');

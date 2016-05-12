@@ -45,7 +45,8 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 		$roomName = '';
 		foreach ($roomsLanguages as $room) {
 			//print_r($room);
-			if ($room['RoomsLanguages']['room_id'] == $roomId && $room['RoomsLanguages']['language_id'] == $languageId) {
+			if ($room['RoomsLanguages']['room_id'] == $roomId &&
+				$room['RoomsLanguages']['language_id'] == $languageId) {
 				$roomName = $room['RoomsLanguages']['name'];
 			}
 		}
@@ -101,7 +102,8 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 		$url = '';
 		$html = '';
 
-		$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan['CalendarEvent']['room_id']);
+		$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName(
+			$vars, $plan['CalendarEvent']['room_id']);
 
 		$html = "<div class='calendar-plan-mark {$calendarPlanMark}'>";
 
@@ -110,7 +112,8 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 		$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
 		$html .= '</div>';
 		$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
-		if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !== $plan['CalendarEvent']['toTime']) {
+		if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !==
+			$plan['CalendarEvent']['toTime']) {
 			$html .= "<p class='calendar-daily-nontimeline-plan calendar-plan-time small'>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</p>';
 			//$html .= "<span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>" . $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</small></span>';
 		}
