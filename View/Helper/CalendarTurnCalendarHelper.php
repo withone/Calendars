@@ -65,7 +65,8 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		$html .= '<div class="row"><div class="col-xs-12 col-sm-2 col-sm-push-10">';
 		$html .= '<div class="pull-right">';
 
-		$url = $this->CalendarUrl->makeEasyEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
+		//$url = $this->CalendarUrl->makeEasyEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
+		$url = $this->CalendarUrl->makeEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
 
 		$html .= '<a class="btn btn-success" href="' . $url . '">';
 		$html .= '<span class="glyphicon glyphicon-plus" tooltip="';

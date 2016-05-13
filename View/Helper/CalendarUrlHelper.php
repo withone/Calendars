@@ -55,9 +55,9 @@ class CalendarUrlHelper extends AppHelper {
 	}
 
 /**
- * makeEasyEditUrl
+ * makeEditUrl
  *
- * 簡易編集画面URL生成
+ * 編集画面URL生成
  *
  * @param int $year 年
  * @param int $month 月
@@ -65,11 +65,12 @@ class CalendarUrlHelper extends AppHelper {
  * @param array &$vars カレンダー情報
  * @return string Url
  */
-	public function makeEasyEditUrl($year, $month, $day, &$vars) {
+	public function makeEditUrl($year, $month, $day, &$vars) {
 		$options = array(
 			'controller' => 'calendar_plans',
 			'action' => 'edit',
-			'style' => 'easy',
+			//'style' => 'easy',
+			'style' => 'detail',
 			'year' => $year,
 			'month' => $month,
 			'day' => $day,

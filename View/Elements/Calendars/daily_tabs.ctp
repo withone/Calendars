@@ -2,7 +2,8 @@
 	<div class="col-xs-12 col-sm-2 col-sm-push-10">
 		<div class="pull-right">
 			<?php
-				$url = $this->CalendarUrl->makeEasyEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
+				//$url = $this->CalendarUrl->makeEasyEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
+				$url = $this->CalendarUrl->makeEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
 			?>
 
 			<a class="btn btn-success" href='<?php echo $url ?>'>

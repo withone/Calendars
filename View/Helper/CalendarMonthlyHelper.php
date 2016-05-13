@@ -325,7 +325,8 @@ class CalendarMonthlyHelper extends AppHelper {
 	public function makeGlyphiconPlusWithUrl($year, $month, $day, &$vars) {
 		$html = '';
 		if (Current::permission('content_creatable')) {
-			$url = $this->CalendarUrl->makeEasyEditUrl($year, $month, $day, $vars);
+			//$url = $this->CalendarUrl->makeEasyEditUrl($year, $month, $day, $vars);
+			$url = $this->CalendarUrl->makeEditUrl($year, $month, $day, $vars);
 			$html .= "<a class='pull-right calendar-edit-plus-icon' href='" . $url . "'>+</a>";
 		}
 		return $html;

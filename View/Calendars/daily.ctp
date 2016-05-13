@@ -12,7 +12,8 @@
 	<div class="col-xs-12 col-sm-2 col-sm-push-10">
 		<div class="text-right">
 			<?php
-				$url = $this->CalendarUrl->makeEasyEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
+				//$url = $this->CalendarUrl->makeEasyEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
+				$url = $this->CalendarUrl->makeEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
 				echo $this->LinkButton->add('', $url);
 			?>
 		</div>

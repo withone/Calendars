@@ -1,11 +1,9 @@
-<?php
-?>
 <?php echo $this->element('Calendars.scripts'); ?>
 
 <div ng-controller="CalendarsDetailEdit" class="block-setting-body"
 	ng-init="initialize(<?php echo h(json_encode(array('frameId' => Current::read('Frame.id')))); ?>)">
 
-<div class='h3'><?php echo __d('calendars', 'カレンダー詳細'); ?></div>
+<div class='h3'><?php echo __d('calendars', '予定の追加'); ?></div>
 <div class="panel panel-default">
 <?php echo $this->element('Calendars.CalendarPlans/edit_form_create'); ?>
 
@@ -26,20 +24,6 @@
 </div><!-- form-groupおわり-->
 
 
-<div class="form-group" name="selectRoomForOpen">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
-
-	<?php
-
-		if (isset($event['CalendarEvent']['room_id'])) {
-			//CakeLog::debug("DBG: event room_id[" . $event['CalendarEvent']['room_id'] . "]");
-			$myself = $event['CalendarEvent']['room_id'];	//FIXME: 本当は、RoomsをTreeビヘイビアのparent()を使って空間IDに変換する必要あり。要改修。
-		}
-		echo $this->CalendarExposeTarget->makeSelectExposeTargetHtml($frameId, $languageId, $vars, $frameSetting, $exposeRoomOptions, $myself);
-	?>
-
-</div><!-- col-sm-10おわり -->
-</div><!-- form-groupおわり-->
 
 <!-- 予定の共有 START -->
 <div class="form-group calendar-plan-share_<?php echo $frameId; ?>" name="planShare" style="display: none; margin-top:0.5em;">
@@ -102,7 +86,7 @@
 <div class="form-group" name="inputStartEndDateTime">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
 	<label>
-		<?php echo __d('calendars', '開始日（時）');	?>
+		<?php echo __d('calendars', '開始');	?>
 	</label>
 </div><!-- col-sm-10おわり-->
 
@@ -114,8 +98,6 @@
 <!--<div class="input-group">--><!-- 表示条件１のinput-group -->
 
 <?php
-	//echo $this->element('NetCommons.datetimepicker');	//これを頭にいれること！
-
 	$date = '';
 	$ngModel = 'startDate[' . $frameId . ']';
 ?>
@@ -181,7 +163,7 @@
 <br />
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
 	<label>
-		<?php echo __d('calendars', '終了日（時）');	?>
+		<?php echo __d('calendars', '終了');	?>
 	</label>
 </div><!-- col-sm-10おわり-->
 
@@ -217,6 +199,7 @@
 		//////'ng-model' => $ngModel,
 		//'ng-show' => $useTime,		//表示条件１
 		//'ng-style' => "{float: 'left'}",
+
 	));
 ?>
 	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div> -->
@@ -254,80 +237,20 @@
 
 </div><!-- form-group name="inputStartEndDateTime"おわり -->
 </div><!-- kuma add -->
-<div><!-- kuma add -->
-<div class="form-group" name="selectTimeZone">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
-
-<br />
-<?php
-		$options = Hash::combine(CalendarsComponent::$tzTbl, '{s}.2', '{s}.0');
-
-		echo $this->NetCommonsForm->label('CalendarActionPlan.timezone_offset' . Inflector::camelize('timezone'), __d('calendars', 'タイムゾーン'));
-
-		echo $this->NetCommonsForm->select('CalendarActionPlan.timezone_offset', $options, array(
-			//'value' => __d('calendars', '_TZ_GMTP9'),		//valueは初期値
-			'value' => Current::read('User.timezone'),		//valueは初期値
-			'class' => 'form-control',
-			'empty' => false,
-			'required' => true,
-		));
-?>
-
-</div><!-- col-sm-10おわり -->
-</div><!-- form-groupおわり-->
-
-<div class="form-group" name="inputLocation">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
-	<label><?php echo __d('calendars', '場所'); ?></label>
-	<?php echo $this->NetCommonsForm->input('CalendarActionPlan.location', array(
-		'type' => 'text',
-		'label' => false,
-		//'required' => true,
-		'div' => false,
-	)); ?>
-</div><!-- col-sm-10おわり -->
-</div><!-- form-groupおわり -->
-
-<div class="form-group" name="inputContact">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
-	<label><?php echo __d('calendars', '連絡先'); ?></label>
-	<?php echo $this->NetCommonsForm->input('CalendarActionPlan.contact', array(
-		'type' => 'text',
-		'label' => false,
-		//'required' => true,
-		'div' => false,
-	)); ?>
-</div><!-- col-sm-10おわり -->
-</div><!-- form-groupおわり -->
 
 
-<div class="form-group" name="inputDescription" ng-controller="CalendarDetailEditWysiwyg">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
-	<label>
-		<?php echo __d('calendars', '詳細'); ?>
-	</label>
-</div>
-<div class="col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 calendar-detailedit-detail">
-	<?php echo $this->NetCommonsForm->wysiwyg('CalendarActionPlan.description', array(
-		'label' => false,
-		'required' => false,
-	));
-	?>
-<div class="clearfix"></div>
 
-</div><!-- col-sm-10おわり -->
-</div><!-- form-groupおわり-->
 
 
 <div class="form-group" name="inputRruleInfo">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
 
-	<uib-accordion close-others="oneAtATime">
+	<!-- <uib-accordion close-others="oneAtATime"> -->
 
-		<uib-accordion-group is-open="status.open">
-			<uib-accordion-heading>
+		<!-- <uib-accordion-group is-open="status.open"> -->
+			<!-- <uib-accordion-heading>
 				繰返しの予定<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-			</uib-accordion-heading>
+			</uib-accordion-heading> -->
 
 			<!-- ここからアコーディオンの中身START -->
 
@@ -404,7 +327,7 @@
 
 ?>
 					</ul>
-				</div><!-- col-sm-12終わり-->
+				<!-- </div> --><!-- col-sm-12終わり-->
 				</div><!-- form-group終わり-->
 
 <?php
@@ -729,12 +652,110 @@
 
 			<!-- ここからアコーディオンの中身END -->
 
-		</uib-accordion-group>
+		<!-- </uib-accordion-group> -->
 
-	</uib-accordion>
+	<!-- </uib-accordion> -->
 
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="form-group" name="selectRoomForOpen">
+<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+
+	<?php
+
+		if (isset($event['CalendarEvent']['room_id'])) {
+			//CakeLog::debug("DBG: event room_id[" . $event['CalendarEvent']['room_id'] . "]");
+			$myself = $event['CalendarEvent']['room_id'];	//FIXME: 本当は、RoomsをTreeビヘイビアのparent()を使って空間IDに変換する必要あり。要改修。
+		}
+		echo $this->CalendarExposeTarget->makeSelectExposeTargetHtml($frameId, $languageId, $vars, $frameSetting, $exposeRoomOptions, $myself);
+	?>
+
+</div><!-- col-sm-10おわり -->
+</div><!-- form-groupおわり-->
+
+
+
+
+
+
+<div><!-- kuma add -->
+<div class="form-group" name="selectTimeZone">
+<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+
+<br />
+<?php
+		$options = Hash::combine(CalendarsComponent::$tzTbl, '{s}.2', '{s}.0');
+
+		echo $this->NetCommonsForm->label('CalendarActionPlan.timezone_offset' . Inflector::camelize('timezone'), __d('calendars', 'タイムゾーン'));
+
+		echo $this->NetCommonsForm->select('CalendarActionPlan.timezone_offset', $options, array(
+			//'value' => __d('calendars', '_TZ_GMTP9'),		//valueは初期値
+			'value' => Current::read('User.timezone'),		//valueは初期値
+			'class' => 'form-control',
+			'empty' => false,
+			'required' => true,
+		));
+?>
+
+</div><!-- col-sm-10おわり -->
+</div><!-- form-groupおわり-->
+
+<div class="form-group" name="inputLocation">
+<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+	<label><?php echo __d('calendars', '場所'); ?></label>
+	<?php echo $this->NetCommonsForm->input('CalendarActionPlan.location', array(
+		'type' => 'text',
+		'label' => false,
+		//'required' => true,
+		'div' => false,
+	)); ?>
+</div><!-- col-sm-10おわり -->
+</div><!-- form-groupおわり -->
+
+<div class="form-group" name="inputContact">
+<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+	<label><?php echo __d('calendars', '連絡先'); ?></label>
+	<?php echo $this->NetCommonsForm->input('CalendarActionPlan.contact', array(
+		'type' => 'text',
+		'label' => false,
+		//'required' => true,
+		'div' => false,
+	)); ?>
+</div><!-- col-sm-10おわり -->
+</div><!-- form-groupおわり -->
+
+
+<div class="form-group" name="inputDescription" ng-controller="CalendarDetailEditWysiwyg">
+<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+	<label>
+		<?php echo __d('calendars', '詳細'); ?>
+	</label>
+</div>
+<div class="col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 calendar-detailedit-detail">
+	<?php echo $this->NetCommonsForm->wysiwyg('CalendarActionPlan.description', array(
+		'label' => false,
+		'required' => false,
+	));
+	?>
+<div class="clearfix"></div>
+
+</div><!-- col-sm-10おわり -->
+</div><!-- form-groupおわり-->
+
 
 
 

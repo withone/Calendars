@@ -295,7 +295,8 @@ class CalendarPlanHelper extends AppHelper {
 	public function makePlanListGlyphiconPlusWithUrl($year, $month, $day, &$vars) {
 		$html = '';
 		if (Current::permission('content_creatable')) {
-			$url = $this->CalendarUrl->makeEasyEditUrl($year, $month, $day, $vars);
+			//$url = $this->CalendarUrl->makeEasyEditUrl($year, $month, $day, $vars);
+			$url = $this->CalendarUrl->makeEditUrl($year, $month, $day, $vars);
 			$html .= "<div class='row' style='margin-top: 0.5em'>";
 			$html .= "<div class='col-xs-12 text-right'>";
 			$html .= "<div class='btn btn-default calendar-easy-edit-area' data-url='" . $url . "'>";
