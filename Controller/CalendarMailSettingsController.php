@@ -30,11 +30,14 @@ class CalendarMailSettingsController extends MailSettingsController {
 		'Blocks.BlockTabs' => array(
 			//画面上部のタブ設定
 			'mainTabs' => array(
-				'frame_settings' => array('url' => array('controller' => 'calendar_frame_settings', 'action' => 'edit')),	//表示設定変>更
+				'frame_settings' => array(
+					'url' => array(	//表示設定変>更
+						'controller' => 'calendar_frame_settings', 'action' => 'edit')),
 				'role_permissions' => array(
 					'url' => array('controller' => 'calendar_block_role_permissions', 'action' => 'edit'),
 				),
-				'mail_settings' => array(		//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
+				//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
+				'mail_settings' => array(
 					'url' => array('controller' => 'calendar_mail_settings', 'action' => 'edit'),
 				),
 			),

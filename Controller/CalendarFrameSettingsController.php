@@ -64,11 +64,15 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 		'Blocks.BlockTabs' => array(
 			//画面上部のタブ設定
 			'mainTabs' => array(
-				'frame_settings' => array('url' => array('controller' => 'calendar_frame_settings', 'action' => 'edit')),	//表示設定変更
+				'frame_settings' => array(
+					'url' => array(
+						'controller' => 'calendar_frame_settings',
+						'action' => 'edit')),	//表示設定変更
 				'role_permissions' => array(
 					'url' => array('controller' => 'calendar_block_role_permissions', 'action' => 'edit'),
 				),
-				'mail_settings' => array(		//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
+				'mail_settings' => array(
+				//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
 					'url' => array('controller' => 'calendar_mail_settings', 'action' => 'edit'),
 				),
 			),
@@ -105,12 +109,18 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 	public function __construct($id = false, $table = null, $ds = null) {
 		parent::__construct($id, $table, $ds);
 		$this->_displayTypeOptions = array(
-			CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY => __d('calendars', '月表示（縮小）'),
-			CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY => __d('calendars', '月表示（拡大）'),
-			CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY => __d('calendars', '週表示'),
-			CalendarsComponent::CALENDAR_DISP_TYPE_DAILY => __d('calendars', '日表示'),
-			CalendarsComponent::CALENDAR_DISP_TYPE_TSCHEDULE => __d('calendars', 'スケジュール（時間順）'),
-			CalendarsComponent::CALENDAR_DISP_TYPE_MSCHEDULE => __d('calendars', 'スケジュール（会員順）'),
+			CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY =>
+				__d('calendars', '月表示（縮小）'),
+			CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY =>
+				__d('calendars', '月表示（拡大）'),
+			CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY =>
+				__d('calendars', '週表示'),
+			CalendarsComponent::CALENDAR_DISP_TYPE_DAILY =>
+				__d('calendars', '日表示'),
+			CalendarsComponent::CALENDAR_DISP_TYPE_TSCHEDULE =>
+				__d('calendars', 'スケジュール（時間順）'),
+			CalendarsComponent::CALENDAR_DISP_TYPE_MSCHEDULE =>
+				__d('calendars', 'スケジュール（会員順）'),
 		);
 	}
 
@@ -133,12 +143,14 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 		if ($this->request->is('put')) {
 			//登録(PUT)処理
 			$data = $this->request->data;
-			$data['CalendarFrameSetting']['display_type'] = (int)$data['CalendarFrameSetting']['display_type'];
+			$data['CalendarFrameSetting']['display_type'] =
+				(int)$data['CalendarFrameSetting']['display_type'];
 			if ($this->CalendarFrameSetting->saveFrameSetting($data)) {
 				$this->redirect(NetCommonsUrl::backToPageUrl());
 				return;
 			}
-			$this->NetCommons->handleValidationError($this->CalendarFrameSetting->validationErrors);	//NC3用のvalidateErrorHandler.エラー時、非ajaxならSession->setFalsh()する.又は.(ajaxの時は)jsonを返す.
+			$this->NetCommons->handleValidationError($this->CalendarFrameSetting->validationErrors);
+			//NC3用のvalidateErrorHandler.エラー時、非ajaxならSession->setFalsh()する.又は.(ajaxの時は)jsonを返す.
 		}
 		//指定したフレームキーのデータセット
 		//
@@ -163,7 +175,8 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 
 		if (! $this->request->is('put')) {
 			$this->request->data['CalendarFrameSetting'] = $setting['CalendarFrameSetting'];
-			$this->request->data['CalendarFrameSettingSelectRoom'] = $this->CalendarFrameSetting->getSelectRooms($settingId);
+			$this->request->data['CalendarFrameSettingSelectRoom'] =
+				$this->CalendarFrameSetting->getSelectRooms($settingId);
 		}
 
 		// 空間情報
@@ -178,7 +191,8 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 		$this->set('rooms', $rooms);
 		$this->set('roomTreeList', $roomTreeList);
 		// フレーム情報
-		$this->request->data['Frame'] = Current::read('Frame');	//カレンダーではsaveAssociated()はつかわないので外す。
+		//カレンダーではsaveAssociated()はつかわないので外す。
+		$this->request->data['Frame'] = Current::read('Frame');
 		// カレンダー表示種別
 		$this->set('displayTypeOptions', $this->_displayTypeOptions);
 	}
@@ -190,7 +204,8 @@ class CalendarFrameSettingsController extends CalendarsAppController {
  */
 	protected function _getRoom($spaceId) {
 		//$rooms = $this->Room->find('threaded', $this->Room->getReadableRoomsConditions($spaceId));
-		$rooms = $this->Room->find('all', $this->Room->getReadableRoomsConditions(array('Room.space_id' => $spaceId)));
+		$rooms = $this->Room->find('all',
+			$this->Room->getReadableRoomsConditions(array('Room.space_id' => $spaceId)));
 		$rooms = Hash::combine($rooms, '{n}.Room.id', '{n}');
 		return $rooms;
 	}
@@ -204,7 +219,9 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 	protected function _getRoomTree($spaceRoomId, $rooms) {
 		// ルームTreeリスト取得
 		$roomTreeList = $this->Room->generateTreeList(
-		array('Room.id' => array_merge(array($spaceRoomId), array_keys($rooms))), null, null, Room::$treeParser);
+			array(
+				'Room.id' => array_merge(
+					array($spaceRoomId), array_keys($rooms))), null, null, Room::$treeParser);
 		return $roomTreeList;
 	}
 }

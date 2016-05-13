@@ -52,8 +52,10 @@ class CalendarPlansController extends CalendarsAppController {
 		'NetCommons.Permission' => array(
 			//アクセスの権限
 			'allow' => array(
-				'edit,add,delete' => 'content_creatable',	//indexとviewは祖先基底クラスNetCommonsAppControllerで許可済
-				'daylist,show' => 'content_readable', //null, //content_readableは全員に与えられているので、チェック省略
+				//indexとviewは祖先基底クラスNetCommonsAppControllerで許可済
+				'edit,add,delete' => 'content_creatable',
+				//null, //content_readableは全員に与えられているので、チェック省略
+				'daylist,show' => 'content_readable',
 			),
 		),
 		'Paginator',
@@ -86,7 +88,8 @@ class CalendarPlansController extends CalendarsAppController {
 	public function beforeFilter() {
 		parent::beforeFilter();
 		if (! Current::read('Block.id')) {
-			CakeLog::error(__d('calendars', 'ブロックIDがないのでブランクページを表示します'));
+			CakeLog::error(
+				__d('calendars', 'ブロックIDがないのでブランクページを表示します'));
 			$this->setAction('emptyRender');
 			return false;
 		}
@@ -109,8 +112,10 @@ class CalendarPlansController extends CalendarsAppController {
 		$calendarRrule = $this->CalendarRrule->getWorkflowContents('first', array(
 			'recursive' => -1,
 			'conditions' => array(
-				$this->CalendarRrule->alias . '.calendar_id' => $this->data['CalendarDeletePlan']['calendar_id'],
-				$this->CalendarRrule->alias . '.key' => $this->data['CalendarDeletePlan']['calendar_rrule_key']
+				$this->CalendarRrule->alias . '.calendar_id' =>
+					$this->data['CalendarDeletePlan']['calendar_id'],
+				$this->CalendarRrule->alias . '.key' =>
+					$this->data['CalendarDeletePlan']['calendar_rrule_key']
 			)
 		));
 
@@ -124,7 +129,8 @@ class CalendarPlansController extends CalendarsAppController {
 		$count = $this->CalendarEvent->find('count', array(
 			'recursive' => -1,
 			'conditions' => array(
-				$this->CalendarEvent->alias . '.calendar_rrule_id' => $this->data['CalendarDeletePlan']['calendar_rrule_id'],
+				$this->CalendarEvent->alias . '.calendar_rrule_id' =>
+					$this->data['CalendarDeletePlan']['calendar_rrule_id'],
 				$this->CalendarEvent->alias . '.id' => $this->data['CalendarDeletePlan']['calendar_event_id'],
 			),
 		));
@@ -169,7 +175,9 @@ class CalendarPlansController extends CalendarsAppController {
  * @return void
  */
 	public function add() {
-		$this->view = 'edit';	//add()でレンダリングするviewファイルの名前をadd.ctpからedit.ctpに変える。これをしないと、View/CalendarPlans/add.ctpがないとの警告がでる。
+		//add()でレンダリングするviewファイルの名前をadd.ctpからedit.ctpに変える。
+		//これをしないと、View/CalendarPlans/add.ctpがないとの警告がでる。
+		$this->view = 'edit';
 		if ($this->request->is('post')) {
 			//登録処理
 
@@ -177,7 +185,8 @@ class CalendarPlansController extends CalendarsAppController {
 
 			$this->CalendarActionPlan->set($this->request->data);
 
-			$this->CalendarActionPlan->calendarProofreadValidationErrors = array();	//校正用配列の準備
+			//校正用配列の準備
+			$this->CalendarActionPlan->calendarProofreadValidationErrors = array();
 			if (!$this->CalendarActionPlan->validates()) {
 				//失敗なら、エラーメッセージを保持したまま、edit()を実行し、easy_edit.ctpを表示
 
@@ -188,10 +197,15 @@ class CalendarPlansController extends CalendarsAppController {
 				//$this->CalendarActionPlan->validationErrors['rrule_interval'] = array();
 				//$this->CalendarActionPlan->validationErrors['rrule_interval']['DAILY'] = array();
 				//$this->CalendarActionPlan->validationErrors['rrule_interval']['DAILY'][] = 'aaabbbccc';
-				//CakeLog::debug("DBG: x1: CalendarActionPlan_vaidationErrors[" . print_r($this->CalendarActionPlan->validationErrors, true) . "]");
-				$this->NetCommons->handleValidationError($this->CalendarActionPlan->validationErrors);	//これでエラーmsgが画面上部に数秒間flashされる。
+				//CakeLog::debug(
+				//	"DBG: x1: CalendarActionPlan_vaidationErrors[" . print_r(
+				//	$this->CalendarActionPlan->validationErrors, true) . "]");
+				//これでエラーmsgが画面上部に数秒間flashされる。
+				$this->NetCommons->handleValidationError($this->CalendarActionPlan->validationErrors);
 
-				$this->request->params['named']['style'] = (isset($this->request->data['CalendarActionPlan']['is_detail']) && $this->request->data['CalendarActionPlan']['is_detail']) ? 'detail' : 'easy';
+				$this->request->params['named']['style'] =
+					(isset($this->request->data['CalendarActionPlan']['is_detail']) &&
+					$this->request->data['CalendarActionPlan']['is_detail']) ? 'detail' : 'easy';
 
 				$this->setAction('edit');
 				return;
@@ -232,35 +246,45 @@ class CalendarPlansController extends CalendarsAppController {
 		);
 		$event = $this->CalendarEvent->find('first', $options);
 		if (!$event) {
-			CakeLog::error(__d('calendars', '対象eventがないのでブランクページを表示します'));
+			CakeLog::error(__d('calendars',
+				'対象eventがないのでブランクページを表示します'));
 			$this->setAction('emptyRender');
 			return;
 		}
 		$roomLang = $this->RoomsLanguage->find('first', array(
 			'conditions' => array(
 				$this->RoomsLanguage->alias . '.room_id' => $event[$this->CalendarEvent->alias]['room_id'],
-				$this->RoomsLanguage->alias . '.language_id' => $event[$this->CalendarRrule->alias]['language_id'],
+				$this->RoomsLanguage->alias . '.language_id' =>
+					$event[$this->CalendarRrule->alias]['language_id'],
 			),
 			'recursive' => -1,
 		));
 		$shareUsers = $this->CalendarEventShareUser->find('all', array(
 			'conditions' => array(
-				$this->CalendarEventShareUser->alias . '.calendar_event_id' => $event[$this->CalendarEvent->alias]['id'],
+				$this->CalendarEventShareUser->alias . '.calendar_event_id' =>
+					$event[$this->CalendarEvent->alias]['id'],
 			),
 			'recursive' => -1,
 			'order' => array($this->CalendarEventShareUser->alias . '.share_user'),
 		));
 		$shareUserInfos = array();
 		foreach ($shareUsers as $shareUser) {
-			$shareUserInfos[] = $this->User->getUser($shareUser[$this->CalendarEventShareUser->alias]['share_user'], $event[$this->CalendarEvent->alias]['language_id']);
+			$shareUserInfos[] =
+				$this->User->getUser(
+					$shareUser[$this->CalendarEventShareUser->alias]['share_user'],
+					$event[$this->CalendarEvent->alias]['language_id']);
 		}
 
-		$createdUserInfo = $this->User->getUser($event[$this->CalendarEvent->alias]['created_user'], $event[$this->CalendarEvent->alias]['language_id']);
+		$createdUserInfo =
+			$this->User->getUser($event[$this->CalendarEvent->alias]['created_user'],
+			$event[$this->CalendarEvent->alias]['language_id']);
 
 		$frameId = Current::read('Frame.id');
 		$languageId = Current::read('Language.id');
 		$isRepeat = $event['CalendarRrule']['rrule'] !== '' ? true : false;
-		$this->set(compact('event', 'roomLang', 'shareUserInfos', 'createdUserInfo', 'frameId', 'languageId', 'isRepeat', 'vars'));
+		$this->set(
+			compact('event', 'roomLang', 'shareUserInfos', 'createdUserInfo', 'frameId',
+			'languageId', 'isRepeat', 'vars'));
 		$this->render($ctpName);
 	}
 
@@ -299,10 +323,12 @@ class CalendarPlansController extends CalendarsAppController {
 		));
 		$frameSettingId = $frameSetting['CalendarFrameSetting']['id'];
 
-		$this->request->data['CalendarFrameSettingSelectRoom'] = $this->CalendarFrameSetting->getSelectRooms($frameSettingId);
+		$this->request->data['CalendarFrameSettingSelectRoom'] =
+			$this->CalendarFrameSetting->getSelectRooms($frameSettingId);
 
 		//公開対象一覧のoptions配列と、自分自身のroom_idを取得
-		list($exposeRoomOptions, $myself) = $this->CalendarActionPlan->getExposeRoomOptions($frameSetting);
+		list($exposeRoomOptions, $myself) =
+			$this->CalendarActionPlan->getExposeRoomOptions($frameSetting);
 
 		//eメール通知の選択options配列を取得
 		$emailOptions = $this->CalendarActionPlan->getNoticeEmailOption();
@@ -317,14 +343,16 @@ class CalendarPlansController extends CalendarsAppController {
 			);
 			$event = $this->CalendarEvent->find('first', $options);
 			if (!$event) {
-				CakeLog::error(__d('calendars', '対象eventがないのでeventを空にして下に流します。'));
+				CakeLog::error(
+					__d('calendars', '対象eventがないのでeventを空にして下に流します。'));
 				$event = array();
 			}
 		}
 
 		$frameId = Current::read('Frame.id');
 		$languageId = Current::read('Language.id');
-		$this->set(compact('frameId', 'languageId', 'vars', 'frameSetting', 'exposeRoomOptions', 'myself', 'emailOptions', 'event'));
+		$this->set(compact('frameId', 'languageId', 'vars', 'frameSetting',
+			'exposeRoomOptions', 'myself', 'emailOptions', 'event'));
 		$this->render($ctpName);
 	}
 

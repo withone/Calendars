@@ -161,7 +161,8 @@ class CalendarsAppController extends AppController {
 		$this->setReturnVars($vars);
 
 		//mInfo情報
-		$vars['mInfo'] = CalendarTime::getMonthlyInfo($vars['year'], $vars['month']);	//月カレンダー情報
+		//月カレンダー情報
+		$vars['mInfo'] = CalendarTime::getMonthlyInfo($vars['year'], $vars['month']);
 		//前月・当月・次月の祝日情報を取り出す。
 		$vars['holidays'] = $this->Holiday->getHoliday(
 			sprintf("%04d-%02d-%02d",

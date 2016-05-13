@@ -148,7 +148,8 @@ class CalendarsController extends CalendarsAppController {
 		));
 		//表示方法設定で指定した選択ルーム群を取り出す
 		//なお選択したルーム群＋全会員(room_id = CalendarsComponent::CALENDAR_ALLMEMBERS)も含まれている。
-		$vars['selectRooms'] = $this->CalendarFrameSetting->getSelectRooms($settingInfo['CalendarFrameSetting']['id']);
+		$vars['selectRooms'] =
+			$this->CalendarFrameSetting->getSelectRooms($settingInfo['CalendarFrameSetting']['id']);
 		*/
 		$vars['selectRooms'] = array();	//マージ前の暫定
 		$vars['parentIdType'] = array(
@@ -177,7 +178,8 @@ class CalendarsController extends CalendarsAppController {
 		));
 
 		//公開対象一覧のoptions配列と、自分自身のroom_idを取得
-		list($exposeRoomOptions, $myself) = $this->CalendarActionPlan->getExposeRoomOptions($frameSetting);
+		list($exposeRoomOptions, $myself) =
+			$this->CalendarActionPlan->getExposeRoomOptions($frameSetting);
 		$vars['exposeRoomOptions'] = $exposeRoomOptions;
 		$vars['myself'] = $myself;
 
@@ -191,7 +193,8 @@ class CalendarsController extends CalendarsAppController {
 		));
 		//表示方法設定で指定した選択ルーム群を取り出す
 		//なお選択したルーム群＋全会員(room_id = CalendarsComponent::CALENDAR_ALLMEMBERS)も含まれている。
-		$vars['selectRooms'] = $this->CalendarFrameSetting->getSelectRooms($settingInfo['CalendarFrameSetting']['id']);
+		$vars['selectRooms'] =
+			$this->CalendarFrameSetting->getSelectRooms($settingInfo['CalendarFrameSetting']['id']);
 		*/
 		$vars['selectRooms'] = array();	//マージ前の暫定
 		$vars['parentIdType'] = array(
@@ -330,7 +333,8 @@ class CalendarsController extends CalendarsAppController {
  * @return array $vars 日次カレンダー変数
  */
 	public function getDailyVars($vars) {
-		if (isset($this->request->params['named']['tab']) && $this->request->params['named']['tab'] === 'timeline') {
+		if (isset($this->request->params['named']['tab']) &&
+			$this->request->params['named']['tab'] === 'timeline') {
 			$vars = $this->getDailyTimelineVars($vars);
 		} else {
 			$vars = $this->getDailyListVars($vars);
@@ -355,7 +359,8 @@ class CalendarsController extends CalendarsAppController {
  * @return array $vars スケジュール変数
  */
 	public function getScheduleVars($vars) {
-		if (isset($this->request->params['named']['sort']) && $this->request->params['named']['sort'] === 'member') {
+		if (isset($this->request->params['named']['sort']) &&
+			$this->request->params['named']['sort'] === 'member') {
 			$vars = $this->getMemberScheduleVars($vars);
 		} else {
 			$vars = $this->getTimeScheduleVars($vars);
