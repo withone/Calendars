@@ -15,10 +15,31 @@
 
 <!-- <div class="panel-body"> -->
 
+
+
+<!--- 編集ボタン -->
+
+		<?php /*if ($this->Workflow->canEdit('CalendarPlan', $event['CalendarEvent'])) :*/ ?>
+			<div class="text-right">
+				<?php echo $this->Button->editLink('',  array(
+			'controller' => 'calendar_plans',
+			'action' => 'edit',
+			'style' => 'detail',
+			'year' => $vars['year'],
+			'month' => $vars['month'],
+			'day' => $vars['day'],
+			'event' => $event['CalendarEvent']['id'],
+			'frame_id' => Current::read('Frame.id'),
+						//'iconSize' => 'btn-xs'
+					)); ?>
+			</div>
+		<?php /*endif;*/ ?>
+
+
 <?php /* CakeLog::debug("event[" . print_r($event, true) . "]"); */ ?>
 
 <div name="dispTitle">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box h3">
+<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box h2">
 
 	<!-- <label><?php echo __d('calendars', '件名'); ?></label> -->
 	<div class="clearfix"></div>
@@ -31,9 +52,11 @@
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
 	<label><?php echo __d('calendars', '日時'); ?></label>
 </div>
-
-<div name="showStartDatetime">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
+<div name="showStartDatetime" style="float:left;">
+<!--<div class="col-xs-12 col-sm-4 col-sm-offset-1">-->
+
+
 	<!-- <label><?php echo __d('calendars', '日時'); ?></label> -->
 	<!-- <div class="clearfix"></div> -->
 	<!-- <span> -->
@@ -42,11 +65,11 @@
 		echo h($startUserDateWdayTime);
 	?>
 	<!-- </span>-->
-</div><!-- col-sm-10おわり -->
+<!--</div>--><!-- col-sm-10おわり -->
 </div><!-- おわり-->
 
 <div name="showEndDatetime">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+<!-- <div class="col-xs-12 col-sm-4"> -->
 	<!-- <label><?php echo __d('calendars', '終了日時'); ?></label> -->
 	<!-- <div class="clearfix"></div>-->
 	<!-- <span> -->
@@ -63,8 +86,10 @@
 		}
 	?>
 	<!--</span> -->
-</div><!-- col-sm-10おわり -->
+<!--</div>--><!-- col-sm-10おわり -->
 </div><!-- おわり-->
+</div>
+
 
 <div name="repeat">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
@@ -183,9 +208,35 @@
 </button>
 -->
 
-<div class="row">
+<div class="text-center">
+<!--- 戻るボタン -->
+		<?php 
+		if (isset($vars['return_style'])) {
+			//cancel時の戻り先としてstyleを指定する。
+			$urlOptions['style'] = $vars['return_style'];
+		}
+		if (isset($vars['return_sort'])) {
+			//cancel時の戻り先としてsortオプションがあればそれもセットで指定する.
+			$urlOptions['sort'] = $vars['return_sort'];
+		}
+
+			$urlOptions = array(
+				'controller' => 'calendars',
+				'action' => 'index',
+				'year' => $vars['year'],
+				'month' => $vars['month'],
+				'frame_id' => Current::read('Frame.id'),
+			);
+			
+			echo $this->Button->cancel(
+				__d('Calendars', '戻る'),
+				$this->NetCommonsHtml->url( NetCommonsUrl::actionUrl($urlOptions))
+			);
+		 ?>
+
+
 <?php
-	echo $this->CalendarPlan->makeShowDetailEditBtnHtml($vars, $event['CalendarEvent']['id']);
+	//echo $this->CalendarPlan->makeShowDetailEditBtnHtml($vars, $event['CalendarEvent']['id']);
 ?>
 </div>
 <!-- <hr style="margin-top:0.2em; margin-bottom:0.2em" /> -->

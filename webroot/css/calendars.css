@@ -4,18 +4,24 @@
 }
 
 /* カレンダー要素の非表示 */
+/* 未使用
 .calendar-hide {
  display: none;
 }
+*/
 
 /* カレンダー要素の表示 */
+/* 未使用
 .calendar-show {
  display: block;
 }
+*/
 
+/* 未使用
 .calendar-border {
 	border: solid 1px #000;
 }
+*/
 
 .calendar-inline {
   	display:inline;
@@ -27,33 +33,43 @@
 	width: 100%;
 }
 
+
+/* 未使用
 .calendar-table-row {
   	display:table-row;
 }
+*/
 
+/* 未使用
 .calendar-table-cell {
   	display:table-cell;
 }
+*/
 
+/* 未使用
 .calendar-cell {
   	/* display:table-cell; */
 	min-width: 20em;
 	max-width: 20em;
 }
+*/
 
+/*未使用
 .calendar-border {
   	border-top: 1px solid #ddd;
   	border-right: 1px solid #ddd;
   	border-bottom: 0px solid #ddd;
   	border-left: 0px solid #ddd;
 }
-
+*/
+/*
 .calendar-head {
   	border-top: 0px solid #ddd;
   	border-right: 0px solid #ddd;
   	border-bottom: 0px solid #ddd;
   	border-left: 0px solid #ddd;
 }
+*/
 
 .calendar-sun {
 	color: #d9534f; /* brand-danger: */
@@ -172,41 +188,56 @@
 	border-left-color: #d9534f;
 }
 
+
 .calendar-plan-mark-share {
 	border-left-color: #e888ec;
 }
 
 
 /*-- カレンダー月縮小用mark 色 --*/
+/* 未使用
 .calendar-plan-smallmonthly-mark-deco {
 	height: 4px;
 	width: 4px;
 	margin: 1px 0px 1px 1px;
 }
+*/
 
 /*-- カレンダー月縮小用mark 色 --*/
+/* 未使用
 .calendar-plan-smallmonthly-mark-public {
 	background-color: #04419a;
 }
+*/
+/* 未使用
 .calendar-plan-smallmonthly-mark-group {
 	background-color: #5da302;
 }
+*/
+/* 未使用
 .calendar-plan-smallmonthly-mark-private {
 	background-color: #d78f03;
 }
+*/
+/* 未使用
 .calendar-plan-smallmonthly-mark-allmember {
 	background-color: #c90505;
 }
+*/
 
 /*-- 月拡大カレンダーの予定が入っている日 --*/
+/* 未使用
 .calendar-tbl-td-plan {
 	background-color: #dff0d8;
 }
+*/
 
 /*-- 週カレンダーのルーム単位の予定 --*/
+/* 未使用
 .calendar-tbl-td-room-plan {
 	/* background-color: #dff0d8; */
 }
+*/
 
 .glyphicon-edit:hover, .glyphicon-plus:hover, .glyphicon-eye-open:hover, .glyphicon-eye-close:hover {
 	cursor: pointer;
@@ -312,10 +343,11 @@
 }
 
 /*-- カレンダー月縮小 --*/
+/* 未使用
 .calendar-smallmonthly-table {
 	width: 50%;
 }
-
+*/
 .calendar-weekly-table {
 	width: 100%;
 }
@@ -390,6 +422,7 @@
 	padding: 5px;
 }
 /*-- 単一日カレンダー タイムライン カラム 時間　ヘッダー --*/
+/* 未使用
 .calendar-daily-timeline-col-periodtime-head {
 	width: 10%;
 	border-width: 1px 1px 1px 1px;
@@ -398,6 +431,7 @@
 	height: 2em;
 	padding: 5px;
 }
+*/
 
 /*-- 単一日カレンダーのタイムラインのスリット --*/
 .calendar-daily-timeline-col-slit {
@@ -409,6 +443,7 @@
 }
 
 /*-- 単一日カレンダーのタイムラインのスリット ヘッド--*/
+/* 未使用
 .calendar-daily-timeline-col-slit-head {
 	width: 90%;
 	border-width: 0px 1px 0px 0px;
@@ -416,6 +451,7 @@
 	border-color: #ddd;
 	padding: 0px;
 }
+*/
 
 /*-- 単一日カレンダーの予定 --*/
 .calendar-daily-nontimeline-col-plan {
@@ -451,37 +487,46 @@
 }
 
 /*-- カレンダーヘッダーのページャー部 --*/
+/* 未使用
 .calendar-weekly-year-pager, .calendar-weekly-month-pager .calender-month-pager{
 	height: auto;
 }
+*/
 
+/* 未使用
 .calendar-pager-weekly{
 	padding-left:10px;
 }
+*/
+/* 未使用
 .calendar-pager-weekly-button{
 	float:left;
 	margin: 10px;
 	padding-left: 10px;
 }
+*/
 
+/* 未使用
 .calendar-weekly-col-plus div{
 	background-color:#efefef;
 }
-
+*/
 /*-- カレンダーヘッダーのページャー部 (ボタン) 2016.3.3--*/
+/* 未使用
 .calendar-pager-button .pager li > a{
 	padding-right:5px !important;
 	border:none;
 	text-align:left;
 }
+*/
 
-
+/*
 .calendar-pager-daily-button {
     float: left;
     margin: 10px;
     padding-left: 10px;
 }
-
+*/
 
 /*-- 単一日カレンダー 非タイムライン --*/
 .calendar-daily-nontimeline-table {
@@ -519,35 +564,31 @@
 }
 */
 
-/*-- スケジュール（時間順・会員順）会員 --*/
-.calendar-schedule-row-member-t { /* kuma mとtで分けた */
-	margin-left: 30px;
-	text-align:right; /* 2016.02.29kuma */
-}
-
-.calendar-schedule-row-member { /* kuma */
-	margin-left: 30px;
-}
 
 /*-- カレンダー スケジュール行の予定（会員順） --*/
+/* 未使用
 .calendar-schedule-row-plan-member {
 	margin-left: 0px;
 }
+*/
 
 /*-- カレンダー スケジュール行(行頭 並べ替え) 2016.3.3 --*/
+/* 未使用
 .calendar-schedule-sort-top {
 	margin-bottom: 5px;
 	padding-bottom: 10px;
 	border-bottom: 2px solid #eee;
 }
+*/
 
 /*-- カレンダー スケジュール行(行末 並べ替え) 2016.3.3 --*/
+/*未使用
 .calendar-schedule-sort-bottom {
 	margin-bottom: 5px;
 	padding-top: 10px;
 	border-top: 2px solid #eee;
 }
-
+*/
 
 
 /*-- カレンダー 範囲外 --*/
@@ -560,9 +601,11 @@ td.calendar-col-day.calendar-out-of-range  .calendar-day {
 }
 
 /*-- カレンダー セル 祝日--*/
+/* 未使用
 .calendar-tbl-td-holiday {
 	background-color: #F2DEDE;
 }
+*/
 
 /*-- カレンダー セル 今日--*/
 .calendar-tbl-td-today {
@@ -620,14 +663,18 @@ td.calendar-col-day.calendar-out-of-range  .calendar-day {
 }
 
 /*-- カレンダー スケジュール行の予定（会員順） --*/
+/* 未使用
 .calendar-schedule-row-plan-member {
 	margin-left: 30px;
 }
+*/
 
 /*-- カレンダー 詳細編集フィールド 2016.3.2 --*/
+/*
 .calendar-detailedit-detail {
 	padding-left:30px;
 }
+*/
 
 /*-- カレンダー 予定追加・編集 詳細（添え文字）2016.3.2  --*/
 .calendar-detailedit-addchar {
