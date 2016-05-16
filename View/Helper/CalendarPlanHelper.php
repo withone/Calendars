@@ -70,6 +70,7 @@ class CalendarPlanHelper extends AppHelper {
  * @param int $eventId イベントID
  * @return string HTML
  */
+	/* 未使用
 	public function makeShowDetailEditBtnHtml($vars, $eventId) {
 		$html = '';
 		$urlOptions = array(
@@ -89,26 +90,8 @@ class CalendarPlanHelper extends AppHelper {
 		}
 		$cancelUrl = NetCommonsUrl::actionUrl($urlOptions);
 
-		/*
-		$cancelOptions = array(
-			'ng-click' => 'sending=true',
-			'ng-class' => '{disabled: sending}',
-		);
-		//キャンセル
-		$cancelOptions = Hash::merge(array(
-			'class' => 'btn btn-default btn-workflow', 'escape' => false
-		), $cancelOptions);
-		$label = Hash::get($cancelOptions, 'label', __d('net_commons', 'Cancel'));
-		$cancelOptions = Hash::remove($cancelOptions, 'label');
-		$html .= $this->Html->link(
-			'<span class="glyphicon glyphicon-remove"></span> ' . $label,
-			$cancelUrl,
-			$cancelOptions
-		);
-		*/
-
 		$html .= "<button class='btn btn-default calendar-detail-edit'
-		 type='button' data-url='" . $cancelUrl . "'>";
+			type='button' data-url='" . $cancelUrl . "'>";
 		$html .= "<span class='glyphicon glyphicon-remove'></span>";
 		$html .= __d('calendars', 'キャンセル');
 		$html .= '</button>';
@@ -129,6 +112,7 @@ class CalendarPlanHelper extends AppHelper {
 		$html .= '</button>';
 		return $html;
 	}
+	*/
 
 /**
  * makeDetailEditBtnHtml

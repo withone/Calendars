@@ -28,15 +28,6 @@
 </div><!-- form-groupおわり-->
 
 
-<!-- 予定の共有 START -->
-<div class="form-group calendar-plan-share_<?php echo $frameId; ?>" name="planShare" style="display: none; margin-top:0.5em;">
-<div class="col-xs-12 col-sm-8 col-sm-offset-2">
-
-	<?php echo $this->element('Calendars.CalendarPlans/edit_plan_share'); ?>
-
-</div><!-- col-sm-10おわり -->
-</div><!-- form-groupおわり-->
-<!-- 予定の共有 END -->
 
 <br />
 <div class="form-group" name="checkTime">
@@ -681,6 +672,15 @@
 
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->
+<!-- 予定の共有 START -->
+<div class="form-group calendar-plan-share_<?php echo $frameId; ?>" name="planShare" style="display: none; margin-top:0.5em;">
+<div class="col-xs-12 col-sm-8 col-sm-offset-2">
+
+	<?php echo $this->element('Calendars.CalendarPlans/edit_plan_share'); ?>
+
+</div><!-- col-sm-10おわり -->
+</div><!-- form-groupおわり-->
+<!-- 予定の共有 END -->
 
 
 
