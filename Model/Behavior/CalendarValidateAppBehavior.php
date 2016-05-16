@@ -209,6 +209,7 @@ class CalendarValidateAppBehavior extends ModelBehavior {
 
 		// rrule_byday[YEARLY] inList => array('', '1SU', '1MO', '1TU', ... , '4FR, '4SA', '-1SU', '-2SU', ..., '-1SA')
 		$bydayYearly = $this->_makeArrayOfWdayInNthWeek();	//1SU, ... , -1SA の配列生成
+		$bydayYearly[] = '';	//年単位の「開始日と同日」(value='')も選択肢の１つなので追加
 		if (!in_array($model->data[$model->alias]['rrule_byday'][CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY], $bydayYearly)) {
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday'] = array();
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday'][CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY] = array();

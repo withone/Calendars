@@ -166,30 +166,63 @@ class CalendarAppBehavior extends ModelBehavior {
 /**
  * startDate,startTime,endDate,endTime生成
  *
- * @param string $sTime sTime文字列(年月日時分秒）
- * @param string $eTime eTime文字列(年月日時分秒）
- * @param string $byday byday
- * @param string &$startDate 生成したstartDate文字列
- * @param string &$startTime 生成したstartTime文字列
- * @param string &$endDate 生成したendDate伯父列
- * @param string &$endTime 生成したendTime文字列
+ * @param string $sTime サーバー系sTime文字列(YmdHis)
+ * @param string $eTime サーバー系eTime文字列(YmdHis)
+ * @param string $byday byday サーバー系byday日文字列(YmdHis)
+ * @param string $userTz userTz ユーザー系タイムゾーンID (Asia/Tokyoなど)
+ * @param string &$startDate 生成したサーバー系startDate文字列
+ * @param string &$startTime 生成したサーバー系startTime文字列
+ * @param string &$endDate 生成したサーバー系endDate文字列
+ * @param string &$endTime 生成したサーバー系endTime文字列
  * @return void
  */
-	public function setStartDateTiemAndEndDateTime($sTime, $eTime, $byday, &$startDate, &$startTime, &$endDate, &$endTime) {
-		$startTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), substr($sTime, 6, 2), substr($sTime, 0, 4));
-		$endTimestamp = mktime(0, 0, 0, substr($eTime, 4, 2), substr($eTime, 6, 2), substr($eTime, 0, 4));
+	public function setStartDateTiemAndEndDateTime($sTime, $eTime, $byday, $userTz, &$startDate, &$startTime, &$endDate, &$endTime) {
+		//INPUT引数のsTime, eTime, bydayはサーバー系なので、
+		//まずは、それぞれをTZのユーザー系のYmdHisに変換する。
+		$userStartTime = (new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($sTime));
+		$userStartTime = CalendarTime::dt2calDt($userStartTime);
+		$userEndTime = (new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($eTime));
+		$userEndTime = CalendarTime::dt2calDt($userEndTime);
+		$userByday = (new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($byday));
+		$userByday = CalendarTime::dt2calDt($userByday);
 
+		//カレンダー上（＝ユーザー系）の開始日の00:00:00のtimestamp取得
+		$date = new DateTime('now', (new DateTimeZone($userTz)));	//ユーザーTZ系のDateTimeObj生成
+		$date->setDate(substr($userStartTime, 0, 4),
+			substr($userStartTime, 4, 2), substr($userStartTime, 6, 2));
+		$date->setTime(0, 0, 0);
+		$startTimestamp = $date->getTimestamp();
+
+		//カレンダー上（＝ユーザー系）の終了日の00:00:00のtimestamp取得
+		$date->setDate(substr($userEndTime, 0, 4),
+			substr($userEndTime, 4, 2), substr($userEndTime, 6, 2));
+		$date->setTime(0, 0, 0);
+		$endTimestamp = $date->getTimestamp();
+
+		//開始日と終了日の差分の日数(a)を算出
 		$diffNum = ($endTimestamp - $startTimestamp) / 86400;
 
-		$timestamp = mktime(substr($sTime, 8, 2), substr($sTime, 10, 2), substr($sTime, 12, 2),
-							substr($byday, 4, 2), substr($byday, 6, 2), substr($byday, 0, 4));
-		$startDate = date('Ymd', $timestamp);
-		$startTime = date('His', $timestamp);
+		//日付がbyday日で時刻が開始日時刻のタイムスタンプの、「サーバー系」のYmdとHisを取得する
+		//
+		$sdate = new DateTime('now', (new DateTimeZone($userTz)));	//ユーザーTZ系のDateTimeObj生成
+		$sdate->setDate(substr($userByday, 0, 4),
+			substr($userByday, 4, 2), substr($userByday, 6, 2));
+		$sdate->setTime(substr($userStartTime, 8, 2),
+			substr($userStartTime, 10, 2), substr($userStartTime, 12, 2));
+		$sdate->setTimezone(new DateTimeZone('UTC'));	//サーバーTZに切り替える
+		$startDate = $sdate->format('Ymd');	//サーバー系の開始日付時刻のYmd
+		$startTime = $sdate->format('His');	//サーバー系の開始日付時刻のHis
 
-		$timestamp = mktime(substr($eTime, 8, 2), substr($eTime, 10, 2), substr($eTime, 12, 2),
-							substr($byday, 4, 2), substr($byday, 6, 2) + $diffNum, substr($byday, 0, 4));
-		$endDate = date('Ymd', $timestamp);
-		$endTime = date('His', $timestamp);
+		//月がbyday月、日がbyday日+差分日数(a)で時刻が終了日時刻のタイムスタンプの、「サーバー系」のYmdとHisを取得する
+		//
+		$edate = new DateTime('now', (new DateTimeZone($userTz)));	//ユーザーTZ系のDateTimeObj生成
+		$edate->setDate(substr($userByday, 0, 4),
+			substr($userByday, 4, 2), substr($userByday, 6, 2) + $diffNum);
+		$edate->setTime(substr($userEndTime, 8, 2),
+			substr($userEndTime, 10, 2), substr($userEndTime, 12, 2));
+		$edate->setTimezone(new DateTimeZone('UTC'));	//サーバーTZに切り替える
+		$endDate = $edate->format('Ymd');	//サーバー系の終了日付時刻のYmd
+		$endTime = $edate->format('His');	//サーバー系の終了日付時刻のHis
 	}
 
 /**

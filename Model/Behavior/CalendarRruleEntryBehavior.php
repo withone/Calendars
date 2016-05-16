@@ -107,9 +107,9 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
  * @return void
  */
 	public function insertPriodEntry(Model &$model, $planParams, $rruleData, $startEventData) {
+		CakeLog::debug("DBG: In insertPriodEntry(). i set model->rrule[INDEX] to 1.");
+
 		$model->rrule['INDEX'] = 1;
-		//CakeLog::debug("DBG: In insertPriodEntry(). i set model->rrule[INDEX] to 1.");
-		//
 
 		switch ($model->rrule['FREQ']) {
 			case 'YEARLY':
@@ -155,7 +155,7 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 			$model->Behaviors->load('Calendars.CalendarMonthlyEntry');
 		}
 		if (isset($model->rrule['BYMONTHDAY'])) {	//指定月のx日、y日
-			$model->insertMonthlyByMonthday($planParams, $rruleData, $startEventData, 1);
+			$model->insertMonthlyByMonthday($planParams, $rruleData, $startEventData, 1, 1);
 		} else {	//第ｘ週ｙ曜日
 			$model->insertMonthlyByDay($planParams, $rruleData, $startEventData, 1);
 		}

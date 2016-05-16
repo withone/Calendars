@@ -45,20 +45,49 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * @return array $result 結果
  */
 	public function insertYearly(Model &$model, $planParams, $rruleData, $eventData, $first = 0, $bymonthday = 0) {
-		list($startDate, $startTime, $endDate, $endTime, $diffNum) = $this->setStartEndDateAndTime($model, $eventData, $first);
-		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $eventData['CalendarEvent']['timezone_offset'])) {
+		CakeLog::debug("DBG: insertYearly(first[" . $first . "] bymonthday[" . $bymonthday . "] start.");
 
+		//ユーザタイムゾーンを取得しておく。
+		$userTz = (new NetCommonsTime())->getUserTimezone();
+
+		//setStartEndDateAndTime()が返す日と時はサーバー系
+		list($startDate, $startTime, $endDate, $endTime, $diffNum) = $this->setStartEndDateAndTime($model, $eventData, $first, $userTz);
+		CakeLog:debug("DBG: setStartEndDateAndTime()の結果. startDate[" . $startDate . "] startTime[" . $startTime . "] endDate[" . $endDate . "] endTime[" . $endTime . "] diffNum[" . $diffNum . "]");
+
+		CakeLog::debug("DBG: before isRepeatable(). startDateTime[" . $startDate . $startTime . "]");
+		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $eventData['CalendarEvent']['timezone_offset'])) {
+			CakeLog::debug("DBG: isRepeatable() がFALSEを返した. よって復帰する.");
 			//insertYearly()は再帰callされるが、ここ(isRepeatable()===falseになった時、復帰する。
 			return true;
 		}
 
-		if ($first && empty($model->rrule['BYDAY'])) {
-			$bymonthday = intval(substr($startDate, 6, 2));	//最初のデータで、かつ、日の間隔ルールがないなら、開始日付時刻の日をbymonthdayとする。
+		if ($first && empty($model->rrule['BYDAY'])) {	//rrule['BYDAY']は配列です
+			//サーバー系時刻の文字列から日の部分をそのまま切り出し$monthdayとして
+			//使うことはできない。なぜなら、monthdayの日は、カレンダー上(＝ユー
+			//ザ系)が代入されることを前提しているため。よって、ユーザー系になおして
+			//から、monthdayを代入する。
+			//
+			$userStartDateTime = (new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($startDate . $startTime));
+			$userStartDateTime = CalendarTime::dt2calDt($userStartDateTime);
+
+			$bymonthday = intval(substr($userStartDateTime, 6, 2));	//最初で、かつ、日の間隔ルールがないなら、ユーザー系開始日付時刻の日をbymonthdayとする。
+			CakeLog::debug("DBG: rrule[BYDAY] is EMPTY! bymonthday[" . $bymonthday . "]");
 		}
 
 		$startDateTime = $endDateTime = '';
 		$dtArray = array($startDate, $startTime, $endDate, $endTime);
-		list($eventData, $startDateTime, $endDateTime) = $this->setStartAndEndDateTimeEtc($model, $dtArray, $first, $bymonthday, $diffNum, $eventData);
+
+		CakeLog::debug("DBG: before setStartAndEndDateTimeEtc() first[" . $first . "] bymonthday[" . $bymonthday . "] diffNum[" . $diffNum . "] userTz[" . $userTz . "]");
+
+		$ret = $this->setStartAndEndDateTimeEtc($model, $planParams, $rruleData, $dtArray, $first, $bymonthday, $diffNum, $eventData, $userTz);
+		if ($ret === false) {
+			CakeLog::debug("DBG: setStartAndEndDateTimeEtc()がFALSEを返したので、return falseします。");
+			return false;
+		}
+		//startDateTime,endDateTimeはサーバー系時刻YmdHisで返ってくる。
+		list($eventData, $startDateTime, $endDateTime) = $ret;
+
+		CakeLog::debug("DBG: after setStartAndEndDateTimeEtc()結果. startDateTime[" . $startDateTime . "] endDateTime[" . $endDateTime . "]");
 
 		//
 		//eventDataの開始・終了の日付と時刻を更新するしてから、insertYearly()を再帰callする。
@@ -68,9 +97,18 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		$eventData['CalendarEvent']['start_time'] = substr($startDateTime, 8);
 		$eventData['CalendarEvent']['end_date'] = substr($endDateTime, 0, 8);
 		$eventData['CalendarEvent']['end_time'] = substr($endDateTime, 8);
+
+		CakeLog::debug("DBG: eventData[CalendarEvent]の各項目。start_date[" . $eventData['CalendarEvent']['start_date'] . "] start_time[" . $eventData['CalendarEvent']['start_time'] . "] end_date[" . $eventData['CalendarEvent']['end_date'] . "] end_time[" . $eventData['CalendarEvent']['end_time'] . "]");
+
 		if (!empty($model->rrule['BYDAY']) && count($model->rrule['BYDAY']) > 0) {
+
+			CakeLog::debug("DBG: rrule[BYDAY]がemptyで無く、且つ、rrule[BYDAY]の要素数[" . count($model->rrule['BYDAY']) . "]が0より大きい時の、insertYearly() 再帰call.");
+
 			return $this->insertYearly($model, $planParams, $rruleData, $eventData);	//insertYearly()の再帰call ケース1
 		} else {
+
+			CakeLog::debug("DBG: もう一方の時の、insertYearly() 再帰call. 0 bymonthday[" . $bymonthday . "]");
+
 			return $this->insertYearly($model, $planParams, $rruleData, $eventData, 0, $bymonthday); //insertYearly()の再帰call ケース2
 		}
 	}
@@ -81,36 +119,76 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * @param Model &$model モデル
  * @param array $eventData event配列データ
  * @param int $first 最初のデータかどうか. 1:最初 0:最初ではない
- * @return array array($startDate, $startTime, $endDate, $endTime, $diffNum)を返す
+ * @param string $userTz ユーザー系タイムゾーンID ('Asia/Tokyo')
+ * @return array サーバー系の各日と時と差分日数の配列($startDate, $startTime, $endDate, $endTime, $diffNum)を返す
  */
-	public function setStartEndDateAndTime(Model &$model, $eventData, $first) {
-		//NC2ではtimezoneDateをつかいサーバー系からユーザ系時刻のYmdHisに直していたが、
+	public function setStartEndDateAndTime(Model &$model, $eventData, $first, $userTz) {
 		//NC3では内部はサーバー系時刻になっているのでtimezoneDateはつかわない。
 		$sTime = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time']; //catしてYmdHisにする
 		$eTime = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time']; //catしてYmdHisにする
 
-		//開始日付(00:00:00)と終了日付(00:00:00)の累積秒および、その「差分日数」を計算する。
-		$startTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), substr($sTime, 6, 2), substr($sTime, 0, 4));	//FIXME:
-		$endTimestamp = mktime(0, 0, 0, substr($eTime, 4, 2), substr($eTime, 6, 2), substr($eTime, 0, 4));	//FIXME:
-		$diffNum = ($endTimestamp - $startTimestamp) / 86400;
+		//以下で使うmkdateの「1日00:00:00」とは、画面上（=ユーザー系）でのカレンダ
+		//日付時刻をさしているので、ユーザー系に直す。
+		//
+		$userStartTime = (new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($sTime));
+		$userStartTime = CalendarTime::dt2calDt($userStartTime);
+		$userEndTime = (new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($eTime));
+		$userEndTime = CalendarTime::dt2calDt($userEndTime);
+
+		$date = new DateTime('now', (new DateTimeZone($userTz)));	//ユーザー系TZでDateTimeObj生成
+		$date->setDate(substr($userStartTime, 0, 4),
+			substr($userStartTime, 4, 2), substr($userStartTime, 6, 2));
+		$date->setTime(0, 0, 0);
+		$startTimestamp = $date->getTimestamp();
+
+		$date->setDate(substr($userEndTime, 0, 4),
+			substr($userEndTime, 4, 2), substr($userEndTime, 6, 2));
+		$date->setTime(0, 0, 0);
+		$endTimestamp = $date->getTimestamp();
+
+		//ユーザー系開始日付(00:00:00)と終了日付(00:00:00)のタイムスタンプから、その「差分日数」を計算する。
+		//
+		$diffNum = ($endTimestamp - $startTimestamp) / 86400;	// a
 
 		if ($first) {
-			$startTimestamp = mktime(substr($sTime, 8, 2), substr($sTime, 10, 2), substr($sTime, 12, 2),
-								substr($sTime, 4, 2), substr($sTime, 6, 2), substr($sTime, 0, 4));
-			$endTimestamp = mktime(substr($eTime, 8, 2), substr($eTime, 10, 2), substr($eTime, 12, 2),
-								substr($eTime, 4, 2), substr($eTime, 6, 2), substr($eTime, 0, 4));
+			//初回の時は、userStartTime, userEneTimeのタイムスタンプをそのまま使う。
+			//
+			$date->setDate(substr($userStartTime, 0, 4),
+				substr($userStartTime, 4, 2), substr($userStartTime, 6, 2));
+			$date->setTime(substr($userStartTime, 8, 2),
+				substr($userStartTime, 10, 2), substr($userStartTime, 12, 2));
+			$startTimestamp = $date->getTimestamp();
+
+			$date->setDate(substr($userEndTime, 0, 4),
+				substr($userEndTime, 4, 2), substr($userEndTime, 6, 2));
+			$date->setTime(substr($userEndTime, 8, 2),
+				substr($userEndTime, 10, 2), substr($userEndTime, 12, 2));
+			$endTimestamp = $date->getTimestamp();
+
 		} else {
-			$startTimestamp = mktime(substr($sTime, 8, 2), substr($sTime, 10, 2), substr($sTime, 12, 2),
-								1, 1, substr($sTime, 0, 4) + $model->rrule['INTERVAL']);
-			$endTimestamp = mktime(substr($eTime, 8, 2), substr($eTime, 10, 2), substr($eTime, 12, 2),
-								1, 1 + $diffNum, substr($eTime, 0, 4) + $model->rrule['INTERVAL']);
+			//２回目以降は、startTimestampはインターバル考慮した年の1月1日
+			//endTimestampはインターバル考慮した年の1月(1+差分日数(a))日
+			//
+			$date->setDate(substr($userStartTime, 0, 4) + $model->rrule['INTERVAL'], 1, 1);
+			$date->setTime(substr($userStartTime, 8, 2),
+				substr($userStartTime, 10, 2), substr($userStartTime, 12, 2));
+			$startTimestamp = $date->getTimestamp();
+
+			$date->setDate(substr($userEndTime, 0, 4) + $model->rrule['INTERVAL'], 1, 1 + $diffNum);
+			$date->setTime(substr($userEndTime, 8, 2),
+				substr($userEndTime, 10, 2), substr($userEndTime, 12, 2));
+			$endTimestamp = $date->getTimestamp();
 		}
 
-		$startDate = date('Ymd', $startTimestamp);
-		$startTime = date('His', $startTimestamp);
+		//TZをユーザー系からサーバー系に切り替える
+		$date->setTimeZone(new DateTimeZone('UTC'));
+		$date->setTimestamp($startTimestamp);
+		$startDate = $date->format('Ymd');
+		$startTime = $date->format('His');
 
-		$endDate = date('Ymd', $endTimestamp);
-		$endTime = date('His', $endTimestamp);
+		$date->setTimestamp($endTimestamp);
+		$endDate = $date->format('Ymd');
+		$endTime = $date->format('His');
 
 		return array($startDate, $startTime, $endDate, $endTime, $diffNum);
 	}
@@ -119,24 +197,34 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * 開始・終了の日付と時刻等をセットする。
  *
  * @param Model &$model モデル
- * @param array $dtArray startDate,startTime,endDate,endTimeをカプセル化した配列
+ * @param array $planParams planParams
+ * @param array $rruleData rruleData
+ * @param array $dtArray サーバ系時刻startDate,startTime,endDate,endTimeをカプセル化した配列
  * @param int $first first 最初かどうか。1:最初 0:最初でない
- * @param int $bymonthday bymonthday 毎月ｘ日のx日のこと
+ * @param int $bymonthday bymonthday 毎月ｘ日のx日のこと(ユーザー系の日であることに注意すること）
  * @param int $diffNum diffNum開始日と終了日の差分日数
  * @param array $eventData eventData配列データ
- * @return array array($eventData, $startDateTime, $endDateTime)を返す。
+ * @param string $userTz ユーザー系タイムゾーンID ('Asia/Tokyo')
+ * @return mixed 成功時、array($eventData, サーバ系時刻$startDateTime, サーバ系時刻$endDateTime)を返す。失敗時 falseを返す。
  */
-	public function setStartAndEndDateTimeEtc(Model &$model, $dtArray, $first, $bymonthday, $diffNum, $eventData) {
+	public function setStartAndEndDateTimeEtc(Model &$model, $planParams, $rruleData, $dtArray, $first, $bymonthday, $diffNum, $eventData, $userTz) {
 		list($startDate, $startTime, $endDate, $endTime) = $dtArray;
 
 		$result = true;
-		$currentMonth = intval(substr($startDate, 4, 2));	//開始日付の月を、現在の月とする。
+		$userStartDateTime = (new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($startDate . $startTime));
+		$userStartDateTime = CalendarTime::dt2calDt($userStartDateTime);
+
+		$currentMonth = intval(substr($userStartDateTime, 4, 2));	//ユーザー系開始日付の月を、現在の月とする。
 		foreach ($model->rrule['BYMONTH'] as $month) {
+			//currentMonthはユーザー系の月、一方rrule['BYMONTH']の配列値($month)も
+			//ユーザー系の月。よって、比較してもOK.
 			if ($first && $currentMonth > $month) {
 				continue;
 			}
 
-			$this->setDtStartendData($first, $currentMonth, $month, $startDate, $startTime, $endDate, $endTime, $diffNum, $eventData);
+			////$this->setDtStartendData($first, $currentMonth, $month, $startDate, $startTime, $endDate, $endTime, $diffNum, $userTz, $eventData);
+			$workParams = array($first, $currentMonth, $month, $startDate, $startTime, $endDate, $endTime, $diffNum, $userTz);
+			$this->setDtStartendData($workParams, $eventData);
 
 			if (!empty($model->rrule['BYDAY']) && count($model->rrule['BYDAY']) > 0) {
 				$result = $this->insertYearlyByday($model, $planParams, $rruleData, $eventData, $first);
@@ -150,7 +238,7 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		$startDateTime = $startDate . $startTime;
 		$endDateTime = $endDate . $endTime;
 		if (is_array($result)) {
-			list($startDateTime, $endDateTime) = $result;
+			list($eventData, $startDateTime, $endDateTime) = $result;
 		}
 
 		return array($eventData, $startDateTime, $endDateTime);
@@ -159,29 +247,66 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 /**
  * eventDataへのデータセット
  *
- * @param int $first first
- * @param int $currentMonth currentMonth
- * @param int $month month
- * @param string $startDate startDate
- * @param string $startTime startTime
- * @param string $endDate endDate
- * @param string $endTime endTime
- * @param int $diffNum diffNum
+ * @param array $workParams 各種変数を格納しているwork配列
  * @param array &$eventData eventData
  * @return void
  */
-	public function setDtStartendData($first, $currentMonth, $month, $startDate, $startTime, $endDate, $endTime, $diffNum, &$eventData) {
-		if ($first && $currentMonth === $month) {
+	public function setDtStartendData($workParams, &$eventData) {
+		//work配列より、以下の変数を復元
+		//
+ 		//int $first 初回かどうか (1:初回 0:２回目以降)
+		//int $currentMonth currentMonth ユーザー系のカレント月
+		//int $month month ユーザー系の月
+		//string $startDate startDate サーバー系開始日のYmd
+		//string $startTime startTime サーバ系開始日のHis
+		//string $endDate endDate サーバー系終了日のYmd
+		//string $endTime endTime サーバー系終了日のHis
+		//int $diffNum diffNum
+		//string $userTz ユーザー系タイムゾーンID ('Asia/Tokyo')
+		list($first, $currentMonth, $month, $startDate, $startTime, $endDate, $endTime, $diffNum, $userTz) = $workParams;
+
+		if ($first && $currentMonth == $month) {
+			//startDate,startTime,endDate,endTimeはすべてサーバー系なので直接
+			//$eventData['CalendarEvent']の該当項目に直接代入する。
+			//
 			$eventData['CalendarEvent']['start_date'] = $startDate;
 			$eventData['CalendarEvent']['start_time'] = $startTime;
 			$eventData['CalendarEvent']['end_date'] = $endDate;
 			$eventData['CalendarEvent']['end_time'] = $endTime;
 		} else {
-			$eventData['CalendarEvent']['start_date'] = substr($startDate, 0, 4) . sprintf('%02d', $month) . '01';
-			$eventData['CalendarEvent']['start_time'] = $startTime;
-			// end_dateにはstartDate + $diffNumの日付をセット(12/31の場合に翌年がセットされるため)
-			$eventData['CalendarEvent']['end_date'] = substr($startDate, 0, 4) . sprintf('%02d', $month) . sprintf('%02d', 1 + $diffNum);
-			$eventData['CalendarEvent']['end_time'] = $endTime;
+			//startDate,startTime,endDate,endTimeはサーバー系時間であり、カレンダー上
+			//(=ユーザー系)の時間ベースで日付加工していたNC2ベースのロジックでは、
+			//時差分の誤差がでる。依って、一旦ユーザー系に変換し、日付加工処理を行ない
+			//その結果を、サーバー系時間に戻してからeventData['CalendarEvent']の該当
+			//項目に代入する。
+
+			//まずは、start,endをユーザー系に直しておく。
+			$userStartDateTime = (new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($startDate . $startTime));
+			$userStartDateTime = CalendarTime::dt2calDt($userStartDateTime);
+			$userEndDateTime = (new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($endDate . $endTime));
+			$userEndDateTime = CalendarTime::dt2calDt($userEndDateTime);
+
+			//ユーザー系の開始日の年＆指定月１日を生成し、サーバー系に変換後、$eventData['CalendarEvent']の
+			//start_dateとstart_time項目に代入する。
+			//
+			$date = new DateTime('now', new DateTimeZone($userTz));
+			$date->setDate(substr($userStartDateTime, 0, 4), $month, 1);
+			$date->setTime(substr($userStartDateTime, 8, 2),
+				substr($userStartDateTime, 10, 2), substr($userStartDateTime, 12, 2));
+			$date->setTimeZone(new DateTimeZone('UTC'));	//サーバー系TZに変換する
+			$eventData['CalendarEvent']['start_date'] = $date->format('Ymd');
+			$eventData['CalendarEvent']['start_time'] = $date->format('His');
+
+			//ユーザー系の開始日の年＆指定月の(1+差分日数)日＋ユーザー系終了日の時刻を生成し、
+			//サーバー系に変換後、$eventData['CalendarEvent']のend_dateとend_time項目に代入する。
+			//
+			$date = new DateTime('now', new DateTimeZone($userTz));
+			$date->setDate(substr($userStartDateTime, 0, 4), $month, 1 + $diffNum);
+			$date->setTime(substr($userEndDateTime, 8, 2),
+				substr($userEndDateTime, 10, 2), substr($userEndDateTime, 12, 2));
+			$date->setTimeZone(new DateTimeZone('UTC'));	//サーバー系TZに変換する
+			$eventData['CalendarEvent']['end_date'] = $date->format('Ymd');
+			$eventData['CalendarEvent']['end_time'] = $date->format('His');
 		}
 	}
 
@@ -194,39 +319,52 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * @param array $eventData eventデータ(CalendarEventのモデルデータ)
  * @param int $bymonthday bymonthday
  * @param int $first 最初のデータかどうか 1:最初である  0:最初ではない
- * @return mixed boolean true:登録せず終了 false:失敗、array 登録成功: array(登録した開始年月日時分秒, 登録した終了年月日時分秒)
+ * @return mixed boolean true:登録せず終了 false:失敗、array 登録成功: array(insertした結果のrEventData, 登録したサーバ系開始年月日時分秒, 登録したサーバ系終了年月日時分秒)
  */
 	public function insertYearlyByMonthday(Model &$model, $planParams, $rruleData, $eventData, $bymonthday, $first) {
+		CakeLog::debug("DBG: insertYearlyByMonthday() start. bymonthday[" . $bymonthday . "] first[" . $first . "] rrule[INDEX]=[" . $model->rrule['INDEX'] . "]");
+
 		$model->rrule['INDEX']++;
 
+		//ユーザタイムゾーンを取得しておく。
+		$userTz = (new NetCommonsTime())->getUserTimezone();
+
 		//開始日付時刻の処理
-		$sTime = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'];
-		$startTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), substr($sTime, 6, 2), substr($sTime, 0, 4));	//FIXME:
+		$userStartTime = $firstNumOfDaysOfMth = '';
+		$startTimestamp = $currentDay = $intervalDay = 0;
+		$this->__setYearlyByMonthdayStartDtProc($eventData, $userStartTime, $startTimestamp, $currentDay, $firstNumOfDaysOfMth, $bymonthday, $first, $intervalDay, $userTz);
+		CakeLog::debug("DBG: bymonthday[" . $bymonthday . "] firstNumOfDaysOfMth[" . $firstNumOfDaysOfMth . "] intervalDay[" . $intervalDay . "]");
 
-		//インターバル日数の計算
-		$currentDay = intval(substr($sTime, 6, 2));
-
-		//１月の該当日(日付時刻)の計算
-		$firstTimestamp = mktime(0, 0, 0, substr($sTime, 4, 2), 1, substr($sTime, 0, 4));	//その年初月(=１月)の最初の該当日	//FIXME.
-
-		if ($bymonthday > date('t', $firstTimestamp)) {
-			//毎月ｘ日のｘ日が、開始日の日より後なら、その差分の日数を、インターバル日数とする。
-			$intervalDay = $bymonthday - date('t', $firstTimestamp);
-		} else {
-			//毎月ｘ日のｘ日が、開始日の日と同じか前なら、インターバル日数を０とする。
-			$intervalDay = 0;
-		}
+		CakeLog::debug("DBG: call復帰条件: first [" . $first . "] currentDay[" . $currentDay . "] bymonthday[" . $bymonthday . "]");
 
 		//call復帰条件のチェック
 		if ($first && $currentDay >= $bymonthday) {
+			CakeLog::debug("DBG: 復帰条件 (first && currentDay >= bymonthday) が真になったので、call復帰します。");
+
 			//現在日が毎月ｘ日のｘ日を超したら、行き過ぎなので、INDEXをデクリメントして、callから復帰する。
 			$model->rrule['INDEX']--;
 			return true;
 		}
 
 		//終了日付時刻の処理
+		//NC3は内部はサーバー系時刻なのでtimezoneDateはつかわない
 		$eTime = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'];
-		$endTimestamp = mktime(0, 0, 0, substr($eTime, 4, 2), substr($eTime, 6, 2), substr($eTime, 0, 4));	//FIXME:
+
+		//以下で使う時間系は、00:00:00など画面上（=ユーザー系）でのカレンダ日付時刻を
+		//さしているので、ユーザー系に直す。
+		//
+		//$userEndTime = (new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($eTime));
+		//$userEndTime = CalendarTime::dt2calDt($userEndTime);
+		$userEndTime = (new CalendarTime())->svr2UserYmdHis($eTime);
+
+
+		//ユーザー系終了日の00:00:00のタイムスタンプを取得
+		////$date = new DateTime('now', (new DateTimeZone($userTz)));
+		////$date->setDate(substr($userEndTime, 0, 4),
+		////	substr($userEndTime, 4, 2), substr($userEndTime, 6, 2));
+		////$date->setTime(0, 0, 0);
+		$date = (new CalendarTime())->getDtObjWithTzDateTime($userTz, substr($userEndTime, 0, 4), substr($userEndTime, 4, 2), substr($userEndTime, 6, 2), 0, 0, 0);
+		$endTimestamp = $date->getTimestamp();
 
 		//開始日と終了日の差分日数の計算
 		$diffNum = ($endTimestamp - $startTimestamp) / 86400;
@@ -236,10 +374,16 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		//(毎月ｘ日のｘ日が、開始日の日と同じかより後ならその差分の日数(=インターバル日数)を引くので、開始日の日をつかった実日数計算になる。）
 		//(毎月ｘ日のｘ日が、開始日の日より前ならその差分の日数(=インターバル日数)は０なので、毎月ｘ日のｘ日をつかった実日数計算になる。）
 		//
-		$startTimestamp = mktime(substr($sTime, 8, 2), substr($sTime, 10, 2), substr($sTime, 12, 2),
-							substr($sTime, 4, 2), $bymonthday - $intervalDay, substr($sTime, 0, 4));
-		$startDate = date('Ymd', $startTimestamp);
-		$startTime = date('His', $startTimestamp);
+		////$date = new DateTime('now', (new DateTimeZone($userTz)));	//ユーザー系TZのDateTimeObjを生成
+		////$date->setDate(substr($userStartTime, 0, 4),
+		////	substr($userStartTime, 4, 2), $bymonthday - $intervalDay);
+		////$date->setTime(substr($userStartTime, 8, 2),
+		////	substr($userStartTime, 10, 2), substr($userStartTime, 12, 2));
+		$date = (new CalendarTime())->getDtObjWithTzDateTime($userTz, substr($userStartTime, 0, 4), substr($userStartTime, 4, 2), $bymonthday - $intervalDay, substr($userStartTime, 8, 2), substr($userStartTime, 10, 2), substr($userStartTime, 12, 2));
+		//$startTimestamp = $date->getTimestamp();
+		$date->setTimezone(new DateTimeZone('UTC'));	//サーバー系TZに切り替える
+		$svrStartDate = $date->format('Ymd');
+		$svrStartTime = $date->format('His');
 
 		//毎月ｘ日のｘ日を考慮した終了日付時刻の実日付時刻を計算
 		//
@@ -247,21 +391,31 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		//(毎月ｘ日のｘ日が、開始日の日より前ならその差分の日数(=インターバル日数)は０なので、毎月ｘ日のｘ日をつかった実日数計算になる。）
 		//(上記２ケースとも、日に開始日と終了日の差分日数を加算しているので、終了の日となる。）
 		//
-		$endTimestamp = mktime(substr($eTime, 8, 2), substr($eTime, 10, 2), substr($eTime, 12, 2),
-							substr($sTime, 4, 2), $bymonthday - $intervalDay + $diffNum, substr($sTime, 0, 4));
-		$endDate = date('Ymd', $endTimestamp);
-		$endTime = date('His', $endTimestamp);
+		////$date = new DateTime('now', (new DateTimeZone($userTz)));	//ユーザー系TZのDateTimeObjを生成
+		////$date->setDate(substr($userStartTime, 0, 4),
+		////	substr($userStartTime, 4, 2), $bymonthday - $intervalDay + $diffNum);
+		////$date->setTime(substr($userEndTime, 8, 2),
+		////	substr($userEndTime, 10, 2), substr($userEndTime, 12, 2));
+		$date = (new CalendarTime())->getDtObjWithTzDateTime($userTz, substr($userStartTime, 0, 4), substr($userStartTime, 4, 2), $bymonthday - $intervalDay + $diffNum, substr($userEndTime, 8, 2), substr($userEndTime, 10, 2), substr($userEndTime, 12, 2));
+		//$endTimestamp = $date->getTimestamp();
+		$date->setTimezone(new DateTimeZone('UTC'));	//サーバー系TZに切り替える
+		$svrEndDate = $date->format('Ymd');
+		$svrEndTime = $date->format('His');
 
-		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $eventData['CalendarEvent']['timezone_offset'])) {
+		CakeLog::debug("DBG: diffNum[" . $diffNum . "] svrStartDate[" . $svrStartDate . "] svrStartTime[" . $svrStartTime . "] svrEndDate[" . $svrEndDate . "] svrEndTime[" . $svrEndTime ."]");
+
+		if (!CalendarSupport::isRepeatable($model->rrule, ($svrStartDate . $svrStartTime), $eventData['CalendarEvent']['timezone_offset'])) {
 			//繰返しがとまったので、callから復帰する。
 			return true;
 		}
 
-		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData, ($startDate . $startTime), ($endDate . $endTime));
+		CakeLog::debug("DBG: insert(svrStartDateTime[" . $svrStartDate . $svrStartTime . "] svrEndDateTime[" . $svrEndDate . $svrEndTime ."])実行");
+
+		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData, ($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime));
 		if ($rEventData['CalendarEvent']['id'] === null) {
 			return false;
 		} else {
-			return array(($startDate . $startTime), ($endDate . $endTime));
+			return array($rEventData, ($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime));
 		}
 	}
 
@@ -273,10 +427,15 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * @param array $rruleData rruleData
  * @param array $eventData eventデータ(CalendarEventのモデルデータ)
  * @param int $first 最初のデータかどうか 1:最初である  0:最初ではない
- * @return mixed boolean true:登録せず終了 false:失敗、array 登録成功: array(登録した開始年月日時分秒, 登録した終了年月日時分秒)
+ * @return mixed boolean true:登録せず終了 false:失敗、array 登録成功: array(insertした結果のrEventData, 登録したサーバ系開始年月日時分秒, 登録したサーバ系終了年月日時分秒)
  */
 	public function insertYearlyByday(Model &$model, $planParams, $rruleData, $eventData, $first = 0) {
+		CakeLog::debug("DBG: insertYearlyByday() start. first[" . $first . "] rrule[INDEX]=[" . $model->rrule['INDEX'] . "]");
+
 		$model->rrule['INDEX']++;
+
+		//ユーザタイムゾーンを取得しておく。
+		$userTz = (new NetCommonsTime())->getUserTimezone();
 
 		//BYDAYは'2MO','3SA'といった形式である
 		//よって、wdayNumにはSUなら0, SAなら6とった値になる。
@@ -284,36 +443,109 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		//よって、weekには、、最後２文字を取り除いた、第x月曜、第y土曜のx、yが取り出せる。
 		$week = intval(substr($model->rrule['BYDAY'][0], 0, -2));	//-2で最後２文字をけずる。
 
+		//NC3は内部はサーバー系時刻なのでtimezoneDateはつかわない
 		$sTime = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'];
 		$eTime = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'];
 
-		$timestamp = mktime(0, 0, 0, substr($sTime, 4, 2), 1, substr($sTime, 0, 4));	//開始日の同年同月1日のtimestamp //FIXME:
-		//getByday()の中でユーザタイムゾーンを使うので、取得しておく。
-		$nctm = new NetCommonsTime();
-		$userTz = $nctm->getUserTimezone(); //NetCommonsTimeよりユーザタイムゾーン("Asia/Tokyo"等）を取得
+		//以下で使うmkdateの「1日00:00:00」とは、画面上（=ユーザー系）でのカレンダ
+		//日付時刻をさしているので、ユーザー系に直す。
+		//
+		$userStartTime = (new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($sTime));
+		$userStartTime = CalendarTime::dt2calDt($userStartTime);
 
+		//ユーザー系開始日の同年同月1日の00:00:00のtimestampを求める。
+		$date = new DateTime('now', (new DateTimeZone($userTz)));
+		$date->setDate(substr($userStartTime, 0, 4), substr($userStartTime, 4, 2), 1);
+		$date->setTime(0, 0, 0);
+		$timestamp = $date->getTimestamp();
+
+		//タイムスタンプとユーザタイムゾーンを引数にわたしてgetByday()をcallする。
+		//getByday()はサーバ系のYmdHis形式の文字列を返す。
 		$byday = CalendarSupport::getByday($timestamp, $week, $wdayNum, $userTz);
+
+		CakeLog::debug("DBG: call復帰条件: first [" . $first . "] sTime[" . $sTime . "] byday[" . $byday . "]");
 
 		//call復帰条件のチェック
 		if ($first && $sTime >= $byday) {
+			CakeLog::debug("DBG: 復帰条件 (first && sTime >= byday) が真になったので、call復帰します。");
+
 			//開始日(対象日？）が繰返しENDのb(第x週第y曜日の実日）を超したら、行き過ぎなので、INDEXをデクリメントして、callから復帰する。
 			$model->rrule['INDEX']--;
 			return true;
 		}
 
-		$startDate = $startTime = $endDate = $endTime = '';
-		$this->setStartDateTiemAndEndDateTime($sTime, $eTime, $byday, $startDate, $startTime, $endDate, $endTime);
+		//setStartDateTiemAndEndDateTime()より返される時刻系はサーバー系です
+		$svrStartDate = $svrStartTime = $svrEndDate = $svrEndTime = '';
+		$this->setStartDateTiemAndEndDateTime($sTime, $eTime, $byday, $userTz, $svrStartDate, $svrStartTime, $svrEndDate, $svrEndTime);
 
-		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $eventData['CalendarEvent']['timezone_offset'])) {
+		CakeLog::debug("DBG: setStartDateTiemAndEndDateTime()結果. svrStartDate[" . $svrStartDate . "] svrStartTime[" . $svrStartTime . "] svrEndDate[" . $svrEndDate . "] svrEndTime[" . $svrEndTime ."]");
+
+		if (!CalendarSupport::isRepeatable($model->rrule, ($svrStartDate . $svrStartTime), $eventData['CalendarEvent']['timezone_offset'])) {
+			CakeLog::debug("DBG: 繰返しがとまったので、復帰する。");
+
 			//繰返しがとまったので、復帰する。
 			return true;
 		}
 
-		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData, ($startDate . $startTime), ($endDate . $endTime));
+		CakeLog::debug("DBG: insert(svrStartDateTime[" . $svrStartDate . $svrStartTime . "] svrEndDateTime[" . $svrEndDate . $svrEndTime ."])実行");
+
+		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData, ($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime));
 		if ($rEventData['CalendarEvent']['id'] === null) {
 			return false;
 		}
 
-		return array(($startDate . $startTime), ($endDate . $endTime));
+		return array($rEventData, ($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime));
+	}
+
+/**
+ * __setYearlyByMonthdayStartDtProc
+ *
+ * 年周期のbymonthdayでの開始日処理
+ *
+ * @param array &$eventData eventData
+ * @param string &$userStartTime userStartTime
+ * @param int &$startTimestamp startTimestamp
+ * @param string &$currentDay currentDay
+ * @param mixed &$firstNumOfDaysOfMth firstNumOfDaysOfMth
+ * @param int &$bymonthday bymonthday
+ * @param int &$first first
+ * @param int &$intervalDay intervalDay
+ * @param string &$userTz userTz 
+ * @return void
+ */
+	private function __setYearlyByMonthdayStartDtProc(&$eventData, &$userStartTime, &$startTimestamp, &$currentDay, &$firstNumOfDaysOfMth, &$bymonthday, &$first, &$intervalDay, &$userTz) {
+		$sTime = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'];
+
+		//以下で使う時間系は「1日00:00:00」など、画面上（=ユーザー系）でのカレンダ
+		//日付時刻をさしているので、ユーザー系に直す。
+		//
+		//$userStartTime = (new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($sTime));
+		//$userStartTime = CalendarTime::dt2calDt($userStartTime);
+		$userStartTime = (new CalendarTime())->svr2UserYmdHis($sTime);
+
+		//ユーザー系開始日の00:00:00のタイムスタンプを取得
+		$date = new DateTime('now', (new DateTimeZone($userTz)));
+		$date->setDate(substr($userStartTime, 0, 4), substr($userStartTime, 4, 2), substr($userStartTime, 6, 2));
+		$date->setTime(0, 0, 0);
+		$startTimestamp = $date->getTimestamp();
+
+		//ユーザー系開始日を使った、インターバル日数の計算
+		$currentDay = intval(substr($userStartTime, 6, 2));
+
+		//ユーザー系開始日の同年同月1日の00:00:00のタイムスタンプ算出
+		////$date = new DateTime('now', (new DateTimeZone($userTz)));
+		////$date->setDate(substr($userStartTime, 0, 4), substr($userStartTime, 4, 2), 1);
+		////$date->setTime(0, 0, 0);
+		$date = (new CalendarTime())->getDtObjWithTzDateTime($userTz, substr($userStartTime, 0, 4), substr($userStartTime, 4, 2), 1, 0, 0, 0);
+		//$firstTimestamp = $date->getTimestamp();
+		$firstNumOfDaysOfMth = $date->format('t');	//指定月の日数y (28-31)
+
+		if ($bymonthday > $firstNumOfDaysOfMth) {
+			//毎月ｘ日のｘ日が、開始日の日より後なら、その差分の日数を、インターバル日数とする。
+			$intervalDay = $bymonthday - $firstNumOfDaysOfMth;
+		} else {
+			//毎月ｘ日のｘ日が、開始日の日と同じか前なら、インターバル日数を０とする。
+			$intervalDay = 0;
+		}
 	}
 }

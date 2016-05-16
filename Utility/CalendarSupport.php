@@ -145,50 +145,53 @@ class CalendarSupport {
  * @param int $week week
  * @param int $wdayNum wdayNum
  * @param string $userTz ユーザタイムゾーン(ex.Asia/Tokyo)
- * @return string $byday 生成されたbyday
+ * @return string $byday 生成されたbyday(このとき、サーバー系(UTC)にもどして返す。
  */
 	public static function getByday($timestamp, $week, $wdayNum, $userTz) {
-		$year = date('Y', $timestamp);
-		$month = date('m', $timestamp);
-		CakeLog::debug("DBG: In getByday(). year[" . $year . "] month[" . $month . "]");
+		$date = new DateTime('now', (new DateTimeZone($userTz)));	//TZはユーザ系
+
+		$date->setTimestamp($timestamp);
+		$year = $date->format('Y');
+		$month = $date->format('m');
 		if ($week === -1) {
 			//ここに飛び込むのは、BYDAYが'-1SA'といった値-1+曜日の書式のとき
+			$lastDay = $date->format('t');	//$timestampの月の日数
 
-			$lastDay = date("t", $timestamp);
-			//FIXME: defualtTZをユーザ系にしたdate()にすべきでは？
+			//カレンダー上(=ユーザー系)の指定月の月末日の00:00:00のタイムスタンプ
+			$date->setDate($year, $month, $lastDay);	//日付の再設定
+			$date->setTime(0, 0, 0);	//時刻の再設定
+			$timestamp = $date->getTimestamp();
+			$wLastDay = $date->format('w');	//カレンダー上の月末日の曜日のindex(0-6)
 
-			$timestamp = mktime(0, 0, 0, $month, $lastDay, $year);
-
-			//NC2のdate('w', $timestamp)はユーザTZを前提にしているので、date()を一時的に、UserTZ
-			////$wLastDay = date('w', $timestamp);
-			$wLastDay = CalendarTime::dateWdayIdxWithUserTz($timestamp, $userTz);
-
-			CakeLog::debug("DBG: getByday week=[-1] case.
-				dateWdayIdxWithUserTz(" . $timestamp . "," . $userTz . ") returned
-					 wLastDay[" . $wLastDay . "]");
-
+			//wdayNumはBYDAY(ex.3SA)の曜日(SA)のindex値(0-6,SAだと6)が入っている
+			//($wdayNum <= $wLastDay)の場合は、月末日の曜日indexをそのままつかう。
+			//($wdayNum > $wLastDay)の場合は、月末日の曜日indexに+7する
+			//
 			$wLastDay = ($wdayNum <= $wLastDay ? $wLastDay : 7 + $wLastDay);
-			$timestamp = mktime(0, 0, 0, $month, $lastDay - $wLastDay + $wdayNum, $year);
+
+			//下記は、カレンダー上の月末日に一番近い(=その月の最後の）BYDAYの
+			//指定曜日に該当する日付の00:00:00のタイムスタンプを求める。
+			//
+			$date->setDate($year, $month, $lastDay - $wLastDay + $wdayNum); //日付の再設定
+			$date->setTime(0, 0, 0);	//時刻の再設定
+			$timestamp = $date->getTimestamp();
 		} else {
-
-			//NC2のdate('w', $timestamp)はユーザTZを前提にしているので、date()ではなく,hdateWdayIdxWithUserTz()を使う.
-			////$w1Day = date('w', $timestamp);		//開始日の同年同月1日の曜日(0-6) a を取り出す。
-
-			$w1Day = CalendarTime::dateWdayIdxWithUserTz($timestamp, $userTz);
-			CakeLog::debug("DBG: getByday week=[" . $week . "] case. 
-				dateWdayIdxWithUserTz(" . $timestamp . ", " . $userTz . ") returned w1Day[" . $w1Day . "]");
-
-			// aが指定曜日以前ならaに1週加算。
+			$w1Day = $date->format('w');	//timestampの曜日のindex a を取り出す
+			// aがBYDAYの指定曜日以前ならaに1週加算。
 			$w1Day = ($w1Day <= $wdayNum ? 7 + $w1Day : $w1Day);
-
-			//1日が日曜日スタートとした場合の第x週第x日の「日」を計算
+			//第nＸ曜日(3MOなら第３月曜日)の日を計算する。
 			$day = $week * 7 + $wdayNum + 1;
-
 			//$day-$w1Dayで実際の1日が実曜日スタートになるよう調整した日のタイムスタンプ b を計算。
-			$timestamp = mktime(0, 0, 0, $month, $day - $w1Day, $year);
+			$date->setDate($year, $month, $day - $w1Day);	//日付の再設定
+			$date->setTime(0, 0, 0);	//時刻の再設定
+			$timestamp = $date->getTimestamp();
 		}
+
 		// b(第x週第y曜日の実際の日)を日付時刻文字列型に変換
-		$byday = date('YmdHis', $timestamp);
+		//このとき、ユーザー系TZからサーバー系TZに直す
+		$date->setTimestamp($timestamp);
+		$date->setTimezone(new DateTimeZone('UTC'));
+		$byday = $date->format('YmdHis');
 		return $byday;
 	}
 }

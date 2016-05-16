@@ -18,26 +18,39 @@
 class CalendarTime {
 
 /**
- * dateWdayIdxWithUserTz
+ * getDtObjWithTzDateTime
  *
- * ユーザタイムゾーンでのdate('w', タイムスタンプ)を実行する
+ * TZ、日付および時刻を指定したDataTimeオブジェクト取得
  *
- * @param int $timestamp UNIXタイムスタンプ
- * @param string $userTz ユーザータイムゾーン(ex."Asia/Tokyo")
- * @return string タイムスタンプを、ユーザタイムゾーンでの曜日になおし、数字文字"0"(SU),"1"(MO),...,"6"(SA)を返す 
+ * @param string $tzId タイムゾーンID (UTC, Asia/Tokyoなど)
+ * @param int $year year
+ * @param int $month month
+ * @param int $day day
+ * @param int $hour hour
+ * @param int $minute minute
+ * @param int $second  second
+ * @return DateTime DateTimeオブジェクト
  */
-	public static function dateWdayIdxWithUserTz($timestamp, $userTz) {
-		//デフォルトタイムゾーンを退避する
-		$defaultTz = date_default_timezone_get();
+	public function getDtObjWithTzDateTime($tzId, $year, $month, $day, $hour, $minute, $second) {
+		$date = new DateTime('now', (new DateTimeZone($tzId)));
+		$date->setDate($year, $month, $day);
+		$date->setTime($hour, $minute, $second);
+		return $date;
+	}
 
-		//ユーザタイムゾーンでの曜日のindex("0"-"6")を取得する.
-		date_default_timezone_set($userTz);
-		$wIdx = date('w', $timestamp);
-
-		//デフォルトタイムゾーンに戻しておく。
-		date_default_timezone_set($defaultTz);
-
-		return $wIdx;
+/**
+ * svr2UserYmdHis
+ *
+ * サーバー系YmdHis文字列をユーザー系YmdHis文字列に変換する
+ *
+ * @param string $svrYmdHis サーバー系YmdHis文字列
+ * @return string ユーザー系YmdHis文字列を返す
+ */
+	public function svr2UserYmdHis($svrYmdHis) {
+		$userYmdHisWithSepa =
+			(new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($svrYmdHis));
+		$userYmdHis = CalendarTime::dt2calDt($userYmdHisWithSepa);
+		return $userYmdHis;
 	}
 
 /**
@@ -233,6 +246,20 @@ class CalendarTime {
 	public static function dt2CalDt($datetime) {
 		return (substr($datetime, 0, 4) . substr($datetime, 5, 2) . substr($datetime, 8, 2) .
 			substr($datetime, 11, 2) . substr($datetime, 14, 2) . substr($datetime, 17, 2));
+	}
+
+/**
+ * calDt2dt
+ *
+ * YmdHis形式からY-m-d H:i:s形式に変換する
+ *
+ * @param string $datetime "YmdHis"形式の日付時刻
+ * @return string "Y-m-d H:i:s"形式の日付時刻
+ */
+	public static function calDt2dt($datetime) {
+		return sprintf('%s-%s-%s %s:%s:%s',
+			substr($datetime, 0, 4), substr($datetime, 4, 2), substr($datetime, 6, 2),
+			substr($datetime, 8, 2), substr($datetime, 10, 2), substr($datetime, 12, 2));
 	}
 
 /**

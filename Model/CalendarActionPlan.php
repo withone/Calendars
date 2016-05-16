@@ -469,6 +469,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 	public function saveCalendarPlan($data) {
 		$this->begin();
 
+		////$this->_phpSystemTzEnvSwithing('Asia/Tokyo');
+
 		try {
 
 			//$this->planTime
@@ -484,9 +486,11 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 			$this->rollback($ex);
 
+			////$this->_phpSystemTzEnvSwithing('UTC');
 			return false;
 		}
 
+		////$this->_phpSystemTzEnvSwithing('UTC');
 		return true;
 	}
 
@@ -606,5 +610,27 @@ class CalendarActionPlan extends CalendarsAppModel {
 				$model->validationErrors = Hash::merge($model->validationErrors, $model->calendarProofreadValidationErrors);
 			}
 		}
+	}
+
+/**
+ * PHPシステムTZ環境切替
+ *
+ * _phpSystemTzEnvSwithing
+ *
+ * @param string $timezoneId  タイムゾーンID ('UTC', or 'Asia/Tokyo')
+ * @return void
+ */
+	protected function _phpSystemTzEnvSwithing($timezoneId) {
+		//カレンダーの登録内部処理の実装はNC2の実装に準じている。
+		//そしてNC2のカレンダー登録処理は、date.timezone = Asia/Tokyo下での
+		//phpの日付・時刻関数 date(), mktime()で矛盾なく動作するようになっている。
+		//画面からいれれられたＴＺ調整・補正は、date(),mktime()の結果を処理しておこなっていた。
+		//
+		//一方、NC3からはdate.timezone = UTCが前提となっている。
+		//(NetCommons/UtilityのNetCommonsTimeのgetNowDatetimeがUTCを期待しているのは明らか)
+		//
+		//よって、カレンダー登録ModelのCRUD関数のいる入口・出口で、この2つのdate.timezoneを
+		//切替する関数を用意する。
+		date_default_timezone_set($timezoneId);
 	}
 }

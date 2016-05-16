@@ -3,10 +3,10 @@
 <div ng-controller="CalendarsDetailEdit" class="block-setting-body"
 	ng-init="initialize(<?php echo h(json_encode(array('frameId' => Current::read('Frame.id')))); ?>)">
 
-<?php if (isset($event['CalendarEvent']['title']))  : ?>
+<?php if (isset($event['CalendarEvent']['title'])) : ?>
 	<div class='h3'><?php echo __d('calendars', '予定の編集'); ?></div>
 <?php else: ?>
-	<div class='h3'><?php echo __d('calendars', '予定の追加'); ?></div>
+		<div class='h3'><?php echo __d('calendars', '予定の追加'); ?></div>
 <?php endif; ?>
 
 <div class="panel panel-default">

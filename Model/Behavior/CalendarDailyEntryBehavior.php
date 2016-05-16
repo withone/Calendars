@@ -43,37 +43,67 @@ class CalendarDailyEntryBehavior extends CalendarAppBehavior {
  * @return array $result 結果
  */
 	public function insertDaily(Model &$model, $planParams, $rruleData, $eventData) {
-		//CakeLog::debug("DBGX: insertDaily() start");
-
-		//CakeLog::debug("DBGDBG: model->rrule[INDEX] before INC value[" . $model->rrule['INDEX'] . "]");
 		$model->rrule['INDEX']++;
-		//CakeLog::debug("DBGDBG: model->rrule[INDEX] after INC value[" . $model->rrule['INDEX'] . "]");
+
+		//ユーザタイムゾーンを取得しておく。
+		$userTz = (new NetCommonsTime())->getUserTimezone();
 
 		//インターバル日数を加算した開始日の計算
+		//
 		////NC3ではすでにサーバー系日付時刻になおっているから、timezoneDateは呼ばない.
-		$time = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time']; //catしてYmdHisにする
+		$sTime = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time']; //catしてYmdHisにする
 
-		$timestamp = mktime(substr($time, 8, 2), substr($time, 10, 2), substr($time, 12, 2),
-							substr($time, 4, 2), substr($time, 6, 2) + $model->rrule['INTERVAL'], substr($time, 0, 4));
-		$startDate = date('Ymd', $timestamp);
-		$startTime = date('His', $timestamp);
+		//以下で使う時間系はカレンダー画面上（=ユーザー系）でのカレンダ
+		//日付時刻をさしているので、ユーザー系に直す。
+		//
+		$userStartTime = (new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($sTime));
+		$userStartTime = CalendarTime::dt2calDt($userStartTime);
 
-		//CakeLog::debug("DBGX: CalendarEvent[start_date]+[start_time][" . $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'] . "] >> time[" . $time . "] >> timestamp[" . $timestamp . "] startDate[" . $startDate . "] startTime[" . $startTime . "]");
+		//ユーザー系開始日の同年同月の日＋インターバール(rrule[INTERVAL])
+		//日数のタイムスタンプを取得
+		$date = new DateTime('now', (new DateTimeZone($userTz)));	//ユーザー系DateTimeObj生成
+		$date->setDate(substr($userStartTime, 0, 4), substr($userStartTime, 4, 2),
+				substr($userStartTime, 6, 2) + $model->rrule['INTERVAL']);
+		$date->setTime(substr($userStartTime, 8, 2),
+			substr($userStartTime, 10, 2), substr($userStartTime, 12, 2));
+		//サーバー系に直して、開始日のYmdとHisを取得
+		$date->setTimeZone(new DateTimeZone('UTC'));	//サーバー系TZに直す
+		$svrStartDate = $date->format('Ymd');
+		$svrStartTime = $date->format('His');
+
+		//CakeLog::debug("DBGX: CalendarEvent[start_date]+[start_time][" . $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'] . "] >> time[" . $time . "] >> timestamp[" . $timestamp . "] svrStartDate[" . $svrStartDate . "] svrStartTime[" . $svrStartTime . "]");
 
 		//インターバル日数を加算した終了日の計算
+		//
 		////NC3ではすでにサーバー系日付時刻になおっているから、timezoneDateは呼ばない.
-		$time = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time']; //catしてYmdHisにする
-		$timestamp = mktime(substr($time, 8, 2), substr($time, 10, 2), substr($time, 12, 2),
-							substr($time, 4, 2), substr($time, 6, 2) + $model->rrule['INTERVAL'], substr($time, 0, 4));
-		$endDate = date('Ymd', $timestamp);
-		$endTime = date('His', $timestamp);
+		$eTime = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time']; //catしてYmdHisにする
 
-		if (!CalendarSupport::isRepeatable($model->rrule, ($startDate . $startTime), $eventData['CalendarEvent']['timezone_offset'])) {
+		//以下で使う時間系はカレンダー画面上（=ユーザー系）でのカレンダ
+		//日付時刻をさしているので、ユーザー系に直す。
+		//
+		$userEndTime = (new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($eTime));
+		$userEndTime = CalendarTime::dt2calDt($userEndTime);
+
+		//ユーザー系終了日の同年同月の日＋インターバール(rrule[INTERVAL])日数
+		//のタイムスタンプを取得
+		$date = new DateTime('now', (new DateTimeZone($userTz)));   //ユーザー系DateTimeObj生成
+		$date->setDate(substr($userEndTime, 0, 4),
+			substr($userEndTime, 4, 2),
+			substr($userEndTime, 6, 2) + $model->rrule['INTERVAL']);
+		$date->setTime(substr($userEndTime, 8, 2),
+			substr($userEndTime, 10, 2), substr($userEndTime, 12, 2));
+
+		//サーバー系に直して、終了日のYmdとHisを取得
+		$date->setTimeZone(new DateTimeZone('UTC'));	//サーバー系TZに直す
+		$svrEndDate = $date->format('Ymd');
+		$svrEndTime = $date->format('His');
+
+		if (!CalendarSupport::isRepeatable($model->rrule, ($svrStartDate . $svrStartTime), $eventData['CalendarEvent']['timezone_offset'])) {
 			return true;
 		}
 
-		//CakeLog::debug("DBGX: insert() startDateTime[" . $startDate . $startTime . "] endDateTime[" . $endDate . $endTime . "]");
-		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData, ($startDate . $startTime), ($endDate . $endTime));
+		//CakeLog::debug("DBGX: insert() svrStartDateTime[" . $svrStartDate . $svrStartTime . "] svrEndDateTime[" . $svrEndDate . $svrEndTime . "]");
+		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData, ($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime));
 		if ($rEventData['CalendarEvent']['id'] === null) {
 			return false;
 		}

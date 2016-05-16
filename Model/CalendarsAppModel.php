@@ -330,12 +330,17 @@ class CalendarsAppModel extends AppModel {
  * @return array 作成したbyday配列を返す
  */
 	private function __makeArrayOfRruleByDay(&$rruleByday, &$repeatFreq) {
+		$wdays = explode('|', CalendarsComponent::CALENDAR_REPEAT_WDAY); //SU,MO, ... ,SA
+
 		$byday = array();
 		foreach ($rruleByday[$repeatFreq] as $val) {
 			$wday = substr($val, -2);	//4SA,-1MOより、"SA","MO"の部分を抜き出す。
-			$num = intval(substr($val, 0, -2));	//4SA,-1MOより、"4","-1"の部分を抜き出し、整数化しておく。
-			if ($num === 0) {	//数字の部分がないケースでは、SAやMOをそのまま$valとする。が、実際にはありえないケース...
+			$num = intval(substr($val, 0, -2));	//4SA,-1MOより、"4","-1"の部分を抜き出し整数化
+			if ($num === 0) {	//YEARYの「開始日と同日」($val==='')のケース
 				$val = $wday;
+			}
+			if (!in_array($wday, $wdays)) {	//YEARYの「開始日と同日」指定時は代入しない
+				continue;
 			}
 			//$wdayがSU-SAにあるかどうか、$numが-1以上4以下であるかのチェックは、すでにvalidateでおわっているので省略
 			$byday[] = $val;
