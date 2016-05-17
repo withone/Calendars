@@ -41,15 +41,20 @@ class CalendarFrameSetting extends CalendarsAppModel {
  * @var array
  */
 	public $actsAs = array(
-		'NetCommons.OriginalKey',	//key,origin_id あったら動作し、なくても無害なビヘイビア
+		'NetCommons.OriginalKey',	// key,origin_id あったら動作し、
+									// なくても無害なビヘイビア
 
-		'NetCommons.Trackable',	// TBLが Trackable項目セット(created_user＋modified_user)をもっていたらTrackable(人の追跡可能）とみなされる。
-								// Trackableとみなされたたら、created_userに対応するusername,handle(TrackableCreator)が、
+		'NetCommons.Trackable',	// TBLが Trackable項目セット(created_user＋modified_user)を
+								// もっていたらTrackable(人の追跡可能）とみなされる。
+								// Trackableとみなされたたら、created_userに対応する
+								// username,handle(TrackableCreator)が、
 								// modified_userに対応するusername,hanldle(TrackableUpdator)が、
 								// belongToで自動追加され、取得データにくっついてくる。
 								// なお、created_user, modified_userがなくても無害なビヘイビアである。
 
-		'Workflow.Workflow',	// TBLに 承認項目セット(status + is_active + is_latest + language_id + (origin_id|key) )があれば、承認TBLとみなされる。
+		'Workflow.Workflow',	// TBLに 承認項目セット
+								// (status + is_active + is_latest + language_id + (origin_id|key) )があれば、
+								// 承認TBLとみなされる。
 								// 承認TBLのINSERTの時だけ働く。UPDATEの時は働かない。
 								// status===STATUS_PUBLISHED（公開）の時だけINSERTデータのis_activeがtrueになり、
 								//	key,言語が一致するその他のデータはis_activeがfalseにされる。
@@ -58,8 +63,10 @@ class CalendarFrameSetting extends CalendarsAppModel {
 								//
 								// なお、承認項目セットがなくても無害なビヘイビアである。
 
-		'Workflow.WorkflowComment', // $model->data['WorkflowComment'] があれば働くし、なくても無害なビヘイビア。
-								// $model->data['WorkflowComment'] があれば、このTBLにstatusがあること（なければ、status=NULLで突っ込みます）
+		'Workflow.WorkflowComment', // $model->data['WorkflowComment'] があれば働くし、
+								// なくても無害なビヘイビア。
+								// $model->data['WorkflowComment'] があれば、このTBLにstatusがあること
+								//（なければ、status=NULLで突っ込みます）
 
 		'Calendars.CalendarValidate',
 		'Calendars.CalendarApp',	//baseビヘイビア
@@ -241,7 +248,8 @@ class CalendarFrameSetting extends CalendarsAppModel {
 			}
 			$settingId = $setting['CalendarFrameSetting']['id'];
 		}
-		$this->CalendarFrameSettingSelectRoom = ClassRegistry::init('Calendars.CalendarFrameSettingSelectRoom', true);
+		$this->CalendarFrameSettingSelectRoom =
+			ClassRegistry::init('Calendars.CalendarFrameSettingSelectRoom', true);
 		$selectRooms = $this->CalendarFrameSettingSelectRoom->getSelectRooms($settingId);
 		return $selectRooms;
 	}
@@ -267,13 +275,15 @@ class CalendarFrameSetting extends CalendarsAppModel {
 			}
 
 			//フレームの登録
-			if (! ($data = $this->save($data, false))) {	//バリデートは前で終わっているので第二引数=false
+			//バリデートは前で終わっているので第二引数=false
+			if (! ($data = $this->save($data, false))) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
 			if ($data['CalendarFrameSetting']['is_select_room']) {
 				//ルーム指定あり処理.
-				$this->CalendarFrameSettingSelectRoom = ClassRegistry::init('Calendars.CalendarFrameSettingSelectRoom');
+				$this->CalendarFrameSettingSelectRoom =
+					ClassRegistry::init('Calendars.CalendarFrameSettingSelectRoom');
 				if (! $this->CalendarFrameSettingSelectRoom->validateCalendarFrameSettingSelectRoom($data)) {
 					CakeLog::error(serialize($this->CalendarFrameSettingSelectRoom->validationErrors));
 
@@ -308,7 +318,8 @@ class CalendarFrameSetting extends CalendarsAppModel {
 		$data[$this->alias]['display_count'] = CalendarsComponent::CALENDAR_STANDARD_DISPLAY_DAY_COUNT;
 
 		//frame_key,room_idは明示的に設定されることを想定し、setDefaultではなにもしない。
-		$data[$this->alias]['timeline_base_time'] = CalendarsComponent::CALENDAR_TIMELINE_DEFAULT_BASE_TIME;
+		$data[$this->alias]['timeline_base_time'] =
+			CalendarsComponent::CALENDAR_TIMELINE_DEFAULT_BASE_TIME;
 	}
 
 }

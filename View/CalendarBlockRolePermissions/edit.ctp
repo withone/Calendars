@@ -15,13 +15,10 @@
 
 	<?php echo $this->BlockTabs->main(BlockTabsHelper::MAIN_TAB_PERMISSION); ?>
 
-	<div class="tab-content">
+		<?php echo $this->element('Blocks.edit_form', array(
+				'model' => 'Calendar',
+				'callback' => 'Calendars.CalendarBlockRolePermissions/edit_form',
+				'cancelUrl' => NetCommonsUrl::backToIndexUrl('default_action'),
+			)); ?>
 
-			<?php echo $this->element('Blocks.edit_form', array(
-					'model' => 'Calendar',
-					'callback' => 'Calendars.CalendarBlockRolePermissions/edit_form',
-					'cancelUrl' => NetCommonsUrl::backToIndexUrl('default_action'),
-				)); ?>
-
-	</div><!--tab-contentを閉じる-->
 </article>

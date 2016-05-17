@@ -63,14 +63,15 @@ class CalendarBlockRolePermissionsController extends CalendarsAppController {
 			//画面上部のタブ設定
 			'mainTabs' => array(
 				'frame_settings' => array(	//表示設定変更
-					'url' => array('controller' => 'calendar_frame_settings', 'action' => 'edit')),
+					'url' => array('controller' => 'calendar_frame_settings')
+				),
 				'role_permissions' => array(
 					'url' => array(
-						'controller' => 'calendar_block_role_permissions', 'action' => 'edit'),
+						'controller' => 'calendar_block_role_permissions'),
 				),
 				'mail_settings' => array(
 					//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
-					'url' => array('controller' => 'calendar_mail_settings', 'action' => 'edit'),
+					'url' => array('controller' => 'calendar_mail_settings'),
 				),
 			),
 		),
@@ -90,7 +91,7 @@ class CalendarBlockRolePermissionsController extends CalendarsAppController {
 				$this->NetCommons->setFlashNotification(__d('net_commons', 'Successfully saved.'), array(
 					'class' => 'success',
 				));
-				$this->redirect(NetCommonsUrl::backToIndexUrl('default_setting_action'));
+				$this->redirect(NetCommonsUrl::backToPageUrl(true));
 				return;
 			}
 			$this->NetCommons->handleValidationError($this->CalendarPermission->validationErrors);

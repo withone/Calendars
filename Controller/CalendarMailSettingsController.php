@@ -32,15 +32,28 @@ class CalendarMailSettingsController extends MailSettingsController {
 			'mainTabs' => array(
 				'frame_settings' => array(
 					'url' => array(	//表示設定変>更
-						'controller' => 'calendar_frame_settings', 'action' => 'edit')),
-				'role_permissions' => array(
-					'url' => array('controller' => 'calendar_block_role_permissions', 'action' => 'edit'),
+						'controller' => 'calendar_frame_settings')
 				),
-				//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
+				'role_permissions' => array(
+					'url' => array('controller' => 'calendar_block_role_permissions'),
+				),
 				'mail_settings' => array(
-					'url' => array('controller' => 'calendar_mail_settings', 'action' => 'edit'),
+					'url' => array('controller' => 'calendar_mail_settings'),
 				),
 			),
 		),
+		'Mails.MailForm',
 	);
+
+/**
+ * beforeFilter
+ *
+ * @return void
+ * @see NetCommonsAppController::beforeFilter()
+ */
+	public function beforeFilter() {
+		parent::beforeFilter();
+
+		$this->backUrl = NetCommonsUrl::backToPageUrl(true);
+	}
 }

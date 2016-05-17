@@ -64,16 +64,14 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 		'Blocks.BlockTabs' => array(
 			//画面上部のタブ設定
 			'mainTabs' => array(
-				'frame_settings' => array(
-					'url' => array(
-						'controller' => 'calendar_frame_settings',
-						'action' => 'edit')),	//表示設定変更
+				'frame_settings' => array(	//表示設定変更
+					'url' => array('controller' => 'calendar_frame_settings')
+				),
 				'role_permissions' => array(
-					'url' => array('controller' => 'calendar_block_role_permissions', 'action' => 'edit'),
+					'url' => array('controller' => 'calendar_block_role_permissions'),
 				),
 				'mail_settings' => array(
-				//暫定. BlocksのmainTabにメール設定が追加されるまでは、ここ＋beforeRender()で対処.
-					'url' => array('controller' => 'calendar_mail_settings', 'action' => 'edit'),
+					'url' => array('controller' => 'calendar_mail_settings'),
 				),
 			),
 		),
@@ -86,6 +84,7 @@ class CalendarFrameSettingsController extends CalendarsAppController {
  * uses model
  */
 	public $uses = array(
+		'Calendars.Calendar',
 		'Calendars.CalendarFrameSetting',
 		'Calendars.CalendarFrameSettingSelectRooms',
 		'Rooms.Room'
@@ -132,6 +131,7 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 	public function beforeFilter() {
 		parent::beforeFilter();
 		$this->Auth->deny('index');
+		$this->Calendar->afterFrameSave(Current::read());
 	}
 
 /**
@@ -146,7 +146,7 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 			$data['CalendarFrameSetting']['display_type'] =
 				(int)$data['CalendarFrameSetting']['display_type'];
 			if ($this->CalendarFrameSetting->saveFrameSetting($data)) {
-				$this->redirect(NetCommonsUrl::backToPageUrl());
+				$this->redirect(NetCommonsUrl::backToPageUrl(true));
 				return;
 			}
 			$this->NetCommons->handleValidationError($this->CalendarFrameSetting->validationErrors);

@@ -27,3 +27,6 @@ msgid "Fri"
 msgstr ""
 msgid "Sat"
 msgstr ""
+
+msgid "MailSetting.mail_fixed_phrase_body.popover"
+msgstr ""
