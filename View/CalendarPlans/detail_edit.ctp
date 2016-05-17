@@ -34,8 +34,10 @@
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
 
 	<label style="float: left;margin-right: 2em;" >
-	<?php echo __d('calendars', '予定時間の設定'); ?>
+	<?php echo __d('calendars', '予定日の設定') . $this->element('NetCommons.required'); ?>
 	</label>
+
+
 
 <?php
 	$useTime = 'useTime[' . $frameId . ']';
@@ -97,10 +99,19 @@
 ?>
 
 <?php
+	//現在日付時刻(Y/m/d H:i:s形式)からの直近１時間の日付時刻(from,to)を取得
+	$nctm = new NetCommonsTime();
+	$userNowYdmHis = $nctm->toUserDatetime('now');
+	$userNowHi = CalendarTime::getHourColonMin($userNowYdmHis);
+	$ymdHis = sprintf("%04d-%02d-%02d %s", $vars['year'], $vars['month'], $vars['day'], $userNowHi);
+	list($ymdOfLastHour, $fromYmdHiOfLastHour, $toYmdHiOfLastHour) = CalendarTime::getTheTimeInTheLastHour($ymdHis);
+
+
+
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD',
 	)));
-
+	$ngModel = 'detailStartDate';
 	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_start_datetime',
 	array(
 		'div' => false,
@@ -115,6 +126,7 @@
 		//////'ng-model' => $ngModel,
 		//'ng-show' => $useTime,		//表示条件１
 		//'ng-style' => "{float: 'left'}",
+		'ng-init' => sprintf("%s = '%s'", $ngModel, $ymdOfLastHour), //kuma add
 	));
 ?>
 	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>-->
@@ -126,6 +138,9 @@
 <!-- <div class="input-group">--><!-- 表示条件２のinput-group -->
 
 <?php
+	$nctm = new NetCommonsTime();
+	$fromServerYmdHiOfLastHour = $nctm->toServerDatetime($fromYmdHiOfLastHour . ':00');
+	$toServerYmdHiOfLastHour = $nctm->toServerDatetime($toYmdHiOfLastHour . ':00');
 	$ngModel = 'startDatetime[' . $frameId . ']';
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD HH:mm',
@@ -143,6 +158,10 @@
 		//////'value' => (empty($date)) ? '' : intval($date),
 		//////'ng-model' => $ngModel,
 		//'ng-show' => '!' . $useTime, //'!' . $useTime,	//表示条件を表示条件１の逆にする。
+		//'placeholder' => 'yyyy-mm-dd hh:nn', //kuma add
+		//'value' => $fromServerYmdHiOfLastHour, // kuma add
+		'ng-init' => sprintf("%s = '%s'", 'detailStartDatetime', $fromServerYmdHiOfLastHour), //kuma add
+
 	));
 ?>
 	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><i class="glyphicon glyphicon-time"></i></div> -->
@@ -176,6 +195,7 @@
 ?>
 
 <?php
+	$ngModel = 'detailEndDate';
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD',
 	)));
@@ -193,7 +213,7 @@
 		//////'ng-model' => $ngModel,
 		//'ng-show' => $useTime,		//表示条件１
 		//'ng-style' => "{float: 'left'}",
-
+		'ng-init' => sprintf("%s = '%s'", $ngModel, $ymdOfLastHour), //kuma add
 	));
 ?>
 	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div> -->
@@ -222,6 +242,9 @@
 		//////'value' => (empty($date)) ? '' : intval($date),
 		//////'ng-model' => $ngModel,
 		//'ng-show' => '!' . $useTime, //'!' . $useTime,	//表示条件を表示条件１の逆にする。
+		//'placeholder' => 'yyyy-mm-dd hh:nn', //kuma add
+		//'value' => $toServerYmdHiOfLastHour, //kuma
+		'ng-init' => sprintf("%s = '%s'", 'detailEndDatetime', $toServerYmdHiOfLastHour), //kuma add
 	));
 ?>
 	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><i class="glyphicon glyphicon-time"></i></div> -->
