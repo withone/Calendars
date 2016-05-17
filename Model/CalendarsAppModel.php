@@ -10,6 +10,7 @@
  */
 
 App::uses('AppModel', 'Model');
+App::uses('CalendarRruleUtil', 'Calendars.Utility');
 
 /**
  * CalendarsApp Model
@@ -225,8 +226,7 @@ class CalendarsAppModel extends AppModel {
 			$rrule['FREQ'] = 'NONE';
 		}
 
-		$planParam['rrule'] = $this->concatRRule($rrule);	//rrule配列を、concatRRule()を使って文字列化
-		//CakeLog::debug("DBG: _setAndMergeRrule() concatRrule()前の rrule配列" . print_r($rrule, true) . "] 後のrrule文字列[" . $planParam['rrule'] . "]");
+		$planParam['rrule'] = (new CalendarRruleUtil())->concatRrule($rrule);	//rrule配列を、concatRrule()を使って文字列化
 
 		return $planParam;
 	}

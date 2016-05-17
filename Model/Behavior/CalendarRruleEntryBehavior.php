@@ -10,6 +10,7 @@
  */
 
 App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');
+App::uses('CalendarRruleUtil', 'Calendars.Utility');
 
 /**
  * CalendarRruleEntryBehavior
@@ -59,10 +60,7 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 		$model->rrule = $planParams['rrule'];	//引数ではなく、$modelのインスタンス変数としてセットする。
 
 		if (!is_array($model->rrule)) {	//$rrulea文字列を解析し配列化する。
-			if (!$model->Behaviors->hasMethod('parseRrule')) {
-				$model->Behaviors->load('Calendars.CalendarRruleHandle');
-			}
-			$model->rrule = $model->parseRrule($model->rrule);
+			$model->rrule = (new CalendarRruleUtil())->parseRrule($model->rrule);
 		}
 
 		//CakeLog::debug("DBG: In insertRrule() rrule array[" . print_r($model->rrule, true) . "]");

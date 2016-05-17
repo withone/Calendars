@@ -8,6 +8,7 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
+App::uses('NetCommonsTime', 'NetCommons.Utility');
 
 /**
  * CalendarTime Utility
@@ -359,123 +360,89 @@ class CalendarTime {
 	}
 
 /**
- * タイムゾーンの計算処理
- * 登録時：第一引数が入っていれば画面から取得したものとみなして、_default_TZから引く
- * 　　　　第一引数がnullならば、_server_TZから引く
- * 表示時：GMTから会員のタイムゾーンを足す
+ * 日付フォーマット関数
  *
- * @param string $time time(YmdHis or Hisの形式)
- * @param int $insertFlag insertFlag(登録、更新時かどうか) default:1(true). MDがboolのデフォルト引数を拒否するのでintに変更
- * @param string  $format format default:date('YmdHis')
- * @return string timezone str
+ * @param string $time time YmdHis形式の文字列. insertFlag=1の時ユーザー系.insertFlag=0の時サーバー系であることを想定している。
+ * @param mixed $timezoneOffset 値(-12.0 - 12.0)が入っていればその時差を使う。nullならtimezoneOffsetはつかわず、insertFlagだけで処理する
+ * @param int $insertFlag insertFlag (1:登録=サーバ系にする. 0:表示=ユーザー系にする)
+ * @param string $timeFormat 時間表示形式
+ * @param int $toFlag これが1の時はその日の最後を24:00:00として表示する
+ * @return string 生成した日付フォーマット文字列
  */
-	/*
-	//public static function timezoneDate($time = null, $insertFlag = 1, $format = null) {
-		$_defaultTZ = Session::read('Calendars._timezoneOffset');
-		$timeNullFlag = false;
-		if ($time === null) {	//$time===null.つまり、画面以外のI/Fから渡された。
-			$timeNullFlag = true;
-			list($time, $timezoneOffset) = self::getTimezoneOffsetAndMinitueOffsetEtc($insertFlag);
-		}
-		if ($insertFlag) { // 登録時　サーバのタイムゾーンを引く
-			$timezoneOffset =
-				self::getTimezoneOffsetWithSummerTimeWhenInsert(
-					$timeNullFlag, $_defaultTZ, $timezoneOffset);
-		} else {
-			// 表示時　会員のタイムゾーンを足す（ログインしていない場合、デフォルトタイムゾーン）
-			$timezoneOffset = Session::read('Calendars._timezoneOffset');
-			if ($timezoneOffset === null) {
-				$timezoneOffset = $_defaultTZ;
-			}
-		}
-
-		return self::getFormatedTimezoneDate($time, $format, $timezoneOffset);
-	}
-	*/
-
-/**
- * タイムゾーン等の設定
- *
- * @param int $insertFlag insertFlag
- * @return array array(string $time, fload $timezoneOffset)
- */
-	public static function getTimezoneOffsetAndMinitueOffsetEtc($insertFlag) {
-		$time = '';
-		$timezoneOffset = 0;
-		if ($insertFlag) {	//登録ケース
-			$time = date('YmdHis');
-		} else {	//更新ケース
-			$timezoneOffset = Session::read('Calendars._server_TZ');
+	public function dateFormat($time, $timezoneOffset = null, $insertFlag = 0, $timeFormat = 'YmdHis', $toFlag = 0) {
+		if (isset($timezoneOffset)) {
+			//ユーザー系、サーバー系ではなく、具体的は時差情報がわたされたので、それで計算するケース
 			$timezoneMinuteOffset = 0;
 			if (round($timezoneOffset) != intval($timezoneOffset)) {
 				$timezoneOffset = ($timezoneOffset > 0) ? floor($timezoneOffset) : ceil($timezoneOffset);
-				$timezoneMinuteOffset = ($timezoneOffset > 0) ? 30 : -30;			// 0.5minute
+				$timezoneMinuteOffset = ($timezoneOffset > 0) ? 30 : -30;	// 0.5minute
 			}
-			//_server_TZだけ引く。つまり、サーバTZをつかい、LOCAL時間からUTC時間に変換する。
-			$timezoneOffset = -1 * $timezoneOffset;
-			$timezoneMinuteOffset = -1 * $timezoneMinuteOffset;
-			$intTime = mktime(date('H') + $timezoneOffset, date('i') + $timezoneMinuteOffset,
-				date('s'), date('m'), date('d'), date('Y'));
-			$time = date('YmdHis', $intTime);
-		}
-		return array($time, $timezoneOffset);
-	}
-
-/**
- * 登録時のサーバタイムゾーン減算(サマータイム考慮)
- *
- * @param bool $timeNullFlag timeNullFlag
- * @param float $_defaultTZ defaultTimeZone
- * @param float $timezoneOffset timezoneOffset
- * @return float $timezoneOffset 計算した結果のtimezoneOffset
- */
-	public static function getTimezoneOffsetWithSummerTimeWhenInsert($timeNullFlag, $_defaultTZ,
-		$timezoneOffset) {
-		$summertimeOffset = 0; // サマータイムも取得できれば考慮する
-		if (date('I')) {
-			$summertimeOffset = -1;
-		}
-		//
-		// 第一引数が入っていれば画面から取得したものとみなして、_defaultTZから引く
-		//
-		if ($timeNullFlag) {
-			//// $timezoneOffset = -1 * $config[_GENERAL_CONF_CATID]['server_TZ']['conf_value'];
-			$timezoneOffset = -1 * Session::read('Calendars._server_TZ');
+			if ($insertFlag) {
+				$timezoneOffset = -1 * $timezoneOffset;	//登録=サーバー系に直す.よってユーザーTZ系時間に時差を引きUTCにする
+			} else {
+				//表示=ユーザー系に直す。よって、UTCに時差を足しユーザー系時間にする。
+			}
+			//NC2の時mktime(), date()は php.ini=date.tiemzone=Aisa/Tokyo時の値を返していた。
+			//それを前提に補正計算する。
+			$date = new DateTime('now', (new DateTimeZone($userTz)));	//ユーザー系にする
+			$date->setDate(intval(substr($time, 0, 4)), intval(substr($time, 4, 2)), intval(substr($time, 6, 2)));
+			$date->setTime(intval(substr($time, 8, 2)) + $timezoneOffset,
+				intval(substr($time, 10, 2)) + $timezoneMinuteOffset, intval(substr($time, 12, 2)));
+			//ユーザー系のままだが、insertFlag=1の時はサーバー系のYmdHis、insertFlag=0の時はユーザー系のYmdHisを返す
+			$time = $date->format('YmdHis');
 		} else {
-			$timezoneOffset = -1 * $_defaultTZ;
-		}
-		$timezoneOffset += $summertimeOffset;
-		return $timezoneOffset;
-	}
+			//オフセット時間の指定がないので、insertFlag=1(登録=ユーザ系toサーバー系)か
+			//insertFlag=0(表示=サーバー系toユーザー系)で判断する。
 
-/**
- * フォーマット指定のタイムゾーン考慮日付取得
- *
- * @param string $time time
- * @param string $format format
- * @param float $timezoneOffset timezoneOffset
- * @return string $date
- */
-	public static function getFormatedTimezoneDate($time, $format, $timezoneOffset) {
-		$timezoneMinuteOffset = 0;
-		if (round($timezoneOffset) != intval($timezoneOffset)) {
-			$timezoneOffset = ($timezoneOffset > 0) ? floor($timezoneOffset) : ceil($timezoneOffset);
-			$timezoneMinuteOffset = ($timezoneOffset > 0) ? 30 : -30;			// 0.5minute
-		}
-		if (strlen($time) === 6) {	//時分秒
-			$intTime = mktime(intval(substr($time, 0, 2)) + $timezoneOffset,
-				intval(substr($time, 2, 2)) + $timezoneMinuteOffset, intval(substr($time, 4, 2)));
-			if ($format === null) {
-				$format = 'His';
-			}
-		} elseif (strlen($time) === 14) {	//年月日時分秒
-			$intTime = mktime(intval(substr($time, 8, 2)) + $timezoneOffset,
-				intval(substr($time, 10, 2)) + $timezoneMinuteOffset, intval(substr($time, 12, 2)),
-							intval(substr($time, 4, 2)), intval(substr($time, 6, 2)), intval(substr($time, 0, 4)));
-			if ($format == null) {
-				$format = 'YmdHis';
+			$userTz = (new NetCommonsTime())->getUserTimezone();
+
+			//少し冗長だが、変化の流れが分かるように書いた。
+			if ($insertFlag) {
+				//登録.ユーザー系toサーバー系YmdHis
+				$userDateTime = $time;
+				$svrDateTime = (new NetCommonsTime())->toServerDatetime(CalendarTime::calDt2dt($userDateTime));
+				$svrDateTime = CalendarTime::dt2calDt($svrDateTime);
+				$time = $svrDateTime;
+			} else {
+				//表示.サーバー系toユーザー系YmdHis
+				$svrDateTime = $time;
+				$userDateTime = (new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($svrDateTime));
+				$userDateTime = CalendarTime::dt2calDt($userDateTime);
+				$time = $userDateTime;
 			}
 		}
-		return date($format, $intTime);
+
+		//タイムスタンプ計算
+		//
+		$date = new DateTime('now', (new DateTimeZone($userTz)));
+		if ($toFlag && substr($time, 8) == "000000") {
+			//x月y日24:00:00とするための工夫
+			$timeFormat = str_replace("H", "24", $timeFormat);
+			$timeFormat = str_replace("is", "0000", $timeFormat);
+			$timeFormat = str_replace("i", "00", $timeFormat);
+
+			//この時点で、$timeFormatは "Ymd240000"になっている。
+
+			//タイムスタンプを求める。
+			//0,0,0があるから、ここにくるのは、表示.サーバ系toユーザー系の時とおもわれるが、、
+			$date->setDate(intval(substr($time, 0, 4)),
+				intval(substr($time, 4, 2)), intval(substr($time, 6, 2)));
+			$date->setTime(0, 0, 0);
+			$timestamp = $date->getTimestamp();
+
+			//タイムスタンプから1秒だけ引く。これは、24:00:00としつつも、翌日にならずに当日の最後にする工夫
+			$timestamp = $timestamp - 1;
+		} else {
+			$date->setDate(intval(substr($time, 0, 4)),
+				intval(substr($time, 4, 2)), intval(substr($time, 6, 2)));
+			$date->setTime(intval(substr($time, 8, 2)),
+				intval(substr($time, 10, 2)), intval(substr($time, 12, 2)));
+			$timestamp = $date->getTimestamp();
+		}
+
+		$date->setTimestamp($timestamp);
+		$week = $date->format('w');	//曜日index (0-6)
+		$weekNameArray = explode('|', __d('calendars', '日|月|火|水|木|金|土'));	//言語別のCALENDAR_WEEK
+		return $date->format(sprintf($timeFormat, $weekNameArray[$week]));
 	}
 }

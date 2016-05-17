@@ -254,7 +254,7 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 	public function setDtStartendData($workParams, &$eventData) {
 		//work配列より、以下の変数を復元
 		//
- 		//int $first 初回かどうか (1:初回 0:２回目以降)
+		//int $first 初回かどうか (1:初回 0:２回目以降)
 		//int $currentMonth currentMonth ユーザー系のカレント月
 		//int $month month ユーザー系の月
 		//string $startDate startDate サーバー系開始日のYmd

@@ -15,13 +15,11 @@
 
 <!-- <div class="panel-body"> -->
 
-
-
 <!--- 編集ボタン -->
 
 		<?php /*if ($this->Workflow->canEdit('CalendarPlan', $event['CalendarEvent'])) :*/ ?>
 			<div class="text-right">
-				<?php echo $this->Button->editLink('',  array(
+				<?php echo $this->Button->editLink('', array(
 			'controller' => 'calendar_plans',
 			'action' => 'edit',
 			'style' => 'detail',
@@ -34,7 +32,6 @@
 					)); ?>
 			</div>
 		<?php /*endif;*/ ?>
-
 
 <?php /* CakeLog::debug("event[" . print_r($event, true) . "]"); */ ?>
 
@@ -91,18 +88,25 @@
 </div>
 
 
-<div name="repeat">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+<?php $rruleStr = $this->CalendarPlanRrule->getStringRrule($event['CalendarRrule']['rrule']); ?>
+<?php if ($rruleStr !== '') : ?>
+	<div name="repeat">
+	<div class="col-xs-12 col-sm-10 col-sm-offset-1">
 	<label style="font-weight:normal;"><?php echo __d('calendars', '※繰返し予定：'); ?></label>
 	<!-- <div class="clearfix"></div> -->
 
-	<span><?php echo h($event['CalendarRrule']['rrule']); ?></span><!-- FIXME: -->
-<!--
+	<!-- <span><?php echo h($event['CalendarRrule']['rrule']); ?></span> -->
+
+	<?php /* getStringRrule()で表示するものは直接入力値はつかわない。よってh()は不要 */ ?>
+	<span><?php echo $this->CalendarPlanRrule->getStringRrule($event['CalendarRrule']['rrule']); ?></span>
+
+	<!--
 	<div><span style="margin-right: 1em">毎週</span><span>月曜日,火曜日</span></div>
 	<div>2016年2月29日まで</div>
--->
-</div><!-- col-sm-10おわり -->
-</div><!-- おわり-->
+	-->
+	</div><!-- col-sm-10おわり -->
+	</div><!-- おわり-->
+<?php endif; ?>
 
 
 <div name="dispRoomForOpen">
@@ -116,72 +120,68 @@
 </div><!-- col-sm-10おわり -->
 </div><!-- おわり-->
 
-<div name="sharePersons">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
-	<label><?php echo __d('calendars', '予定を共有する人'); ?></label>
-<div class="clearfix"></div>
-
-<?php
-	$shareUserNames = Hash::extract($shareUserInfos, "{n}.UsersLanguage.0.name");
+<?php $shareUserNames = Hash::extract($shareUserInfos, "{n}.UsersLanguage.0.name"); ?>
+<?php if (count($shareUserNames) > 0) : ?>
+	<div name="sharePersons">
+	<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
+		<label>' . <?php echo __d('calendars', '予定を共有する人'); ?></label>
+		<div class="clearfix"></div>
+	<?php
 	foreach ($shareUserNames as $idx => $shareUserName) {
 		if ($idx) {
 			echo ',&nbsp;&nbsp;';
 		}
 		echo "<span class='calendar-share-person'>" . h($shareUserName) . '</span>';
 	}
-?>
+	?>
+	</div><!-- col-sm-10おわり -->
+	</div><!-- おわり-->
 
-</div><!-- col-sm-10おわり -->
-</div><!-- おわり-->
-
-
-
-<div name="showLocation">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
-	<label><?php echo __d('calendars', '場所'); ?></label>
-	<div class="clearfix"></div>
-	<span><?php echo h($event['CalendarEvent']['location']); ?></span>
-</div><!-- col-sm-10おわり -->
-</div><!-- おわり-->
+<?php endif; ?>
 
 
-<div name="showContact">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
-	<label><?php echo __d('calendars', '連絡先'); ?></label>
-	<div class="clearfix"></div>
-	<span><?php echo h($event['CalendarEvent']['contact']); ?></span>
-</div><!-- col-sm-10おわり -->
-</div><!-- おわり-->
+<?php if ($event['CalendarEvent']['location'] !== '') : ?>
+	<div name="showLocation">
+	<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
+		<label><?php echo __d('calendars', '場所'); ?></label>
+		<div class="clearfix"></div>
+		<span><?php echo h($event['CalendarEvent']['location']); ?></span>
+	</div><!-- col-sm-10おわり -->
+	</div><!-- おわり-->
+<?php endif; ?>
 
 
-<div name="description">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
-	<label><?php echo __d('calendars', '詳細'); ?></label>
-	<div class="clearfix"></div>
-<!-- ここにwysiwyigの内容がきます -->
-	<span><?php echo $event['CalendarEvent']['description']; ?></span>
-<!--
+<?php if ($event['CalendarEvent']['contact'] !== '') : ?>
+	<div name="showContact">
+	<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
+		<label><?php echo __d('calendars', '連絡先'); ?></label>
+		<div class="clearfix"></div>
+		<span><?php echo h($event['CalendarEvent']['contact']); ?></span>
+	</div><!-- col-sm-10おわり -->
+	</div><!-- おわり-->
+<?php endif; ?>
 
-	<div>
-	ここに<span class="h2">詳細</span>がはいります。ここに<span style="color:red">詳細</span>がはいります。
-	<br/>
-	ここに<span class="h3">詳細</span>がはいります。ここに<span style="color:blue">詳細</span>がはいります。
-	<br/>
-	ここに<span class="h4">詳細</span>がはいります。ここに<span style="color:green">詳細</span>がはいります。
-	</div>
--->
-<!-- ここにwysiwyigの内容がきます -->
-</div><!-- col-sm-10おわり -->
-</div><!-- おわり-->
+
+<?php if ($event['CalendarEvent']['description'] !== '') : ?>
+	<div name="description">
+	<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
+		<label><?php echo __d('calendars', '詳細'); ?></label>
+		<div class="clearfix"></div>
+		<!-- ここにwysiwyigの内容がきます -->
+		<span><?php echo $event['CalendarEvent']['description']; ?></span>
+		<!-- ここにwysiwyigの内容がきます -->
+	</div><!-- col-sm-10おわり -->
+	</div><!-- おわり-->
+<?php endif; ?>
 
 
 <div name="writer">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
 	<label><?php echo __d('calendars', '記入者'); ?></label>
-	<div class="clearfix"></div>
-	<span><?php echo h(Hash::get($createdUserInfo, 'UsersLanguage.0.name')); ?></span>
-</div><!-- col-sm-10おわり -->
-</div><!-- おわり-->
+		<div class="clearfix"></div>
+		<span><?php echo h(Hash::get($createdUserInfo, 'UsersLanguage.0.name')); ?></span>
+	</div><!-- col-sm-10おわり -->
+	</div><!-- おわり-->
 
 <div name="updateDate">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
@@ -227,12 +227,12 @@
 				'month' => $vars['month'],
 				'frame_id' => Current::read('Frame.id'),
 			);
-			
+
 			echo $this->Button->cancel(
 				__d('Calendars', '戻る'),
 				$this->NetCommonsHtml->url( NetCommonsUrl::actionUrl($urlOptions))
 			);
-		 ?>
+		?>
 
 
 <?php

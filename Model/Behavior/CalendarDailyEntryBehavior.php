@@ -86,7 +86,7 @@ class CalendarDailyEntryBehavior extends CalendarAppBehavior {
 
 		//ユーザー系終了日の同年同月の日＋インターバール(rrule[INTERVAL])日数
 		//のタイムスタンプを取得
-		$date = new DateTime('now', (new DateTimeZone($userTz)));   //ユーザー系DateTimeObj生成
+		$date = new DateTime('now', (new DateTimeZone($userTz)));	//ユーザー系DateTimeObj生成
 		$date->setDate(substr($userEndTime, 0, 4),
 			substr($userEndTime, 4, 2),
 			substr($userEndTime, 6, 2) + $model->rrule['INTERVAL']);

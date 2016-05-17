@@ -179,8 +179,23 @@ class CalendarsComponent extends Component {
 /**
  * 繰返しエラー発生キーワード
  *
+ * @var string
  */
 	const CALENDAR_RRULE_ERROR_HAPPEND = 'calendar_rrule_error_happend';
+
+/**
+ * 繰返しの区切り文字
+ *
+ * @var string
+ */
+	const CALENDAR_RRULE_PAUSE = ',';
+
+/**
+ * フォーマット
+ *
+ * @var string
+ */
+	const CALENDAR_DATE_FORMAT = 'Y/m/d';
 
 /**
  * カレンダータイムゾーン情報	FIXME: 「システム管理」＞「一般設定」の「タイムゾーン一覧」に統合・一元化すること。

@@ -54,7 +54,7 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 
 		//開始日付時刻の処理
 		$userStartTime = '';
-		$startTimestamp = $currentDay  = $interval = $intervalDay = 0;
+		$startTimestamp = $currentDay = $interval = $intervalDay = 0;
 		$this->__setMonthlyByMonthdayStartDtProc($eventData, $userStartTime, $startTimestamp, $userTz, $currentDay, $first, $model, $interval, $intervalDay);
 
 		CakeLog::debug("DBG: 開始日付時刻処理. startTimestamp[" . $startTimestamp . "] first[" . $first . "] currentDay[" . $currentDay . "] rrule[BYMONTHDAY][0]=[" . $model->rrule['BYMONTHDAY'][0] . "] interval[" . $interval . "] intervalDay[" . $intervalDay . "]");

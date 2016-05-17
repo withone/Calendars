@@ -78,6 +78,7 @@ class CalendarPlansController extends CalendarsAppController {
 		'Calendars.CalendarMonthly',
 		'Calendars.CalendarPlan',
 		'Calendars.CalendarExposeTarget',
+		'Calendars.CalendarPlanRrule',
 	);
 
 /**

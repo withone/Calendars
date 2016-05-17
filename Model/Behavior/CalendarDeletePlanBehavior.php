@@ -10,7 +10,8 @@
  */
 
 App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');	//プラグインセパレータ(.)とパスセバレータ(/)混在に注意
-App::uses('CalendarRruleHandleBehavior', 'Calendars.Model/Behavior');
+//App::uses('CalendarRruleHandleBehavior', 'Calendars.Model/Behavior');
+App::uses('CalendarRruleUtil', 'Calendars.Utility');
 
 /**
  * CalendarDeletePlanBehavior
@@ -152,12 +153,12 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
-		$rruleHandler = new CalendarRruleHandleBehavior();
-		$rruleArr = $rruleHandler->parseRrule($rruleData['CalendarRrule']['rrule']);
+		$rruleUtilObj = new CalendarRruleUtil();
+		$rruleArr = $rruleUtilObj->parseRrule($rruleData['CalendarRrule']['rrule']);
 		$dtstart = $eventData['CalendarEvent']['dtstart'];
 		$timestamp = mktime(0, 0, 0, substr($dtstart, 4, 2), substr($dtstart, 6, 2), substr($dtstart, 0, 4));
 		$rruleArr['UNTIL'] = date('Ymd', $timestamp) . 'T' . substr($dtstart, 8);	//iCalendar仕様の日付形式(Tつなぎ)にする。
-		$rruleData['CalendarRrule']['rrule'] = $rruleHandler->concatRrule($rruleArr);	//rrule配列をrrule文字列にする。
+		$rruleData['CalendarRrule']['rrule'] = $rruleUtilObj->concatRrule($rruleArr);	//rrule配列をrrule文字列にする。
 
 		//CalendarRruleの更新準備
 		if (!isset($model->CalendarRrule)) {

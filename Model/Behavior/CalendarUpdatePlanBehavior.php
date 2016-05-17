@@ -10,7 +10,8 @@
  */
 
 App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');
-App::uses('CalendarRruleHandleBehavior', 'Calendars.Model/Behavior');
+//App::uses('CalendarRruleHandleBehavior', 'Calendars.Model/Behavior');
+App::uses('CalendarRruleUtil', 'Calendars.Utility');
 
 /**
  * CalendarUpdatePlanBehavior
@@ -318,7 +319,8 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			//
 
 			//親のrruleDataはすでに取得しているので、rrule文字列はすぐに取得できる。
-			$rruleArr = $this->parseRrule($rruleData['CalendarRrule']['rrule']);
+			$rruleUtilObj = new CalendarRruleUtil();
+			$rruleArr = $rruleUtilObj->parseRrule($rruleData['CalendarRrule']['rrule']);
 
 			//以下２行は冗長とおもわれる。取り出して上書きしても順番ふくめ変わらないので外す。
 			//$freq = $rruleArr['FREQ'];
@@ -328,7 +330,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 						substr($planParams['dtstart'], 6, 2),
 						substr($planParams['dtstart'], 0, 4));
 			$rruleArr['UNTIL'] = date('Ymd', $timestamp) . 'T' . substr($planParams['dtstart'], 8);	//UNTILを自分の直前までにする。
-			$rruleBeforeStr = $this->concatRRule($model, $rruleArr);
+			$rruleBeforeStr = $rruleUtilObj->concatRrule($model, $rruleArr);
 
 			//今のrruleDataデータのrrule文字列を書き換える。
 			$rruleDataBefore = $rruleData;

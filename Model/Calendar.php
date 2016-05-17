@@ -148,7 +148,7 @@ class Calendar extends CalendarsAppModel {
 		if (!empty($data['Frame']['block_id'])) {
 			return $data;
 		}
-		$frame = $data['Frame'];	//Frameモデルですでに、Frameモデルデータは登録されている。
+		$frame = $data['Frame'];	//FrameモデルですでにFrameモデルデータは登録済み
 
 		$this->begin();
 
@@ -167,7 +167,8 @@ class Calendar extends CalendarsAppModel {
 				// ブロックを作成する
 				$block = $this->_makeBlock($frame);
 			} else {
-				Current::$current['Block'] = $block['Block'];	//取得したBlockを$current[Block]に記録しておく。
+				//取得したBlockを$current[Block]に記録しておく。
+				Current::$current['Block'] = $block['Block'];
 			}
 
 			//Frameモデルに、このブロックのidを記録しておく。 カレンダーの場合、Frame:Blockの関係は n:1
@@ -175,8 +176,10 @@ class Calendar extends CalendarsAppModel {
 			if (! $this->Frame->save($data)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
-			Current::$current['Frame']['block_id'] = $block['Block']['id']; //新規に生成したBlockのidをCurrent[Frame]に追記しておく。
-			//このフレーム用の「表示方法変更」「権限設定」「メール設定」のレコードを１セット用意します。
+			//新規に生成したBlockのidをCurrent[Frame]に追記しておく。
+			Current::$current['Frame']['block_id'] = $block['Block']['id'];
+			//このフレーム用の「表示方法変更」「権限設定」「メール設定」のレコードを
+			//１セット用意します。
 
 			//このフレームの「表示方法変更」
 			if (! $this->_saveFrameChangeAppearance($frame)) {
@@ -327,7 +330,8 @@ class Calendar extends CalendarsAppModel {
 		if (! $block) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
-		Current::$current['Block'] = $block['Block'];	//新規に生成したBlockを$current[Block]に記録しておく。
+		//新規に生成したBlockを$current[Block]に記録しておく。
+		Current::$current['Block'] = $block['Block'];
 		return $block;
 	}
 }

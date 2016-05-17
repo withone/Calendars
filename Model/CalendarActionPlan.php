@@ -50,7 +50,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		'Calendars.CalendarPlanTimeValidate',	//予定（時間関連）バリデーション専用
 		'Calendars.CalendarPlanRruleValidate',	//予定（Rrule関連）バリデーション専用
 		'Calendars.CalendarPlanValidate',	//予定バリデーション専用
-		'Calendars.CalendarRruleHandle',	//concatRRule()など
+		////'Calendars.CalendarRruleHandle',	//concatRrule()など
 	);
 	// @codingStandardsIgnoreStart
 	// $_schemaはcakePHP2の予約語だが、宣言するとphpcsが警告を出すので抑止する。
@@ -617,7 +617,7 @@ class CalendarActionPlan extends CalendarsAppModel {
  *
  * _phpSystemTzEnvSwithing
  *
- * @param string $timezoneId  タイムゾーンID ('UTC', or 'Asia/Tokyo')
+ * @param string $timezoneId タイムゾーンID('UTC'or'Asia/Tokyo')
  * @return void
  */
 	protected function _phpSystemTzEnvSwithing($timezoneId) {
