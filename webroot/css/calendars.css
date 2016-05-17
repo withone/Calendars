@@ -235,7 +235,7 @@
 /*-- 週カレンダーのルーム単位の予定 --*/
 /* 未使用
 .calendar-tbl-td-room-plan {
-	/* background-color: #dff0d8; */
+	background-color: #dff0d8;
 }
 */
 
@@ -590,6 +590,9 @@
 }
 */
 
+.calendar-schedule-badge {
+	margin-left:10px;
+}
 
 /*-- カレンダー 範囲外 --*/
 .calendar-out-of-range {

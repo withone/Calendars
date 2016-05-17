@@ -35,15 +35,24 @@
 
 <?php /* CakeLog::debug("event[" . print_r($event, true) . "]"); */ ?>
 
+<!-- ワークフロー（一時保存/承認待ち、など）のマーク(ステータス) -->
+			<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+			</div>
+			
+			
+<!-- ステータス -->
 <div name="dispTitle">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box h2">
+<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+	<div style="float:left;">
+	<?php echo $this->CalendarCommon->makeWorkFlowLabel($event['CalendarRrule']['status']); ?>
+	</div>
 
-	<!-- <label><?php echo __d('calendars', '件名'); ?></label> -->
-	<div class="clearfix"></div>
 
+	<div class="calendar-eachplan-box h2">
 	<?php echo $this->TitleIcon->titleIcon($event['CalendarEvent']['title_icon']); ?>
 	<span><?php echo h($event['CalendarEvent']['title']); ?></span>
 	<!-- <div class="clearfix"></div> -->
+	</div>
 </div><!-- col-sm-10おわり -->
 </div><!-- おわり-->
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
@@ -179,7 +188,8 @@
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
 	<label><?php echo __d('calendars', '記入者'); ?></label>
 		<div class="clearfix"></div>
-		<span><?php echo h(Hash::get($createdUserInfo, 'UsersLanguage.0.name')); ?></span>
+		<!-- <span><?php echo h(Hash::get($createdUserInfo, 'UsersLanguage.0.name')); ?></span> -->
+		<span><?php echo $this->DisplayUser->handleLink($event, array('avatar' => false)); ?></span>
 	</div><!-- col-sm-10おわり -->
 	</div><!-- おわり-->
 

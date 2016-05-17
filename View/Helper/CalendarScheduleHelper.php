@@ -400,7 +400,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		}
 
 		if ($planCount != 0) {
-			$html .= '<span class="badge nc-badge">' . $planCount . '</span>'; //pending 予定数
+			$html .= '<span class="badge nc-badge calendar-schedule-badge">' . $planCount . '</span>';
 		}
 		$html .= '</span></p></div>';
 
