@@ -33,12 +33,14 @@ class CalendarPlanTimeValidateBehavior extends ModelBehavior {
 	public function checkReverseStartEndDateTime(Model &$model, $check, $editType) {
 		$startDate = false;
 		$startTime = false;
-		if (!$this->_isYmdHi($model, $model->data[$model->alias]['detail_start_datetime'], $editType, $startDate, $startTime)) {
+		if (!$this->_isYmdHi($model, $model->data[$model->alias]['detail_start_datetime'],
+			$editType, $startDate, $startTime)) {
 			return false;
 		}
 		$endDate = false;
 		$endTime = false;
-		if (!$this->_isYmdHi($model, $model->data[$model->alias]['detail_end_datetime'], $editType, $endDate, $endTime)) {
+		if (!$this->_isYmdHi($model, $model->data[$model->alias]['detail_end_datetime'],
+			$editType, $endDate, $endTime)) {
 			return false;
 		}
 		if (!$startDate && !$endDate) {
@@ -114,12 +116,14 @@ class CalendarPlanTimeValidateBehavior extends ModelBehavior {
 	protected function _isYmdHi(Model &$model, $datetimeStr, $editType, &$date, &$time) {
 		$date = false;
 		$time = false;
-		$isDetailEdit = (isset($model->data[$model->alias]['is_detail']) && $model->data[$model->alias]['is_detail']) ? true : false;
+		$isDetailEdit = (isset($model->data[$model->alias]['is_detail']) &&
+			$model->data[$model->alias]['is_detail']) ? true : false;
 		if ($editType === 'detail' && (! $isDetailEdit)) {
 			//detailの時だけチェックしろの指示で、非detail=easy画面だったので、スルーする。
 			return true;
 		}
-		if (isset($model->data[$model->alias]['enable_time']) && ($model->data[$model->alias]['enable_time'])) {
+		if (isset($model->data[$model->alias]['enable_time']) &&
+			($model->data[$model->alias]['enable_time'])) {
 			//時間の指定がある. YYYY-MM-DD hh:mm形式
 			$regex = "/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})$/";
 		} else {
@@ -171,13 +175,15 @@ class CalendarPlanTimeValidateBehavior extends ModelBehavior {
 		$value = array_values($check);
 		$value = $value[0];
 
-		$isDetailEdit = (isset($model->data[$model->alias]['is_detail']) && $model->data[$model->alias]['is_detail']) ? true : false;
+		$isDetailEdit = (isset($model->data[$model->alias]['is_detail'])
+			&& $model->data[$model->alias]['is_detail']) ? true : false;
 		if ($editType === 'easy' && $isDetailEdit) {
 			//easyの時だけチェックしろの指示で、detail画面だったので、スルーする。
 			return true;
 		}
 
-		if (isset($model->data[$model->alias]['enable_time']) && (! $model->data[$model->alias]['enable_time'])) {
+		if (isset($model->data[$model->alias]['enable_time']) &&
+			(! $model->data[$model->alias]['enable_time'])) {
 			return true;	//開始時間と終了時間の指定がないので、ノーチェック
 		}
 
@@ -196,19 +202,24 @@ class CalendarPlanTimeValidateBehavior extends ModelBehavior {
 	protected function _doEasyCheckReverseRange(Model &$model) {
 		$fromTo = array('from', 'to');
 		foreach ($fromTo as $keyword) {
-			if (preg_match("/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):\d{2}$/", $model->data[$model->alias]['easy_hour_minute_' . $keyword]) !== 1) {
+			if (preg_match("/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):\d{2}$/",
+				$model->data[$model->alias]['easy_hour_minute_' . $keyword]) !== 1) {
 				return false;
 			}
 		}
 		//並び順チェック
 		//フォーマットが保証されているので、直接文字列同士で大小比較してＯＫ.
-		if ($model->data[$model->alias]['easy_hour_minute_from'] > $model->data[$model->alias]['easy_hour_minute_to']) {
+		if ($model->data[$model->alias]['easy_hour_minute_from'] >
+			$model->data[$model->alias]['easy_hour_minute_to']) {
 			return false;
 		}
 
 		//form, toが予定日の許容範囲かのチェック （予定日の00:00:00-予定翌日の00:00:00内ならＯＫ。それからはずれたらＮＧ）
 		//
-		list($serverStartDateZero, $serverNextDateZero) = (new CalendarTime())->convUserDate2SvrFromToDateTime($model->data[$model->alias]['easy_start_date'], $model->data[$model->alias]['timezone_offset']);
+		list($serverStartDateZero, $serverNextDateZero) =
+			(new CalendarTime())->convUserDate2SvrFromToDateTime(
+				$model->data[$model->alias]['easy_start_date'],
+				$model->data[$model->alias]['timezone_offset']);
 
 		if ($model->data[$model->alias]['easy_hour_minute_from'] < $serverStartDateZero ||
 			$serverNextDateZero < $model->data[$model->alias]['easy_hour_minute_to']) {

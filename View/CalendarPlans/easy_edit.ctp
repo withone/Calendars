@@ -257,6 +257,7 @@ var mock= {};
 
 mock.elms = document.getElementsByClassName('calendar-specify-a-time_<?php echo $frameId ?>');
 mock.fnc =  function(evt) {
+
 	var target = evt.target;
 
 	if ( target.tagName != 'INPUT' ) {

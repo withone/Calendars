@@ -91,11 +91,13 @@ class CalendarValidateBehavior extends ModelBehavior {
 		//最大・最小に収まるかどうか。
 		App::uses('HolidaysAppController', 'Holidays.Controller');
 		if ($edge === 'start') {
-			if ($Ymd < substr(CalendarTime::stripDashColonAndSp(HolidaysAppController::HOLIDAYS_DATE_MIN), 0, 8)) {
+			if ($Ymd < substr(CalendarTime::stripDashColonAndSp(
+				HolidaysAppController::HOLIDAYS_DATE_MIN), 0, 8)) {
 				return false;
 			}
 		} else {
-			if ($Ymd > substr(CalendarTime::stripDashColonAndSp(HolidaysAppController::HOLIDAYS_DATE_MAX), 0, 8)) {
+			if ($Ymd > substr(CalendarTime::stripDashColonAndSp(
+				HolidaysAppController::HOLIDAYS_DATE_MAX), 0, 8)) {
 				return false;
 			}
 		}

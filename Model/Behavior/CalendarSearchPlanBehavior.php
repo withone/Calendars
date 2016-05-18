@@ -9,7 +9,8 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');	//プラグインセパレータ(.)とパスセバレータ(/)混在に注意
+//プラグインセパレータ(.)とパスセバレータ(/)混在に注意
+App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');
 
 /**
  * CalendarSearchPlanBehavior

@@ -350,7 +350,14 @@ NetCommonsApp.controller('CalendarsDetailEdit',
         //
         if ($scope.detailStartDate != '') {
           $('#' + targetId).val($scope.detailStartDate);
+
+          //簡易では、開始日と終了日が統一され「終日」
+          //(実質開始のみ）１つとなった。
+          //そのため、開始日の値を、終了日のDOMの値に代入する
           //
+          var endTargetId = targetId.replace(/Start/g, 'End');
+          $('#' + endTargetId).val($scope.detailStartDate);
+    
         }
       };
 
@@ -466,6 +473,58 @@ NetCommonsApp.controller('CalendarsDetailEdit',
 
       $scope.toggleEnableTime = function(frameId) {
         console.log('useTime[' + $scope.useTime + ']');
+        if ($scope.useTime[frameId]) {
+          //時刻なし(YYYY-MM-DD) -> 時刻あり(YYYY-MM-DD HH:mm)
+          if ($scope.detailStartDatetime && $scope.detailStartDatetime.indexOf(':') >= 0) {
+            //$scopeの方はYYYY-MM-DD HH:mm
+            var domVal = $('#CalendarActionPlanDetailStartDatetime').val();
+            if (!domVal || domVal.indexOf(':') === (-1)) {
+              //DOMの方は YYYY-MM-DD HH:mm「ではない」.未定義かYYYY-MM-DD
+              //なので、$scopeの値を、DOMに反映する。
+              $('#CalendarActionPlanDetailStartDatetime').val($scope.detailStartDatetime);
+            }
+          }
+          if ($scope.detailEndDatetime && $scope.detailEndDatetime.indexOf(':') >= 0) {
+            //$scopeの方はYYYY-MM-DD HH:mm
+            var domVal = $('#CalendarActionPlanDetailEndDatetime').val();
+            if(!domVal || domVal.indexOf(':') === (-1)) {
+              //DOMの方は YYYY-MM-DD HH:mm「ではない」.未定義かYYYY-MM-DD
+              //なので、$scopeの値を、DOMに反映する。
+              $('#CalendarActionPlanDetailEndDatetime').val($scope.detailEndDatetime);
+            }
+          }
+					console.log('時刻なし(YYYY-MM-DD) -> 時刻あり(YYYY-MM-DD HH:mm)');
+        } else {
+          //時刻あり(YYYY-MM-DD HH:mm) -> 時刻なし(YYYY-MM-DD)
+          if ($scope.detailStartDate && $scope.detailStartDate.indexOf(':') === (-1)) {
+            //$scopeの方はYYYY-MM-DD
+            var domVal = $('#CalendarActionPlanDetailStartDatetime').val();
+            if (!domVal || domVal.indexOf(':') > 0) {
+              //DOMの方は YYYY-MM-DD「ではない」.未定義かYYYY-MM-DD HH:mm
+              //なので、$scopeの値を、DOMに反映する。
+              $('#CalendarActionPlanDetailStartDatetime').val($scope.detailStartDate);
+            }
+          }
+          if ($scope.detailEndDate && $scope.detailEndDate.indexOf(':') === (-1)) {
+            //$scopeの方はYYYY-MM-DD
+            var domVal = $('#CalendarActionPlanDetailEndDatetime').val();
+            if (!domVal || domVal.indexOf(':') > 0) {
+              //DOMの方は YYYY-MM-DD「ではない」.未定義かYYYY-MM-DD HH:mm
+              //なので、$scopeの値を、DOMに反映する。
+              $('#CalendarActionPlanDetailEndDatetime').val($scope.detailEndDate);
+            }
+          }
+          console.log('時刻あり(YYYY-MM-DD HH:mm) -> 時刻なし(YYYY-MM-DD)');
+        }
+        //結果
+				console.log('$scope:');
+				console.log('sdt[' + $scope.detailStartDatetime + ']');
+				console.log('sd [' + $scope.detailStartDate + ']');
+				console.log('edt[' + $scope.detailEndDatetime + ']');
+				console.log('ed [' + $scope.detailEndDate + ']');
+				console.log('DOM:');
+				console.log('sdt[' + $('#CalendarActionPlanDetailStartDatetime').val()  + ']');$
+				console.log('edt[' + $('#CalendarActionPlanDetailEndDatetime').val()  + ']');$
       };
 
       $scope.changeMonthlyDayOfTheWeek = function(frameId) {

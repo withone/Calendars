@@ -9,7 +9,8 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');	//プラグインセパレータ(.)とパスセバレータ(/)混在に注意
+//プラグインセパレータ(.)とパスセバレータ(/)混在に注意
+App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');
 
 /**
  * CalendarExposeRoomBehavior
@@ -41,7 +42,8 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 		$roomTreeList = array();
 		foreach ($spaceIds as $spaceId) {
 			$rooms[$spaceId] = $this->getRoomsOfSpace($model, $spaceId);
-			$roomTreeList[$spaceId] = $this->getRoomTreeOfSpace($model, $spaces[$spaceId]['Room']['id'], $rooms[$spaceId]);
+			$roomTreeList[$spaceId] = $this->getRoomTreeOfSpace(
+				$model, $spaces[$spaceId]['Room']['id'], $rooms[$spaceId]);
 
 			//CakeLog::debug("DBG: rooms[" . $spaceId . "]=" . print_r($rooms[$spaceId], true) . "]");
 			//CakeLog::debug("DBG: roomTreeList[" . $spaceId . "]=" . print_r($roomTreeList[$spaceId], true) . "]");
@@ -51,7 +53,8 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 		$options = array();
 		foreach ($spaces as $space) {	//Space::PUBLIC_SPACE_ID, Space::ROOM_SPACE_IDを順次処理.
 			//$title = $model->Rooms->roomName($space);
-			$roomsLanguage = Hash::extract($space, 'RoomsLanguage.{n}[language_id=' . Current::read('Language.id') . ']');
+			$roomsLanguage = Hash::extract($space, 'RoomsLanguage.{n}[language_id=' .
+				Current::read('Language.id') . ']');
 			$title = h($roomsLanguage[0]['name']);
 
 			if ($space['Space']['type'] == Space::PRIVATE_SPACE_TYPE) {
@@ -60,7 +63,9 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 				$myself = $roomId;	//プライベートルームを自分自身とする
 				$options[$roomId] = $title;
 			} else {	//公開空間またはグループ空間
-				$options = $this->mergeSelectExposeTargetOptions($model, $options, $title, $space, $roomTreeList[$space['Space']['id']], $rooms[$space['Space']['id']], $frameSetting);
+				$options = $this->mergeSelectExposeTargetOptions(
+					$model, $options, $title, $space, $roomTreeList[$space['Space']['id']],
+					$rooms[$space['Space']['id']], $frameSetting);
 			}
 		}
 		// 全会員
@@ -85,7 +90,8 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
  * @param int $frameSetting カレンダーフレーム設定情報
  * @return array マージ後のoptions配列
  */
-	public function mergeSelectExposeTargetOptions(Model &$model, $options, $title, $space, $roomTreeList, $rooms, $frameSetting) {
+	public function mergeSelectExposeTargetOptions(Model &$model, $options, $title, $space,
+		$roomTreeList, $rooms, $frameSetting) {
 		if ($roomTreeList) {
 			foreach ($roomTreeList as $roomId => $tree) {
 				if (Hash::get($rooms, $roomId)) {
@@ -95,7 +101,8 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 							//グループ空間の時は、インデントを１つ減らす。..これにより、NC2と同じレベルの表現になる。
 							$nest -= 1;
 						}
-						$roomsLanguage = Hash::extract($rooms[$roomId], 'RoomsLanguage.{n}[language_id=' . Current::read('Language.id') . ']');
+						$roomsLanguage = Hash::extract($rooms[$roomId],
+							'RoomsLanguage.{n}[language_id=' . Current::read('Language.id') . ']');
 						$targetTitle = h($roomsLanguage[0]['name']);
 						//$options[$roomId] = str_repeat('　', $nest * 1) . h($model->Rooms->roomName($rooms[$roomId]));
 						$options[$roomId] = str_repeat('　', $nest * 1) . $targetTitle;
@@ -143,7 +150,9 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 	public function getRoomsOfSpace(Model &$model, $spaceId) {
 		//指定空間配下で読み取り可能なルーム群を取得し、(room_id => room情報配列)集合にして返す。
 		$rooms = Hash::combine(
-			($model->Room->find('all', $model->Room->getReadableRoomsConditions(array('Room.space_id' => $spaceId)))),
+			($model->Room->find('all',
+				$model->Room->getReadableRoomsConditions(array('Room.space_id' => $spaceId)))
+			),
 			'{n}.Room.id', '{n}'
 		);
 		return $rooms;
@@ -161,7 +170,8 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
  */
 	public function getRoomTreeOfSpace(Model &$model, $spaceRoomId, $rooms) {
 		$roomTreeList = $model->Room->generateTreeList(
-		array('Room.id' => array_merge(array($spaceRoomId), array_keys($rooms))), null, null, Room::$treeParser);
+			array('Room.id' => array_merge(array($spaceRoomId), array_keys($rooms))
+			), null, null, Room::$treeParser);
 		return $roomTreeList;
 	}
 }

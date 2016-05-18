@@ -37,8 +37,6 @@
 	<?php echo __d('calendars', '予定日の設定') . $this->element('NetCommons.required'); ?>
 	</label>
 
-
-
 <?php
 	$useTime = 'useTime[' . $frameId . ']';
 
@@ -82,7 +80,13 @@
 <div class="form-group" name="inputStartEndDateTime">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
 	<label>
+<div ng-hide="<?php echo $useTime; ?>">
+		<?php echo __d('calendars', '終日');	?>
+</div><!-- ng-hideおわり -->
+<div ng-show="<?php echo $useTime; ?>">
 		<?php echo __d('calendars', '開始');	?>
+</div><!-- ng-showおわり -->
+
 	</label>
 </div><!-- col-sm-10おわり-->
 
@@ -90,28 +94,28 @@
 
 <div class="col-xs-12 col-sm-5 col-sm-offset-1">
 
-<div ng-show="<?php echo '!' . $useTime; ?>" style="float:left"><!--表示条件１START-->
+<div ng-show="<?php echo $useTime; ?>" style="float:left"><!--表示条件１START-->
 <!--<div class="input-group">--><!-- 表示条件１のinput-group -->
 
-<?php
-	$date = '';
-	$ngModel = 'startDate[' . $frameId . ']';
-?>
 
 <?php
-	//現在日付時刻(Y/m/d H:i:s形式)からの直近１時間の日付時刻(from,to)を取得
+	//現在日付時刻(Y/m/d H:i:s形式)からの直近１時間の日付時刻(from,to)を取得.
+	//なおdatetimepickerのTZ変換オプション(convert_timezone)をfalseにしているので
+	//ここで準備するYmdHisはユーザー系TZであることに留意してください。
+	//
 	$nctm = new NetCommonsTime();
 	$userNowYdmHis = $nctm->toUserDatetime('now');
 	$userNowHi = CalendarTime::getHourColonMin($userNowYdmHis);
 	$ymdHis = sprintf("%04d-%02d-%02d %s", $vars['year'], $vars['month'], $vars['day'], $userNowHi);
 	list($ymdOfLastHour, $fromYmdHiOfLastHour, $toYmdHiOfLastHour) = CalendarTime::getTheTimeInTheLastHour($ymdHis);
-
+	//var変数の日付のYmd「も」用意しておく
+	$varsYmd = sprintf("%04d-%02d-%02d", $vars['year'], $vars['month'], $vars['day']);
 
 
 	$pickerOpt = str_replace('"', "'", json_encode(array(
-		'format' => 'YYYY-MM-DD',
+		'format' => 'YYYY-MM-DD HH:mm',	//hashi
 	)));
-	$ngModel = 'detailStartDate';
+	$ngModel = 'detailStartDatetime'; //[' . $frameId . ']';
 	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_start_datetime',
 	array(
 		'div' => false,
@@ -119,14 +123,17 @@
 		'datetimepicker' => 'datetimepicker',
 		'datetimepicker-options' => $pickerOpt,
 		'convert_timezone' => false,	//日付だけの場合、User系の必要あるのでoffし、カレンダー側でhandlingする。
-		'ng-model' => 'detailStartDate',
-		'ng-change' => "changeDetailStartDate('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')",	//FIXME: selectイベントに変えたい。
+		'ng-model' => $ngModel,
+		'ng-change' => "changeDetailStartDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')",	//FIXME: selectイベントに変えたい。
 		//////'value' => $start_datetime_value,
 		//////'value' => (empty($date)) ? '' : intval($date),
 		//////'ng-model' => $ngModel,
 		//'ng-show' => $useTime,		//表示条件１
 		//'ng-style' => "{float: 'left'}",
-		'ng-init' => sprintf("%s = '%s'", $ngModel, $ymdOfLastHour), //kuma add
+		//modelに値を代入した後、changeDetail..()を使い、モデルの値を、DOMのinputのvalueに転写する.
+		'ng-init' => sprintf("%s = '%s'; ", 'detailStartDatetime', $fromYmdHiOfLastHour) .
+			"changeDetailStartDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')",
+
 	));
 ?>
 	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>-->
@@ -134,16 +141,13 @@
 <!--</div>--><!-- 表示条件１のinput-groupおわり -->
 </div><!--ng-show 表示条件１END-->
 
-<div ng-show="<?php echo $useTime; ?>"><!--表示条件２START-->
+<div ng-show="<?php echo '!' . $useTime; ?>"><!--表示条件２START-->
 <!-- <div class="input-group">--><!-- 表示条件２のinput-group -->
 
 <?php
-	$nctm = new NetCommonsTime();
-	$fromServerYmdHiOfLastHour = $nctm->toServerDatetime($fromYmdHiOfLastHour . ':00');
-	$toServerYmdHiOfLastHour = $nctm->toServerDatetime($toYmdHiOfLastHour . ':00');
-	$ngModel = 'startDatetime[' . $frameId . ']';
+	$ngModel = 'detailStartDate'; //[' . $frameId . ']';
 	$pickerOpt = str_replace('"', "'", json_encode(array(
-		'format' => 'YYYY-MM-DD HH:mm',
+		'format' => 'YYYY-MM-DD',
 	)));
 	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_start_datetime',
 	array(
@@ -152,8 +156,8 @@
 		'datetimepicker' => 'datetimepicker',
 		'datetimepicker-options' => $pickerOpt,
 		'convert_timezone' => false,	//日付だけの場合、User系の必要あるのでoffし、カレンダー側でhandlingする。
-		'ng-model' => 'detailStartDatetime',
-		'ng-change' => "changeDetailStartDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')",	//FIXME: selectイベントに変えたい。
+		'ng-model' => $ngModel,
+		'ng-change' => "changeDetailStartDate('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')",	//FIXME: selectイベントに変えたい。
 		//////'value' => $start_datetime_value,
 		//////'value' => (empty($date)) ? '' : intval($date),
 		//////'ng-model' => $ngModel,
@@ -161,9 +165,11 @@
 		//'placeholder' => 'yyyy-mm-dd hh:nn', //kuma add
 		//'value' => $fromServerYmdHiOfLastHour, // kuma add
 		//'type' => 'datetime,'
-		'ng-init' => sprintf("%s = '%s'", 'detailStartDatetime', $fromServerYmdHiOfLastHour), //kuma add
-
+		//modelに値を代入した後、changeDetail..()を使い、モデルの値を、DOMのinputのvalueに転写する.
+		'ng-init' => sprintf("%s = '%s'; ", $ngModel, $varsYmd) .
+			"changeDetailStartDate('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')",
 	));
+
 ?>
 	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><i class="glyphicon glyphicon-time"></i></div> -->
 
@@ -174,59 +180,29 @@
 
 <div class="clearfix"></div><!-- 次行 -->
 
+<div ng-show="<?php echo $useTime; ?>">
 <br />
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
 	<label>
 		<?php echo __d('calendars', '終了');	?>
 	</label>
 </div><!-- col-sm-10おわり-->
+</div><!-- ng-showおわり -->
 
 <div class="clearfix"></div><!-- 次行 -->
 
 <div class="col-xs-12 col-sm-5 col-sm-offset-1">
 
-<div ng-show="<?php echo '!' . $useTime; ?>" style="float:left"><!--表示条件１START-->
+<div ng-show="<?php echo $useTime; ?>" style="float:left"><!--表示条件１START-->
 <!-- <div class="input-group">--><!-- 表示条件１のinput-group -->
 
 <?php
 	////echo $this->element('NetCommons.datetimepicker');	//すでに、From側で組み込み済なのでcommentout
 
-	$date = '';
-	$ngModel = 'endDate[' . $frameId . ']';
 ?>
 
 <?php
-	$ngModel = 'detailEndDate';
-	$pickerOpt = str_replace('"', "'", json_encode(array(
-		'format' => 'YYYY-MM-DD',
-	)));
-	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_end_datetime',
-	array(
-		'div' => false,
-		'label' => false,
-		'datetimepicker' => 'datetimepicker',
-		'datetimepicker-options' => $pickerOpt,
-		'convert_timezone' => false,	//日付だけの場合、User系の必要あるのでoffし、カレンダー側でhandlingする。
-		'ng-model' => 'detailEndDate',
-		'ng-change' => "changeDetailEndDate('" . 'CalendarActionPlan' . Inflector::camelize('detail_end_datetime') . "')",	//FIXME: selectイベントに変えたい。
-		//////'value' => $end_datetime_value,
-		//////'value' => (empty($date)) ? '' : intval($date),
-		//////'ng-model' => $ngModel,
-		//'ng-show' => $useTime,		//表示条件１
-		//'ng-style' => "{float: 'left'}",
-		'ng-init' => sprintf("%s = '%s'", $ngModel, $ymdOfLastHour), //kuma add
-	));
-?>
-	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div> -->
-
-<!--</div>--><!-- 表示条件１のinput-groupおわり -->
-</div><!-- ng-show 表示条件１END-->
-
-<div ng-show="<?php echo $useTime; ?>"><!--表示条件２START-->
-<!--<div class="input-group">--><!-- 表示条件２のinput-group -->
-
-<?php
-	$ngModel = 'endDatetime[' . $frameId . ']';
+	$ngModel = 'detailEndDatetime'; //[' . $frameId . ']';
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD HH:mm',
 	)));
@@ -237,25 +213,60 @@
 		'datetimepicker' => 'datetimepicker',
 		'datetimepicker-options' => $pickerOpt,
 		'convert_timezone' => false,	//日付だけの場合、User系の必要あるのでoffし、カレンダー側でhandlingする。
-		'ng-model' => 'detailEndDatetime',
-		'ng-change' => "changeDetailEndDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_end_datetime') . "')",	//FIXME: selectイベントにかえたい。
+		'ng-model' => $ngModel,
+		'ng-change' => "changeDetailEndDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_end_datetime') . "')",	//FIXME: selectイベントに変えたい。
+		//////'value' => $end_datetime_value,
+		//////'value' => (empty($date)) ? '' : intval($date),
+		//////'ng-model' => $ngModel,
+		//'ng-show' => $useTime,		//表示条件１
+		//'ng-style' => "{float: 'left'}",
+		//modelに値を代入した後、changeDetail..()を使い、モデルの値を、DOMのinputのvalueに転写する.
+		'ng-init' => sprintf("%s = '%s'; ", 'detailEndDatetime', $toYmdHiOfLastHour) .
+			"changeDetailEndDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_end_datetime') . "')",
+	));
+?>
+	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div> -->
+
+<!--</div>--><!-- 表示条件１のinput-groupおわり -->
+</div><!-- ng-show 表示条件１END-->
+
+<!-- <div ng-show="<?php echo '!' . $useTime; ?>"> --><!--表示条件２START *これはつねにHIDEすることになった -->
+<div ng-hide="1">
+<!--<div class="input-group">--><!-- 表示条件２のinput-group -->
+
+<?php
+	$ngModel = 'detailEndDate'; //[' . $frameId . ']';
+	$pickerOpt = str_replace('"', "'", json_encode(array(
+		'format' => 'YYYY-MM-DD',
+	)));
+	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_end_datetime',
+	array(
+		'div' => false,
+		'label' => false,
+		'datetimepicker' => 'datetimepicker',
+		'datetimepicker-options' => $pickerOpt,
+		'convert_timezone' => false,	//日付だけの場合、User系の必要あるのでoffし、カレンダー側でhandlingする。
+		'ng-model' => $ngModel,
+		'ng-change' => "changeDetailEndDate('" . 'CalendarActionPlan' . Inflector::camelize('detail_end_datetime') . "')",	//FIXME: selectイベントにかえたい。
 		//////'value' => $end_datetime_value,
 		//////'value' => (empty($date)) ? '' : intval($date),
 		//////'ng-model' => $ngModel,
 		//'ng-show' => '!' . $useTime, //'!' . $useTime,	//表示条件を表示条件１の逆にする。
 		//'placeholder' => 'yyyy-mm-dd hh:nn', //kuma add
 		//'value' => $toServerYmdHiOfLastHour, //kuma
-		'ng-init' => sprintf("%s = '%s'", 'detailEndDatetime', $toServerYmdHiOfLastHour), //kuma add
+		//modelに値を代入した後、changeDetail..()を使い、モデルの値を、DOMのinputのvalueに転写する.
+		'ng-init' => sprintf("%s = '%s'; ", $ngModel, $varsYmd) .
+			"changeDetailEndDate('" . 'CalendarActionPlan' . Inflector::camelize('detail_end_datetime') . "')",
 	));
 ?>
 	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><i class="glyphicon glyphicon-time"></i></div> -->
 
 <!--</div>--><!-- 表示条件２のinput-groupおわり -->
-</div><!-- ng-show 表示条件２END-->
+<!-- </div> --><!-- ng-show 表示条件２END-->
+</div><!-- ng-hide -->
 
 </div><!-- form-group name="inputStartEndDateTime"おわり -->
 </div><!-- kuma add -->
-
 
 
 
