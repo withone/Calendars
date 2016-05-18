@@ -96,10 +96,12 @@ class CalendarShareUserEntryBehavior extends CalendarAppBehavior {
 		$shareUsers = sort($shareUsers, SORT_NUMERIC);		//新しい共有ユーザ群
 		$oldShareUsers = sort($oldShareUsers, SORT_NUMERIC);	//古い共有ユーザ群
 
-		$insShareUsers = array_diff($oldShareUsers, $shareUsers);	//新しい共有ユーザ群より、追加すべきユーザ群を抽出
+		//新しい共有ユーザ群より、追加すべきユーザ群を抽出
+		$insShareUsers = array_diff($oldShareUsers, $shareUsers);
 		$this->insertShareUsers($model, $insShareUsers, $eventId);
 
-		$delShareUsers = array_diff($shareUsers, $oldShareUsers);	//古い共有ユーザ群より、削除すべきユーザ群を抽出
+		//古い共有ユーザ群より、削除すべきユーザ群を抽出
+		$delShareUsers = array_diff($shareUsers, $oldShareUsers);
 		$this->deleteShareUsers($model, $delShareUsers, $eventId);
 
 		//新しい共有ユーザ群と、古い共有ユーザ群両方に存在するユーザは、そのままとしておく。
@@ -121,7 +123,7 @@ class CalendarShareUserEntryBehavior extends CalendarAppBehavior {
 
 		$conditions = array(
 			'CalendarEventShareUsers.calendar_event_id' => $eventId,
-			'CalendarEventShareUsers.share_user' => $shareUsers,	//shareUsersは配列なので IN指定となる。
+			'CalendarEventShareUsers.share_user' => $shareUsers,	//shareUsersは配列なのでIN指定
 		);
 		if (!$model->CalendarEventShareUser->deleteAll($conditions, false)) {
 			//deleteAll失敗

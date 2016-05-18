@@ -71,16 +71,20 @@ class CalendarPlanRruleHelper extends AppHelper {
 				$resultStr .= __d('calendars', '繰返しなし');
 				break;
 			case 'YEARLY':
-				$resultStr .= $this->__addStrWhenYearlyCase($freq, $rrule, $bymonthStr, $bydayStr, $bymonthdayStr);
+				$resultStr .= $this->__addStrWhenYearlyCase($freq, $rrule,
+					$bymonthStr, $bydayStr, $bymonthdayStr);
 				break;
 			case 'MONTHLY':
-				$resultStr .= $this->__addStrWhenMonthlyCase($freq, $rrule, $bymonthStr, $bydayStr, $bymonthdayStr);
+				$resultStr .= $this->__addStrWhenMonthlyCase($freq, $rrule,
+					$bymonthStr, $bydayStr, $bymonthdayStr);
 				break;
 			case 'WEEKLY':
-				$resultStr .= $this->__addStrWhenWeeklyCase($freq, $rrule, $bymonthStr, $bydayStr, $bymonthdayStr);
+				$resultStr .= $this->__addStrWhenWeeklyCase($freq, $rrule,
+					$bymonthStr, $bydayStr, $bymonthdayStr);
 				break;
 			case 'DAILY':
-				$resultStr .= $this->__addStrWhenDailyCase($freq, $rrule, $bymonthStr, $bydayStr, $bymonthdayStr);
+				$resultStr .= $this->__addStrWhenDailyCase($freq, $rrule,
+					$bymonthStr, $bydayStr, $bymonthdayStr);
 				break;
 			default:
 		}
@@ -142,7 +146,8 @@ class CalendarPlanRruleHelper extends AppHelper {
 	private function __getBydayVals($freq, $rrule) {
 		$bydayStr = '';
 		$wdays = explode('|', CalendarsComponent::CALENDAR_REPEAT_WDAY);
-		$weekNameArray = explode('|', __d('calendars', '日曜日|月曜日|火曜日|水曜日|木曜日|金曜日|土曜日'));
+		$weekNameArray = explode('|',
+			__d('calendars', '日曜日|月曜日|火曜日|水曜日|木曜日|金曜日|土曜日'));
 		if (isset($rrule[$freq]['BYDAY'])) {
 			foreach ($rrule[$freq]['BYDAY'] as $val) {
 				$wday = substr($val, -2);
@@ -273,7 +278,9 @@ class CalendarPlanRruleHelper extends AppHelper {
 		$wkResultStr = '';
 		if (isset($rrule['UNTIL'])) {
 			$wkResultStr .= '&nbsp;/&nbsp;'; //'<br />';
-			$wkResultStr .= (new CalendarTime())->dateFormat(substr($rrule['UNTIL'], 0, 8) . substr($rrule['UNTIL'], -6), null, 0, __d('calendars', 'Y年m月d日まで'), 1);
+			$wkResultStr .=
+				(new CalendarTime())->dateFormat(substr($rrule['UNTIL'], 0, 8) .
+				substr($rrule['UNTIL'], -6), null, 0, __d('calendars', 'Y年m月d日まで'), 1);
 		} elseif (isset($rrule['COUNT'])) {
 			$wkResultStr .= '&nbsp;/&nbsp;';	//'<br />';
 			$wkResultStr .= sprintf(__d('calendars', '%s回'), $rrule['COUNT']);
