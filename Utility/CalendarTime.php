@@ -369,7 +369,8 @@ class CalendarTime {
  * @param int $toFlag これが1の時はその日の最後を24:00:00として表示する
  * @return string 生成した日付フォーマット文字列
  */
-	public function dateFormat($time, $timezoneOffset = null, $insertFlag = 0, $timeFormat = 'YmdHis', $toFlag = 0) {
+	public function dateFormat($time, $timezoneOffset = null, $insertFlag = 0,
+		$timeFormat = 'YmdHis', $toFlag = 0) {
 		if (isset($timezoneOffset)) {
 			//ユーザー系、サーバー系ではなく、具体的は時差情報がわたされたので、それで計算するケース
 			$timezoneMinuteOffset = 0;
@@ -378,14 +379,16 @@ class CalendarTime {
 				$timezoneMinuteOffset = ($timezoneOffset > 0) ? 30 : -30;	// 0.5minute
 			}
 			if ($insertFlag) {
-				$timezoneOffset = -1 * $timezoneOffset;	//登録=サーバー系に直す.よってユーザーTZ系時間に時差を引きUTCにする
+				//登録=サーバー系に直す.よってユーザーTZ系時間に時差を引きUTCにする
+				$timezoneOffset = -1 * $timezoneOffset;
 			} else {
 				//表示=ユーザー系に直す。よって、UTCに時差を足しユーザー系時間にする。
 			}
 			//NC2の時mktime(), date()は php.ini=date.tiemzone=Aisa/Tokyo時の値を返していた。
 			//それを前提に補正計算する。
 			$date = new DateTime('now', (new DateTimeZone($userTz)));	//ユーザー系にする
-			$date->setDate(intval(substr($time, 0, 4)), intval(substr($time, 4, 2)), intval(substr($time, 6, 2)));
+			$date->setDate(intval(substr($time, 0, 4)),
+				intval(substr($time, 4, 2)), intval(substr($time, 6, 2)));
 			$date->setTime(intval(substr($time, 8, 2)) + $timezoneOffset,
 				intval(substr($time, 10, 2)) + $timezoneMinuteOffset, intval(substr($time, 12, 2)));
 			//ユーザー系のままだが、insertFlag=1の時はサーバー系のYmdHis、insertFlag=0の時はユーザー系のYmdHisを返す
@@ -442,7 +445,8 @@ class CalendarTime {
 
 		$date->setTimestamp($timestamp);
 		$week = $date->format('w');	//曜日index (0-6)
-		$weekNameArray = explode('|', __d('calendars', '日|月|火|水|木|金|土'));	//言語別のCALENDAR_WEEK
+		//言語別のCALENDAR_WEEK
+		$weekNameArray = explode('|', __d('calendars', '日|月|火|水|木|金|土'));
 		return $date->format(sprintf($timeFormat, $weekNameArray[$week]));
 	}
 }

@@ -26,9 +26,12 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 /**
  * use table
  *
+ * validateおよびinsert/update/deletePlan()呼び出しが
+ * 目的のモデルなのでテーブルは使用しない。
+ *
  * @var array
  */
-	public $useTable = false;	//このモデルはvalidateとinsert/update/deletePlan()呼び出しが主目的なのでテーブルを使用しない。
+	public $useTable = false;
 
 /**
  * use behaviors
@@ -177,7 +180,8 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 		try {
 			$this->_dequeueEmail($data); //mailQueueからのDequeueを先にする。
 
-			$this->deletePlan($data['CalendarDeletePlan']['calendar_event_id'], $data['CalendarDeletePlan']['edit_rrule']);
+			$this->deletePlan($data['CalendarDeletePlan']['calendar_event_id'],
+				$data['CalendarDeletePlan']['edit_rrule']);
 
 			$this->commit();
 		} catch (Exception $ex) {

@@ -113,7 +113,8 @@ class CalendarSetting extends CalendarsAppModel {
 
 		try {
 			//権限の登録
-			if (! ($data = $this->save($data, false))) {	//バリデートは前で終わっているので第二引数=false
+			//バリデートは前で終わっているので第二引数=false
+			if (! ($data = $this->save($data, false))) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 			$this->commit();
