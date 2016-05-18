@@ -160,6 +160,7 @@
 		//'ng-show' => '!' . $useTime, //'!' . $useTime,	//表示条件を表示条件１の逆にする。
 		//'placeholder' => 'yyyy-mm-dd hh:nn', //kuma add
 		//'value' => $fromServerYmdHiOfLastHour, // kuma add
+		//'type' => 'datetime,'
 		'ng-init' => sprintf("%s = '%s'", 'detailStartDatetime', $fromServerYmdHiOfLastHour), //kuma add
 
 	));
@@ -324,18 +325,20 @@
 
 					echo $this->NetCommonsForm->input('CalendarActionPlan.repeat_freq', array(
 								'legend' => false,
-								'type' => 'radio',
+								//'type' => 'radio', kuma mod 2016.05.18
+								'type' => 'select',
 								'options' => array(
-									CalendarsComponent::CALENDAR_REPEAT_FREQ_DAILY => __d('calendars', '日単位'),
-									CalendarsComponent::CALENDAR_REPEAT_FREQ_WEEKLY => __d('calendars', '週単位'),
-									CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY => __d('calendars', '月単位'),
-									CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY => __d('calendars', '年単位'),
+									CalendarsComponent::CALENDAR_REPEAT_FREQ_DAILY => __d('calendars', '日'),
+									CalendarsComponent::CALENDAR_REPEAT_FREQ_WEEKLY => __d('calendars', '週'),
+									CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY => __d('calendars', '月'),
+									CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY => __d('calendars', '年'),
 								),
 								'before' => "<li>",
 								'after' => '</li>',
 								'separator' => "</li><li>",
 								'div' => false,
-								'label' => false,
+								//'label' => false, 2016.05.18
+								'label' => __d('Calendars', '繰り返しの単位'),
 								'class' => '',
 								'ng-model' => 'selectRepeatPeriodArray[' . $frameId . ']',
 								'ng-init' => 'setInitRepeatPeriod(' . $frameId . ',"' . $periodTypeIndex . '")',
@@ -356,6 +359,9 @@
 					foreach (range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_DAILY_MIN, CalendarsComponent::CALENDAR_RRULE_INTERVAL_DAILY_MAX) as $num) {
 						$options[$num] = sprintf(__d('calendars', '%d日'), $num);
 					}
+?>
+<?php
+					echo $this->NetCommonsForm->label('CalendarActionPlan' . Inflector::camelize('rrule_interval'), __d('calendars', '繰り返しのパターン'));
 
 					echo $this->NetCommonsForm->select(
 						'CalendarActionPlan.rrule_interval.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_DAILY, $options, array(
@@ -364,6 +370,7 @@
 						'empty' => false,
 						'required' => true,
 						'div' => false,
+						//'label' => __d('Calendars', '繰り返しのパターン'),//test
 					));
 
 					echo $this->NetCommonsForm->error(
