@@ -38,18 +38,17 @@ class CalendarRrule extends CalendarsAppModel {
 		'Calendars.CalendarUpdatePlan', //Update
 		'Calendars.CalendarDeletePlan', //Delete
 		'Blocks.Block' => array(
-			'name' => 'CalendarRrule.name',						//nameの値がBlockモデルの名称として登録される。
-																	//
-			'loadModels' => array(									//Blockと紐づく（アソシエーションのある)
-																	//他のモデルがあれば、loadModelsで指定しておくと。
-																	//ブロックデータ登録時、指定モデルのblock_id,block_key
-																	//に値を自動セットしてくれる。
-																	//フロックデータ削除時、指定モデルから削除してくれる。
-																	//
-				'WorkflowComment' => 'Workflow.WorkflowComment',	//Calendarの場合、WorkflowCommentがそれなので指定する。
-																	//
-																	//仕様詳細はBlocks/Model/Behavior/BlockBehavior.php参照のこと。
-
+			'name' => 'CalendarRrule.name',	//nameの値がBlockモデルの名称として登録される。
+			'loadModels' => array(			//Blockと紐づく（アソシエーションのある)
+											//他のモデルがあれば、loadModelsで指定しておくと。
+											//ブロックデータ登録時、指定モデルのblock_id,block_key
+											//に値を自動セットしてくれる。
+											//フロックデータ削除時、指定モデルから削除してくれる。
+											//
+				'WorkflowComment' => 'Workflow.WorkflowComment',
+											//Calendarの場合、WorkflowCommentがそれなので指定する。
+											//
+											//仕様詳細はBlocks/Model/Behavior/BlockBehavior.php参照のこと。
 			),
 		),
 	);
