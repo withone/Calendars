@@ -51,7 +51,8 @@ class CalendarDailyEntryBehavior extends CalendarAppBehavior {
 		//インターバル日数を加算した開始日の計算
 		//
 		////NC3ではすでにサーバー系日付時刻になおっているから、timezoneDateは呼ばない.
-		$sTime = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time']; //catしてYmdHisにする
+		//catしてYmdHisにする
+		$sTime = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'];
 
 		//以下で使う時間系はカレンダー画面上（=ユーザー系）でのカレンダ
 		//日付時刻をさしているので、ユーザー系に直す。
@@ -76,7 +77,8 @@ class CalendarDailyEntryBehavior extends CalendarAppBehavior {
 		//インターバル日数を加算した終了日の計算
 		//
 		////NC3ではすでにサーバー系日付時刻になおっているから、timezoneDateは呼ばない.
-		$eTime = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time']; //catしてYmdHisにする
+		//catしてYmdHisにする
+		$eTime = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'];
 
 		//以下で使う時間系はカレンダー画面上（=ユーザー系）でのカレンダ
 		//日付時刻をさしているので、ユーザー系に直す。
@@ -98,12 +100,14 @@ class CalendarDailyEntryBehavior extends CalendarAppBehavior {
 		$svrEndDate = $date->format('Ymd');
 		$svrEndTime = $date->format('His');
 
-		if (!CalendarSupport::isRepeatable($model->rrule, ($svrStartDate . $svrStartTime), $eventData['CalendarEvent']['timezone_offset'])) {
+		if (!CalendarSupport::isRepeatable($model->rrule, ($svrStartDate . $svrStartTime),
+			$eventData['CalendarEvent']['timezone_offset'])) {
 			return true;
 		}
 
 		//CakeLog::debug("DBGX: insert() svrStartDateTime[" . $svrStartDate . $svrStartTime . "] svrEndDateTime[" . $svrEndDate . $svrEndTime . "]");
-		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData, ($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime));
+		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData,
+			($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime));
 		if ($rEventData['CalendarEvent']['id'] === null) {
 			return false;
 		}

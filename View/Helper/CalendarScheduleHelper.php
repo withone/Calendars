@@ -112,7 +112,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 			$html .= "<div class='calendar-plan-mark {$calendarPlanMark}'>";
 			$html .= '<div>';
 			// ワークフロー（一時保存/承認待ち、など）のマーク
-			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
+			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarEvent']['status']);
 			$html .= '</div>';
 
 			if ($fromTime !== $plan['CalendarEvent']['fromTime'] ||
@@ -198,7 +198,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 			$htmlPlan .= "<div class='calendar-plan-mark {$calendarPlanMark}'>";
 			$htmlPlan .= '<div>';
 			// ワークフロー（一時保存/承認待ち、など）のマーク
-			$htmlPlan .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
+			$htmlPlan .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarEvent']['status']);
 			$htmlPlan .= '</div>';
 
 			if ($fromTime !== $plan['CalendarEvent']['fromTime'] ||

@@ -241,8 +241,8 @@ class CalendarAppBehavior extends ModelBehavior {
 			'icalendar_uid' => CalendarSupport::generateIcalUid($planParams['start_date'], $planParams['start_time']),
 			'icalendar_comp_name' => self::CALENDAR_PLUGIN_NAME,
 			'room_id' => Current::read('Room.id'),
-			'language_id' => Current::read('Language.id'),
-			'status' => WorkflowComponent::STATUS_IN_DRAFT,
+			//'language_id' => Current::read('Language.id'),
+			//'status' => WorkflowComponent::STATUS_IN_DRAFT,
 		);
 
 		foreach ($planParams as $key => $val) {
@@ -264,9 +264,9 @@ class CalendarAppBehavior extends ModelBehavior {
 			$rruleData['CalendarRrule']['icalendar_comp_name'] = $params['icalendar_comp_name'];
 		}
 		$rruleData['CalendarRrule']['room_id'] = $params['room_id'];
-		$rruleData['CalendarRrule']['language_id'] = $params['language_id'];
-		$rruleData['CalendarRrule']['status'] = $params['status'];
-		//is_active,is_latestは、Workflowが自動セット
+		////$rruleData['CalendarRrule']['language_id'] = $params['language_id'];
+		////$rruleData['CalendarRrule']['status'] = $params['status'];
+		//is_active,is_latestは、Workflowが自動セット ->　is_xxxは項目削除した。
 		//create_user, created, modified_user, modifiedは、Trackableが自動セット
 	}
 
@@ -310,8 +310,9 @@ class CalendarAppBehavior extends ModelBehavior {
 		//初期化
 		$params = array(
 			'calendar_rrule_id' => $rruleData['CalendarRrule']['id'],	//外部キーをセット
+			//keyは、Workflowが自動セット
 			'room_id' => $rruleData['CalendarRrule']['room_id'],
-			'language_id' => $rruleData['CalendarRrule']['language_id'],
+			'language_id' => Current::read('Language.id'),
 			'target_user' => Current::read('User.id'),
 			'title' => '',
 			'title_icon' => '',
@@ -326,6 +327,8 @@ class CalendarAppBehavior extends ModelBehavior {
 			'end_time' => $planParams['end_time'],
 			'dtend' => $planParams['end_date'] . $planParams['end_time'],
 			'timezone_offset' => $planParams['timezone_offset'],
+			'status' => $planParams['status'],
+
 			'linked_model' => '',
 			'linked_content_key' => '',
 		);
@@ -352,6 +355,7 @@ class CalendarAppBehavior extends ModelBehavior {
 		$eventData['CalendarEvent']['end_time'] = $params['end_time'];
 		$eventData['CalendarEvent']['dtend'] = $params['dtend'];
 		$eventData['CalendarEvent']['timezone_offset'] = $params['timezone_offset'];
+		$eventData['CalendarEvent']['status'] = $params['status'];
 
 		$eventData['CalendarEvent']['location'] = $params['location'];
 		$eventData['CalendarEvent']['contact'] = $params['contact'];

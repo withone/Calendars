@@ -88,7 +88,7 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		$html .= '<div class="calendar-plan-mark ' . $calendarPlanMark . '">';
 		// ステータスラベル
 		$html .= '<div>';
-		$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
+		$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarEvent']['status']);
 		$html .= '</div>';
 		// 時間
 		if ($fromTime !== $plan['CalendarEvent']['fromTime'] ||

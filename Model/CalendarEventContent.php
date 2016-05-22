@@ -102,7 +102,8 @@ class CalendarEventContent extends CalendarsAppModel {
 			'calendar_event_id' => array(
 				'numeric' => array(
 					'rule' => array('numeric'),
-					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('calendars', 'calendar_event id')),
+					'message' => sprintf(__d('net_commons', 'Please input %s.'),
+						__d('calendars', 'calendar_event id')),
 					'allowEmpty' => false,
 					'required' => true,
 				),
@@ -137,10 +138,12 @@ class CalendarEventContent extends CalendarsAppModel {
 				$data = $this->create();
 				$data[$this->alias]['model'] = $rEventData[$this->alias]['model'];
 				$data[$this->alias]['.content_key'] = $rEventData[$this->alias]['content_key'];
-				$data[$this->alias]['calendar_event_id'] = $rEventData['CalendarEvent']['id']; //これだけは親モデル
+				//これだけは親モデル
+				$data[$this->alias]['calendar_event_id'] = $rEventData['CalendarEvent']['id'];
 			} else {
 				//modelとcontent_key一致データあり。なので、calendar_event_idを更新する。
-				$data[$this->alias]['calendar_event_id'] = $rEventData['CalendarEvent']['id']; //これだけは親モデル
+				//これだけは親モデル
+				$data[$this->alias]['calendar_event_id'] = $rEventData['CalendarEvent']['id'];
 			}
 			if (! $this->save($data)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));

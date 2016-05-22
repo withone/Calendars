@@ -116,7 +116,7 @@ class CalendarDailyTimelineHelper extends CalendarMonthlyHelper {
 			$html .= '</small>';
 
 			// ワークフロー（一時保存/承認待ち、など）のマーク
-			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
+			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarEvent']['status']);
 			$html .= '<small>' . $plan['CalendarEvent']['title'] . '</small>';
 			$html .= '</div></div>';
 			$html .= '</p></div>';

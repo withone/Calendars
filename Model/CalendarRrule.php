@@ -73,13 +73,13 @@ class CalendarRrule extends CalendarsAppModel {
 			'fields' => '',
 			'order' => ''
 		),
-		'Language' => array(
-			'className' => 'Languages.Language',
-			'foreignKey' => 'language_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		),
+		//'Language' => array(
+		//	'className' => 'Languages.Language',
+		//	'foreignKey' => 'language_id',
+		//	'conditions' => '',
+		//	'fields' => '',
+		//	'order' => ''
+		//),
 	);
 
 /**
@@ -154,32 +154,32 @@ class CalendarRrule extends CalendarsAppModel {
 					'required' => true,
 				),
 			),
-			'language_id' => array(
-				'rule1' => array(
-					'rule' => array('numeric'),
-					'message' => __d('net_commons', 'Invalid request.'),
-				),
-			),
-			'status' => array(
-				'rule1' => array(
-					'rule' => array('numeric'),
-					'message' => __d('net_commons', 'Invalid request'),
-					'required' => true,
-				),
-			),
-			'is_active' => array(
-				'rule1' => array(
-					'rule' => 'boolean',
-					'message' => __d('net_commons', 'Invalid request'),
-				),
-			),
-			'is_latest' => array(
-				'rule1' => array(
-					'rule' => 'boolean',
-					'message' => __d('net_commons', 'Invalid request'),
-				),
-			),
-
+			//langauge_id, status, is_active, is_latestは削除した。
+			//'language_id' => array(
+			//	'rule1' => array(
+			//		'rule' => array('numeric'),
+			//		'message' => __d('net_commons', 'Invalid request.'),
+			//	),
+			//),
+			//'status' => array(
+			//	'rule1' => array(
+			//		'rule' => array('numeric'),
+			//		'message' => __d('net_commons', 'Invalid request'),
+			//		'required' => true,
+			//	),
+			//),
+			//'is_active' => array(
+			//	'rule1' => array(
+			//		'rule' => 'boolean',
+			//		'message' => __d('net_commons', 'Invalid request'),
+			//	),
+			//),
+			//'is_latest' => array(
+			//	'rule1' => array(
+			//		'rule' => 'boolean',
+			//		'message' => __d('net_commons', 'Invalid request'),
+			//	),
+			//),
 		));
 		return parent::beforeValidate($options);
 	}

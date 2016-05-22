@@ -52,8 +52,15 @@ class CalendarEvent extends CalendarsAppModel {
 			'foreignKey' => 'calendar_rrule_id',
 			'conditions' => '',
 			'fields' => '',
+			'order' => '',
+		),
+		'Language' => array(
+			'className' => 'Languages.Language',
+			'foreignKey' => 'language_id',
+			'conditions' => '',
+			'fields' => '',
 			'order' => ''
-		)
+		),
 	);
 
 /**
@@ -88,7 +95,6 @@ class CalendarEvent extends CalendarsAppModel {
 			'finderQuery' => '',
 			'counterQuery' => ''
 		),
-
 	);
 
 /**
@@ -99,6 +105,43 @@ class CalendarEvent extends CalendarsAppModel {
 	public $validate = array(
 
 	);
+
+/**
+ * _doMergeWorkflowParamValidate
+ *
+ * Workflowパラメータ関連バリデーションのマージ
+ *
+ * @return void
+ */
+	protected function _doMergeWorkflowParamValidate() {
+		$this->validate = Hash::merge($this->validate, array(
+			'language_id' => array(
+				'rule1' => array(
+					'rule' => array('numeric'),
+					'message' => __d('net_commons', 'Invalid request.'),
+				),
+			),
+			'status' => array(
+				'rule1' => array(
+					'rule' => array('numeric'),
+					'message' => __d('net_commons', 'Invalid request'),
+					'required' => true,
+				),
+			),
+			'is_active' => array(
+				'rule1' => array(
+					'rule' => 'boolean',
+					'message' => __d('net_commons', 'Invalid request'),
+				),
+			),
+			'is_latest' => array(
+				'rule1' => array(
+					'rule' => 'boolean',
+					'message' => __d('net_commons', 'Invalid request'),
+				),
+			),
+		));
+	}
 
 /**
  * Called during validation operations, before validation. Please note that custom
@@ -118,12 +161,6 @@ class CalendarEvent extends CalendarsAppModel {
 				),
 			),
 			'room_id' => array(
-				'rule1' => array(
-					'rule' => array('numeric'),
-					'message' => __d('net_commons', 'Invalid request.'),
-				),
-			),
-			'language_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'message' => __d('net_commons', 'Invalid request.'),
@@ -197,7 +234,20 @@ class CalendarEvent extends CalendarsAppModel {
 			//		'message' => __d('net_commons', 'Invalid request.'),
 			//	),
 			//),
+			'recurrence_event_id' => array(
+				'rule1' => array(
+					'rule' => array('numeric'),
+					'message' => __d('net_commons', 'Invalid request.'),
+				),
+			),
+			'exception_event_id' => array(
+				'rule1' => array(
+					'rule' => array('numeric'),
+					'message' => __d('net_commons', 'Invalid request.'),
+				),
+			),
 		));
+		$this->_doMergeWorkflowParamValidate(); //Workflowパラメータ関連validation
 		return parent::beforeValidate($options);
 	}
 }
