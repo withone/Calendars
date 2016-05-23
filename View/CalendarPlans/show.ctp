@@ -44,7 +44,7 @@
 <div name="dispTitle">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
 	<div style="float:left;">
-	<?php echo $this->CalendarCommon->makeWorkFlowLabel($event['CalendarRrule']['status']); ?>
+	<?php echo $this->CalendarCommon->makeWorkFlowLabel($event['CalendarEvent']['status']); ?>
 	</div>
 
 

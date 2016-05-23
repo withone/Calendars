@@ -110,19 +110,17 @@ class CalendarPlansController extends CalendarsAppController {
 			return;
 		}
 
-		//Rruleデータ取得
-		$calendarRrule = $this->CalendarRrule->getWorkflowContents('first', array(
+		//Eventデータ取得
+		$calendarEvent = $this->CalendarEvent->getWorkflowContents('first', array(
 			'recursive' => -1,
 			'conditions' => array(
-				$this->CalendarRrule->alias . '.calendar_id' =>
+				$this->CalendarEvent->alias . '.id' =>
 					$this->data['CalendarDeletePlan']['calendar_id'],
-				$this->CalendarRrule->alias . '.key' =>
-					$this->data['CalendarDeletePlan']['calendar_rrule_key']
 			)
 		));
 
-		//Rrule削除権限チェック
-		if (! $this->CalendarRrule->canDeleteWorkflowContent($calendarRrule)) {
+		//Event削除権限チェック
+		if (! $this->CalendarEvent->canDeleteWorkflowContent($calendarEvent)) {
 			$this->throwBadRequest();
 			return false;
 		}
@@ -257,7 +255,7 @@ class CalendarPlansController extends CalendarsAppController {
 			'conditions' => array(
 				$this->RoomsLanguage->alias . '.room_id' => $event[$this->CalendarEvent->alias]['room_id'],
 				$this->RoomsLanguage->alias . '.language_id' =>
-					$event[$this->CalendarRrule->alias]['language_id'],
+					$event[$this->CalendarEvent->alias]['language_id'],
 			),
 			'recursive' => -1,
 		));

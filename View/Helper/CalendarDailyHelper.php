@@ -109,7 +109,7 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 
 		// ワークフロー（一時保存/承認待ち、など）のマーク
 		$html .= '<div>';
-		$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarRrule']['status']);
+		$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarEvent']['status']);
 		$html .= '</div>';
 		$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
 		if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !==

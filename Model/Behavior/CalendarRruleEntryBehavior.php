@@ -57,7 +57,8 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 			unset($model->rrule);
 		}
 
-		$model->rrule = $planParams['rrule'];	//引数ではなく、$modelのインスタンス変数としてセットする。
+		//引数ではなく、$modelのインスタンス変数としてセットする。
+		$model->rrule = $planParams['rrule'];
 
 		if (!is_array($model->rrule)) {	//$rrulea文字列を解析し配列化する。
 			$model->rrule = (new CalendarRruleUtil())->parseRrule($model->rrule);
@@ -77,17 +78,20 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 
 		$eventData = $model->CalendarEvent->find('first', $params);
 		if (!is_array($eventData) || !isset($eventData['CalendarEvent'])) {
-			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
+			$model->validationErrors = Hash::merge(
+				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
 		$conditions = array(
-			$model->CalendarEvent->alias . '.calendar_rrule_id' => $eventData['CalendarEvent']['calendar_rrule_id'],
+			$model->CalendarEvent->alias .
+				'.calendar_rrule_id' => $eventData['CalendarEvent']['calendar_rrule_id'],
 			$model->CalendarEvent->alias . '.id <>' => $eventData['CalendarEvent']['id'],
 		);
 
 		if (!$model->CalendarEvent->deleteAll($conditions, false)) {
-			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
+			$model->validationErrors = Hash::merge(
+				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
@@ -148,7 +152,8 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
  * @param array &$startEventData eventデータ
  * @return void
  */
-	protected function _insertMonthlyPriodEntry(Model &$model, &$planParams, &$rruleData, &$startEventData) {
+	protected function _insertMonthlyPriodEntry(Model &$model,
+		&$planParams, &$rruleData, &$startEventData) {
 		if (!$model->Behaviors->hasMethod('insertMonthlyByMonthday')) {
 			$model->Behaviors->load('Calendars.CalendarMonthlyEntry');
 		}

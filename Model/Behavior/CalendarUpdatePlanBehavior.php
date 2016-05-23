@@ -187,7 +187,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		//$data['CalendarRrule']['description'] = $rruleData['CalendarRrule']['description'];
 		$data['CalendarRrule']['rrule'] = $rruleData['CalendarRrule']['rrule'];
 		$data['CalendarRrule']['room_id'] = $rruleData['CalendarRrule']['room_id'];
-		$data['CalendarRrule']['status'] = $rruleData['CalendarRrule']['status'];
+		//$data['CalendarRrule']['status'] = $rruleData['CalendarRrule']['status'];
 		//$data['CalendarRrule']['language_id'] = $rruleData['CalendarRrule']['language_id'];
 	}
 
