@@ -471,6 +471,11 @@ NetCommonsApp.controller('CalendarsDetailEdit',
         }
       };
 
+      $scope.initDescription = function(descriptionVal) {
+        $scope.calendarActionPlan = {};
+        $scope.calendarActionPlan.description = descriptionVal;
+      };
+
       $scope.toggleEnableTime = function(frameId) {
         console.log('useTime[' + $scope.useTime + ']');
         if ($scope.useTime[frameId]) {
@@ -515,6 +520,10 @@ NetCommonsApp.controller('CalendarsDetailEdit',
             }
           }
           console.log('時刻あり(YYYY-MM-DD HH:mm) -> 時刻なし(YYYY-MM-DD)');
+
+          //checkboxのDOMの値も同期させておく。
+          /////$('#CalendarActionPlanEnableTime').prop('checked', true);
+
         }
         //結果
 				console.log('$scope:');
@@ -523,8 +532,10 @@ NetCommonsApp.controller('CalendarsDetailEdit',
 				console.log('edt[' + $scope.detailEndDatetime + ']');
 				console.log('ed [' + $scope.detailEndDate + ']');
 				console.log('DOM:');
-				console.log('sdt[' + $('#CalendarActionPlanDetailStartDatetime').val()  + ']');$
-				console.log('edt[' + $('#CalendarActionPlanDetailEndDatetime').val()  + ']');$
+				console.log('sdt[' + $('#CalendarActionPlanDetailStartDatetime').val()  + ']');
+				console.log('edt[' + $('#CalendarActionPlanDetailEndDatetime').val()  + ']');
+
+        console.log('enable_time[' + $('#CalendarActionPlanEnableTime').prop('checked') + ']');
       };
 
       $scope.changeMonthlyDayOfTheWeek = function(frameId) {

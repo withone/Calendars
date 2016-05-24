@@ -194,4 +194,306 @@ class CalendarSupport {
 		$byday = $date->format('YmdHis');
 		return $byday;
 	}
+
+/**
+ * __getInitailTerm
+ *
+ * 繰返し期限配列の初期値を返す
+ *
+ * @param string $ymd ymd(YYYY-MM-DD形式)
+ * @return array 繰返し期限配列の初期値
+ */
+	private function __getInitailTerm($ymd) {
+		$term = array(
+			'REPEAT_COUNT' => 1,
+			'REPEAT_UNTIL' => 0,
+			'COUNT' => 3,
+			'UNTIL' => $ymd, //YYYY-MM-DD
+		);
+		return $term;
+	}
+
+/**
+ * __getInitialFreq
+ *
+ * 繰返し周期性配列の初期値を返す
+ *
+ * @param array $wdays array('SU', 'MO', ... , 'SA')
+ * @param int $wdayIndex $ways配列内の曜日index(0-6)
+ * @param mixed $month 月(1-12)
+ * @return array 繰返し周期性配列の初期値
+ */
+	private function __getInitialFreq($wdays, $wdayIndex, $month) {
+		$freq = array(
+			'DAILY' => array(
+				'INTERVAL' => 1,	//1日ごと
+			),
+			'WEEKLY' => array(
+				'INTERVAL' => 1,	//1週ごと
+				//指定日の曜日('SU'など)を返す
+				'BYDAY' => array($wdays[$wdayIndex]), //FRなどを要素のもつ配列
+			),
+			'MONTHLY' => array(
+				'INTERVAL' => 1,	//１月ごと
+				'BYDAY' => array(),	//空配列
+				'BYMONTHDAY' => array(),	//空配列
+			),
+			'YEARLY' => array(
+				'INTERVAL' => 1,	//１年ごと
+				'BYMONTH' => array(intval($month)), //12などを要素にもつ配列
+				'BYDAY' => array(),	//空配列
+			),
+		);
+		return $freq;
+	}
+
+/**
+ * getInitialCalendarActionPlanForView
+ *
+ * 表示用CalendarActionPlan初期データ生成
+ *
+ * @param string $year year
+ * @param string $month month
+ * @param string $day day
+ * @param string $hour hour
+ * @param string $minitue minitue
+ * @param string $second second
+ * @return array 生成された表示用CalendarActionPlan配列
+ */
+	public function getInitialCalendarActionPlanForView($year, $month, $day,
+		$hour, $minitue, $second) {
+		$userTz = (new NetCommonsTime())->getUserTimezone();
+
+		//"Y-m-d H:i:s"形式の指定日付時刻からの直近１時間の日付時刻(from,to)を取得
+		list($ymdOfLastHour, $fromYmdHiOfLastHour, $toYmdHiOfLastHour) =
+			CalendarTime::getTheTimeInTheLastHour(sprintf('%04d-%02d-%02d %02d:%02d:%02d',
+				$year, $month, $day, $hour, $minitue, $second));
+		$date = (new CalendarTime())->getDtObjWithTzDateTime($userTz,
+			$year, $month, $day, $hour, $minitue, $second);
+		$wdayIndex = intval($date->format('w'));	//0-6
+		$wdays = explode('|', CalendarsComponent::CALENDAR_REPEAT_WDAY);
+
+		$initialCapForView = array(
+			'GroupsUser' => array(),	//共有なし
+			'CalendarActionPlan' => array(
+				'edit_rrule' => 0,
+				'title' => '',
+				'title_icon' => '',
+				'enable_time' => 0,
+				'easy_start_date' => $ymdOfLastHour, //YYYY-MM-DD
+				'easy_hour_minute_from' => $fromYmdHiOfLastHour, //hh:mm
+				'easy_hour_minute_to' => $toYmdHiOfLastHour, //hh:mm
+				//YYYY-MM-DD hh:mm
+				'detail_start_datetime' => $ymdOfLastHour . ' ' . $fromYmdHiOfLastHour,
+				//YYYY-MM-DD hh:mm
+				'detail_end_datetime' => $ymdOfLastHour . ' ' . $toYmdHiOfLastHour,
+				'plan_room_id' => 1,	//パブリック
+				'timezone_offset' => (new NetCommonsTime())->getUserTimezone(),
+				'is_detail' => 0,
+				'location' => '',
+				'contact' => '',
+				'description' => '',
+				'is_repeat' => 0,
+				'repeat_freq' => 'DAILY',
+				'FREQ' => $this->__getInitialFreq($wdays, $wdayIndex, $month),
+				'TERM' => $this->__getInitailTerm($ymdOfLastHour),
+				'enable_email' => 0,
+				'email_send_timing' => 5,
+			),
+		);
+		return $initialCapForView;
+	}
+
+/**
+ * getCalendarActionPlanForView
+ *
+ * eventデータを元にした表示用CalendarActionPlanデータ生成
+ *
+ * @param array $event event
+ * @return array 生成された表示用CalendarActionPlan配列
+ */
+	public function getCalendarActionPlanForView($event) {
+		$userStartYmdHis =
+			(new CalendarTime())->svr2UserYmdHis($event['CalendarEvent']['dtstart']);
+		//YYYY-MM-DD hh:mm:ss
+		$userStartDatetime = CalendarTime::addDashColonAndSp($userStartYmdHis);
+
+		$userEndYmdHis =
+			(new CalendarTime())->svr2UserYmdHis($event['CalendarEvent']['dtend']);
+		//YYYY-MM-DD hh:mm:ss
+		$userEndDatetime = CalendarTime::addDashColonAndSp($userEndYmdHis);
+
+		$userTz = (new NetCommonsTime())->getUserTimezone();
+		$tmArray = CalendarTime::transFromYmdHisToArray($userStartDatetime);
+		$date = (new CalendarTime())->getDtObjWithTzDateTime($userTz,
+			$tmArray['year'], $tmArray['month'], $tmArray['day'],
+			$tmArray['hour'], $tmArray['min'], $tmArray['sec']);
+		$wdayIndex = intval($date->format('w'));	//0-6
+		$wdays = explode('|', CalendarsComponent::CALENDAR_REPEAT_WDAY);
+
+		$isDetail = 0;
+		if ($event['CalendarEvent']['location'] !== '' ||
+			$event['CalendarEvent']['contact'] !== '' ||
+			$event['CalendarEvent']['description'] !== '') {
+			$isDetail = 1;
+		}
+
+		$capForView = $this->__makeCapForViewSubset($event, $userStartDatetime, $userEndDatetime,
+			$isDetail, $wdays, $wdayIndex, $tmArray);
+
+		$rrule = (new CalendarRruleUtil())->parseRrule($event['CalendarRrule']['rrule']);
+
+		$this->__setRruleFreqParamsToCapForView($rrule, $capForView);
+
+		$this->__setRruleTermParamsToCapForView($rrule, $capForView);
+		/*
+		if (isset($rrule['REPEAT_COUNT']) && $rrule['REPEAT_COUNT'] == 1) {
+			$capForView['CalendarActionPlan']['TERM']['REPEAT_COUNT'] = 1;
+			$capForView['CalendarActionPlan']['TERM']['REPEAT_UNTIL'] = 0;
+			$capForView['CalendarActionPlan']['TERM']['COUNT'] = $rrule['COUNT'];
+		}
+		if (isset($rrule['REPEAT_UNTIL']) && $rrule['REPEAT_UNTIL'] == 1) {
+			$capForView['CalendarActionPlan']['TERM']['REPEAT_COUNT'] = 0;
+			$capForView['CalendarActionPlan']['TERM']['REPEAT_UNTIL'] = 1;
+
+			$userUntilYmdHis =
+				(new CalendarTime())->svr2UserYmdHis($rrule['UNTIL']);
+			//YYYY-MM-DD hh:mm:ss
+			$userUntilDatetime = CalendarTime::addDashColonAndSp($userUntilYmdHis);
+
+			$capForView['CalendarActionPlan']['TERM']['UNTIL'] = $userUntilDatetime;
+		}
+		*/
+
+		$capForView['GroupsUser'] = array();
+		if (isset($event['CalendarEventShareUser']) && is_array($event['CalendarEventShareUser'])) {
+			foreach ($event['CalendarEventShareUser'] as $shareUser) {
+				$capForView['GroupsUser'][] = $shareUser['share_user'];
+			}
+		}
+
+		return $capForView;
+	}
+
+/**
+ * __makeCapForViewSubset
+ *
+ * CapForView配列のサブセット生成
+ *
+ * @param array $event event
+ * @param string $userStartDatetime userStartDatetime
+ * @param string $userEndDatetime userEndDatetime
+ * @param int $isDetail isDetail
+ * @param array $wdays wdays
+ * @param int $wdayIndex wdayIndex
+ * @param array $tmArray tmArray
+ * @return array 生成されたCapForView配列のサブセット
+ */
+	private function __makeCapForViewSubset($event, $userStartDatetime, $userEndDatetime,
+		$isDetail, $wdays, $wdayIndex, $tmArray) {
+		$capForView = array(
+			'CalendarActionPlan' => array(
+				'edit_rrule' => 0,	//tableにはない項目なのでinitと同じ値
+				'title' => $event['CalendarEvent']['title'],
+				'title_icon' => $event['CalendarEvent']['title_icon'],
+				'enable_time' => ($event['CalendarEvent']['is_allday']) ? 0 : 1,
+				'easy_start_date' => substr($userStartDatetime, 0, 10), //YYYY-MM-DD
+				'easy_hour_minute_from' => substr($userStartDatetime, 11, 5), //hh:mm
+				'easy_hour_minute_to' => substr($userEndDatetime, 11, 5), //hh:mm
+				//YYYY-MM-DD hh:mm
+				'detail_start_datetime' => substr($userStartDatetime, 0, 16),
+				//YYYY-MM-DD hh:mm
+				'detail_end_datetime' => substr($userEndDatetime, 0, 16),
+				'plan_room_id' => $event['CalendarEvent']['room_id'],
+				'timezone_offset' => $event['CalendarEvent']['timezone_offset'],
+				'is_detail' => $isDetail,
+				'location' => $event['CalendarEvent']['location'],
+				'contact' => $event['CalendarEvent']['contact'],
+				'description' => $event['CalendarEvent']['description'],
+				'is_repeat' => 0,	//まずは初期値
+				'repeat_freq' => 'DAILY',	//まずは初期値
+				'FREQ' => $this->__getInitialFreq($wdays, $wdayIndex, $tmArray['month']),
+				'TERM' => $this->__getInitailTerm(substr($userStartDatetime, 0, 10)),
+				'enable_email' => intval($event['CalendarEvent']['is_enable_mail']),
+				'email_send_timing' => intval($event['CalendarEvent']['email_send_timing']),
+			),
+		);
+		return $capForView;
+	}
+
+/**
+ * __setRruleFreqParamsToCapForView
+ *
+ * 繰返し規則の周期性のパラメータをcapForView配列にセットする。
+ *
+ * @param array $rrule 元となるrrule配列
+ * @param array &$capForView 代入すべきcapForView配列
+ * @return void
+ */
+	private function __setRruleFreqParamsToCapForView($rrule, &$capForView) {
+		if ($rrule['FREQ'] === 'DAILY') {
+			$capForView['CalendarActionPlan']['is_repeat'] = 1;
+			$capForView['CalendarActionPlan']['repeat_freq'] = 'DAILY';
+			$capForView['CalendarActionPlan']['FREQ']['DAILY']['INTERVAL'] = $rrule['INTERVAL'];
+		}
+		if ($rrule['FREQ'] === 'WEEKLY') {
+			$capForView['CalendarActionPlan']['is_repeat'] = 1;
+			$capForView['CalendarActionPlan']['repeat_freq'] = 'WEEKLY';
+			$capForView['CalendarActionPlan']['FREQ']['WEEKLY']['INTERVAL'] = $rrule['INTERVAL'];
+			$capForView['CalendarActionPlan']['FREQ']['WEEKLY']['BYDAY'] = $rrule['BYDAY']; //配列
+		}
+		if ($rrule['FREQ'] === 'MONTHLY') {
+			$capForView['CalendarActionPlan']['is_repeat'] = 1;
+			$capForView['CalendarActionPlan']['repeat_freq'] = 'MONTHLY';
+			$capForView['CalendarActionPlan']['FREQ']['MONTHLY']['INTERVAL'] = $rrule['INTERVAL'];
+			$capForView['CalendarActionPlan']['FREQ']['MONTHLY']['BYDAY'] = array('');
+			$capForView['CalendarActionPlan']['FREQ']['MONTHLY']['BYMONTHDAY'] = array('');
+			if (isset($rrule['BYDAY'])) {
+				$capForView['CalendarActionPlan']['FREQ']['MONTHLY']['BYDAY'] =
+					$rrule['BYDAY'];
+			}
+			if (isset($rrule['BYMONTHDAY'])) {
+				$capForView['CalendarActionPlan']['FREQ']['MONTHLY']['BYMONTHDAY'] =
+					$rrule['BYMONTHDAY'];
+			}
+		}
+		if ($rrule['FREQ'] === 'YEARLY') {
+			$capForView['CalendarActionPlan']['is_repeat'] = 1;
+			$capForView['CalendarActionPlan']['repeat_freq'] = 'YEARLY';
+			$capForView['CalendarActionPlan']['FREQ']['YEARLY']['INTERVAL'] = $rrule['INTERVAL'];
+			$capForView['CalendarActionPlan']['FREQ']['MONTHLY']['BYMONTH'] = $rrule['BYMONTH'];
+			$capForView['CalendarActionPlan']['FREQ']['MONTHLY']['BYDAY'] = array('');
+			if (isset($rrule['BYDAY'])) {
+				$capForView['CalendarActionPlan']['FREQ']['MONTHLY']['BYDAY'] = $rrule['BYDAY'];
+			}
+		}
+	}
+
+/**
+ * __setRruleTermParamsToCapForView
+ *
+ * 繰返し規則の期限のパラメータをcapForView配列にセットする。
+ *
+ * @param array $rrule 元となるrrule配列
+ * @param array &$capForView 代入すべきcapForView配列
+ * @return void
+ */
+	private function __setRruleTermParamsToCapForView($rrule, &$capForView) {
+		if (isset($rrule['REPEAT_COUNT']) && $rrule['REPEAT_COUNT'] == 1) {
+			$capForView['CalendarActionPlan']['TERM']['REPEAT_COUNT'] = 1;
+			$capForView['CalendarActionPlan']['TERM']['REPEAT_UNTIL'] = 0;
+			$capForView['CalendarActionPlan']['TERM']['COUNT'] = $rrule['COUNT'];
+		}
+		if (isset($rrule['REPEAT_UNTIL']) && $rrule['REPEAT_UNTIL'] == 1) {
+			$capForView['CalendarActionPlan']['TERM']['REPEAT_COUNT'] = 0;
+			$capForView['CalendarActionPlan']['TERM']['REPEAT_UNTIL'] = 1;
+
+			$userUntilYmdHis =
+				(new CalendarTime())->svr2UserYmdHis($rrule['UNTIL']);
+			//YYYY-MM-DD hh:mm:ss
+			$userUntilDatetime = CalendarTime::addDashColonAndSp($userUntilYmdHis);
+
+			$capForView['CalendarActionPlan']['TERM']['UNTIL'] = $userUntilDatetime;
+		}
+	}
 }

@@ -9,12 +9,17 @@
 		//'ng-model' => 'calendars.plan.title',
 		'div' => false,
 	);
-	if (isset($event['CalendarEvent']['title'])) {
-		$options['value'] = $event['CalendarEvent']['title'];
+	//if (isset($event['CalendarEvent']['title'])) {
+	//	$options['value'] = $event['CalendarEvent']['title'];
+	//}
+	//if (isset($event['CalendarEvent']['title_icon'])) {
+	//	$options['titleIcon'] = $event['CalendarEvent']['title_icon'];
+	//}
+	if (isset($this->request->data['CalendarEvent']['title'])) {
+		$options['value'] = $this->request->data['CalendarEvent']['title'];
 	}
-
-	if (isset($event['CalendarEvent']['title_icon'])) {
-		$options['titleIcon'] = $event['CalendarEvent']['title_icon'];
+	if (isset($this->request->data['CalendarEvent']['title_icon'])) {
+		$options['titleIcon'] = $this->request->data['CalendarEvent']['title_icon'];
 	}
 
 	//inputWithTitleIcon()の第１引数がfieldName, 第２引数が$titleIconFieldName

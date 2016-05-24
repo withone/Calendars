@@ -86,10 +86,12 @@ class CalendarAppBehavior extends ModelBehavior {
 			//
 			$rruleData = $model->CalendarRrule->find('first', $params);
 			if (!is_array($rruleData) || !isset($rruleData['CalendarRrule'])) {
-				$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarRrule->validationErrors);
+				$model->validationErrors =
+					Hash::merge($model->validationErrors, $model->CalendarRrule->validationErrors);
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
-			$this->rruleData = $rruleData;	//CalendarRruleのデータを記録し、２度目以降に備える。
+			//CalendarRruleのデータを記録し、２度目以降に備える。
+			$this->rruleData = $rruleData;
 		}
 
 		//NC3では内部はサーバー系日付時刻になっているのでtimezoneDateはつかわない.
@@ -98,23 +100,30 @@ class CalendarAppBehavior extends ModelBehavior {
 		$insertStartTime = $startTime;
 		$insertEndTime = $endTime;
 
-		$rEventData = $this->setReventData($eventData, $insertStartTime, $insertEndTime); //eventDataをもとにrEventDataをつくり、モデルにセット
+		//eventDataをもとにrEventDataをつくり、モデルにセット
+		$rEventData = $this->setReventData(
+			$eventData, $insertStartTime, $insertEndTime);
 
 		$model->CalendarEvent->set($rEventData);
 
 		if (!$model->CalendarEvent->validates()) {	//rEventDataをチェック
-			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
+			$model->validationErrors = Hash::merge(
+				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
 		if (!$model->CalendarEvent->save($rEventData, false)) { //保存のみ
-			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
+			$model->validationErrors = Hash::merge(
+				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
-		$rEventData['CalendarEvent']['id'] = $model->CalendarEvent->id; //採番されたidをeventDataにセ>
+		//採番されたidをeventDataにセット
+		$rEventData['CalendarEvent']['id'] = $model->CalendarEvent->id;
 
-		if (isset($rEventData['CalendarEventContent']) && $rEventData['CalendarEventContent']['linked_model'] !== '') { //関連コンテンツの登録
+		//関連コンテンツの登録
+		if (isset($rEventData['CalendarEventContent']) &&
+			$rEventData['CalendarEventContent']['linked_model'] !== '') {
 			if (!(isset($this->CalendarEventContent))) {
 				$model->loadModels(['CalendarEventContent' => 'Calendar.CalendarEventContent']);
 			}
@@ -176,7 +185,8 @@ class CalendarAppBehavior extends ModelBehavior {
  * @param string &$endTime 生成したサーバー系endTime文字列
  * @return void
  */
-	public function setStartDateTiemAndEndDateTime($sTime, $eTime, $byday, $userTz, &$startDate, &$startTime, &$endDate, &$endTime) {
+	public function setStartDateTiemAndEndDateTime($sTime, $eTime, $byday, $userTz,
+		&$startDate, &$startTime, &$endDate, &$endTime) {
 		//INPUT引数のsTime, eTime, bydayはサーバー系なので、
 		//まずは、それぞれをTZのユーザー系のYmdHisに変換する。
 		$userStartTime = (new NetCommonsTime())->toUserDatetime(CalendarTime::calDt2dt($sTime));
@@ -238,7 +248,8 @@ class CalendarAppBehavior extends ModelBehavior {
 			'calendar_id' => 1,	//暫定
 			'name' => '',
 			'rrule' => '',
-			'icalendar_uid' => CalendarSupport::generateIcalUid($planParams['start_date'], $planParams['start_time']),
+			'icalendar_uid' => CalendarSupport::generateIcalUid(
+				$planParams['start_date'], $planParams['start_time']),
 			'icalendar_comp_name' => self::CALENDAR_PLUGIN_NAME,
 			'room_id' => Current::read('Room.id'),
 			//'language_id' => Current::read('Language.id'),

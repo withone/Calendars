@@ -111,6 +111,8 @@ class CalendarsSchema extends CakeSchema {
 		'is_latest' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'comment' => 'Is latest, 0:not latest 1:latest | 最新コンテンツかどうか 0:最新でない 1:最新 | | '),
 		'recurrence_event_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'comment' => 'When the value is 1 or more, pointing to the recurrences (substitution) event id | 1以上のとき、再発(置換）イベントidを指す。VCALENDERのRECURRENCE-ID機能実現のための項目 | | '),
 		'exception_event_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'comment' => 'When the value is 1 or more, pointing to the exceptions (deletion) event id | 1以上のとき、例外（削除）イベントidを指す。vcalendarの EXDATE機能実現のための項目 | | '),
+		'is_enable_mail' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'comment' => 'Whether or not email notification prior to the event. 0:no notification 1:do notification | イベント前にメール通知するかどうか 0:通知しない 1:通知する | | '),
+		'email_send_timing' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'comment' => 'Event N minutes ago sending e-mail. N is a number. Unit is minutes. | イベントN分前メール通知の値N。単位は分。 | | '),
 		'created_user' => array('type' => 'integer', 'null' => true, 'default' => '0', 'unsigned' => false, 'comment' => 'created user | 作成者 | users.id | '),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => 'created datetime | 作成日時 | | '),
 		'modified_user' => array('type' => 'integer', 'null' => true, 'default' => '0', 'unsigned' => false, 'comment' => 'modified user | 更新者 | users.id | '),

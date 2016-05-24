@@ -68,6 +68,10 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 		// 入力カラムの定義、データ型とdefault値、必要ならlength値
 
+		//繰返し編集の指定(0/1/2). このフィールドは渡ってこない時もあるので
+		//ViewにてunlockField指定しておくこと。
+		'edit_rrule' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+
 		//タイトル
 		'title' => array('type' => 'string', 'default' => ''),
 
@@ -239,6 +243,13 @@ class CalendarActionPlan extends CalendarsAppModel {
  */
 	protected function _doMergeRruleValidate($isDetailEdit) {
 		$this->validate = Hash::merge($this->validate, array(
+			'edit_rrule' => array(
+				'rule1' => array(
+					'rule' => array('inList', array(0, 1, 2)),
+					'required' => false,
+					'message' => __d('calendars', '繰返しの変更指定が不正です'),
+				),
+			),
 			'is_repeat' => array(
 				'rule1' => array(
 					'rule' => array('inList', array(0, 1)),

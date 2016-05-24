@@ -9,7 +9,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');	//プラグインセパレータ(.)とパスセバレータ(/)混在に注意
+App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');
 
 /**
  * CalendarEntryBehavior
@@ -95,7 +95,7 @@ class CalendarEntryBehavior extends CalendarAppBehavior {
 		$this->log('DBG: before Save', LOG_DEBUG);
 		if (isset($this->calendarEntryIndicator)) {
 			//カレンダー登録指示子(insert|update)があれば、それに従う
-			$this->log('DBG: given calendarEntryIndicator[' . $this->calendarEntryIndicator . ']', LOG_DEBUG);
+			//$this->log('DBG: given calendarEntryIndicator[' . $this->calendarEntryIndicator . ']', LOG_DEBUG);
 			return parent::beforeSave($model, $options);
 		}
 
@@ -133,7 +133,7 @@ class CalendarEntryBehavior extends CalendarAppBehavior {
 			//データがないので、insert
 			$this->calendarEntryIndicator = 'insert';
 		}
-		$this->log('DBG: i descid calendarEntryIndicator[' . $this->calendarEntryIndicator . ']', LOG_DEBUG);
+		//$this->log('DBG: i descid calendarEntryIndicator[' . $this->calendarEntryIndicator . ']', LOG_DEBUG);
 
 		return parent::beforeSave($model, $options);
 	}
@@ -164,8 +164,8 @@ class CalendarEntryBehavior extends CalendarAppBehavior {
 		//$this->log("DBG :" . serialize($model->data), LOG_DEBUG);
 
 		$fields = $this->settings[$model->alias]['fields'];
-		$this->log("DBG : description[" . $model->data[$model->alias][$fields['description']] . "]", LOG_DEBUG);
-		$this->log("DBG : start_date[" . $model->data[$model->alias][$fields['start_date']] . "]", LOG_DEBUG);
+		//$this->log("DBG : description[" . $model->data[$model->alias][$fields['description']] . "]", LOG_DEBUG);
+		//$this->log("DBG : start_date[" . $model->data[$model->alias][$fields['start_date']] . "]", LOG_DEBUG);
 
 		if (!$model->Behaviors->hasMethod('insertPlan')) {
 			$model->Behaviors->load('Calendars.CalendarInsertPlan');

@@ -3,7 +3,7 @@
 <div ng-controller="CalendarsDetailEdit" class="block-setting-body"
 	ng-init="initialize(<?php echo h(json_encode(array('frameId' => Current::read('Frame.id')))); ?>)">
 
-<?php if (isset($event['CalendarEvent']['title'])) : ?>
+<?php if (isset($event['CalendarEvent']['id']) && $event['CalendarEvent']['id'] > 0) : ?>
 	<div class='h3'><?php echo __d('calendars', '予定の編集'); ?></div>
 <?php else: ?>
 		<div class='h3'><?php echo __d('calendars', '予定の追加'); ?></div>
@@ -19,6 +19,34 @@
 	<?php echo $this->element('Calendars.CalendarPlans/detail_edit_hiddens'); ?>
 
 <div class="panel-body">
+
+<?php $this->NetCommonsForm->unlockField('CalendarActionPlan.edit_rrule'); ?>
+
+<?php if ($capForView['CalendarActionPlan']['is_repeat']) : ?>
+	<div class="form-group" name="RepeatSet">
+	<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+	<h2 style='float: left'>
+	<?php echo $this->TitleIcon->titleIcon('/net_commons/img/title_icon/10_070_warning.svg'); ?>
+	</h2>
+	<div style='padding-top: 1.5em'>
+	<?php echo __d('calendars', 'この予定は繰り返し設定されています。変更した予定を下記項目から選択し、予定編集してください。'); ?>
+	</div>
+	<div class="alert alert-warning">
+	<?php
+		echo $this->NetCommonsForm->radio('CalendarActionPlan.edit_rrule', array(
+				'0' => __d('calendars', 'この予定のみ'),
+				'1' => __d('calendars', 'これ以降に指定した全ての予定'),
+				'2' => __d('calendars', '設定した全ての予定')
+			),
+			array(
+				'div' => 'form-inline',
+			)
+		);
+	?>
+	</div>
+	</div><!-- col-sm-10おわり -->
+	</div><!-- form-groupおわり-->
+<?php endif; ?>
 
 <div class="form-group" name="inputTitle">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
@@ -39,17 +67,17 @@
 
 <?php
 	$useTime = 'useTime[' . $frameId . ']';
-
 	echo $this->NetCommonsForm->input('CalendarActionPlan.enable_time', array(
 		'type' => 'checkbox',
-		'checked' => false,
 		'label' => false,
 		'div' => false,
 		'class' => 'text-left calendar-specify-a-time_' . $frameId,
 		'style' => 'float: left',
 		'ng-model' => $useTime,
 		'ng-change' => 'toggleEnableTime(' . $frameId . ')',
-
+		'ng-false-value' => 'false',
+		'ng-true-value' => 'true',
+		'ng-init' => (($this->request->data['CalendarActionPlan']['enable_time']) ? ($useTime . ' = true') : ($useTime . ' = false')),
 	));
 ?>
 	<label style="float: left">
@@ -63,15 +91,15 @@
 
 <?php 
 	$startDatetimeValue = '';
-	if (isset($event['CalendarActionPlan']['detail_start_datetime'])) {
-		$startDatetimeValue = $event['CalendarActionPlan']['detail_start_datetime'];
+	if (isset($this->request->data['CalendarActionPlan']['detail_start_datetime'])) {
+		$startDatetimeValue = $this->request->data['CalendarActionPlan']['detail_start_datetime'];
 	}
 	$this->NetCommonsForm->unlockField('CalendarActionPlan.detail_start_datetime');
 	echo $this->NetCommonsForm->hidden('CalendarActionPlan.detail_start_datetime', array('value' => $startDatetimeValue));
 
 	$endDatetimeValue = '';
-	if (isset($event['CalendarActionPlan']['detail_end_datetime'])) {
-		$endDatetimeValue = $event['CalendarActionPlan']['detail_end_datetime'];
+	if (isset($this->request->data['CalendarActionPlan']['detail_end_datetime'])) {
+		$endDatetimeValue = $this->request->data['CalendarActionPlan']['detail_end_datetime'];
 	}
 	$this->NetCommonsForm->unlockField('CalendarActionPlan.detail_end_datetime');
 	echo $this->NetCommonsForm->hidden('CalendarActionPlan.detail_end_datetime', array('value' => $endDatetimeValue));
@@ -99,23 +127,53 @@
 
 
 <?php
+	//**Controllerで値が整理・補充された$this->request->dataを使うことにしたので、以下は割愛。**
+	//
 	//現在日付時刻(Y/m/d H:i:s形式)からの直近１時間の日付時刻(from,to)を取得.
 	//なおdatetimepickerのTZ変換オプション(convert_timezone)をfalseにしているので
 	//ここで準備するYmdHisはユーザー系TZであることに留意してください。
 	//
-	$nctm = new NetCommonsTime();
-	$userNowYdmHis = $nctm->toUserDatetime('now');
-	$userNowHi = CalendarTime::getHourColonMin($userNowYdmHis);
-	$ymdHis = sprintf("%04d-%02d-%02d %s", $vars['year'], $vars['month'], $vars['day'], $userNowHi);
-	list($ymdOfLastHour, $fromYmdHiOfLastHour, $toYmdHiOfLastHour) = CalendarTime::getTheTimeInTheLastHour($ymdHis);
+	//$nctm = new NetCommonsTime();
+	//$userNowYdmHis = $nctm->toUserDatetime('now');
+	//$userNowHi = CalendarTime::getHourColonMin($userNowYdmHis);
+	//$ymdHis = sprintf("%04d-%02d-%02d %s", $vars['year'], $vars['month'], $vars['day'], $userNowHi);
+	//list($ymdOfLastHour, $fromYmdHiOfLastHour, $toYmdHiOfLastHour) = CalendarTime::getTheTimeInTheLastHour($ymdHis);
 	//var変数の日付のYmd「も」用意しておく
-	$varsYmd = sprintf("%04d-%02d-%02d", $vars['year'], $vars['month'], $vars['day']);
+	//$varsYmd = sprintf("%04d-%02d-%02d", $vars['year'], $vars['month'], $vars['day']);
 
+	//開始日のデータ準備
+	if (strpos($this->request->data['CalendarActionPlan']['detail_start_datetime'], ':') !== false) {
+		//YYYY-MM-DD hh:mmなのでそのまま代入
+		$fromYmdHiOfLastHour = $this->request->data['CalendarActionPlan']['detail_start_datetime'];
+		//YYYY-MM-DDの部分を取り出す
+		$fromvarsYmd = substr($this->request->data['CalendarActionPlan']['detail_start_datetime'], 0, 10);
+	} else {
+		//YYYY-MM-DDなのでそのまま代入
+		$fromvarsYmd = $this->request->data['CalendarActionPlan']['detail_start_datetime'];
+		//YYYY-MM-DD hh:mmのhh:mmを暫定的に00:00で補う。
+		$fromYmdHiOfLastHour = $this->request->data['CalendarActionPlan']['detail_start_datetime'] . ' 00:00';
+	}
+
+	//終了日のデータ準備
+	if (strpos($this->request->data['CalendarActionPlan']['detail_end_datetime'], ':') !== false) {
+		//YYYY-MM-DD hh:mm
+		$toYmdHiOfLastHour = $this->request->data['CalendarActionPlan']['detail_end_datetime'];
+		//YYYY-MM-DDの部分を取り出す
+		$tovarsYmd = substr($this->request->data['CalendarActionPlan']['detail_end_datetime'], 0, 10);
+	} else {
+		//YYYY-MM-DDだけの場合、終日型なのでstartのymd=endのymdであるが、ここは素直にendの方を使うこととする。
+		//
+		//YYYY-MM-DDなのでそのまま代入
+		$tovarsYmd = $this->request->data['CalendarActionPlan']['detail_end_datetime'];
+		//YYYY-MM-DD hh:mmのhh:mmを暫定的に00:00で補う。
+		$toYmdHiOfLastHour = $this->request->data['CalendarActionPlan']['detail_end_datetime'] . ' 00:00';
+	}
 
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD HH:mm',	//hashi
 	)));
 	$ngModel = 'detailStartDatetime'; //[' . $frameId . ']';
+
 	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_start_datetime',
 	array(
 		'div' => false,
@@ -166,7 +224,7 @@
 		//'value' => $fromServerYmdHiOfLastHour, // kuma add
 		//'type' => 'datetime,'
 		//modelに値を代入した後、changeDetail..()を使い、モデルの値を、DOMのinputのvalueに転写する.
-		'ng-init' => sprintf("%s = '%s'; ", $ngModel, $varsYmd) .
+		'ng-init' => sprintf("%s = '%s'; ", $ngModel, $fromvarsYmd) .
 			"changeDetailStartDate('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')",
 	));
 
@@ -255,7 +313,7 @@
 		//'placeholder' => 'yyyy-mm-dd hh:nn', //kuma add
 		//'value' => $toServerYmdHiOfLastHour, //kuma
 		//modelに値を代入した後、changeDetail..()を使い、モデルの値を、DOMのinputのvalueに転写する.
-		'ng-init' => sprintf("%s = '%s'; ", $ngModel, $varsYmd) .
+		'ng-init' => sprintf("%s = '%s'; ", $ngModel, $tovarsYmd) .
 			"changeDetailEndDate('" . 'CalendarActionPlan' . Inflector::camelize('detail_end_datetime') . "')",
 	));
 ?>
@@ -705,9 +763,9 @@
 	<?php
 
 		if (isset($event['CalendarEvent']['room_id'])) {
-			//CakeLog::debug("DBG: event room_id[" . $event['CalendarEvent']['room_id'] . "]");
 			$myself = $event['CalendarEvent']['room_id'];	//FIXME: 本当は、RoomsをTreeビヘイビアのparent()を使って空間IDに変換する必要あり。要改修。
 		}
+
 		echo $this->CalendarExposeTarget->makeSelectExposeTargetHtml($frameId, $languageId, $vars, $frameSetting, $exposeRoomOptions, $myself);
 	?>
 
@@ -730,10 +788,21 @@
 
 <div><!-- kuma add -->
 
+<?php
+	$checkMailStyle = '';
+	if ($mailSettingInfo['MailSetting']['is_mail_send'] == 0) {
+		$checkMailStyle = "style='display: none;'";
+	}
+?>
 
-
-<div class="form-group" name="checkMail">
+<div class="form-group" name="checkMail" <?php echo $checkMailStyle; ?>>
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
+
+	<label style='float: left'>
+	<?php echo __d('calendars', 'メール通知'); ?>
+	</label style='float: left'>
+
+	<div class="clearfix"></div>
 
 
 <?php echo $this->NetCommonsForm->input('CalendarActionPlan.enable_mail', array(
@@ -746,46 +815,51 @@
 	));
 ?>
 	<label style='float: left'>
-		<?php echo __d('calendars', 'メールで通知'); ?>
+		<?php echo __d('calendars', 'イベント前にメール通知する'); ?>
 	</label>
 
-<div class="clearfix"></div>
+<!-- <div class="clearfix"></div> -->
 
-</div><!-- col-sm-10おわり -->
-</div><!-- form-groupおわり-->
+<!-- </div> --><!-- col-sm-10おわり -->
+<!-- </div> --><!-- form-groupおわり-->
 
 
-<div class="form-group calendar-mail-notice_<?php echo $frameId ?>" name="selectMailTime" style="display: none">
-<div class="col-xs-8 col-sm-5 col-sm-offset-1">
+<!-- <div class="form-group calendar-mail-notice_<?php echo $frameId ?>" name="selectMailTime" style="display: none"> -->
+<!-- <div class="col-xs-8 col-sm-5 col-sm-offset-1"> -->
 <?php
 		$options = array(
-			'0' => __d('calendars', '0分前'),
-			'5' => __d('calendars', '5分前'),
-			'10' => __d('calendars', '10分前'),
-			'15' => __d('calendars', '15分前'),
-			'20' => __d('calendars', '20分前'),
-			'25' => __d('calendars', '25分前'),
-			'30' => __d('calendars', '30分前'),
-			'45' => __d('calendars', '45分前'),
-			'60' => __d('calendars', '1時間前'),
-			'120' => __d('calendars', '2時間前'),
-			'180' => __d('calendars', '3時間前'),
-			'720' => __d('calendars', '12時間前'),
-			'1440' => __d('calendars', '24時間前'),
-			'2880' => __d('calendars', '2日前'),
-			'8540' => __d('calendars', '1週間前'),
-			'9999' => __d('calendars', '今すぐ'),
+			//'0' => __d('calendars', 'イベント0分前'),
+			'5' => __d('calendars', 'イベント5分前'),
+			'10' => __d('calendars', 'イベント10分前'),
+			'15' => __d('calendars', 'イベント15分前'),
+			'20' => __d('calendars', 'イベント20分前'),
+			'25' => __d('calendars', 'イベント25分前'),
+			'30' => __d('calendars', 'イベント30分前'),
+			'45' => __d('calendars', 'イベント45分前'),
+			'60' => __d('calendars', 'イベント1時間前'),
+			'120' => __d('calendars', 'イベント2時間前'),
+			'180' => __d('calendars', 'イベント3時間前'),
+			'720' => __d('calendars', 'イベント12時間前'),
+			'1440' => __d('calendars', 'イベント24時間前'),
+			'2880' => __d('calendars', 'イベント2日前'),
+			'8540' => __d('calendars', 'イベント1週間前'),
+			//'9999' => __d('calendars', '今すぐ'),
 		);
 
-		echo $this->NetCommonsForm->label('CalendarActionPlan.email_send_timing', __d('calendars', 'メール通知タイミング'));
-
+		//echo $this->NetCommonsForm->label('CalendarActionPlan.email_send_timing', __d('calendars', 'メール通知タイミング'));
+?>
+		<div class="col-xs-6">
+<?php
 		echo $this->NetCommonsForm->select('CalendarActionPlan.email_send_timing', $options, array(
 			'value' => __d('calendars', '0分前'),		//valueは初期値
 			'class' => 'form-control',
 			'empty' => false,
 			'required' => true,
+			'div' => false,
+			'style' => 'float: left',
 		));
 ?>
+		</div>
 
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->
@@ -835,7 +909,6 @@
 
 
 
-
 <!-- 詳細 -->
 <div class="form-group" name="inputDescription" ng-controller="CalendarDetailEditWysiwyg">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
@@ -844,10 +917,12 @@
 	</label>
 </div>
 <div class="col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 calendar-detailedit-detail">
-	<?php echo $this->NetCommonsForm->wysiwyg('CalendarActionPlan.description', array(
-		'label' => false,
-		'required' => false,
-	));
+	<?php
+		echo $this->NetCommonsForm->wysiwyg('CalendarActionPlan.description', array(
+			'label' => false,
+			'required' => false,
+			'ng-init' => 'initDescription(' . json_encode($this->request->data['CalendarActionPlan']['description']) . ');',
+		));
 	?>
 <div class="clearfix"></div>
 
@@ -867,8 +942,8 @@
 		echo $this->NetCommonsForm->label('CalendarActionPlan.timezone_offset' . Inflector::camelize('timezone'), __d('calendars', 'タイムゾーン'));
 
 		echo $this->NetCommonsForm->select('CalendarActionPlan.timezone_offset', $options, array(
-			//'value' => __d('calendars', '_TZ_GMTP9'),		//valueは初期値
-			'value' => Current::read('User.timezone'),		//valueは初期値
+			////'value' => Current::read('User.timezone'),		//valueは初期値
+			'value' => $this->request->data['CalendarActionPlan']['timezone_offset'],
 			'class' => 'form-control',
 			'empty' => false,
 			'required' => true,

@@ -41,6 +41,7 @@ class CalendarPlansController extends CalendarsAppController {
 		'Calendars.CalendarDeleteActionPlan',	//予定削除action専用
 		'Rooms.RoomsLanguage',
 		'Users.User',
+		'Mails.MailSetting',
 	);
 
 /**
@@ -308,6 +309,8 @@ class CalendarPlansController extends CalendarsAppController {
  * @return void
  */
 	public function edit() {
+		//CakeLog::debug("DBG: edit()直後. request_data[" . print_r($this->request->data, true) . "]");
+
 		//表示用の設定
 		$ctpName = '';
 		$vars = array();
@@ -342,6 +345,9 @@ class CalendarPlansController extends CalendarsAppController {
 				'recursive' => 1, //belongsTo, hasOne, hasManyまで取得
 			);
 			$event = $this->CalendarEvent->find('first', $options);
+
+			//CakeLog::debug("DBG: 編集時のevent関連データ[ " . print_r($event, true) . "]");
+
 			if (!$event) {
 				CakeLog::error(
 					__d('calendars', '対象eventがないのでeventを空にして下に流します。'));
@@ -349,10 +355,50 @@ class CalendarPlansController extends CalendarsAppController {
 			}
 		}
 
+		if (count($event) > 0) {
+			//eventが空の場合、該当eventの表示用配列を取得する。
+			//
+			$capForView = (new CalendarSupport())->getCalendarActionPlanForView($event);
+
+			//CakeLog::debug("DBG: getCalendarActionPlanForView(event)結果[ " . print_r($capForView, true) . "]");
+
+		} else {
+			//eventが空の場合、初期値でFILLした表示用配列を取得する。
+			//
+			$userTz = (new NetCommonsTime())->getUserTimezone();
+			$date = new DateTime('now', (new DateTimeZone($userTz)));
+			if (isset($this->request->params['named']['year'])) {
+				$year = $this->request->params['named']['year'];
+				$month = $this->request->params['named']['month'];
+				$day = $this->request->params['named']['day'];
+			} else {
+				$year = $date->format('Y');
+				$month = $date->format('m');
+				$day = $date->format('d');
+			}
+			$hour = $date->format('H');
+			$minitue = $date->format('i');
+			$second = $date->format('s');
+			$capForView = (new CalendarSupport())->getInitialCalendarActionPlanForView(
+				$year, $month, $day, $hour, $minitue, $second);
+
+			//CakeLog::debug("DBG: getInitialCalendarActionPlanForVieww(YmdHis[" .
+			//$year . $month . $day . $hour . $minitue . $second . "])結果[ " .
+			//print_r($capForView, true) . "]");
+
+		}
+
+		$this->__setCapForView2RequestData($capForView); //capForViewのrequest->data反映
+
 		$frameId = Current::read('Frame.id');
 		$languageId = Current::read('Language.id');
+
+		$mailSettingInfo = $this->getMailSettingInfo();
+		//CakeLog::debug("DBG: mailSettingInfo[" . print_r($mailSettingInfo, true) . "]");
+
 		$this->set(compact('frameId', 'languageId', 'vars', 'frameSetting',
-			'exposeRoomOptions', 'myself', 'emailOptions', 'event'));
+			'exposeRoomOptions', 'myself', 'emailOptions', 'event',
+			'capForView', 'mailSettingInfo'));
 		$this->render($ctpName);
 	}
 
@@ -410,4 +456,66 @@ class CalendarPlansController extends CalendarsAppController {
 		}
 		return $ctpName;
 	}
+
+/**
+ * getMailSettingInfo
+ *
+ * メール設定情報の取得
+ *
+ * @return array メール設定情報の配列
+ */
+	public function getMailSettingInfo() {
+		$mailSettingInfo = $this->MailSetting->find('first', array(
+			'conditions' => array(
+				$this->MailSetting->alias . '.plugin_key' => 'calendars',
+				$this->MailSetting->alias . '.block_key' => Current::read('Block.key'),
+			),
+			'recursive' => 1,	//belongTo, hasOne, hasMany まで求める
+		));
+		return $mailSettingInfo;
+	}
+
+/**
+ * __setCapForView2RequestData
+ *
+ * 表示用配列から$this->request->dataへの反映
+ *
+ * @param array $capForView 表示用のcap(CalendarActionPlan)情報
+ * @return void
+ */
+	private function __setCapForView2RequestData($capForView) {
+		foreach ($capForView['CalendarActionPlan'] as $item => $val) {
+			if (isset($this->request->data['CalendarActionPlan'][$item])) {
+				CakeLog::debug("DBG: item[$item]はrequest_data[CalendarActionPlan]に有り。値は[" .
+					serialize($this->request->data['CalendarActionPlan'][$item]) . "]");
+			} else {
+				$this->request->data['CalendarActionPlan'][$item] = $val;
+				CakeLog::debug("DBG: item[" . $item .
+					"]はrequest_data[CalendarActionPlan]に無し。よって、capForView値[" .
+					serialize($val) . "]を代入");
+			}
+		}
+		/*
+		//???? 'edit_rrule'
+		//ok title'
+		//ok 'title_icon'
+		//ok 'enable_time'
+		//hidden 'easy_start_date'
+		//hidden 'easy_hour_minute_from'
+		//hidden 'easy_hour_minute_to'
+		//２つForm定義あり 'detail_start_datetime'
+		//'detail_end_datetime'
+		'plan_room_id'
+		'timezone_offset'
+		'is_detail'
+		'location'
+		'contact'
+		'description'
+		'is_repeat'
+		'repeat_freq'
+		'enable_email'
+		'email_send_timing'
+		*/
+	}
+
 }

@@ -40,13 +40,15 @@ class CalendarPlanRruleValidateBehavior extends CalendarValidateAppBehavior {
 
 				if (empty($model->data[$model->alias]['rrule_count'])) {
 					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'] = array();
-					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'][] = __d('calendars', 'カレンダー繰返し回数は必須です');
+					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'][] =
+						__d('calendars', 'カレンダー繰返し回数は必須です');
 					return false;
 				}
 
 				if (preg_match('/^\d+$/', $model->data[$model->alias]['rrule_count']) !== 1) {
 					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'] = array();
-					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'][] = __d('calendars', 'カレンダー繰返し回数は数字のみ可能です');
+					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'][] =
+						__d('calendars', 'カレンダー繰返し回数は数字のみ可能です');
 					//CakeLog::debug("DBG: error case. calendarProofreadValidationErros[" . print_r($model->CalendarActionPlan->calendarProofreadValidationErrors, true) . "]");
 
 					return false;
@@ -54,7 +56,8 @@ class CalendarPlanRruleValidateBehavior extends CalendarValidateAppBehavior {
 
 				if ($rruleCount < 1 || $rruleCount > 999) {
 					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'] = array();
-					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'][] = sprintf(__d('calendares', 'カレンダー繰返し回数は%d以上%d以下です'), 1, 999);
+					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'][] =
+						sprintf(__d('calendares', 'カレンダー繰返し回数は%d以上%d以下です'), 1, 999);
 					return false;
 				}
 				break;
@@ -85,7 +88,8 @@ class CalendarPlanRruleValidateBehavior extends CalendarValidateAppBehavior {
  * @return bool 成功時true, 失敗時false
  */
 	public function checkRrule(Model &$model, $check) {
-		$isRepeat = (isset($model->data[$model->alias]['is_repeat']) && $model->data[$model->alias]['is_repeat']) ? true : false;
+		$isRepeat = (isset($model->data[$model->alias]['is_repeat']) &&
+			$model->data[$model->alias]['is_repeat']) ? true : false;
 		if (!$isRepeat) {
 			return true;	//繰返し「無し」なら、true
 		}
@@ -148,14 +152,20 @@ class CalendarPlanRruleValidateBehavior extends CalendarValidateAppBehavior {
 		}
 		//開始日（時刻）をサーバー系に直す
 		$nctm = new NetCommonsTime();
-		$serverStartDate = $nctm->toServerDatetime($startDate, $model->data[$model->alias]['timezone_offset']);
+		$serverStartDate = $nctm->toServerDatetime(
+			$startDate, $model->data[$model->alias]['timezone_offset']);
 		//until日の翌日を求める
-		$untilDateStr = $model->data[$model->alias]['rrule_until'] . ' 00:00:00'; //Y-m-d H:i:s形式にする。
+		//Y-m-d H:i:s形式にする。
+		$untilDateStr = $model->data[$model->alias]['rrule_until'] . ' 00:00:00';
 		$untilDateAry = CalendarTime::transFromYmdHisToArray($untilDateStr);
-		list($yearOfNextDay, $monthOfNextDay, $nextDay) = CalendarTime::getNextDay($untilDateAry['year'], $untilDateAry['month'], $untilDateAry['day']);
-		$nextDayOfUntilDate = sprintf("%04d-%02d-%02d 00:00:00", (int)$yearOfNextDay, (int)$monthOfNextDay, (int)$nextDay);
+		list($yearOfNextDay, $monthOfNextDay, $nextDay) =
+			CalendarTime::getNextDay(
+				$untilDateAry['year'], $untilDateAry['month'], $untilDateAry['day']);
+		$nextDayOfUntilDate = sprintf("%04d-%02d-%02d 00:00:00",
+			(int)$yearOfNextDay, (int)$monthOfNextDay, (int)$nextDay);
 		//untilDateの翌日00:00:00を作り出し、サーバー系に直す
-		$svrNxtDayOfUntilDt = $nctm->toServerDatetime($nextDayOfUntilDate, $model->data[$model->alias]['timezone_offset']);
+		$svrNxtDayOfUntilDt = $nctm->toServerDatetime(
+			$nextDayOfUntilDate, $model->data[$model->alias]['timezone_offset']);
 		if ($svrNxtDayOfUntilDt <= $serverStartDate) {
 			return __d('calendars', '繰返し期限日が開始日より前になっています');
 		}
