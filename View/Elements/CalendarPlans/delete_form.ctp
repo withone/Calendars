@@ -34,7 +34,26 @@
 	<?php
 		//ここの削除メッセージは、ユーザが扱いを三択しその結果で変わるが、そこはJavaScriptで制御する。
 		//ここで代入している値は初期値。
-		echo $this->Button->delete('', sprintf(__d('calendars', 'この予定を削除しますか？')));
+		if (isset($event['CalendarEvent']['id']) && intval($event['CalendarEvent']['id']) > 0) {
+			//画面でis_repeatは変更されている可能性が有るので、判断には使えない。
+			//ＤＢのcalendar_rrulesテーブルのrruleを解析すること。
+			if (isset($event['CalendarRrule']['rrule']) && preg_match(
+				"/FREQ=(DAILY|WEEKLY|MONTHLY|YEARLY)/", $event['CalendarRrule']['rrule']) === 1) {
+				//繰返しあり、３選択時の削除
+				$options = array(
+					'onclick' => false, //"alert('x')",
+					//'ng-click' => "showRepeatConfirm($frameId, 'On', 'delete'); return true;",
+					//'ng-click' => "showRepeatConfirm($frameId, 'On', 'delete'); return false;",
+					'ng-click' => "showRepeatConfirmEx(" . $frameId . ", 'On', 'delete');",
+				);
+				$confirmMessage = '';
+			} else {
+				//繰返しなしの時の削除
+				$options = array();
+				$confirmMessage = sprintf(__d('calendars', 'この予定を削除しますか？'));
+			}
+			echo $this->Button->delete('', $confirmMessage, $options);
+		}
 	?>
 
 <?php echo $this->NetCommonsForm->end();

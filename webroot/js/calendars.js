@@ -577,6 +577,11 @@ NetCommonsApp.controller('CalendarsDetailEdit',
         }
       };
 
+		  $scope.showRepeatConfirmEx = function (frameId, isRepeat, action) {
+        console.log('frameId[' + frameId + '] isRepeat[' + isRepeat + '] action[' + action + ']');
+        return confirm('３選択の削除Confirmケースです。３択画面組込中...');
+      };
+
       $scope.showRepeatConfirm = function(frameId, isRepeat, action) {
         if (isRepeat === 'On') {
           console.log('繰返し処理');

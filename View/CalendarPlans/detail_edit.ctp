@@ -990,7 +990,8 @@
 
 <?php if (isset($event['CalendarEvent']) && ($this->request->params['action'] === 'edit' && $this->Workflow->canDelete('Calendars.CalendarRrule', $event))) : ?>
 	<div class="panel-footer text-right">
-		<?php echo $this->element('Calendars.CalendarPlans/delete_form'); ?>
+		<?php /* aaaaaaaaaaaaaaaaa */ ?>
+		<?php echo $this->element('Calendars.CalendarPlans/delete_form', array('frameId' => $frameId, 'event' => $event, 'capForView' => $capForView)); ?>
 	</div>
 <?php endif; ?>
 
