@@ -103,7 +103,7 @@ class CalendarWeeklyEntryBehavior extends CalendarAppBehavior {
  * @return array $result 結果
  */
 	public function insertWeeklyInterval(Model &$model, $planParams, $rruleData, $eventData, $interval, $userTz) {
-		CakeLog::debug("DBGX: insertWeeklyInterval(model, planParams, rruleData, eventData, interval[" . $interval . "] userTz[". $userTz . "] eventData[CalendarEvent]=startDateTime [" . $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'] . "] endDateTime[" . $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'] . "]) start");
+		//CakeLog::debug("DBGX: insertWeeklyInterval(model, planParams, rruleData, eventData, interval[" . $interval . "] userTz[". $userTz . "] eventData[CalendarEvent]=startDateTime [" . $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'] . "] endDateTime[" . $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'] . "]) start");
 
 		$model->rrule['INDEX']++;
 

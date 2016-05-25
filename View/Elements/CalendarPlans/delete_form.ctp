@@ -41,10 +41,9 @@
 				"/FREQ=(DAILY|WEEKLY|MONTHLY|YEARLY)/", $event['CalendarRrule']['rrule']) === 1) {
 				//繰返しあり、３選択時の削除
 				$options = array(
-					'onclick' => false, //"alert('x')",
-					//'ng-click' => "showRepeatConfirm($frameId, 'On', 'delete'); return true;",
-					//'ng-click' => "showRepeatConfirm($frameId, 'On', 'delete'); return false;",
-					'ng-click' => "showRepeatConfirmEx(" . $frameId . ", 'On', 'delete');",
+					'onclick' => false,
+					'ng-click' => "showRepeatConfirmEx(" . $frameId . ", 'delete', \$event);",
+					////'ng-click' => "showRepeatTypeSelect(" . $frameId . ", 'delete', \$event," . $event['CalendarEvent']['id'] . ");",
 				);
 				$confirmMessage = '';
 			} else {

@@ -850,7 +850,8 @@
 
 <?php
 	$checkMailStyle = '';
-	if ($mailSettingInfo['MailSetting']['is_mail_send'] == 0) {
+	if (!isset($mailSettingInfo['MailSetting']['is_mail_send']) ||
+		$mailSettingInfo['MailSetting']['is_mail_send'] == 0) {
 		$checkMailStyle = "style='display: none;'";
 	}
 ?>

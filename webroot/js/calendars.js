@@ -318,7 +318,7 @@ NetCommonsApp.controller('CalendarDetailEditWysiwyg',
     }]
 );
 NetCommonsApp.controller('CalendarsDetailEdit',
-    ['$scope', 'ConfirmRepeat', function($scope, ConfirmRepeat) {
+    ['$scope', '$location', 'ConfirmRepeat', 'NetCommonsModal', function($scope, $location, ConfirmRepeat, NetCommonsModal) {
       $scope.repeatArray = [];  //key=Frame.id、value=T/F of checkbox
       //key=Frame.id,value=index number
       //of option elements
@@ -498,7 +498,7 @@ NetCommonsApp.controller('CalendarsDetailEdit',
               $('#CalendarActionPlanDetailEndDatetime').val($scope.detailEndDatetime);
             }
           }
-					console.log('時刻なし(YYYY-MM-DD) -> 時刻あり(YYYY-MM-DD HH:mm)');
+          console.log('時刻なし(YYYY-MM-DD) -> 時刻あり(YYYY-MM-DD HH:mm)');
         } else {
           //時刻あり(YYYY-MM-DD HH:mm) -> 時刻なし(YYYY-MM-DD)
           if ($scope.detailStartDate && $scope.detailStartDate.indexOf(':') === (-1)) {
@@ -526,14 +526,14 @@ NetCommonsApp.controller('CalendarsDetailEdit',
 
         }
         //結果
-				console.log('$scope:');
-				console.log('sdt[' + $scope.detailStartDatetime + ']');
-				console.log('sd [' + $scope.detailStartDate + ']');
-				console.log('edt[' + $scope.detailEndDatetime + ']');
-				console.log('ed [' + $scope.detailEndDate + ']');
-				console.log('DOM:');
-				console.log('sdt[' + $('#CalendarActionPlanDetailStartDatetime').val()  + ']');
-				console.log('edt[' + $('#CalendarActionPlanDetailEndDatetime').val()  + ']');
+        console.log('$scope:');
+        console.log('sdt[' + $scope.detailStartDatetime + ']');
+        console.log('sd [' + $scope.detailStartDate + ']');
+        console.log('edt[' + $scope.detailEndDatetime + ']');
+        console.log('ed [' + $scope.detailEndDate + ']');
+        console.log('DOM:');
+        console.log('sdt[' + $('#CalendarActionPlanDetailStartDatetime').val()  + ']');
+        console.log('edt[' + $('#CalendarActionPlanDetailEndDatetime').val()  + ']');
 
         console.log('enable_time[' + $('#CalendarActionPlanEnableTime').prop('checked') + ']');
       };
@@ -577,9 +577,79 @@ NetCommonsApp.controller('CalendarsDetailEdit',
         }
       };
 
-		  $scope.showRepeatConfirmEx = function (frameId, isRepeat, action) {
-        console.log('frameId[' + frameId + '] isRepeat[' + isRepeat + '] action[' + action + ']');
-        return confirm('３選択の削除Confirmケースです。３択画面組込中...');
+      $scope.selectCancel = function() {
+        console.log("selectCancelがクリックされました");
+      };
+      $scope.doSelect = function() {
+        console.log("selectしました");
+      };
+
+
+      $scope.showRepeatTypeSelect = function (frameId, action, $event, eventId) {
+        console.log('1');
+        //クリックのデフォルト動作(この場合form のsubmit)を抑止しておく。
+        $event.preventDefault();
+        if (action === 'delete') {
+          //３選択をエコーバックさせるために、modalを使う。modalの中ではCRUDはさせない.
+          var modalInstance = NetCommonsModal.show($scope, 'CalendarsDetailEdit',
+            $scope.baseUrl + '/calendars/calendar_plans/select/event:' + eventId + '?frame_id=' + frameId
+          );
+          //コールバックセット
+          modalInstance.result.then(
+            function(result) {
+              $scope.result = result;
+              $scope.event = "close";
+            },
+            function(resutl) {
+              $scope.result = result;
+              $scope.event = "dismiss";
+            }
+          );
+        }
+      };
+
+      $scope.showRepeatConfirmEx = function (frameId, action, $event) {
+        if (confirm('３選択の削除Confirmケースです。３択画面組込中...今は全て削除のみ')) {
+          return true;
+        } else {
+          //$event.preventDefault()発行しないと、
+          //return falseしても決定の挙動になる.
+          $event.preventDefault();
+          return false;
+        }
+        return;
+
+        /*
+        console.log('frameId[' + frameId + '] action[' + action + '] $event');
+
+        console.log('繰返し処理');
+        var modalInstance = ConfirmRepeat($scope, frameId, action);
+        modalInstance.result.then(
+          function(result) {
+            console.log('成功 case');
+          },
+          function() {
+            console.log('失敗 case');
+          }
+        );
+        console.log('プロミスを登録しておいた');
+
+        if (action === 'delete') {
+          if (confirm('delete ok')) {
+            //
+            //予定の削除処理をpostします。
+            //
+            console.log('削除実行する');
+          } else {
+            console.log('削除実行しない');
+            $event.preventDefault();
+          }
+          return;
+        } else {
+          console.log('action[' + action + ']は不明です。');
+          $event.preventDefault();
+        }
+        */
       };
 
       $scope.showRepeatConfirm = function(frameId, isRepeat, action) {

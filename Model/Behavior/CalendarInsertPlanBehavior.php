@@ -9,7 +9,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');	//プラグインセパレータ(.)とパスセバレータ(/)混在に注意
+App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');
 
 /**
  * CalendarInsertPlanBehavior
@@ -76,7 +76,8 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 			$model->Behaviors->load('Calendars.CalendarShareUserEntry');
 		}
 
-		$model->insertShareUsers($planParams['share_users'], $eventId);	//カレンダー共有ユーザ登録
+		//カレンダ共有ユーザ登録
+		$model->insertShareUsers($planParams['share_users'], $eventId);
 		//注: 他のモデルの組み込みBehaviorをcallする場合、第一引数に$modelの指定はいらない。
 
 		//関連コンテンツの登録
@@ -111,12 +112,14 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 		//	$planParams['timezone_offset'] = 0.0;
 		//}
 
-		if (!isset($planParams['start_date']) && !isset($planParams['start_time'])) { //開始日付と開始時刻は必須
+		//開始日付と開始時刻は必須
+		if (!isset($planParams['start_date']) && !isset($planParams['start_time'])) {
 			//throw new InternalErrorException(__d('Calendars', 'No start_date or start_time'));
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
-		if (!isset($planParams['end_date']) && !isset($planParams['end_time'])) { //終了日付と終了時刻は必須
+		//終了日付と終了時刻は必須
+		if (!isset($planParams['end_date']) && !isset($planParams['end_time'])) {
 			//throw new InternalErrorException(__d('Calendars', 'No end_date or end_time.'));
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
@@ -148,22 +151,27 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 				'CalendarRrule' => 'Calendars.CalendarRrule',
 			]);
 		}
-		$rruleData = $model->CalendarRrule->create();	//rruleData保存のためにモデルをリセット(insert用)
+		//rruleData保存のためにモデルをリセット(insert用)
+		$rruleData = $model->CalendarRrule->create();
 
-		$this->setRruleData($planParams, $rruleData);		//rruleDataにplanParamデータを詰め、それをモデルにセット
+		//rruleDataにplanParamデータを詰め、それをモデルにセット
+		$this->setRruleData($planParams, $rruleData);
 		$model->CalendarRrule->set($rruleData);
 
 		if (!$model->CalendarRrule->validates()) {		//rruleDataをチェック
-			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarRrule->validationErrors);
+			$model->validationErrors = Hash::merge(
+				$model->validationErrors, $model->CalendarRrule->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
 		if (!$model->CalendarRrule->save($rruleData, false)) {	//保存のみ
-			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarRrule->validationErrors);
+			$model->validationErrors = Hash::merge(
+				$model->validationErrors, $model->CalendarRrule->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
-		$rruleData['CalendarRrule']['id'] = $model->CalendarRrule->id;	//採番されたidをrruleDataにセットしておく
+		//採番されたidをrruleDataにセットしておく
+		$rruleData['CalendarRrule']['id'] = $model->CalendarRrule->id;
 		return $rruleData;
 	}
 
@@ -182,23 +190,28 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 				'CalendarEvent' => 'Calendars.CalendarEvent',
 			]);
 		}
-		$eventData = $model->CalendarEvent->create();	//eventData保存のためにモデルをリセット(insert用)
+		//eventData保存のためにモデルをリセット(insert用)
+		$eventData = $model->CalendarEvent->create();
 
-		$this->setEventData($planParams, $rruleData, $eventData);	//eventDataにplanParamデータを詰め、それをモデルにセット
+		//eventDataにplanParamデータを詰め、それをモデルにセット
+		$this->setEventData($planParams, $rruleData, $eventData);
 		$model->CalendarEvent->set($eventData);
 
 		if (!$model->CalendarEvent->validates()) {		//eventDataをチェック
 			//CakeLog::debug("DBG: validationErrors[ " . print_r($model->CalendarEvent->validationErrors, true) . "}");
-			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
+			$model->validationErrors = Hash::merge(
+				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
 		if (!$model->CalendarEvent->save($eventData, false)) {	//保存のみ
-			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
+			$model->validationErrors = Hash::merge(
+				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
-		$eventData['CalendarEvent']['id'] = $model->CalendarEvent->id;	//採番されたidをeventDataにセットしておく
+		//採番されたidをeventDataにセットしておく
+		$eventData['CalendarEvent']['id'] = $model->CalendarEvent->id;
 		return $eventData;
 	}
 
@@ -214,10 +227,12 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 			$planParams['share_users'] = null;
 			return;
 		}
-		if (!is_null($planParams['share_users']) && !is_string($planParams['share_users']) && !is_array($planParams['share_users'])) {
+		if (!is_null($planParams['share_users']) && !is_string($planParams['share_users']) &&
+			!is_array($planParams['share_users'])) {
 			//throw new InternalErrorException(__d('Calendars', 'share_users must be null or string or array.'));
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
-		$planParams['share_users'] = is_string($planParams['share_users']) ? array($planParams['share_users']) : $planParams['share_users'];
+		$planParams['share_users'] = is_string($planParams['share_users']) ?
+			array($planParams['share_users']) : $planParams['share_users'];
 	}
 }

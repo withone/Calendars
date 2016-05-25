@@ -281,12 +281,12 @@ class CalendarSupport {
 				'title_icon' => '',
 				'enable_time' => 0,
 				'easy_start_date' => $ymdOfLastHour, //YYYY-MM-DD
-				'easy_hour_minute_from' => $fromYmdHiOfLastHour, //hh:mm
-				'easy_hour_minute_to' => $toYmdHiOfLastHour, //hh:mm
+				'easy_hour_minute_from' => substr($fromYmdHiOfLastHour, 11), //hh:mm
+				'easy_hour_minute_to' => substr($toYmdHiOfLastHour, 11), //hh:mm
 				//YYYY-MM-DD hh:mm
-				'detail_start_datetime' => $ymdOfLastHour . ' ' . $fromYmdHiOfLastHour,
+				'detail_start_datetime' => $ymdOfLastHour . ' ' . substr($fromYmdHiOfLastHour, 11),
 				//YYYY-MM-DD hh:mm
-				'detail_end_datetime' => $ymdOfLastHour . ' ' . $toYmdHiOfLastHour,
+				'detail_end_datetime' => $ymdOfLastHour . ' ' . substr($toYmdHiOfLastHour, 11),
 				'plan_room_id' => 1,	//パブリック
 				'timezone_offset' => (new NetCommonsTime())->getUserTimezone(),
 				'is_detail' => 0,
