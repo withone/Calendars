@@ -59,35 +59,27 @@
 
 <br />
 <div class="form-group" name="checkTime">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+  <div class="form-inline col-xs-12 col-sm-10 col-sm-offset-1">
+   <label class="control-label" style="margin-right:1em;">
+    <?php echo __d('calendars', '予定日の設定') . $this->element('NetCommons.required'); ?>
+   </label>
+   <?php
+ $useTime = 'useTime[' . $frameId . ']';
+    ?>
 
-	<label style="float: left;margin-right: 2em;" >
-	<?php echo __d('calendars', '予定日の設定') . $this->element('NetCommons.required'); ?>
-	</label>
-
-<?php
-	$useTime = 'useTime[' . $frameId . ']';
-	echo $this->NetCommonsForm->input('CalendarActionPlan.enable_time', array(
-		'type' => 'checkbox',
-		'label' => false,
-		'div' => false,
-		'class' => 'text-left calendar-specify-a-time_' . $frameId,
-		'style' => 'float: left',
-		'ng-model' => $useTime,
-		'ng-change' => 'toggleEnableTime(' . $frameId . ')',
-		'ng-false-value' => 'false',
-		'ng-true-value' => 'true',
-		'ng-init' => (($this->request->data['CalendarActionPlan']['enable_time']) ? ($useTime . ' = true') : ($useTime . ' = false')),
-	));
-?>
-	<label style="float: left">
-		<?php echo __d('calendars', '時間の指定'); ?>
-	</label>
-
-<div class="clearfix"></div>
-
-</div><!-- col-sm-10おわり -->
-</div><!-- form-groupおわり-->
+   <?php echo $this->NetCommonsForm->checkbox('CalendarActionPlan.enable_time', array(
+   'label' => __d('calendars', '時間の指定'),
+   'class' => 'calendar-specify-a-time_' . $frameId,
+   'div' => false,
+   'ng-model' => $useTime,
+   'ng-change' => 'toggleEnableTime(' . $frameId . ')',
+   'ng-false-value' => 'false',
+   'ng-true-value' => 'true',
+   'ng-init' => (($this->request->data['CalendarActionPlan']['enable_time']) ? ($useTime . ' = true') : ($useTime . ' = false')),
+   ));
+   ?>
+ </div><!-- col-sm-10おわり -->
+ </div><!-- form-groupおわり-->
 
 <?php 
 	$startDatetimeValue = '';
@@ -344,7 +336,8 @@
 			<div class="form-group" name="checkRrule">
 			<div class="col-xs-12 col-sm-12">
 
-			<?php echo $this->NetCommonsForm->input('CalendarActionPlan.is_repeat', array(
+
+			<?php /*echo $this->NetCommonsForm->input('CalendarActionPlan.is_repeat', array(
 				'type' => 'checkbox',
 				'checked' => false,
 				'label' => false,
@@ -353,12 +346,20 @@
 				'ng-model' => "repeatArray[" . $frameId . "]",
 				'ng-change' => "toggleRepeatArea(" . $frameId . ")",
 				'style' => 'float: left',
-			));
+			));*/
 			?>
 
-			<label style='float: left'>
-				<?php echo __d('calendars', '予定を繰り返す'); ?>
-			</label>
+   <?php echo $this->NetCommonsForm->checkbox('CalendarActionPlan.is_repeat', array(
+    'label' => __d('calendars', '予定を繰り返す'),
+    'class' => 'calendar-repeat-a-plan_' . $frameId,
+    'ng-model' => "repeatArray[" . $frameId . "]",
+    'ng-change' => "toggleRepeatArea(" . $frameId . ")",
+   ));
+   ?>
+
+			<!-- <label style='float: left'>
+				<?php //echo __d('calendars', '予定を繰り返す'); ?>
+			</label> -->
 
 			<div class="clearfix"></div>
 
@@ -470,7 +471,14 @@
 <?php
 	echo "<div class='form-group calendar-weekly-info_" . $frameId . " " . $weeklyDisplayClass . "' name='weeklyInfo'>";
 ?>
-				<div class="col-xs-6 col-sm-5">
+				<div class="col-xs-12 col-sm-12">
+				<ul class="list-inline">
+					<li>
+<?php
+					echo $this->NetCommonsForm->label('CalendarActionPlan' . Inflector::camelize('rrule_interval'), __d('calendars', '繰り返しのパターン'));
+?>
+					</li>
+					<li>
 <?php
 					$options = array();
 					foreach (range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_WEEKLY_MIN, CalendarsComponent::CALENDAR_RRULE_INTERVAL_WEEKLY_MAX) as $num) {
@@ -483,11 +491,14 @@
 						'empty' => false,
 						'required' => true,
 						'div' => false,
+						//'label' => 'aaa',
 					));
 
 ?>
-				</div>
-				<div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div>
+				
+				</li>
+				<!-- <li><div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div></li> -->
+				</ul></div>
 				<div class="clearfix"></div>
 				<br />
 				<div class="col-xs-12 col-sm-12">
@@ -498,6 +509,7 @@
 					foreach ($wdays as $idx => $wday) {
 						$options[$wday] = $this->CalendarPlan->getWdayString($idx);
 					}
+					/*
 					echo $this->NetCommonsForm->input(
 						'CalendarActionPlan.rrule_byday.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_WEEKLY, array(
 						'label' => false,
@@ -507,6 +519,15 @@
 						'class' => 'checkbox nc-checkbox text-left calendar-choice-day-of-the-week_' . $frameId,
 						'style' => ''
 					));
+					*/
+		echo $this->NetCommonsForm->input(
+      'CalendarActionPlan.rrule_byday.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_WEEKLY, array(
+      'label' => false,
+      'div' => false,
+      'multiple' => 'checkbox',
+      'options' => $options,
+      'class' => 'checkbox-inline nc-checkbox text-left calendar-choice-day-of-the-week_' . $frameId,
+     ));
 ?>
 </div>
 				</div><!--col-sm-12おわり-->
@@ -598,11 +619,11 @@
 <?php
 					$options = array();
 					foreach (range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_YEARLY_MIN, CalendarsComponent::CALENDAR_RRULE_INTERVAL_YEARLY_MAX) as $num) {
-						$options[$num] = sprintf(__d('calendars', '%d年'), $num);
+						$options[$num] = sprintf(__d('calendars', '%d年ごと'), $num);
 					}
 					echo $this->NetCommonsForm->select(
 						'CalendarActionPlan.rrule_interval.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY, $options, array(
-						'value' => sprintf(__d('calendars', '%d年'), 1),		//valueは初期値
+						'value' => sprintf(__d('calendars', '%d年ごと'), 1),		//valueは初期値
 						'class' => 'form-control',
 						'empty' => false,
 						'required' => true,
@@ -610,7 +631,7 @@
 					));
 ?>
 				</div><!-- col-sm-8おわり -->
-				<div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div>
+				<!-- <div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div> -->
 				<div class="clearfix"></div>
 				<br />
 				<div class="col-xs-12 col-sm-12 form-inline form-group">
@@ -634,7 +655,15 @@
 
 				<div class="clearfix"></div>
 
-				<div class="col-xs-8 col-sm-5">
+				<div class="col-xs-12 col-sm-12">
+				<ul class="list-inline">
+					<li>
+
+<?php
+				echo $this->NetCommonsForm->label('CalendarActionPlan' . Inflector::camelize('rrule_interval'), __d('calendars', '繰り返しの設定'));
+?>
+</li>
+<li>
 <?php
 					$options = $this->CalendarPlan->makeOptionsOfWdayInNthWeek('', __d('calendars', '開始日と同日'));
 
@@ -652,6 +681,8 @@
 
 					));
 ?>
+</li>
+</ul>
 				</div><!--col-sm-5おわり-->
 				</div><!-- row form-group終わり-->
 
