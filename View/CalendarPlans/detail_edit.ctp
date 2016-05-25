@@ -370,10 +370,18 @@
 
 			<!-- 繰返しの選択詳細 START-->
 
-				<div class="row form-group" name="selectRepeatType">
+				<div class="form-group" name="selectRepeatType">
 				<div class="col-xs-12 col-sm-12">
 
 					<ul class="list-inline">
+
+					<li>
+<?php
+					echo $this->NetCommonsForm->label('CalendarActionPlan' . Inflector::camelize('rrule_interval'), __d('calendars', '繰り返しの単位'));
+?>
+					</li>
+
+
 <?php
 					$periodTypeIndex = CalendarsComponent::CALENDAR_REPEAT_FREQ_DAILY;	//input radio をon状態にする indexキー (DAILY=日単位,WEEKLY=週単位,..)
 					$dailyDisplayClass = $weeklyDisplayClass = $monthlyDisplayClass = $yearlyDisplayClass = 'hidden';
@@ -406,9 +414,9 @@
 								'after' => '</li>',
 								'separator' => "</li><li>",
 								'div' => false,
-								//'label' => false, 2016.05.18
-								'label' => __d('Calendars', '繰り返しの単位'),
-								'class' => '',
+								'label' => false,
+								//'label' => __d('Calendars', '繰り返しの単位'),
+								'class' => 'form-control',
 								'ng-model' => 'selectRepeatPeriodArray[' . $frameId . ']',
 								'ng-init' => 'setInitRepeatPeriod(' . $frameId . ',"' . $periodTypeIndex . '")',
 								'ng-change' => 'changePeriodType(' . $frameId . ')',
@@ -416,22 +424,29 @@
 
 ?>
 					</ul>
-				<!-- </div> --><!-- col-sm-12終わり-->
+				</div>
 				</div><!-- form-group終わり-->
 
 <?php
-	echo "<div class='row form-group calendar-daily-info_" . $frameId . " " . $dailyDisplayClass . "' name='dailyInfo'>";
+	echo "<div class='form-group calendar-daily-info_" . $frameId . " " . $dailyDisplayClass . "' name='dailyInfo'>";
 ?>
-				<div class="col-xs-6 col-sm-5">
 <?php
 					$options = array();
 					foreach (range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_DAILY_MIN, CalendarsComponent::CALENDAR_RRULE_INTERVAL_DAILY_MAX) as $num) {
 						$options[$num] = sprintf(__d('calendars', '%d日'), $num);
 					}
 ?>
+
+			<!-- <div class="clearfix"></div> -->
+				<div class="col-xs-12 col-sm-12">
+				<ul class="list-inline">
+					<li>
 <?php
 					echo $this->NetCommonsForm->label('CalendarActionPlan' . Inflector::camelize('rrule_interval'), __d('calendars', '繰り返しのパターン'));
-
+?>
+					</li>
+					<li>
+<?php
 					echo $this->NetCommonsForm->select(
 						'CalendarActionPlan.rrule_interval.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_DAILY, $options, array(
 						'value' => sprintf(__d('calendars', '%d日'), 1),		//valueは初期値
@@ -445,12 +460,15 @@
 					echo $this->NetCommonsForm->error(
 						'CalendarActionPlan.rrule_interval.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_DAILY, null, array('div' => true));
 ?>
-				</div>
-				<div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div>
-				</div><!-- row form-group終わり-->
+					</li>
+					
+				<li>ごと</li>
+			</ul>
+		</div>
+		</div><!-- row form-group終わり-->
 
 <?php
-	echo "<div class='row form-group calendar-weekly-info_" . $frameId . " " . $weeklyDisplayClass . "' name='weeklyInfo'>";
+	echo "<div class='form-group calendar-weekly-info_" . $frameId . " " . $weeklyDisplayClass . "' name='weeklyInfo'>";
 ?>
 				<div class="col-xs-6 col-sm-5">
 <?php
@@ -473,7 +491,7 @@
 				<div class="clearfix"></div>
 				<br />
 				<div class="col-xs-12 col-sm-12">
-
+<div class="form-inline">
 <?php
 					$options = array();
 					$wdays = explode('|', CalendarsComponent::CALENDAR_REPEAT_WDAY);
@@ -486,32 +504,44 @@
 						'div' => false,
 						'multiple' => 'checkbox',
 						'options' => $options,
-						'class' => 'text-left calendar-choice-day-of-the-week_' . $frameId,
+						'class' => 'checkbox nc-checkbox text-left calendar-choice-day-of-the-week_' . $frameId,
+						'style' => ''
 					));
 ?>
+</div>
 				</div><!--col-sm-12おわり-->
 				</div><!-- row form-group終わり-->
 
 <?php
 	echo "<div class='row form-group calendar-monthly-info_" . $frameId . " " . $monthlyDisplayClass . "' name='monthlyInfo'>";
 ?>
-				<div class="col-xs-8 col-sm-5">
+				<div class="col-xs-12 col-sm-12">
+				<ul class="list-inline">
+					<li>
+<?php
+					echo $this->NetCommonsForm->label('CalendarActionPlan' . Inflector::camelize('rrule_interval'), __d('calendars', '繰り返しのパターン'));
+?>
+					</li>
+					<li>
 <?php
 					$options = array();
 					foreach (range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_MONTHLY_MIN, CalendarsComponent::CALENDAR_RRULE_INTERVAL_MONTHLY_MAX) as $num) {
-						$options[$num] = sprintf(__d('calendars', '%dヶ月'), $num);
+						$options[$num] = sprintf(__d('calendars', '%dヶ月ごと'), $num);
 					}
 					echo $this->NetCommonsForm->select(
 						'CalendarActionPlan.rrule_interval.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY, $options, array(
-						'value' => sprintf(__d('calendars', '%dヶ月'), 1),		//valueは初期値
+						'value' => sprintf(__d('calendars', '%dヶ月ごと'), 1),		//valueは初期値
 						'class' => 'form-control',
+						//'label' => __d('Calendars', '繰り返しのパターン'),
 						'empty' => false,
 						'required' => true,
 						'div' => false,
 					));
 ?>
+</li>
 				</div>
-				<div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div>
+				<!-- <div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div> -->
+</ul>
 				<div class="clearfix"></div>
 				<br />
 				<div class="col-xs-8 col-sm-5">
@@ -583,7 +613,7 @@
 				<div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div>
 				<div class="clearfix"></div>
 				<br />
-				<div class="col-xs-12 col-sm-12">
+				<div class="col-xs-12 col-sm-12 form-inline form-group">
 
 <?php
 					$options = array();
@@ -596,7 +626,7 @@
 						'div' => false,
 						'multiple' => 'checkbox',
 						'options' => $options,
-						'class' => 'text-left calendar-choice-month_' . $frameId,
+						'class' => 'checkbox nc-checkbox text-left calendar-choice-month_' . $frameId,
 					));
 ?>
 
@@ -626,16 +656,13 @@
 				</div><!-- row form-group終わり-->
 
 
-				<div class="row form-group calendar-repeat-limit_<?php echo $frameId; ?>" name="calendarRepeatLimit">
+				<div class="form-group calendar-repeat-limit_<?php echo $frameId; ?>" name="calendarRepeatLimit">
 				<div class="col-xs-12 col-sm-5"><label>繰返しの終了</label>
 				</div>
-				<div class="clearfix"></div>
-
 
 				<div class="col-xs-12 col-sm-12">
-
-					<ul class="list-inline">
-<?php
+				<div class="form-inline form-group">
+				<?php
 					$repeatEndTypeIndex = CalendarsComponent::CALENDAR_RRULE_TERM_COUNT;	//input radio をon状態にする index文字列 (COUNT=回数指定,UNTIL=終了日指定)
 					$countDisplayClass = $endDateDisplayClass = 'hidden';
 					switch ($repeatEndTypeIndex) {
@@ -654,27 +681,27 @@
 									CalendarsComponent::CALENDAR_RRULE_TERM_COUNT => __d('calendars', '繰返し回数を指定する'),
 									CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL => __d('calendars', '繰返しの終了日を指定する'),
 								),
-								'before' => "<li>",
-								'after' => '</li>',
-								'separator' => "</li><li>",
+							//	'before' => "<li>",
+							//	'after' => '</li>',
+							//	'separator' => "</li><li>",
 								'div' => false,
 								'label' => false,
 								'class' => '',
 								'ng-model' => 'selectRepeatEndType[' . $frameId . ']',
 								'ng-init' => 'setInitRepeatEndType(' . $frameId . ',"' . $repeatEndTypeIndex . '")',
 								'ng-change' => 'changeRepeatEndType(' . $frameId . ')',
+								'style' => 'margin-left:10px;padding-right:10px;',
 					));
 
-?>
-					</ul>
+				?>
+				</div>
 				</div><!--col-sm-12おわり-->
-				<div class="clearfix"></div>
 <?php
 	echo "<div class='col-xs-12 col-sm-12 calendar-repeat-end-count-info_" . $frameId . " " . $countDisplayClass . "' name='countInfo'>";
 ?>
 
 					<div class="row form-group">
-						<div class="col-xs-4 col-sm-4">
+						<div class="col-xs-4 col-sm-3">
 <?php
 						$initValue = '3';		//初期値
 						echo $this->NetCommonsForm->input('CalendarActionPlan.rrule_count', array(
