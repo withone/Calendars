@@ -9,7 +9,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');	//プラグインセパレータ(.)とパスセバレータ(/)混在に注意
+App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');
 //App::uses('CalendarRruleHandleBehavior', 'Calendars.Model/Behavior');
 App::uses('CalendarRruleUtil', 'Calendars.Utility');
 
@@ -69,13 +69,15 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 
 		$eventData = $rruleData = array();
 		if (!is_array($results) || !isset($results['CalendarEvent'])) {
-			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
+			$model->validationErrors = Hash::merge(
+				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 		$eventData['CalendarEvent'] = $results['CalendarEvent'];
 		if (!is_array($results) || !isset($results['CalendarRrule'])) {
 			//getCalendarEventAndRrule()の中では、CalendarEvent->find('first')を発行しているだけなので、CalendarEventモデルでＯＫ
-			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarEvent->validationErrors);
+			$model->validationErrors = Hash::merge(
+				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 		$rruleData['CalendarRrule'] = $results['CalendarRrule'];
@@ -88,17 +90,19 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 		$condtionds = array(
 			$model->CalendarEventContent->alias . '.calendar_event_id' => $eventData['CalendarEvent']['id'],
 		);
-		$model->CalendarEventContent->deleteAll($condtionds, false);	//対応するcalendar_event_contentsを消す
+		//対応するcalendar_event_contentsを消す
+		$model->CalendarEventContent->deleteAll($condtionds, false);
 
 		if (!isset($model->CalendarEventShareUser)) {
 			$model->loadModels([
 				'CalendarEventShareUser' => 'Calendars.CalendarEventShareUser'
 			]);
 		}
-		$condtionds = array(
-			$model->CalendarEventShareUser->alias . '.calendar_event_id' => $eventData['CalendarEvent']['id'],
+		$condtionds = array($model->CalendarEventShareUser->alias .
+			'.calendar_event_id' => $eventData['CalendarEvent']['id'],
 		);
-		$model->CalendarEventShareUser->deleteAll($condtionds, false);	//対応するcalendar_event_share_usersを消す
+		//対応するcalendar_event_share_usersを消す
+		$model->CalendarEventShareUser->deleteAll($condtionds, false);
 
 		//予定データの削除処理
 		if ($editRrule === self::CALENDAR_PLAN_EDIT_ALL) {
@@ -122,10 +126,14 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
  * @return void
  * @throws InternalErrorException
  */
-	public function deleteCalendarPlanEditAll(Model &$model, $eventId, $editRrule, $rruleData, $eventData) {
-		$conditions = array($model->CalendarEvent->alias . '.calendar_rrule_id' => $eventData['CalendarEvent']['calendar_rrule_id']);
+	public function deleteCalendarPlanEditAll(Model &$model, $eventId, $editRrule,
+		$rruleData, $eventData) {
+		$conditions = array($model->CalendarEvent->alias .
+			'.calendar_rrule_id' => $eventData['CalendarEvent']['calendar_rrule_id']);
 
-		if (!$model->CalendarEvent->deleteAll($conditions, true)) { //第２引数のcascadeをtrueにすることで、cakePHPのbelongsToでカスケードしているCalendarEventShareUser, CalendarEventContentも消す
+		//第２引数のcascadeをtrueにすることで、cakePHPのbelongsToでカスケードしている
+		//CalendarEventShareUser, CalendarEventContentも消す.
+		if (!$model->CalendarEvent->deleteAll($conditions, true)) {
 			//deleteAll失敗
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
@@ -142,13 +150,16 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
  * @return void
  * @throws InternalErrorException
  */
-	public function deleteCalendarPlanEditAfter(Model &$model, $eventId, $editRrule, $rruleData, $eventData) {
+	public function deleteCalendarPlanEditAfter(Model &$model, $eventId, $editRrule,
+		$rruleData, $eventData) {
 		$conditions = array(
 			'.calendar_rrule_id' => $eventData['CalendarEvent']['calendar_rrule_id'],
 			'.dtstart >=' => $eventData['CalendarEvent']['dtstart'],
 		);
 
-		if (!$model->CalendarEvent->deleteAll($conditions, true)) {	//第２引数のcascadeをtrueにすることで、cakePHPのbelongsToでカスケードしているCalendarEventShareUserもCalendarEventContent消す
+		//第２引数のcascadeをtrueにすることで、cakePHPのbelongsToでカスケードしている
+		//CalendarEventShareUserもCalendarEventContent消す。
+		if (!$model->CalendarEvent->deleteAll($conditions, true)) {
 			//deleteAll失敗
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
@@ -156,9 +167,12 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 		$rruleUtilObj = new CalendarRruleUtil();
 		$rruleArr = $rruleUtilObj->parseRrule($rruleData['CalendarRrule']['rrule']);
 		$dtstart = $eventData['CalendarEvent']['dtstart'];
-		$timestamp = mktime(0, 0, 0, substr($dtstart, 4, 2), substr($dtstart, 6, 2), substr($dtstart, 0, 4));
-		$rruleArr['UNTIL'] = date('Ymd', $timestamp) . 'T' . substr($dtstart, 8);	//iCalendar仕様の日付形式(Tつなぎ)にする。
-		$rruleData['CalendarRrule']['rrule'] = $rruleUtilObj->concatRrule($rruleArr);	//rrule配列をrrule文字列にする。
+		$timestamp = mktime(0, 0, 0,
+			substr($dtstart, 4, 2), substr($dtstart, 6, 2), substr($dtstart, 0, 4));
+		//iCalendar仕様の日付形式(Tつなぎ)にする。
+		$rruleArr['UNTIL'] = date('Ymd', $timestamp) . 'T' . substr($dtstart, 8);
+		//rrule配列をrrule文字列にする。
+		$rruleData['CalendarRrule']['rrule'] = $rruleUtilObj->concatRrule($rruleArr);
 
 		//CalendarRruleの更新準備
 		if (!isset($model->CalendarRrule)) {
@@ -168,12 +182,14 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 		}
 		$model->CalendarRrule->set($rruleData);
 		if (!$model->CalendarRrule->validates()) {	//rruleDataをチェック
-			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarRrule->validationErrors);
+			$model->validationErrors = Hash::merge(
+				$model->validationErrors, $model->CalendarRrule->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
 		if (!$model->CalendarRrule->save($rruleData, false)) {	//CalendarRruleの更新. 保存のみ
-			$model->validationErrors = Hash::merge($model->validationErrors, $model->CalendarRrule->validationErrors);
+			$model->validationErrors = Hash::merge(
+				$model->validationErrors, $model->CalendarRrule->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 	}
@@ -189,8 +205,11 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
  * @return void
  * @throws InternalErrorException
  */
-	public function deleteCalendarPlanEditThis(Model &$model, $eventId, $editRrule, $rruleData, $eventData) {
-		if (!$model->CalendarEvent->delete($eventId, true)) {	//第２引数をtrueにして、関連するcalendar_event_share_usersとcalendar_event_contentsも消す。
+	public function deleteCalendarPlanEditThis(Model &$model, $eventId, $editRrule,
+		$rruleData, $eventData) {
+		//第２引数をtrueにして、関連するcalendar_event_share_usersと
+		//calendar_event_contentsも消す。
+		if (!$model->CalendarEvent->delete($eventId, true)) {
 			//delete失敗
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
