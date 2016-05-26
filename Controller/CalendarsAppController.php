@@ -162,7 +162,9 @@ class CalendarsAppController extends AppController {
 
 		//mInfo情報
 		//月カレンダー情報
-		$vars['mInfo'] = CalendarTime::getMonthlyInfo($vars['year'], $vars['month']);
+		////$vars['mInfo'] = CalendarTime::getMonthlyInfo($vars['year'], $vars['month']);
+		//PHPカレンダー関数を使用しないgetMonthlyInfoAlt()に変更
+		$vars['mInfo'] = (new CalendarTime())->getMonthlyInfoAlt($vars['year'], $vars['month']);
 		//前月・当月・次月の祝日情報を取り出す。
 		$vars['holidays'] = $this->Holiday->getHoliday(
 			sprintf("%04d-%02d-%02d",
