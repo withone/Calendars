@@ -20,6 +20,28 @@
 class CalendarSupport {
 
 /**
+ * getMixedToString
+ *
+ * 配列の最初の要素を取り出す。文字列であればそのまま返す。
+ *
+ * @param mixed $data data
+ * @return mixed 成功時：$dateの最初要素を取り出す。空配列は''を返す。変数が文字列ならそのまま返す。失敗：falseを返す。
+ */
+	public static function getMixedToString($data) {
+		if (is_string($data)) {
+			return $data;
+		}
+		if (is_array($data)) {
+			if (count($data) === 0 || !isset($data[0])) {
+				return '';
+			} else {
+				return (string)$data[0];
+			}
+		}
+		return false;
+	}
+
+/**
  * generateIcalUid
  *
  * iCalendar仕様のUID生成
@@ -258,10 +280,11 @@ class CalendarSupport {
  * @param string $hour hour
  * @param string $minitue minitue
  * @param string $second second
+ * @param array $exposeRoomOptions 公開対象ルーム配列
  * @return array 生成された表示用CalendarActionPlan配列
  */
 	public function getInitialCalendarActionPlanForView($year, $month, $day,
-		$hour, $minitue, $second) {
+		$hour, $minitue, $second, $exposeRoomOptions) {
 		$userTz = (new NetCommonsTime())->getUserTimezone();
 
 		//"Y-m-d H:i:s"形式の指定日付時刻からの直近１時間の日付時刻(from,to)を取得
@@ -272,6 +295,17 @@ class CalendarSupport {
 			$year, $month, $day, $hour, $minitue, $second);
 		$wdayIndex = intval($date->format('w'));	//0-6
 		$wdays = explode('|', CalendarsComponent::CALENDAR_REPEAT_WDAY);
+
+		$rooms = array_keys($exposeRoomOptions);
+		if (in_array(Current::read('Roomd.id'), $rooms)) {
+			//公開対象ルーム一覧にCurrentのRoom.idが存在する
+			$planRoomId = Current::read('Room.id');
+		} else {
+			//公開対象ルーム一覧にCurrentのRoom.idが存在しない時は、親
+			//のペアレント(パブリック、プライベート）の仮想room_idを
+			//セットする。
+			$planRoomId = Current::read('Room.parent_id');
+		}
 
 		$initialCapForView = array(
 			'GroupsUser' => array(),	//共有なし
@@ -287,7 +321,7 @@ class CalendarSupport {
 				'detail_start_datetime' => $ymdOfLastHour . ' ' . substr($fromYmdHiOfLastHour, 11),
 				//YYYY-MM-DD hh:mm
 				'detail_end_datetime' => $ymdOfLastHour . ' ' . substr($toYmdHiOfLastHour, 11),
-				'plan_room_id' => 1,	//パブリック
+				'plan_room_id' => $planRoomId,
 				'timezone_offset' => (new NetCommonsTime())->getUserTimezone(),
 				'is_detail' => 0,
 				'location' => '',
@@ -346,24 +380,6 @@ class CalendarSupport {
 		$this->__setRruleFreqParamsToCapForView($rrule, $capForView);
 
 		$this->__setRruleTermParamsToCapForView($rrule, $capForView);
-		/*
-		if (isset($rrule['REPEAT_COUNT']) && $rrule['REPEAT_COUNT'] == 1) {
-			$capForView['CalendarActionPlan']['TERM']['REPEAT_COUNT'] = 1;
-			$capForView['CalendarActionPlan']['TERM']['REPEAT_UNTIL'] = 0;
-			$capForView['CalendarActionPlan']['TERM']['COUNT'] = $rrule['COUNT'];
-		}
-		if (isset($rrule['REPEAT_UNTIL']) && $rrule['REPEAT_UNTIL'] == 1) {
-			$capForView['CalendarActionPlan']['TERM']['REPEAT_COUNT'] = 0;
-			$capForView['CalendarActionPlan']['TERM']['REPEAT_UNTIL'] = 1;
-
-			$userUntilYmdHis =
-				(new CalendarTime())->svr2UserYmdHis($rrule['UNTIL']);
-			//YYYY-MM-DD hh:mm:ss
-			$userUntilDatetime = CalendarTime::addDashColonAndSp($userUntilYmdHis);
-
-			$capForView['CalendarActionPlan']['TERM']['UNTIL'] = $userUntilDatetime;
-		}
-		*/
 
 		$capForView['GroupsUser'] = array();
 		if (isset($event['CalendarEventShareUser']) && is_array($event['CalendarEventShareUser'])) {

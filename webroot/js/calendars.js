@@ -340,6 +340,8 @@ NetCommonsApp.controller('CalendarsDetailEdit',
       $scope.detailEndDate;
       $scope.detailEndDatetime;
 
+      $scope.rruleUntil;
+
       console.log('DEBUGGING...');
 
       $scope.initialize = function(data) {

@@ -62,6 +62,7 @@ class CalendarPlansController extends CalendarsAppController {
 		),
 		'Paginator',
 		'Calendars.CalendarsDaily',
+		'Calendars.CalendarWorks',
 	);
 
 /**
@@ -188,28 +189,6 @@ class CalendarPlansController extends CalendarsAppController {
 	}
 
 /**
- * _getOptions
- *
- * オプション取得
- *
- * @return array オプション配列
- */
-	protected function _getOptions() {
-		$options = array(
-			'controller' => 'calendars',
-			'action' => 'index',
-			'frame_id' => Current::read('Frame.id'),
-		);
-		if (isset($this->request->data['return_style']) && $this->request->data['return_style']) {
-			$options['style'] = $this->request->data['return_style'];
-		}
-		if (isset($this->request->data['return_sort']) && $this->request->data['return_sort']) {
-			$options['sort'] = $this->request->data['return_sort'];
-		}
-		return $options;
-	}
-
-/**
  * add
  *
  * @return void
@@ -258,7 +237,8 @@ class CalendarPlansController extends CalendarsAppController {
 			}
 			//保存成功
 
-			$options = $this->_getOptions();
+			//$options = $this->_getOptions();
+			$options = $this->CalendarWorks->getOptions();
 			$url = NetCommonsUrl::actionUrl($options);
 			$this->redirect($url);
 			//return; ここには到達しない.
@@ -353,6 +333,7 @@ class CalendarPlansController extends CalendarsAppController {
 		//表示用の設定
 		$ctpName = '';
 		$vars = array();
+		$style = 'detail';	//初期値
 		if (isset($this->request->params['named']) && isset($this->request->params['named']['style'])) {
 			$style = $this->request->params['named']['style'];
 		}
@@ -369,8 +350,11 @@ class CalendarPlansController extends CalendarsAppController {
 			$this->CalendarFrameSetting->getSelectRooms($frameSettingId);
 
 		//公開対象一覧のoptions配列と、自分自身のroom_idを取得
+		//FIXME: ここのmyselfはprivate_parent_idの方を返す！
 		list($exposeRoomOptions, $myself) =
 			$this->CalendarActionPlan->getExposeRoomOptions($frameSetting);
+		//CakeLog::debug("DBG: exposeRoomOptions[" . print_r($exposeRoomOptions, true) . "]");
+		CakeLog::debug("DBG: myself[" . $myself . "]");
 
 		//eメール通知の選択options配列を取得
 		$emailOptions = $this->CalendarActionPlan->getNoticeEmailOption();
@@ -399,7 +383,8 @@ class CalendarPlansController extends CalendarsAppController {
 			//
 			$capForView = (new CalendarSupport())->getCalendarActionPlanForView($event);
 
-			//CakeLog::debug("DBG: getCalendarActionPlanForView(event)結果[ " . print_r($capForView, true) . "]");
+			//CakeLog::debug("DBG: getCalendarActionPlanForView(event)結果[ " .
+			//	print_r($capForView, true) . "]");
 
 		} else {
 			//eventが空の場合、初期値でFILLした表示用配列を取得する。
@@ -419,7 +404,7 @@ class CalendarPlansController extends CalendarsAppController {
 			$minitue = $date->format('i');
 			$second = $date->format('s');
 			$capForView = (new CalendarSupport())->getInitialCalendarActionPlanForView(
-				$year, $month, $day, $hour, $minitue, $second);
+				$year, $month, $day, $hour, $minitue, $second, $exposeRoomOptions);
 
 			//CakeLog::debug("DBG: getInitialCalendarActionPlanForVieww(YmdHis[" .
 			//$year . $month . $day . $hour . $minitue . $second . "])結果[ " .
@@ -427,7 +412,8 @@ class CalendarPlansController extends CalendarsAppController {
 
 		}
 
-		$this->__setCapForView2RequestData($capForView); //capForViewのrequest->data反映
+		$this->request->data = $this->CalendarWorks->setCapForView2RequestData(
+			$capForView, $this->request->data); //capForViewのrequest->data反映
 
 		$frameId = Current::read('Frame.id');
 		$languageId = Current::read('Language.id');
@@ -512,49 +498,6 @@ class CalendarPlansController extends CalendarsAppController {
 			'recursive' => 1,	//belongTo, hasOne, hasMany まで求める
 		));
 		return $mailSettingInfo;
-	}
-
-/**
- * __setCapForView2RequestData
- *
- * 表示用配列から$this->request->dataへの反映
- *
- * @param array $capForView 表示用のcap(CalendarActionPlan)情報
- * @return void
- */
-	private function __setCapForView2RequestData($capForView) {
-		foreach ($capForView['CalendarActionPlan'] as $item => $val) {
-			if (isset($this->request->data['CalendarActionPlan'][$item])) {
-				CakeLog::debug("DBG: item[$item]はrequest_data[CalendarActionPlan]に有り。値は[" .
-					serialize($this->request->data['CalendarActionPlan'][$item]) . "]");
-			} else {
-				$this->request->data['CalendarActionPlan'][$item] = $val;
-				CakeLog::debug("DBG: item[" . $item .
-					"]はrequest_data[CalendarActionPlan]に無し。よって、capForView値[" .
-					serialize($val) . "]を代入");
-			}
-		}
-		/*
-		//???? 'edit_rrule'
-		//ok title'
-		//ok 'title_icon'
-		//ok 'enable_time'
-		//hidden 'easy_start_date'
-		//hidden 'easy_hour_minute_from'
-		//hidden 'easy_hour_minute_to'
-		//２つForm定義あり 'detail_start_datetime'
-		//'detail_end_datetime'
-		'plan_room_id'
-		'timezone_offset'
-		'is_detail'
-		'location'
-		'contact'
-		'description'
-		'is_repeat'
-		'repeat_freq'
-		'enable_email'
-		'email_send_timing'
-		*/
 	}
 
 }

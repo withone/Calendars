@@ -244,4 +244,5 @@ class CalendarsComponent extends Component {
 		'_TZ_GMTP12' => array("(GMT+12:00) Auckland, Wellington, Fiji, Kamchatka, Marshall Island", 12.0,
 			"Pacific/Auckland"),
 	);
+
 }

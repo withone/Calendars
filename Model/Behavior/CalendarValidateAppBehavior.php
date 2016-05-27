@@ -54,9 +54,11 @@ class CalendarValidateAppBehavior extends ModelBehavior {
 			default:
 				//不正種別の場合、右代表で、rrule_interval[DAILY]にエラーＭＳＧを代入する。
 				$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval'] = array();
-				$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval'][CalendarsComponent::CALENDAR_REPEAT_FREQ_DAILY] = array();
-				$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday'][CalendarsComponent::CALENDAR_REPEAT_FREQ_DAILY][] = __d('calendars', '繰返し指定ありの単位が日、週、月、年のいずれでもありません');
-				//CakeLog::debug("DBG: a3: proofread[" . print_r($model->CalendarActionPlan->calendarProofreadValidationErrors, true) . "]");
+				$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['DAILY'] =
+					array();
+				$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['DAILY'][] =
+					__d('calendars',
+						'繰返し指定ありの単位が日、週、月、年のいずれでもありません');
 				return false;
 		}
 		return $ret;
@@ -72,12 +74,14 @@ class CalendarValidateAppBehavior extends ModelBehavior {
  * @return bool 成功時true, 失敗時false
  */
 	private function __checkDailyRepateFreq(Model &$model, &$check) {
-		if (!in_array($model->data[$model->alias]['rrule_interval'][CalendarsComponent::CALENDAR_REPEAT_FREQ_DAILY],
-				range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_DAILY_MIN, CalendarsComponent::CALENDAR_RRULE_INTERVAL_DAILY_MAX))) {
+		if (!in_array($model->data[$model->alias]['rrule_interval']['DAILY'],
+				range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_DAILY_MIN,
+					CalendarsComponent::CALENDAR_RRULE_INTERVAL_DAILY_MAX))) {
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval'] = array();
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['DAILY'] = array();
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['DAILY'][] = __d('calendars', '繰返し指定ありの日単位の日ごとの値が不正です');
-			//CakeLog::debug("DBG: a3: proofread[" . print_r($model->CalendarActionPlan->calendarProofreadValidationErrors, true) . "]");
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['DAILY'] =
+				array();
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['DAILY'][] =
+				__d('calendars', '繰返し指定ありの日単位の日ごとの値が不正です');
 			return false;
 		}
 		return true;
@@ -93,28 +97,32 @@ class CalendarValidateAppBehavior extends ModelBehavior {
  * @return bool 成功時true, 失敗時false
  */
 	private function __checkWeeklyRepateFreq(Model &$model, &$check) {
-		if (!in_array($model->data[$model->alias]['rrule_interval'][CalendarsComponent::CALENDAR_REPEAT_FREQ_WEEKLY],
-			range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_WEEKLY_MIN, CalendarsComponent::CALENDAR_RRULE_INTERVAL_WEEKLY_MAX))) {
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval'] = array();
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval'][CalendarsComponent::CALENDAR_REPEAT_FREQ_WEEKLY] = array();
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval'][CalendarsComponent::CALENDAR_REPEAT_FREQ_WEEKLY][] = __d('calendars', '繰返し指定ありの週単位の週ごとの値が不正です');
-			//CakeLog::debug("DBG: a3: proofread[" . print_r($model->CalendarActionPlan->calendarProofreadValidationErrors, true) . "]");
+		if (!in_array($model->data[$model->alias]['rrule_interval']['WEEKLY'],
+			range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_WEEKLY_MIN,
+				CalendarsComponent::CALENDAR_RRULE_INTERVAL_WEEKLY_MAX))) {
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval'] =
+				array();
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['WEEKLY'] =
+				array();
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['WEEKLY'][] =
+				__d('calendars', '繰返し指定ありの週単位の週ごとの値が不正です');
 			return false;
 		}
 
 		// rrule_byday[WEEKLY][N] inList => array('SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA') (複数選択)
 		$wdays = explode('|', CalendarsComponent::CALENDAR_REPEAT_WDAY);
 		$cnt = 0;
-		foreach ($model->data[$model->alias]['rrule_byday'][CalendarsComponent::CALENDAR_REPEAT_FREQ_WEEKLY] as $wday) {
+		foreach ($model->data[$model->alias]['rrule_byday']['WEEKLY'] as $wday) {
 			if (in_array($wday, $wdays)) {
 				++$cnt;
 			}
 		}
-		if (!($cnt > 0 && $cnt === count($model->data[$model->alias]['rrule_byday'][CalendarsComponent::CALENDAR_REPEAT_FREQ_WEEKLY]))) {
+		if (!($cnt > 0 && $cnt === count($model->data[$model->alias]['rrule_byday']['WEEKLY']))) {
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday'] = array();
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday'][CalendarsComponent::CALENDAR_REPEAT_FREQ_WEEKLY] = array();
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday'][CalendarsComponent::CALENDAR_REPEAT_FREQ_WEEKLY][] = __d('calendars', '繰返し指定ありの週単位の曜日の指定が不正です');
-			//CakeLog::debug("DBG: a3: proofread[" . print_r($model->CalendarActionPlan->calendarProofreadValidationErrors, true) . "]");
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['WEEKLY'] =
+				array();
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['WEEKLY'][] =
+				__d('calendars', '繰返し指定ありの週単位の曜日の指定が不正です');
 			return false;
 		}
 		return true;
@@ -130,12 +138,15 @@ class CalendarValidateAppBehavior extends ModelBehavior {
  * @return bool 成功時true, 失敗時false
  */
 	private function __checkMonthlyRepateFreq(Model &$model, &$check) {
-		if (!in_array($model->data[$model->alias]['rrule_interval'][CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY],
-			range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_MONTHLY_MIN, CalendarsComponent::CALENDAR_RRULE_INTERVAL_MONTHLY_MAX))) {
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval'] = array();
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval'][CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY] = array();
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval'][CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY][] = __d('calendars', '繰返し指定ありの月単位の月ごとの値が不正です');
-			//CakeLog::debug("DBG: a3: proofread[" . print_r($model->CalendarActionPlan->calendarProofreadValidationErrors, true) . "]");
+		if (!in_array($model->data[$model->alias]['rrule_interval']['MONTHLY'],
+			range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_MONTHLY_MIN,
+				CalendarsComponent::CALENDAR_RRULE_INTERVAL_MONTHLY_MAX))) {
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval'] =
+				array();
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['MONTHLY'] =
+				array();
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['MONTHLY'][] =
+				__d('calendars', '繰返し指定ありの月単位の月ごとの値が不正です');
 			return false;
 		}
 
@@ -146,14 +157,14 @@ class CalendarValidateAppBehavior extends ModelBehavior {
 		$bydayMonthly = $this->_makeArrayOfWdayInNthWeek();	//1SU, ... , -1SA の配列生成
 
 		$chkFlag = true;
-		if ($model->data[$model->alias]['rrule_byday'][CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY] === '') {
+		if ($model->data[$model->alias]['rrule_byday']['MONTHLY'] === '') {
 			//rrule_bymonthdayのMONTHLYが 1, ... ,31 のどれかであること
-			if (!in_array($model->data[$model->alias]['rrule_bymonthday'][CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY], range(1, 31))) {
+			if (!in_array($model->data[$model->alias]['rrule_bymonthday']['MONTHLY'], range(1, 31))) {
 				$chkFlag = false;
 			}
-		} elseif ($model->data[$model->alias]['rrule_bymonthday'][CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY] === '') {
+		} elseif ($model->data[$model->alias]['rrule_bymonthday']['MONTHLY'] === '') {
 			//rrule_bydayのMONTHLYが 1SU, ... , -1SA のいずれかであること
-			if (!in_array($model->data[$model->alias]['rrule_byday'][CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY], $bydayMonthly)) {
+			if (!in_array($model->data[$model->alias]['rrule_byday']['MONTHLY'], $bydayMonthly)) {
 				$chkFlag = false;
 			}
 		} else {
@@ -164,9 +175,11 @@ class CalendarValidateAppBehavior extends ModelBehavior {
 		if (!$chkFlag) {
 			//曜日or日付のエラーをrrule_bydayのエラーとして扱う
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday'] = array();
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday'][CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY] = array();
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday'][CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY][] = __d('calendars', '繰返し指定ありの月単位の曜日または日付指定の値が不正です');
-			//CakeLog::debug("DBG: a3: proofread[" . print_r($model->CalendarActionPlan->calendarProofreadValidationErrors, true) . "]");
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['MONTHLY'] =
+				array();
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['MONTHLY'][] =
+				__d('calendars',
+					'繰返し指定ありの月単位の曜日または日付指定の値が不正です');
 			return false;
 		}
 		return true;
@@ -182,39 +195,57 @@ class CalendarValidateAppBehavior extends ModelBehavior {
  * @return bool 成功時true, 失敗時false
  */
 	private function __checkYearlyRepateFreq(Model &$model, &$check) {
-		if (!in_array($model->data[$model->alias]['rrule_interval'][CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY],
-			range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_YEARLY_MIN, CalendarsComponent::CALENDAR_RRULE_INTERVAL_YEARLY_MAX))) {
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval'] = array();
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval'][CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY] = array();
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval'][CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY][] = __d('calendars', '繰返し指定ありの年単位の年ごとの値が不正です');
-			//CakeLog::debug("DBG: a3: proofread[" . print_r($model->CalendarActionPlan->calendarProofreadValidationErrors, true) . "]");
+		if (!in_array($model->data[$model->alias]['rrule_interval']['YEARLY'],
+			range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_YEARLY_MIN,
+				CalendarsComponent::CALENDAR_RRULE_INTERVAL_YEARLY_MAX))) {
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval'] =
+				array();
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['YEARLY'] =
+				array();
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['YEARLY'][] =
+				__d('calendars', '繰返し指定ありの年単位の年ごとの値が不正です');
+			return false;
+		}
+
+		if (empty($model->data[$model->alias]['rrule_bymonth']['YEARLY'])) {
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_bymonth'] =
+				array();
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_bymonth']['YEARLY'] =
+				array();
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_bymonth']['YEARLY'][] =
+				__d('calendars',
+					'繰返し指定ありの年単位の月が１つも指定されていません');
 			return false;
 		}
 
 		// rrule_bymonth[YEARLY][N] inList => array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12) //n月 (複数選択)
 		$months = range(1, 12);
 		$cnt = 0;
-		foreach ($model->data[$model->alias]['rrule_bymonth'][CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY] as $month) {
+		foreach ($model->data[$model->alias]['rrule_bymonth']['YEARLY'] as $month) {
 			if (in_array($month, $months)) {
 				++$cnt;
 			}
 		}
-		if (!($cnt > 0 && $cnt === count($model->data[$model->alias]['rrule_bymonth'][CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY]))) {
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_bymonth'] = array();
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_bymonth'][CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY] = array();
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_bymonth'][CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY][] = __d('calendars', '繰返し指定ありの年単位の月の指定が不正です');
-			//CakeLog::debug("DBG: a3: proofread[" . print_r($model->CalendarActionPlan->calendarProofreadValidationErrors, true) . "]");
+		if (!($cnt > 0 && $cnt === count($model->data[$model->alias]['rrule_bymonth']['YEARLY']))) {
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_bymonth'] =
+				array();
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_bymonth']['YEARLY'] =
+				array();
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_bymonth']['YEARLY'][] =
+				__d('calendars', '繰返し指定ありの年単位の月の指定が不正です');
 			return false;
 		}
 
 		// rrule_byday[YEARLY] inList => array('', '1SU', '1MO', '1TU', ... , '4FR, '4SA', '-1SU', '-2SU', ..., '-1SA')
 		$bydayYearly = $this->_makeArrayOfWdayInNthWeek();	//1SU, ... , -1SA の配列生成
-		$bydayYearly[] = '';	//年単位の「開始日と同日」(value='')も選択肢の１つなので追加
-		if (!in_array($model->data[$model->alias]['rrule_byday'][CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY], $bydayYearly)) {
+		//年単位の「開始日と同日」(value='')も選択肢の１つなので追加
+		$bydayYearly[] = '';
+		if (!in_array($model->data[$model->alias]['rrule_byday']['YEARLY'], $bydayYearly)) {
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday'] = array();
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday'][CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY] = array();
-			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday'][CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY][] = __d('calendars', '繰返し指定ありの年単位の週と曜日の値が不正です');
-			//CakeLog::debug("DBG: a3: proofread[" . print_r($model->CalendarActionPlan->calendarProofreadValidationErrors, true) . "]");
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['YEARLY'] =
+				array();
+			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['YEARLY'][] =
+				__d('calendars', '繰返し指定ありの年単位の週と曜日の値が不正です');
 			return false;
 		}
 		return true;

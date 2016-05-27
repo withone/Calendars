@@ -56,18 +56,16 @@ class CalendarExposeTargetHelper extends AppHelper {
 		);
 		*/
 
-		//CakeLog::debug("DBG: Current_room_id[" . Current::read('Room.id') . "]");
-
 		$html = $this->NetCommonsForm->label(
 			'CalendarActionPlan.plan_room_id' . Inflector::camelize('room_id'),
 			__d('calendars', '公開対象') . $this->_View->element('NetCommons.required'));
 
-		$value = ($myself) ? $myself : Current::read('Room.id');
 		$html .= $this->NetCommonsForm->select('CalendarActionPlan.plan_room_id', $options, array(
 			'class' => 'form-control select-expose-target',
 			'empty' => false,
 			'required' => true,
-			'value' => $value, //Current::read('Room.id'),	//value値のoption要素がselectedになる。
+			//value値のoption要素がselectedになる。
+			'value' => $this->request->data['CalendarActionPlan']['plan_room_id'],
 			//'ng-model' => "exposeRoomArray[" . $frameId . "]",
 			//'ng-change' => "changeRoom(" . $myself . "," . $frameId . ")",
 			'data-frame-id' => $frameId,
