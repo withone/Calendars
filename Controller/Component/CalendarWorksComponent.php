@@ -20,6 +20,33 @@ App::uses('Component', 'Controller');
 class CalendarWorksComponent extends Component {
 
 /**
+ * getDateTimeParam
+ *
+ * オプション取得
+ *
+ * @param array $params $this->request-params配列が渡される
+ * @return array 年月日時分秒配列
+ */
+	public function getDateTimeParam($params) {
+		$userTz = (new NetCommonsTime())->getUserTimezone();
+		$date = new DateTime('now', (new DateTimeZone($userTz)));
+
+		if (isset($params['named']['year'])) {
+			$year = $params['named']['year'];
+			$month = $params['named']['month'];
+			$day = $params['named']['day'];
+		} else {
+			$year = $date->format('Y');
+			$month = $date->format('m');
+			$day = $date->format('d');
+		}
+		$hour = $date->format('H');
+		$minitue = $date->format('i');
+		$second = $date->format('s');
+		return array($year, $month, $day, $hour, $minitue, $second);
+	}
+
+/**
  * getOptions
  *
  * オプション取得
@@ -66,13 +93,22 @@ class CalendarWorksComponent extends Component {
 				CakeLog::debug("DBG: item[$item]はdata[CalendarActionPlan]に有り。値は[" .
 					serialize($data['CalendarActionPlan'][$item]) . "]");
 			} else {
-
 				$data['CalendarActionPlan'][$item] = $val;
 				CakeLog::debug("DBG: item[" . $item .
 					"]はrequest_data[CalendarActionPlan]に無し。よって、capForView値[" .
 					serialize($val) . "]を代入");
 			}
 		}
+
+		if (isset($data['GroupsUser'])) {
+			CakeLog::debug("DBG: data[GroupsUser]は有り。値は[" .
+				serialize($data['GroupsUser']) . "]");
+		} else {
+			$data['GroupsUser'] = $capForView['GroupsUser'];
+			CakeLog::debug("DBG: data[GroupsUser]は無し。よって、capForView[GroupsUser][" .
+				serialize($capForView['GroupsUser']) . "]を代入");
+		}
+
 		return $data;
 	}
 

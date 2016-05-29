@@ -482,6 +482,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 		////$this->_phpSystemTzEnvSwithing('Asia/Tokyo');
 
+		$this->aditionalData = $data['WorkflowComment'];
+
 		try {
 
 			//$this->planTime
@@ -536,9 +538,22 @@ class CalendarActionPlan extends CalendarsAppModel {
 			$fields = array(
 				'title', 'title_icon',		//FIXME: insert/update側に追加実装しないといけない項目
 				'location', 'contact', 'description',
+				'enable_email', 'email_send_timing',
 			);
 			foreach ($fields as $field) {
 				$planParam[$field] = $data[$this->alias][$field];
+			}
+
+			//他の機構で渡さないといけないデータはここでセットすること
+			//
+			$planParam[CalendarsComponent::ADDITIONAL] = array();
+			//ワークフロー用
+			if (isset($data['WorkflowComment'])) {
+				//ワークフローコメントをセットする。
+				$planParam[CalendarsComponent::ADDITIONAL]['WorkflowComment'] = $data['WorkflowComment'];
+				//ワークフローコメントがsave時Block.keyも一緒に必要としてるので、セットする。
+				$planParam[CalendarsComponent::ADDITIONAL]['Block'] = array();
+				$planParam[CalendarsComponent::ADDITIONAL]['Block']['key'] = Current::read('Block.key');
 			}
 
 		} catch(Exception $ex) {
@@ -580,7 +595,8 @@ class CalendarActionPlan extends CalendarsAppModel {
  */
 	protected function _getTimeZoneOffsetNum($timezoneOffset) {
 		//$tzTblの形式 '_TZ_GMTP9' => array("(GMT+9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk", 9.0, "Asia/Tokyo"),
-		foreach (CalendarsComponent::$tzTbl as $tzData) {
+		$tzTbl = CalendarsComponent::getTzTbl();
+		foreach ($tzTbl as $tzData) {
 			if ($tzData[2] === $timezoneOffset) {
 				return $tzData[1];
 			}

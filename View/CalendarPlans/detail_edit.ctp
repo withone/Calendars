@@ -55,16 +55,15 @@
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->
 
-
-
 <br />
 <div class="form-group" name="checkTime">
   <div class="form-inline col-xs-12 col-sm-10 col-sm-offset-1">
    <label class="control-label" style="margin-right:1em;">
     <?php echo __d('calendars', '予定日の設定') . $this->element('NetCommons.required'); ?>
    </label>
-   <?php $useTime = 'useTime[' . $frameId . ']'; ?>
-
+   <?php
+		$useTime = 'useTime[' . $frameId . ']';
+	?>
 	<?php echo $this->NetCommonsForm->checkbox('CalendarActionPlan.enable_time', array(
 	'label' => __d('calendars', '時間の指定'),
 	'class' => 'calendar-specify-a-time_' . $frameId,
@@ -94,6 +93,9 @@
 	$this->NetCommonsForm->unlockField('CalendarActionPlan.detail_end_datetime');
 	echo $this->NetCommonsForm->hidden('CalendarActionPlan.detail_end_datetime', array('value' => $endDatetimeValue));
 ?>
+
+
+
 
 <div class="form-group" name="inputStartEndDateTime">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
@@ -865,10 +867,18 @@
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->
 <!-- 予定の共有 START -->
-<div class="form-group calendar-plan-share_<?php echo $frameId; ?>" name="planShare" style="display: none; margin-top:0.5em;">
+<?php
+	$dispValue = 'none';
+	if ($this->request->data['CalendarActionPlan']['plan_room_id'] == $myself) {
+		$dispValue = 'block';
+	}
+?>
+<?php
+	echo "<div class='form-group calendar-plan-share_" . $frameId . "' name='planShare' style='display: " . $dispValue . "; margin-top:0.5em;'>";
+?>
 <div class="col-xs-12 col-sm-8 col-sm-offset-2">
 
-	<?php echo $this->element('Calendars.CalendarPlans/edit_plan_share'); ?>
+	<?php echo $this->element('Calendars.CalendarPlans/edit_plan_share', array('shareUsers', $shareUsers)); ?>
 
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->
@@ -899,7 +909,7 @@
 
 	<div class="clearfix"></div>
 
-<?php 
+<?php
 	echo $this->NetCommonsForm->input('CalendarActionPlan.enable_email', array(
 		'type' => 'checkbox',
 		'checked' => ($this->request->data['CalendarActionPlan']['enable_email']) ? true : false,
@@ -909,7 +919,6 @@
 		'class' => 'text-left',
 		'style' => 'float: left',
 	));
-//aaaaaaaaaaaaaa
 ?>
 	<label style='float: left; font-weight: 400; font-size: 14px'>
 		<?php echo __d('calendars', 'イベント前にメール通知する'); ?>
@@ -1036,7 +1045,8 @@
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
 
 <?php
-		$options = Hash::combine(CalendarsComponent::$tzTbl, '{s}.2', '{s}.0');
+		$tzTbl = CalendarsComponent::getTzTbl();
+		$options = Hash::combine($tzTbl, '{s}.2', '{s}.0');
 
 		echo $this->NetCommonsForm->label('CalendarActionPlan.timezone_offset' . Inflector::camelize('timezone'), __d('calendars', 'タイムゾーン'));
 
@@ -1060,6 +1070,14 @@
 
 	</div><!--どっかの開始divのおわり-->
 
+<!-- コメント入力 -->
+<hr />
+<div class="form-group" name="inputCommentArea">
+<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+	<?php /* $this->NetCommonsForm->unlockField('CalendarEvnet.status'); */ ?>
+	<?php echo $this->Workflow->inputComment('CalendarEvent.status'); ?>
+</div><!-- col-xs-12おわり -->
+</div><!-- inputCommentAreaおわり -->
 
 
 </div><!-- panel-bodyを閉じる -->
@@ -1074,7 +1092,7 @@
 <hr style="margin-top:0.2em; margin-bottom:0.2em" />
 
 <!--
-<?php if (isset($event['CalendarEvent']) && ($this->request->params['action'] === 'edit' && $this->Workflow->canDelete('Calendars.CalendarRrule', $event))) : ?>
+<?php if (isset($event['CalendarEvent']) && ($this->request->params['action'] === 'edit' && $this->Workflow->canDelete('Calendars.CalendarEvent', $event))) : ?>
 	<div class="panel-footer text-right">
 		<?php echo $this->element('Calendars.CalendarPlans/delete_form'); ?>
 	</div>
@@ -1087,9 +1105,8 @@
 <!-- </form> --><!--formを閉じる-->
 
 
-<?php if (isset($event['CalendarEvent']) && ($this->request->params['action'] === 'edit' && $this->Workflow->canDelete('Calendars.CalendarRrule', $event))) : ?>
+<?php if (isset($event['CalendarEvent']) && ($this->request->params['action'] === 'edit' && $this->Workflow->canDelete('Calendars.CalendarEvent', $event))) : ?>
 	<div class="panel-footer text-right">
-		<?php /* aaaaaaaaaaaaaaaaa */ ?>
 		<?php echo $this->element('Calendars.CalendarPlans/delete_form', array('frameId' => $frameId, 'event' => $event, 'capForView' => $capForView)); ?>
 	</div>
 <?php endif; ?>
@@ -1098,6 +1115,11 @@
 
 
 </div><!--panelを閉じる-->
+
+<!-- コメント一覧 -->
+<?php
+	echo $this->Workflow->comments();
+?>
 
 </article>
 

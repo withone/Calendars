@@ -61,6 +61,7 @@ class CalendarExposeTargetHelper extends AppHelper {
 			__d('calendars', '公開対象') . $this->_View->element('NetCommons.required'));
 
 		$html .= $this->NetCommonsForm->select('CalendarActionPlan.plan_room_id', $options, array(
+			//select-expose-targetクラスをもつ要素のchangeをjqで捕まえています
 			'class' => 'form-control select-expose-target',
 			'empty' => false,
 			'required' => true,
