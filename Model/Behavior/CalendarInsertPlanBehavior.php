@@ -195,6 +195,7 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 
 		//eventDataにplanParamデータを詰め、それをモデルにセット
 		$this->setEventData($planParams, $rruleData, $eventData);
+
 		$model->CalendarEvent->set($eventData);
 
 		if (!$model->CalendarEvent->validates()) {		//eventDataをチェック

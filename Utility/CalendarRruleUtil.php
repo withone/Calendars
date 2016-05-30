@@ -20,6 +20,24 @@ App::uses('CalendarTime', 'Calendars.Utility');
 class CalendarRruleUtil {
 
 /**
+ * generateIcalUid
+ *
+ * iCalendar仕様のUID生成
+ *
+ * @param string $startDate カレンダー開始日付
+ * @param string $startTime カレンダー開始時刻
+ * @return string iCalendar仕様のUIDを生成.
+ */
+	public static function generateIcalUid($startDate, $startTime) {
+		$domain = 'localhost';
+		if (preg_match("/(?:.+)(?:\/\/)([^\/]+)/", FULL_BASE_URL, $matches) === 1) {
+			$domain = $matches[1];
+		}
+		$iCalendarUid = $startDate . 'T' . $startTime . 'Z' . '-' . uniqid() . '@' . $domain;
+		return $iCalendarUid;
+	}
+
+/**
  * Rruleパース(CRUD用)
  *
  * @param string $rruleStr rrule文字列

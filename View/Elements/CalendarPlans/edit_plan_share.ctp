@@ -42,9 +42,9 @@
 
 	//第4引数：ユーザIDの配列を指定（編集画面等で、登録時に選択したユー
 	//ザを選択済みとして初期表示したい時に指定、デフォルト値：空配列）
-	//$selectUsers = (isset($this->request->data['selectUsers'])) ?
-	//$this->request->data['selectUsers'] : null;
-	$selectUsers = null;
+	//なお、$selectUsersは、User->getUser(user_id,lang_id)の結果を順次格納した配列イメージ
+	//$selectUsers = null;
+	$selectUsers = $shareUsers;
 
 	echo $this->GroupUserList->select($title, $pluginModel, $roomId, $selectUsers);
 

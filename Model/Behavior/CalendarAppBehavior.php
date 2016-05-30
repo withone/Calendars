@@ -13,6 +13,7 @@ App::uses('ModelBehavior', 'Model');
 //App::uses('CalendarTime', 'Calendars.Utility');
 App::uses('CalendarTime', 'Calendars.Utility');
 App::uses('CalendarSupport', 'Calendars.Utility');
+App::uses('CalendarRruleUtil', 'Calendars.Utility');
 App::uses('WorkflowComponent', 'Workflow.Controller/Component');
 
 /**
@@ -62,7 +63,9 @@ class CalendarAppBehavior extends ModelBehavior {
 	);
 
 /**
- * 登録処理
+ * 繰返し専用event登録処理(*event初回登録に使ってはいけません）
+ *
+ * 毎回 keyをclearしてから登録します。(初回登録から踏襲するのは、status, is_active, is_latestとします)
  *
  * @param Model &$model 実際のモデル名
  * @param array $planParams planParams
@@ -102,7 +105,10 @@ class CalendarAppBehavior extends ModelBehavior {
 
 		//eventDataをもとにrEventDataをつくり、モデルにセット
 		$rEventData = $this->setReventData(
-			$eventData, $insertStartTime, $insertEndTime);
+			$eventData, $insertStartTime, $insertEndTime, $planParams);
+
+		//eventのkeyを新しく採番するため、nullクリアします。
+		$rEventData['CalendarEvent']['key'] = null;
 
 		$model->CalendarEvent->set($rEventData);
 
@@ -112,6 +118,9 @@ class CalendarAppBehavior extends ModelBehavior {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
+		//eventの保存。
+		//なお、追加情報(workflowcomment)は WFCのafterSave()で自動セットされる。
+		//
 		if (!$model->CalendarEvent->save($rEventData, false)) { //保存のみ
 			$model->validationErrors = Hash::merge(
 				$model->validationErrors, $model->CalendarEvent->validationErrors);
@@ -139,9 +148,10 @@ class CalendarAppBehavior extends ModelBehavior {
  * @param array $eventData 元になるeventData配列
  * @param string $insertStartTime insertStartTime 登録用開始日付時刻文字列
  * @param string $insertEndTime insertEndTime 登録用終了日付時刻文字列
+ * @param array $planParams planParamsが渡ってくる。追加拡張を取り出す為に必要。
  * @return array 実際に登録する$rEventData配列を返す
  */
-	public function setReventData($eventData, $insertStartTime, $insertEndTime) {
+	public function setReventData($eventData, $insertStartTime, $insertEndTime, $planParams) {
 		$rEventData = $eventData;
 
 		$rEventData['CalendarEvent']['id'] = null;		//新規登録用にidにnullセット
@@ -167,6 +177,15 @@ class CalendarAppBehavior extends ModelBehavior {
 
 		if (isset($eventData['CalendarEvent']['modified'])) {
 			$rEventData['CalendarEvent']['modified'] = $eventData['CalendarEvent']['modified'];
+		}
+
+		//workflowcommentなどの追加拡張データはここで追加する。
+		//
+		if (isset($planParams[CalendarsComponent::ADDITIONAL]) &&
+			count($planParams[CalendarsComponent::ADDITIONAL]) > 0) {
+			foreach ($planParams[CalendarsComponent::ADDITIONAL] as $modelName => $vals) {
+				$rEventData[$modelName] = $vals;
+			}
 		}
 
 		return $rEventData;
@@ -248,7 +267,7 @@ class CalendarAppBehavior extends ModelBehavior {
 			'calendar_id' => 1,	//暫定
 			'name' => '',
 			'rrule' => '',
-			'icalendar_uid' => CalendarSupport::generateIcalUid(
+			'icalendar_uid' => CalendarRruleUtil::generateIcalUid(
 				$planParams['start_date'], $planParams['start_time']),
 			'icalendar_comp_name' => self::CALENDAR_PLUGIN_NAME,
 			'room_id' => Current::read('Room.id'),
@@ -301,6 +320,8 @@ class CalendarAppBehavior extends ModelBehavior {
 			'timezone_offset',
 			'linked_model',
 			'linked_content_key',
+			'enable_email',
+			'email_send_timing',
 		);
 		foreach ($keys as $key) {
 			if (isset($planParams[$key])) {
@@ -339,6 +360,8 @@ class CalendarAppBehavior extends ModelBehavior {
 			'dtend' => $planParams['end_date'] . $planParams['end_time'],
 			'timezone_offset' => $planParams['timezone_offset'],
 			'status' => $planParams['status'],
+			'enable_email' => $planParams['enable_email'],
+			'email_send_timing' => $planParams['email_send_timing'],
 
 			'linked_model' => '',
 			'linked_content_key' => '',
@@ -372,9 +395,21 @@ class CalendarAppBehavior extends ModelBehavior {
 		$eventData['CalendarEvent']['contact'] = $params['contact'];
 		$eventData['CalendarEvent']['description'] = $params['description'];
 
+		$eventData['CalendarEvent']['is_enable_mail'] = $params['enable_email']; //名違いに注意
+		$eventData['CalendarEvent']['email_send_timing'] = $params['email_send_timing'];
+
 		//保存するモデルをここで替える
 		$eventData['CalendarEventContent']['linked_model'] = $params['linked_model'];
 		$eventData['CalendarEventContent']['linked_content_key'] = $params['linked_content_key'];
+
+		//workflowcommentなどの追加拡張データはここで追加する。
+		//
+		if (isset($planParams[CalendarsComponent::ADDITIONAL]) &&
+			count($planParams[CalendarsComponent::ADDITIONAL]) > 0) {
+			foreach ($planParams[CalendarsComponent::ADDITIONAL] as $modelName => $vals) {
+				$eventData[$modelName] = $vals;
+			}
+		}
 	}
 
 /**

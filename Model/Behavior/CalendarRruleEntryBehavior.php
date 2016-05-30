@@ -89,6 +89,9 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 			$model->CalendarEvent->alias . '.id <>' => $eventData['CalendarEvent']['id'],
 		);
 
+		//FIXME: deleteAll(同じrruleをもつ、自分意外のeventsをすべて消しているが、、これは、
+		//こうするのではなく、is_latestをoffにするのが正しい。
+		//
 		if (!$model->CalendarEvent->deleteAll($conditions, false)) {
 			$model->validationErrors = Hash::merge(
 				$model->validationErrors, $model->CalendarEvent->validationErrors);

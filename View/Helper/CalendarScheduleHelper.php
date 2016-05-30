@@ -364,7 +364,9 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		/* 曜日 */
 
 		//dayCount後の日付
-		$wDay = CalendarTime::getWday($year, $month, $day);
+		////$wDay = CalendarTime::getWday($year, $month, $day);
+		//PHPカレンダー関数を使用しないgetWdayAlt()に変更
+		$wDay = (new CalendarTime())->getWdayAlt($year, $month, $day);
 		$textColor = $this->CalendarCommon->makeTextColor($year, $month, $day, $vars['holidays'], $wDay);
 		$month = (int)$month;
 		$day = (int)$day;

@@ -31,8 +31,8 @@ class CalendarEvent extends CalendarsAppModel {
 	public $actsAs = array(
 		'NetCommons.OriginalKey',
 		'NetCommons.Trackable',
-		'Workflow.WorkflowComment',
 		'Workflow.Workflow',
+		'Workflow.WorkflowComment',
 		'Calendars.CalendarValidate',
 		'Calendars.CalendarApp',	//baseビヘイビア
 		'Calendars.CalendarInsertPlan',	//Insert用
@@ -250,4 +250,5 @@ class CalendarEvent extends CalendarsAppModel {
 		$this->_doMergeWorkflowParamValidate(); //Workflowパラメータ関連validation
 		return parent::beforeValidate($options);
 	}
+
 }

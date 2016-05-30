@@ -264,75 +264,80 @@ class CalendarTime {
 	}
 
 /**
- * getWday
+ * getWdayAlt
  *
- * 年月日から曜日(0-6)を返す
+ * 年月日から曜日(0-6)を返す (PHPカレンダー関数を使用しないversion.)
  *
  * @param int $year 年
  * @param int $month 月
  * @param int $day 日
  * @return int 曜日(0-6)
  */
-	public static function getWday($year, $month, $day) {
-		//指定年月日のグレゴリウス日をユリウス積算日に変換
-		$julianDay = gregoriantojd($month, $day, $year);
-		$wDay = jddayofweek($julianDay);	//ユリウス積算日から曜日を返す
+	public function getWdayAlt($year, $month, $day) {
+		$userTz = (new NetCommonsTime())->getUserTimezone();
+		$date = new DateTime('now', (new DateTimeZone($userTz)));	//ユーザー系
+		$date->setDate($year, $month, $day);	//指定日の00:00:00
+		$date->setTime(0, 0, 0);
+		$wDay = $date->format('w'); //指定日の曜日を返す
 		return $wDay;
 	}
 
 /**
- * getMonthlyInfo
+ * getMonthlyInfoAlt
  *
- * 月カレンダーで必要な情報を返す
+ * 月カレンダーで必要な情報を返す (PHPカレンダー関数を使用しない版)
  *
  * @param int $year 年
  * @param int $month 月
  * @return array 前月、次月、今月の月カレンダー情報の配列
  */
-	public static function getMonthlyInfo($year, $month) {
-		//当月１日のグレゴリウス日をユリウス積算日に変換
-		$julian1stDay = gregoriantojd($month, 1, $year);
-		$wdayOf1stDay = jddayofweek($julian1stDay);	//ユリウス積算日から曜日を返す
+	public function getMonthlyInfoAlt($year, $month) {
+		$userTz = (new NetCommonsTime())->getUserTimezone();
+		$date = new DateTime('now', (new DateTimeZone($userTz)));	//ユーザー系
 
-		//指定した年とカレンダーについて月の日数を返す(グレゴリオ暦)
-		$daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-		//当月末日のグレゴリウス日をユリウス積算日に変換
-		$julianLastDay = gregoriantojd($month, $daysInMonth, $year);
-		$wdayOfLastDay = jddayofweek($julianLastDay);	//ユリウス積算日から曜日を返す
+		$date->setDate($year, $month, 1);	//当月1日の00:00:00
+		$date->setTime(0, 0, 0);
+		$wdayOf1stDay = $date->format('w'); //当月1日の曜日を返す
+
+		$date->setDate($year, $month + 1, 1);	//翌月1日 00:00:00
+		$date->setTime(0, 0, 0);
+		$wkTm = $date->getTimestamp();
+		$date->setTimestamp($wkTm - 10);	//翌月1日00:00:00の10秒前は当月末日
+		$daysInMonth = $date->format('d');	//当月の月日数
+		$wdayOfLastDay = $date->format('w'); //当月末日の曜日
 
 		$numOfWeek = ceil(($daysInMonth + $wdayOf1stDay) / 7);	//当月の週数
 
-		if ($month == 1) {
-			$yearOfPrevMonth = $year - 1;
-			$prevMonth = 12;
-		} else {
-			$yearOfPrevMonth = $year;
-			$prevMonth = $month - 1;
-		}
-		$daysInPrevMonth = cal_days_in_month(CAL_GREGORIAN, $prevMonth, $yearOfPrevMonth);
+		$date->setDate($year, $month, 1); //当月１日00:00:00
+		$date->setTime(0, 0, 0);
+		$wkTm = $date->getTimestamp();
+		$date->setTimestamp($wkTm - 10);	//当月1日00:00:00の10秒前は前月末日
+		$yearOfPrevMonth = $date->format('Y');	//前月の年
+		$prevMonth = $date->format('m');	//前月の月
+		$daysInPrevMonth = $date->format('d');	//前月の月日数
 
-		if ($month == 12) {
-			$yearOfNextMonth = $year + 1;
-			$nextMonth = 1;
-		} else {
-			$yearOfNextMonth = $year;
-			$nextMonth = $month + 1;
-		}
-		$daysInNextMonth = cal_days_in_month(CAL_GREGORIAN, $nextMonth, $yearOfNextMonth);
+		$date->setDate($year, $month + 2, 1);	//翌々月1日00:00:00
+		$date->setTime(0, 0, 0);
+		$wkTm = $date->getTimestamp();
+		$date->setTimestamp($wkTm - 10);	//翌々月1日00:00:00の10秒前は翌月末日
+
+		$yearOfNextMonth = $date->format('Y');	//翌月の年
+		$nextMonth = $date->format('m');	//翌月の月
+		$daysInNextMonth = $date->format('d');	//翌月の月日数
 
 		return array(
-			'yearOfPrevMonth' => $yearOfPrevMonth,
-			'prevMonth' => $prevMonth,
-			'daysInPrevMonth' => $daysInPrevMonth,
-			'yearOfNextMonth' => $yearOfNextMonth,
-			'nextMonth' => $nextMonth,
-			'daysInNextMonth' => $daysInNextMonth,
-			'year' => $year,
-			'month' => $month,
-			'wdayOf1stDay' => $wdayOf1stDay,
-			'daysInMonth' => $daysInMonth,
-			'wdayOfLastDay' => $wdayOfLastDay,
-			'numOfWeek' => $numOfWeek,
+			'yearOfPrevMonth' => intval($yearOfPrevMonth),
+			'prevMonth' => intval($prevMonth),
+			'daysInPrevMonth' => intval($daysInPrevMonth),
+			'yearOfNextMonth' => intval($yearOfNextMonth),
+			'nextMonth' => intval($nextMonth),
+			'daysInNextMonth' => intval($daysInNextMonth),
+			'year' => intval($year),
+			'month' => intval($month),
+			'wdayOf1stDay' => intval($wdayOf1stDay),
+			'daysInMonth' => intval($daysInMonth),
+			'wdayOfLastDay' => intval($wdayOfLastDay),
+			'numOfWeek' => intval($numOfWeek),
 		);
 	}
 

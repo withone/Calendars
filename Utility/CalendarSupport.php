@@ -20,21 +20,25 @@
 class CalendarSupport {
 
 /**
- * generateIcalUid
+ * getMixedToString
  *
- * iCalendar仕様のUID生成
+ * 配列の最初の要素を取り出す。文字列であればそのまま返す。
  *
- * @param string $startDate カレンダー開始日付
- * @param string $startTime カレンダー開始時刻
- * @return string iCalendar仕様のUIDを生成.
+ * @param mixed $data data
+ * @return mixed 成功時：$dateの最初要素を取り出す。空配列は''を返す。変数が文字列ならそのまま返す。失敗：falseを返す。
  */
-	public static function generateIcalUid($startDate, $startTime) {
-		$domain = 'localhost';
-		if (preg_match("/(?:.+)(?:\/\/)([^\/]+)/", FULL_BASE_URL, $matches) === 1) {
-			$domain = $matches[1];
+	public static function getMixedToString($data) {
+		if (is_string($data)) {
+			return $data;
 		}
-		$iCalendarUid = $startDate . 'T' . $startTime . 'Z' . '-' . uniqid() . '@' . $domain;
-		return $iCalendarUid;
+		if (is_array($data)) {
+			if (count($data) === 0 || !isset($data[0])) {
+				return '';
+			} else {
+				return (string)$data[0];
+			}
+		}
+		return false;
 	}
 
 /**
@@ -258,10 +262,11 @@ class CalendarSupport {
  * @param string $hour hour
  * @param string $minitue minitue
  * @param string $second second
+ * @param array $exposeRoomOptions 公開対象ルーム配列
  * @return array 生成された表示用CalendarActionPlan配列
  */
 	public function getInitialCalendarActionPlanForView($year, $month, $day,
-		$hour, $minitue, $second) {
+		$hour, $minitue, $second, $exposeRoomOptions) {
 		$userTz = (new NetCommonsTime())->getUserTimezone();
 
 		//"Y-m-d H:i:s"形式の指定日付時刻からの直近１時間の日付時刻(from,to)を取得
@@ -272,6 +277,17 @@ class CalendarSupport {
 			$year, $month, $day, $hour, $minitue, $second);
 		$wdayIndex = intval($date->format('w'));	//0-6
 		$wdays = explode('|', CalendarsComponent::CALENDAR_REPEAT_WDAY);
+
+		$rooms = array_keys($exposeRoomOptions);
+		if (in_array(Current::read('Roomd.id'), $rooms)) {
+			//公開対象ルーム一覧にCurrentのRoom.idが存在する
+			$planRoomId = Current::read('Room.id');
+		} else {
+			//公開対象ルーム一覧にCurrentのRoom.idが存在しない時は、親
+			//のペアレント(パブリック、プライベート）の仮想room_idを
+			//セットする。
+			$planRoomId = Current::read('Room.parent_id');
+		}
 
 		$initialCapForView = array(
 			'GroupsUser' => array(),	//共有なし
@@ -287,7 +303,7 @@ class CalendarSupport {
 				'detail_start_datetime' => $ymdOfLastHour . ' ' . substr($fromYmdHiOfLastHour, 11),
 				//YYYY-MM-DD hh:mm
 				'detail_end_datetime' => $ymdOfLastHour . ' ' . substr($toYmdHiOfLastHour, 11),
-				'plan_room_id' => 1,	//パブリック
+				'plan_room_id' => $planRoomId,
 				'timezone_offset' => (new NetCommonsTime())->getUserTimezone(),
 				'is_detail' => 0,
 				'location' => '',
@@ -346,33 +362,36 @@ class CalendarSupport {
 		$this->__setRruleFreqParamsToCapForView($rrule, $capForView);
 
 		$this->__setRruleTermParamsToCapForView($rrule, $capForView);
-		/*
-		if (isset($rrule['REPEAT_COUNT']) && $rrule['REPEAT_COUNT'] == 1) {
-			$capForView['CalendarActionPlan']['TERM']['REPEAT_COUNT'] = 1;
-			$capForView['CalendarActionPlan']['TERM']['REPEAT_UNTIL'] = 0;
-			$capForView['CalendarActionPlan']['TERM']['COUNT'] = $rrule['COUNT'];
-		}
-		if (isset($rrule['REPEAT_UNTIL']) && $rrule['REPEAT_UNTIL'] == 1) {
-			$capForView['CalendarActionPlan']['TERM']['REPEAT_COUNT'] = 0;
-			$capForView['CalendarActionPlan']['TERM']['REPEAT_UNTIL'] = 1;
-
-			$userUntilYmdHis =
-				(new CalendarTime())->svr2UserYmdHis($rrule['UNTIL']);
-			//YYYY-MM-DD hh:mm:ss
-			$userUntilDatetime = CalendarTime::addDashColonAndSp($userUntilYmdHis);
-
-			$capForView['CalendarActionPlan']['TERM']['UNTIL'] = $userUntilDatetime;
-		}
-		*/
 
 		$capForView['GroupsUser'] = array();
 		if (isset($event['CalendarEventShareUser']) && is_array($event['CalendarEventShareUser'])) {
 			foreach ($event['CalendarEventShareUser'] as $shareUser) {
-				$capForView['GroupsUser'][] = $shareUser['share_user'];
+				//request->data['GroupsUser']の格納形式に合わせる。
+				$capForView['GroupsUser'][] = array('user_id' => $shareUser['share_user']);
 			}
 		}
 
 		return $capForView;
+	}
+
+/**
+ * convTzOffset2TzId
+ *
+ * timezoneOffset(数字-12.0-12.0）からtzId(Asia/Tokyoなど)への変換
+ * 
+ * @param double $tzOffsetVal timezoneのoffset値(-12.0 - 12.0)
+ * @return string timezoneId
+ */
+	public function convTzOffset2TzId($tzOffsetVal) {
+		$tzId = (new NetCommonsTime())->getUserTimezone(); //初期値
+		$tzTbl = CalendarsComponent::getTzTbl();
+		foreach ($tzTbl as $tzInfo) {
+			if ($tzInfo[CalendarsComponent::CALENDAR_TIMEZONE_OFFSET_VAL] == $tzOffsetVal) {
+				$tzId = $tzInfo[CalendarsComponent::CALENDAR_TIMEZONE_ID];
+				break;
+			}
+		}
+		return $tzId;
 	}
 
 /**
@@ -391,6 +410,7 @@ class CalendarSupport {
  */
 	private function __makeCapForViewSubset($event, $userStartDatetime, $userEndDatetime,
 		$isDetail, $wdays, $wdayIndex, $tmArray) {
+		$tzId = $this->convTzOffset2TzId($event['CalendarEvent']['timezone_offset']);
 		$capForView = array(
 			'CalendarActionPlan' => array(
 				'edit_rrule' => 0,	//tableにはない項目なのでinitと同じ値
@@ -405,7 +425,7 @@ class CalendarSupport {
 				//YYYY-MM-DD hh:mm
 				'detail_end_datetime' => substr($userEndDatetime, 0, 16),
 				'plan_room_id' => $event['CalendarEvent']['room_id'],
-				'timezone_offset' => $event['CalendarEvent']['timezone_offset'],
+				'timezone_offset' => $tzId,
 				'is_detail' => $isDetail,
 				'location' => $event['CalendarEvent']['location'],
 				'contact' => $event['CalendarEvent']['contact'],
@@ -414,7 +434,7 @@ class CalendarSupport {
 				'repeat_freq' => 'DAILY',	//まずは初期値
 				'FREQ' => $this->__getInitialFreq($wdays, $wdayIndex, $tmArray['month']),
 				'TERM' => $this->__getInitailTerm(substr($userStartDatetime, 0, 10)),
-				'enable_email' => intval($event['CalendarEvent']['is_enable_mail']),
+				'enable_email' => intval($event['CalendarEvent']['is_enable_mail']), //名違いに注意
 				'email_send_timing' => intval($event['CalendarEvent']['email_send_timing']),
 			),
 		);

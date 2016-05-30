@@ -153,7 +153,8 @@ class CalendarPlanTimeValidateBehavior extends ModelBehavior {
 	public function allowedTimezoneOffset(Model &$model, $check) {
 		$value = array_values($check);
 		$value = $value[0];
-		foreach (CalendarsComponent::$tzTbl as $tzData) {
+		$tzTbl = CalendarsComponent::getTzTbl();
+		foreach ($tzTbl as $tzData) {
 			if ($tzData[2] === $value) {
 				return true;
 			}

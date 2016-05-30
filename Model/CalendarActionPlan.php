@@ -206,7 +206,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 					)),
 					'required' => false,
 					'allowEmpty' => true,
-					'message' => __d('calendars', '戻り先のスタイル指定が不正です'),
+					'message' => __d('calendars', '戻り先のスタイル指定が不正です。'),
 				),
 			),
 			'return_sort' => array(
@@ -217,7 +217,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 					)),
 					'required' => false,	//sort指定はスケジュールの時だけ
 					'allowEmpty' => true,
-					'message' => __d('calendars', '戻り先のソート指定が不正です'),
+					'message' => __d('calendars', '戻り先のソート指定が不正です。'),
 				),
 			),
 			'return_tab' => array(
@@ -228,7 +228,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 					)),
 					'required' => false,	//tab指定は単一日の時だけ
 					'allowEmpty' => true,
-					'message' => __d('calendars', '戻り先のタブ指定が不正です'),
+					'message' => __d('calendars', '戻り先のタブ指定が不正です。'),
 				),
 			),
 		));
@@ -247,14 +247,14 @@ class CalendarActionPlan extends CalendarsAppModel {
 				'rule1' => array(
 					'rule' => array('inList', array(0, 1, 2)),
 					'required' => false,
-					'message' => __d('calendars', '繰返しの変更指定が不正です'),
+					'message' => __d('calendars', '繰返しの変更指定が不正です。'),
 				),
 			),
 			'is_repeat' => array(
 				'rule1' => array(
 					'rule' => array('inList', array(0, 1)),
 					'required' => false,
-					'message' => __d('calendars', '予定の繰り返し指定が不正です'),
+					'message' => __d('calendars', '予定の繰り返し指定が不正です。'),
 				),
 			),
 			'repeat_freq' => array(
@@ -386,11 +386,11 @@ class CalendarActionPlan extends CalendarsAppModel {
 				'rule1' => array(
 					'rule' => array('notBlank'),
 					'required' => true,
-					'message' => __d('calendars', '件名が不正です'),
+					'message' => __d('calendars', '件名が不正です。'),
 				),
 				'rule2' => array(
 					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
-					'message' => sprintf(__d('calendars', '件名は最大 %d 文字です'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
+					'message' => sprintf(__d('calendars', '件名は最大 %d 文字です。'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 				),
 			),
 			'title_icon' => array(
@@ -398,7 +398,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_GENERAL_VCHAR_LEN),
 					'required' => false,
 					'allowEmpty' => true,
-					'message' => sprintf(__d('calendars', 'タイトルアイコンは最大 %d 文字です'), CalendarsComponent::CALENDAR_VALIDATOR_GENERAL_VCHAR_LEN),
+					'message' => sprintf(__d('calendars', 'タイトルアイコンは最大 %d 文字です。'), CalendarsComponent::CALENDAR_VALIDATOR_GENERAL_VCHAR_LEN),
 				),
 			),
 		));
@@ -425,42 +425,42 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'rule' => array('allowedRoomId'),
 					'required' => true,
 					'allowEmpty' => false,
-					'message' => __d('calendars', '権限が不正です'),
+					'message' => __d('calendars', '権限が不正です。'),
 				),
 			),
 			'timezone_offset' => array(
 				'rule1' => array(
 					'rule' => array('allowedTimezoneOffset'),
 					'required' => false,
-					'message' => __d('calendars', 'タイムゾーンが不正です'),
+					'message' => __d('calendars', 'タイムゾーンが不正です。'),
 				),
 			),
 			'is_detail' => array(
 				'rule1' => array(
 					'rule' => array('inList', array(0, 1)),
 					'required' => false,
-					'message' => __d('calendars', '詳細表示の指定が不正です'),
+					'message' => __d('calendars', '詳細表示の指定が不正です。'),
 				),
 			),
 			'location' => array(
 				'rule1' => array(
 					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 					'required' => false,
-					'message' => sprintf(__d('calendars', '場所は最大 %d 文字です'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
+					'message' => sprintf(__d('calendars', '場所は最大 %d 文字です。'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 				),
 			),
 			'contact' => array(
 				'rule1' => array(
 					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 					'required' => false,
-					'message' => sprintf(__d('calendars', '連絡先は最大 %d 文字です'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
+					'message' => sprintf(__d('calendars', '連絡先は最大 %d 文字です。'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 				),
 			),
 			'description' => array(
 				'rule1' => array(
 					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_TEXTAREA_LEN),
 					'required' => false,
-					'message' => sprintf(__d('calendars', '連絡先は最大 %d 文字です'), CalendarsComponent::CALENDAR_VALIDATOR_TEXTAREA_LEN),
+					'message' => sprintf(__d('calendars', '連絡先は最大 %d 文字です。'), CalendarsComponent::CALENDAR_VALIDATOR_TEXTAREA_LEN),
 				),
 			),
 			//statusの値は $data['data_N']のNではいってくるので、省略
@@ -481,6 +481,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 		$this->begin();
 
 		////$this->_phpSystemTzEnvSwithing('Asia/Tokyo');
+
+		$this->aditionalData = $data['WorkflowComment'];
 
 		try {
 
@@ -536,9 +538,22 @@ class CalendarActionPlan extends CalendarsAppModel {
 			$fields = array(
 				'title', 'title_icon',		//FIXME: insert/update側に追加実装しないといけない項目
 				'location', 'contact', 'description',
+				'enable_email', 'email_send_timing',
 			);
 			foreach ($fields as $field) {
 				$planParam[$field] = $data[$this->alias][$field];
+			}
+
+			//他の機構で渡さないといけないデータはここでセットすること
+			//
+			$planParam[CalendarsComponent::ADDITIONAL] = array();
+			//ワークフロー用
+			if (isset($data['WorkflowComment'])) {
+				//ワークフローコメントをセットする。
+				$planParam[CalendarsComponent::ADDITIONAL]['WorkflowComment'] = $data['WorkflowComment'];
+				//ワークフローコメントがsave時Block.keyも一緒に必要としてるので、セットする。
+				$planParam[CalendarsComponent::ADDITIONAL]['Block'] = array();
+				$planParam[CalendarsComponent::ADDITIONAL]['Block']['key'] = Current::read('Block.key');
 			}
 
 		} catch(Exception $ex) {
@@ -580,7 +595,8 @@ class CalendarActionPlan extends CalendarsAppModel {
  */
 	protected function _getTimeZoneOffsetNum($timezoneOffset) {
 		//$tzTblの形式 '_TZ_GMTP9' => array("(GMT+9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk", 9.0, "Asia/Tokyo"),
-		foreach (CalendarsComponent::$tzTbl as $tzData) {
+		$tzTbl = CalendarsComponent::getTzTbl();
+		foreach ($tzTbl as $tzData) {
 			if ($tzData[2] === $timezoneOffset) {
 				return $tzData[1];
 			}
