@@ -65,12 +65,21 @@ class CalendarActionPlan extends CalendarsAppModel {
 	public $_schema = array (
 		// @codingStandardsIgnoreEnd
 
-
 		// 入力カラムの定義、データ型とdefault値、必要ならlength値
-
 		//繰返し編集の指定(0/1/2). このフィールドは渡ってこない時もあるので
 		//ViewにてunlockField指定しておくこと。
 		'edit_rrule' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+
+		//カレンダー元eventId
+		'origin_event_id' => array('type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
+		//カレンダー元eventKey
+		'origin_event_key' => array('type' => 'string', 'default' => ''),
+		//カレンダー元rruleId
+		'origin_rrule_id' => array('type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
+		//カレンダー元rruleKey
+		'origin_rrule_key' => array('type' => 'string', 'default' => ''),
+		//カレンダー元rruleを共有するeventの数（＝自分もふくめた兄弟の数）
+		'origin_num_of_event_siblings' => array('type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
 
 		//タイトル
 		'title' => array('type' => 'string', 'default' => ''),
@@ -475,19 +484,23 @@ class CalendarActionPlan extends CalendarsAppModel {
  * 予定データ登録
  *
  * @param array $data POSTされたデータ
+ * @param string $procMode procMode
+ * @param bool $isOriginRepeat isOriginRepeat
+ * @param bool $isTimeOrRepeatMod isTimeOrRepeatMod
  * @return bool 成功時true, 失敗時false
  */
-	public function saveCalendarPlan($data) {
+	public function saveCalendarPlan($data, $procMode, $isOriginRepeat, $isTimeOrRepeatMod) {
 		$this->begin();
-
-		////$this->_phpSystemTzEnvSwithing('Asia/Tokyo');
 
 		$this->aditionalData = $data['WorkflowComment'];
 
 		try {
-
-			//$this->planTime
-
+			//備忘）
+			//選択したTZを考慮したUTCへの変換は、この
+			//convertToPlanParamFormat()の中でcallしている、
+			//_setAndMergeDateTime()がさらにcallしている、
+			//_setAndMergeDateTimeDetail()で行っています。
+			//
 			$planParam = $this->convertToPlanParamFormat($data);
 
 			$this->insertPlan($planParam);
@@ -499,11 +512,9 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 			$this->rollback($ex);
 
-			////$this->_phpSystemTzEnvSwithing('UTC');
 			return false;
 		}
 
-		////$this->_phpSystemTzEnvSwithing('UTC');
 		return true;
 	}
 
@@ -640,24 +651,197 @@ class CalendarActionPlan extends CalendarsAppModel {
 	}
 
 /**
- * PHPシステムTZ環境切替
+ * getProcModeOriginRepeatAndModType
  *
- * _phpSystemTzEnvSwithing
+ * 追加・変更、元データ繰返し有無、及び時間・繰返し系変更タイプの判断処理
  *
- * @param string $timezoneId タイムゾーンID('UTC'or'Asia/Tokyo')
+ * @param array $data $this->request->data配列が渡される
+ * @param array $originEvent 変更元のevent関連データ
+ * @return array 処理モードと元データ繰返し有無
+ */
+	public function getProcModeOriginRepeatAndModType($data, $originEvent) {
+		$cap = $data['CalendarActionPlan'];
+
+		//追加処理か変更処理かの判断
+		//
+		$procMode = CalendarsComponent::PLAN_ADD;
+		if (!empty($cap['origin_event_id'])) {
+			$procMode = CalendarsComponent::PLAN_EDIT;
+		}
+
+		//元データが繰返しタイプかどうかの判断
+		$isOriginRepeat = false;
+		if (isset($cap['origin_num_of_event_siblings']) &&
+			$cap['origin_num_of_event_siblings'] > 1) {
+			$isOriginRepeat = true;
+		}
+
+		//変更内容が、時間・繰返し系の変更を含むかどうかの判断
+		//（Googleカレンダーの考え方の導入）
+		//
+		$timeRepeatModCnt = 0;
+
+		if (!empty($originEvent)) {
+			//１）タイムゾーンの比較
+			$this->__compareTz($cap, $originEvent, $timeRepeatModCnt);
+
+//aaaaaaaaaaaaaaa
+			//２）日付時刻の比較
+			//入力されたユーザ日付（時刻）を、選択TZを考慮し、サーバ系日付時刻に直してから比較する。
+			$this->__compareDatetime($cap, $originEvent, $timeRepeatModCnt);
+
+			//３）繰返しの比較
+			$cru = new CalendarRruleUtil();
+
+			//POSTされたデータよりrrule配列を生成する。
+			$workParam = array();
+			$workParam = $this->_setAndMergeRrule($workParam, $data);
+			$capRrule = $cru->parseRrule($workParam['rrule']);
+
+			//eventの親rruleモデルよりrruleを取り出し配列化する。
+			$originRrule = $cru->parseRrule($originEvent['CalendarRrule']['rrule']);
+
+			CakeLog::debug("DBG: capRrule[" . serialize($capRrule) .
+				"] VS originRrule[" . serialize($originRrule) . "]");
+			if (empty($this->__arrayRecursiveDiff($capRrule, $originRrule)) &&
+				empty($this->__arrayRecursiveDiff($originRrule, $capRrule))) {
+				//a集合=>b集合の差集合、b集合=>a集合の差集合、ともに空なので
+				//集合要素に差はない、と判断する。
+			} else {
+				//差がみつかったので、繰返しに変更あり。
+				++$timeRepeatModCnt;
+				CakeLog::debug("DBG 繰返しに変化あり! capRrule[" . serialize($capRrule) .
+				"] VS originRrule[" . serialize($originRrule) . "]");
+			}
+		}
+
+		$isTimeOrRepeatMod = false;
+		if ($timeRepeatModCnt) {	//1箇所以上変化があればtrueにする。
+			$isTimeOrRepeatMod = true;
+		}
+
+		CakeLog::debug("DBG: 結果. procMode[" . $procMode . "] isOriginRepeat[" .
+			$isOriginRepeat . "] isTimeOrRepeatMod[" . $isTimeOrRepeatMod . "]");
+
+		return array($procMode, $isOriginRepeat, $isTimeOrRepeatMod);
+	}
+
+/**
+ * __compareTz
+ *
+ * タイムゾーンの比較
+ *
+ * @param array $cap $data['CalendarActionPlan']情報
+ * @param array $originEvent 元イベント関連情報
+ * @param &$timeRepeatModCnt 変更数。タイムゾーンが変更されいていたら１加算する。
  * @return void
  */
-	protected function _phpSystemTzEnvSwithing($timezoneId) {
-		//カレンダーの登録内部処理の実装はNC2の実装に準じている。
-		//そしてNC2のカレンダー登録処理は、date.timezone = Asia/Tokyo下での
-		//phpの日付・時刻関数 date(), mktime()で矛盾なく動作するようになっている。
-		//画面からいれれられたＴＺ調整・補正は、date(),mktime()の結果を処理しておこなっていた。
-		//
-		//一方、NC3からはdate.timezone = UTCが前提となっている。
-		//(NetCommons/UtilityのNetCommonsTimeのgetNowDatetimeがUTCを期待しているのは明らか)
-		//
-		//よって、カレンダー登録ModelのCRUD関数のいる入口・出口で、この2つのdate.timezoneを
-		//切替する関数を用意する。
-		date_default_timezone_set($timezoneId);
+	private function __compareTz($cap, $originEvent, &$timeRepeatModCnt) {
+		$tzTbl = CalendarsComponent::getTzTbl();
+		$originTzId = '';
+		foreach ($tzTbl as $tzInfo) {
+			//dobule と stringで、型が違うので == で比較すること
+			if ($tzInfo[CalendarsComponent::CALENDAR_TIMEZONE_OFFSET_VAL] ==
+			$originEvent['CalendarEvent']['timezone_offset']) {
+				$originTzId = $tzInfo[CalendarsComponent::CALENDAR_TIMEZONE_ID];
+				break;
+			}
+		}
+		if ($originTzId != $cap['timezone_offset']) {
+			//選択したＴＺが変更されている。
+			++$timeRepeatModCnt;
+			CakeLog::debug("DBG: TZに変更あり！ originTzId=[" . $originTzId .
+				"] VS cap[timezone_offset]=[" . $cap['timezone_offset'] . "]");
+		}
 	}
+
+/**
+ * __compareDatetime
+ *
+ * 日付時刻の比較
+ * 入力されたユーザ日付（時刻）を、選択TZを考慮し、サーバ系日付時刻に直してから比較する。
+ *
+ * @param array $cap $data['CalendarActionPlan']情報
+ * @param array $originEvent 元イベント関連情報
+ * @param &$timeRepeatModCnt 変更数。日付時刻情報が変更されいていたら１加算する。
+ * @return void
+ */
+	private function __compareDatetime($cap, $originEvent, &$timeRepeatModCnt) {
+		if ($cap['enable_time']) {
+			//開始ー終了. "YYYY-MM-DD hh:mm" - "YYYY-MM-DD hh:mm"
+			//
+			//FIXME:  YYYY-MM-DD hh:mm のはずだが、手入力の時も問題ないか要確認。
+			$nctm = new NetCommonsTime();
+
+			$serverStartDatetime = $nctm->toServerDatetime($cap['detail_start_datetime'] . ':00', $cap['timezone_offset']);
+			$startDate = CalendarTime::stripDashColonAndSp(substr($serverStartDatetime, 0, 10));
+			$startTime = CalendarTime::stripDashColonAndSp(substr($serverStartDatetime, 11, 8));
+			$capDtstart = $startDate . $startTime;
+
+			$serverEndDatetime = $nctm->toServerDatetime($cap['detail_end_datetime'] . ':00', $cap['timezone_offset']);
+			$endDate = CalendarTime::stripDashColonAndSp(substr($serverEndDatetime, 0, 10));
+			$endTime = CalendarTime::stripDashColonAndSp(substr($serverEndDatetime, 11, 8));
+			$capDtend = $endDate . $endTime;
+		} else {
+			//終日指定
+			//CalendarsAppMode.phpの_setAndMergeDateTimeEasy()の終日タイプと同様処理をする。
+			//
+			//FIXME:  YYYY-MM-DDのはずだが、手入力の時も問題ないか要確認.
+			$ymd = substr($cap['detail_start_datetime'], 0, 10);	//YYYY-MM-DD
+			list($serverStartDateZero, $serverNextDateZero) =
+				(new CalendarTime())->convUserDate2SvrFromToDateTime(
+					$ymd, $cap['timezone_offset']);
+			$startDate = CalendarTime::stripDashColonAndSp(substr($serverStartDateZero, 0, 10));
+			$startTime = CalendarTime::stripDashColonAndSp(substr($serverStartDateZero, 11, 8));
+			$capDtstart = $startDate . $startTime;
+
+			$endDate = CalendarTime::stripDashColonAndSp(substr($serverNextDateZero, 0, 10));
+			$endTime = CalendarTime::stripDashColonAndSp(substr($serverNextDateZero, 11, 8));
+			$capDtend = $endDate . $endTime;
+		}
+		if ($capDtstart == $originEvent['CalendarEvent']['dtstart'] &&
+			$capDtend == $originEvent['CalendarEvent']['dtend']) {
+			//サーバ日付時間はすべて一致。
+		} else {
+			//サーバ日付時刻に変更あり。
+			++$timeRepeatModCnt;
+
+			CakeLog::debug("DBG: dtstar,dtendに変更あり！ POSTオリジナル enable_time[" .
+				$cap['enable_time'] . "] detail_start_datetime[" . $cap['detail_start_datetime'] .
+				"] detail_end_datetime[" . $cap['detail_end_datetime'] .
+				"] timezone_offset[" . $cap['timezone_offset'] . "]  => サーバ系 capDtstart[" .
+				$capDtstart . "] capDtend[" . $capDtend . "] VS origin dtstart[" .
+				$originEvent['CalendarEvent']['dtstart'] . "] dtend[" .
+				$originEvent['CalendarEvent']['dtend'] . "]");
+		}
+	}
+
+/**
+ * __arrayRecursiveDiff
+ *
+ * ２配列の集合の比較
+ *
+ * @param $aArray1 配列１
+ * @param $aArray2 配列２
+ * @return array 配列１の内、配列２にふくまれてない要素を配列で返す。
+ */
+	private function __arrayRecursiveDiff($aArray1, $aArray2) {
+		$aReturn = array();
+		foreach ($aArray1 as $mKey => $mValue) {
+			if (array_key_exists($mKey, $aArray2)) {
+				if (is_array($mValue)) {
+					$aRecursiveDiffResult = arrayRecursiveDiff($mValue, $aArray2[$mKey]);
+					if (count($aRecursiveDiffResult)) { $aReturn[$mKey] = $aRecursiveDiffResult; }
+				} else {
+					if ($mValue != $aArray2[$mKey]) {
+						$aReturn[$mKey] = $mValue;
+					}
+				}
+			} else {
+				$aReturn[$mKey] = $mValue;
+			}
+		}
+		return $aReturn;
+	}
+	
 }

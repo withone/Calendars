@@ -251,4 +251,27 @@ class CalendarEvent extends CalendarsAppModel {
 		return parent::beforeValidate($options);
 	}
 
+/**
+ * 自分もふくめた兄弟一覧を取得
+ *
+ * @param interger $rruleId 兄弟が共通にもつrruleのid
+ * @param interger $needLatest 最新に限定するかどうか。0:最新に限定しない。1:最新に限定する。
+ * @return array 兄弟一覧の配列
+ */
+	public function getSiblings($rruleId, $needLatest = 0) {
+		$options = array(
+			'conditions' => array(
+				$this->alias . '.calendar_rrule_id' => $rruleId,
+				//$this->alias . '.is_latest' => 1,
+			),
+			'recursive' => -1, //eventだけとる
+			'callbacks' => false,
+		);
+
+		if ($needLatest) {
+			$field = $this->alias . '.is_latest';
+			$options['conditions'][$field] = 1;
+		}
+		return $this->find('all', $options);
+	}
 }

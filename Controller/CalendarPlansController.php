@@ -234,8 +234,20 @@ class CalendarPlansController extends CalendarsAppController {
 				return;
 			}
 
+			$originEvent = array();
+			if (!empty($this->request->data['CalendarActionPlan']['origin_event_id'])) {
+				$originEvent = $this->__getEvent($this->request->data['CalendarActionPlan']['origin_event_id']);
+			}
+			//追加・変更、元データ繰返し有無、及び時間・繰返し系変更タイプの判断処理
+			list($procMode, $isOriginRepeat, $isTimeOrRepeatMod) =
+				$this->CalendarActionPlan->getProcModeOriginRepeatAndModType(
+					$this->request->data, $originEvent);
+
 			//成功なら元画面(カレンダーorスケジューラー)に戻る。
-			if (!$this->CalendarActionPlan->saveCalendarPlan($this->request->data)) {
+			//FIXME: 遷移元がshow.ctpなら、戻り先をshow.ctpに変える必要あり。
+			//
+			if (!$this->CalendarActionPlan->saveCalendarPlan($this->request->data,
+				$procMode, $isOriginRepeat, $isTimeOrRepeatMod)) {
 				//保存失敗
 				CakeLog::error("保存失敗");	//FIXME: エラー処理を記述のこと。
 			}
@@ -336,7 +348,7 @@ class CalendarPlansController extends CalendarsAppController {
 
 		//表示用の設定
 		$ctpName = '';
-		$vars = $event = array(); //0件を意味する空配列を入れておく。
+		$vars = $event = $eventSiblings = array(); //0件を意味する空配列を入れておく。
 		$style = 'detail';	//初期値
 		if (isset($this->request->params['named']) && isset($this->request->params['named']['style'])) {
 			$style = $this->request->params['named']['style'];
@@ -364,17 +376,30 @@ class CalendarPlansController extends CalendarsAppController {
 		$emailOptions = $this->CalendarActionPlan->getNoticeEmailOption();
 
 		if (isset($this->request->params['named']['event'])) {
-			$event = $this->__getEvent();
+			$event = $this->__getEvent($this->request->params['named']['event']);
 		}
 
+		//まずは、追加or編集モードの判定
+		$planViewMode = CalendarsComponent::PLAN_ADD;
+		if (count($event) > 0) {
+			//namedのevent:(id値)のeventデータがすでにあるので、編集
+			$planViewMode = CalendarsComponent::PLAN_EDIT;
+		} elseif (!empty($this->request->data['CalendarActionPlan']['origin_event_id'])) {
+			//formのhiddenに(取り出したeventの)id値が埋め込まれているので、編集
+			//変更時の入力エラー後の表示がここに該当する。
+			$planViewMode = CalendarsComponent::PLAN_EDIT;
+		}
+
+		//次に、該当eventのデータを取り出しセットするか、初期データをセットする
+		//かのいずれかを行う。
 		if (count($event) > 0) {
 			//eventが存在する場合、該当eventの表示用配列を取得する。
 			//
 			$capForView = (new CalendarSupport())->getCalendarActionPlanForView($event);
 
-			//CakeLog::debug("DBG: getCalendarActionPlanForView(event)結果[ " .
-			//	print_r($capForView, true) . "]");
-
+			//eventの兄弟も探しておく。
+			$eventSiblings = $this->CalendarEvent->getSiblings(
+				$event['CalendarEvent']['calendar_rrule_id']);
 		} else {
 			//eventが空の場合、初期値でFILLした表示用配列を取得する。
 			//
@@ -382,11 +407,6 @@ class CalendarPlansController extends CalendarsAppController {
 				$this->CalendarWorks->getDateTimeParam($this->request->params);
 			$capForView = (new CalendarSupport())->getInitialCalendarActionPlanForView(
 				$year, $month, $day, $hour, $minitue, $second, $exposeRoomOptions);
-
-			//CakeLog::debug("DBG: getInitialCalendarActionPlanForVieww(YmdHis[" .
-			//$year . $month . $day . $hour . $minitue . $second . "])結果[ " .
-			//print_r($capForView, true) . "]");
-
 		}
 
 		//capForViewのrequest->data反映
@@ -412,7 +432,8 @@ class CalendarPlansController extends CalendarsAppController {
 		}
 
 		$this->set(compact('frameId', 'languageId', 'vars', 'frameSetting', 'exposeRoomOptions',
-			'myself', 'emailOptions', 'event', 'capForView', 'mailSettingInfo', 'shareUsers'));
+			'myself', 'emailOptions', 'event', 'capForView', 'mailSettingInfo', 'shareUsers',
+			'eventSiblings', 'planViewMode'));
 		$this->render($ctpName);
 	}
 
@@ -494,12 +515,13 @@ class CalendarPlansController extends CalendarsAppController {
  *
  * イベント情報の取得
  *
+ * @param int $eventId $eventId
  * @return array 取得したイベント情報配列
  */
-	private function __getEvent() {
+	private function __getEvent($eventId) {
 		$options = array(
 			'conditions' => array(
-				$this->CalendarEvent->alias . '.id' => $this->request->params['named']['event'],
+				$this->CalendarEvent->alias . '.id' => $eventId,
 			),
 			'recursive' => 1, //belongsTo, hasOne, hasManyまで取得
 		);

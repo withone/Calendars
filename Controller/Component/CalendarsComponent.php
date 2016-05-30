@@ -206,6 +206,14 @@ class CalendarsComponent extends Component {
 	const ADDITIONAL = 'CALENDAR_ADDITIONAL';
 
 /**
+ * 予定編集のモード
+ *
+ * @val string
+ */
+	const PLAN_ADD = 'add';
+	const PLAN_EDIT = 'edit';
+
+/**
  * カレンダータイムゾーン情報の要素の位置
  *
  * @val integer

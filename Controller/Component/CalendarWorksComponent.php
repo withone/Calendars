@@ -24,7 +24,7 @@ class CalendarWorksComponent extends Component {
  *
  * オプション取得
  *
- * @param array $params $this->request-params配列が渡される
+ * @param array $params $this->request->params配列が渡される
  * @return array 年月日時分秒配列
  */
 	public function getDateTimeParam($params) {
@@ -141,7 +141,6 @@ class CalendarWorksComponent extends Component {
 					//$data['CalendarActionPlan']['rrule_byday']['MONTHLY'] =
 					//  $freq['MONTHLY']['BYDAY']; という形で代入
 					$data['CalendarActionPlan'][$type][$unit] = $freq[$unit][$typeKeyword];
-
 				}
 			}
 		}

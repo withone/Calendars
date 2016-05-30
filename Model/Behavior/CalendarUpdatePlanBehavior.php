@@ -92,10 +92,10 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 
 		//Rruleデータの全更新、指定以降更新、追加処理
 		if ($editRrule === self::CALENDAR_PLAN_EDIT_ALL) {
-			$this->setRruleData($planParams, $rruleData, self::CALENDAR_UPDATE_MODE);
+			$this->setRruleData($model, $planParams, $rruleData, self::CALENDAR_UPDATE_MODE);
 			$this->updateRruleDataAll($model, $planParams, $rruleData);
 		} elseif ($editRrule === self::CALENDAR_PLAN_EDIT_AFTER) {
-			$this->setRruleData($planParams, $rruleData, self::CALENDAR_UPDATE_MODE);
+			$this->setRruleData($model, $planParams, $rruleData, self::CALENDAR_UPDATE_MODE);
 			list($rruleData, $eventData) = $this->updatePlanByAfter(
 				$model, $eventId, $rruleKey, $planParams, $rruleData, $eventData);
 		} else {

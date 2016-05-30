@@ -257,14 +257,28 @@ class CalendarAppBehavior extends ModelBehavior {
 /**
  * RruleDataへのデータ設定
  *
+ * @param Model &$model model
  * @param array $planParams 予定パラメータ
  * @param array &$rruleData rruleデータ
  * @param string $mode mode insert時:self::CALENDAR_INSERT_MODE(デフォルト値) update時:self::CALENDAR_UPDATE_MODE
  * @return void
  */
-	public function setRruleData($planParams, &$rruleData, $mode = self::CALENDAR_INSERT_MODE) {
+	public function setRruleData(&$model, $planParams, &$rruleData,
+		$mode = self::CALENDAR_INSERT_MODE) {
+		if (!(isset($model->Calendar))) {
+			$model->loadModels(['Calendar' => 'Calendars.Calendar']);
+		}
+		$blockKey = Current::read('Block.key');
+		$calendar = $model->Calendar->findByBlockKey($blockKey);	//find('first'形式で返る
+		$calendarId = 1;	//暫定初期値
+		if (!empty($calendar['Calendar']['id'])) {
+			$calendarId = $calendar['Calendar']['id'];
+		}
+		//CakeLog::debug("DBG: blockKey[" . $blockKey . "] calendar[" . print_r($calendar, true) .
+		//	"] calendarId[" . $calendarId . "]");
+
 		$params = array(
-			'calendar_id' => 1,	//暫定
+			'calendar_id' => $calendarId,
 			'name' => '',
 			'rrule' => '',
 			'icalendar_uid' => CalendarRruleUtil::generateIcalUid(

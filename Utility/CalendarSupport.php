@@ -481,10 +481,10 @@ class CalendarSupport {
 			$capForView['CalendarActionPlan']['is_repeat'] = 1;
 			$capForView['CalendarActionPlan']['repeat_freq'] = 'YEARLY';
 			$capForView['CalendarActionPlan']['FREQ']['YEARLY']['INTERVAL'] = $rrule['INTERVAL'];
-			$capForView['CalendarActionPlan']['FREQ']['MONTHLY']['BYMONTH'] = $rrule['BYMONTH'];
-			$capForView['CalendarActionPlan']['FREQ']['MONTHLY']['BYDAY'] = array('');
+			$capForView['CalendarActionPlan']['FREQ']['YEARLY']['BYMONTH'] = $rrule['BYMONTH'];
+			$capForView['CalendarActionPlan']['FREQ']['YEARLY']['BYDAY'] = array('');
 			if (isset($rrule['BYDAY'])) {
-				$capForView['CalendarActionPlan']['FREQ']['MONTHLY']['BYDAY'] = $rrule['BYDAY'];
+				$capForView['CalendarActionPlan']['FREQ']['YEARLY']['BYDAY'] = $rrule['BYDAY'];
 			}
 		}
 	}
@@ -508,12 +508,26 @@ class CalendarSupport {
 			$capForView['CalendarActionPlan']['TERM']['REPEAT_COUNT'] = 0;
 			$capForView['CalendarActionPlan']['TERM']['REPEAT_UNTIL'] = 1;
 
-			$userUntilYmdHis =
-				(new CalendarTime())->svr2UserYmdHis($rrule['UNTIL']);
-			//YYYY-MM-DD hh:mm:ss
-			$userUntilDatetime = CalendarTime::addDashColonAndSp($userUntilYmdHis);
-
-			$capForView['CalendarActionPlan']['TERM']['UNTIL'] = $userUntilDatetime;
+			//ユーザーTZ=JSTのカレンダ編集画面より期限"2016-05-31まで"とすると、
+			//CalendarRruleのrruleには、UNTIL=20160531T150000(=UTC)が入る。
+			//parseRrule()して配列化して取り出すと、$rule[UNTIL]=20160531150000となる。
+			//これをJSTになおすと2016-06-01 00:00:00となる。
+			//時間の大小計算の場合、これ「2016-06-01 00:00:00まで(=未満)」
+			//との比較が、カレンダ編集画面に再表示する時は、
+			//「2016-05-31まで」と引く１日して代入・表現しないと、
+			//予定登録画面の表記と１日ずれてしまう。
+			//なので、ここで補正します。
+			//
+			$date = new DateTime('now', (new DateTimeZone('UTC')));	//サーバ系
+			$date->setDate(substr($rrule['UNTIL'], 0, 4),
+				substr($rrule['UNTIL'], 4, 2), substr($rrule['UNTIL'], 6, 2));
+			$date->setTime(substr($rrule['UNTIL'], 8, 2),
+				substr($rrule['UNTIL'], 10, 2), substr($rrule['UNTIL'], 12, 2));
+			$userTz = (new NetCommonsTime())->getUserTimezone();
+			$date->setTimezone(new DateTimeZone($userTz));	//ユーザ系へ変換
+			$date->setDate($date->format('Y'),
+				$date->format('m'), intval($date->format('d')) - 1);	//1日前にする
+			$capForView['CalendarActionPlan']['TERM']['UNTIL'] = $date->format('Y-m-d');
 		}
 	}
 }

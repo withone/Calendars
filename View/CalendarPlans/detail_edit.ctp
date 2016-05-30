@@ -3,7 +3,7 @@
 <div ng-controller="CalendarsDetailEdit" class="block-setting-body"
 	ng-init="initialize(<?php echo h(json_encode(array('frameId' => Current::read('Frame.id')))); ?>)">
 
-<?php if (isset($event['CalendarEvent']['id']) && $event['CalendarEvent']['id'] > 0) : ?>
+<?php if ($planViewMode === CalendarsComponent::PLAN_EDIT) : ?>
 	<div class='h3'><?php echo __d('calendars', '予定の編集'); ?></div>
 <?php else: ?>
 		<div class='h3'><?php echo __d('calendars', '予定の追加'); ?></div>
@@ -16,13 +16,18 @@
 
 	<?php echo $this->element('Calendars.CalendarPlans/return_hiddens', array('model' => 'CalendarActionPlan')); ?>
 
-	<?php echo $this->element('Calendars.CalendarPlans/detail_edit_hiddens'); ?>
+	<?php
+		echo $this->element('Calendars.CalendarPlans/detail_edit_hiddens', array(
+			'event' => $event, 'eventSiblings' => $eventSiblings,
+		));
+	?>
 
 <div class="panel-body">
 
 <?php $this->NetCommonsForm->unlockField('CalendarActionPlan.edit_rrule'); ?>
 
-<?php if ($capForView['CalendarActionPlan']['is_repeat']) : ?>
+<?php if (count($eventSiblings) > 1 || (isset($this->request->data['CalendarActionPlan']['origin_num_of_event_siblings']) &&
+	$this->request->data['CalendarActionPlan']['origin_num_of_event_siblings'] > 1)) : ?>
 	<div class="form-group" name="RepeatSet">
 	<div class="col-xs-12 col-sm-10 col-sm-offset-1">
 	<h2 style='float: left'>
@@ -165,7 +170,10 @@
 		'format' => 'YYYY-MM-DD HH:mm',	//hashi
 	)));
 	$ngModel = 'detailStartDatetime'; //[' . $frameId . ']';
-
+	$addNgInit = '';
+	if ($this->request->data['CalendarActionPlan']['enable_time']) {
+		$addNgInit = "changeDetailStartDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')";
+	}
 	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_start_datetime',
 	array(
 		'div' => false,
@@ -181,8 +189,9 @@
 		//'ng-show' => $useTime,		//表示条件１
 		//'ng-style' => "{float: 'left'}",
 		//modelに値を代入した後、changeDetail..()を使い、モデルの値を、DOMのinputのvalueに転写する.
-		'ng-init' => sprintf("%s = '%s'; ", 'detailStartDatetime', $fromYmdHiOfLastHour) .
-			"changeDetailStartDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')",
+		//'ng-init' => sprintf("%s = '%s'; ", 'detailStartDatetime', $fromYmdHiOfLastHour) .
+		//	"changeDetailStartDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')",
+		'ng-init' => sprintf("%s = '%s'; ", 'detailStartDatetime', $fromYmdHiOfLastHour) . $addNgInit,
 
 	));
 ?>
@@ -199,6 +208,10 @@
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD',
 	)));
+	$addNgInit = '';
+	if (!$this->request->data['CalendarActionPlan']['enable_time']) {
+		$addNgInit = "changeDetailStartDate('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')";
+	}
 	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_start_datetime',
 	array(
 		'div' => false,
@@ -216,8 +229,9 @@
 		//'value' => $fromServerYmdHiOfLastHour, // kuma add
 		//'type' => 'datetime,'
 		//modelに値を代入した後、changeDetail..()を使い、モデルの値を、DOMのinputのvalueに転写する.
-		'ng-init' => sprintf("%s = '%s'; ", $ngModel, $fromvarsYmd) .
-			"changeDetailStartDate('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')",
+		//'ng-init' => sprintf("%s = '%s'; ", $ngModel, $fromvarsYmd) .
+		//	"changeDetailStartDate('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')",
+		'ng-init' => sprintf("%s = '%s'; ", $ngModel, $fromvarsYmd) . $addNgInit,
 	));
 
 ?>
@@ -256,6 +270,10 @@
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD HH:mm',
 	)));
+	$addNgInit = '';
+	if ($this->request->data['CalendarActionPlan']['enable_time']) {
+		$addNgInit = "changeDetailEndDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_end_datetime') . "')";
+	}
 	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_end_datetime',
 	array(
 		'div' => false,
@@ -271,8 +289,9 @@
 		//'ng-show' => $useTime,		//表示条件１
 		//'ng-style' => "{float: 'left'}",
 		//modelに値を代入した後、changeDetail..()を使い、モデルの値を、DOMのinputのvalueに転写する.
-		'ng-init' => sprintf("%s = '%s'; ", 'detailEndDatetime', $toYmdHiOfLastHour) .
-			"changeDetailEndDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_end_datetime') . "')",
+		//'ng-init' => sprintf("%s = '%s'; ", 'detailEndDatetime', $toYmdHiOfLastHour) .
+		//	"changeDetailEndDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_end_datetime') . "')",
+		'ng-init' => sprintf("%s = '%s'; ", 'detailEndDatetime', $toYmdHiOfLastHour) . $addNgInit,
 	));
 ?>
 	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div> -->
@@ -289,6 +308,10 @@
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD',
 	)));
+	$addNgInit = '';
+	if (!$this->request->data['CalendarActionPlan']['enable_time']) {
+		$addNgInit = "changeDetailEndDate('" . 'CalendarActionPlan' . Inflector::camelize('detail_end_datetime') . "')";
+	}
 	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_end_datetime',
 	array(
 		'div' => false,
@@ -305,8 +328,9 @@
 		//'placeholder' => 'yyyy-mm-dd hh:nn', //kuma add
 		//'value' => $toServerYmdHiOfLastHour, //kuma
 		//modelに値を代入した後、changeDetail..()を使い、モデルの値を、DOMのinputのvalueに転写する.
-		'ng-init' => sprintf("%s = '%s'; ", $ngModel, $tovarsYmd) .
-			"changeDetailEndDate('" . 'CalendarActionPlan' . Inflector::camelize('detail_end_datetime') . "')",
+		//'ng-init' => sprintf("%s = '%s'; ", $ngModel, $tovarsYmd) .
+		//	"changeDetailEndDate('" . 'CalendarActionPlan' . Inflector::camelize('detail_end_datetime') . "')",
+		'ng-init' => sprintf("%s = '%s'; ", $ngModel, $tovarsYmd) . $addNgInit,
 	));
 ?>
 	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><i class="glyphicon glyphicon-time"></i></div> -->
