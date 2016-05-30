@@ -84,7 +84,6 @@ class CalendarPlanHelper extends AppHelper {
 		return $html;
 	}
 
-
 /**
  * makeShowDetailEditBtnHtml
  *
