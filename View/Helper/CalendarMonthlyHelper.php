@@ -65,7 +65,8 @@ class CalendarMonthlyHelper extends AppHelper {
  * 
  * @var array
  */
-	protected $_lineProcess = false; //処理中の予定（true:連続プランである/false連続プランではない）
+	protected $_lineProcess = false; //処理中の予定
+									//(true:連続プランである/false連続プランではない）
 
 /**
  * TimelineDataの取得
@@ -155,10 +156,13 @@ class CalendarMonthlyHelper extends AppHelper {
  * @return bool
  */
 	public function isLinePlan($plan) {
-		$startUserDate = $this->CalendarPlan->makeDateWithUserSiteTz($plan['CalendarEvent']['dtstart'], $plan['CalendarEvent']['is_allday']);
-		$endUserDate = $this->CalendarPlan->makeDateWithUserSiteTz($plan['CalendarEvent']['dtend'], $plan['CalendarEvent']['is_allday']);
+		$startUserDate = $this->CalendarPlan->makeDateWithUserSiteTz(
+			$plan['CalendarEvent']['dtstart'], $plan['CalendarEvent']['is_allday']);
+		$endUserDate = $this->CalendarPlan->makeDateWithUserSiteTz(
+			$plan['CalendarEvent']['dtend'], $plan['CalendarEvent']['is_allday']);
 
-		if ($startUserDate != $endUserDate && $plan['CalendarEvent']['is_allday'] == false) { //日跨ぎ（ユーザー時刻で同一日ではない）
+		//日跨ぎ（ユーザー時刻で同一日ではない）
+		if ($startUserDate != $endUserDate && $plan['CalendarEvent']['is_allday'] == false) {
 			return true;
 		}
 
@@ -200,9 +204,11 @@ class CalendarMonthlyHelper extends AppHelper {
 			//$endUserDate = $this->CalendarPlan->makeDateWithUserSiteTz($plan['CalendarEvent']['dtend'], $plan['CalendarEvent']['is_allday']);
 			//if ($startUserDate != $endUserDate && $plan['CalendarEvent']['is_allday'] == false) { //日跨ぎ（ユーザー時刻で同一日ではない）
 			if ($isLine == true) {
-				if ($year == $tmaStart['year'] && $month == $tmaStart['month'] && $day == $tmaStart['day']) { // 日跨ぎの初日である
+				if ($year == $tmaStart['year'] && $month == $tmaStart['month'] &&
+					$day == $tmaStart['day']) { // 日跨ぎの初日である
 					/* HTML追加 */
-					$html .= "<div class='hidden-xs calendar-plan-line " . $calendarLinePlanMark . "'  id='" . $id . '_' . $this->_week . "'>";
+					$html .= "<div class='hidden-xs calendar-plan-line " . $calendarLinePlanMark .
+						"'  id='" . $id . '_' . $this->_week . "'>";
 					$html .= '<a href=' . $url . ' class="calendar-line-link">';
 					$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
 					$html .= h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...'));
@@ -229,7 +235,8 @@ class CalendarMonthlyHelper extends AppHelper {
 						$this->_lineData[$this->_week][$this->_linePlanCnt]['toCell'] = $this->_celCnt;
 
 						//HTML追加
-						$html .= "<div class='hidden-xs calendar-plan-line " . $calendarLinePlanMark . "'  id='" . $id . '_' . $this->_week . "'>";
+						$html .= "<div class='hidden-xs calendar-plan-line " . $calendarLinePlanMark .
+							"'  id='" . $id . '_' . $this->_week . "'>";
 						$html .= '<a href=' . $url . ' class="calendar-line-link">';
 						$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
 						$html .= h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...'));

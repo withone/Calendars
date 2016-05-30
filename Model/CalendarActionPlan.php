@@ -703,8 +703,9 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 			CakeLog::debug("DBG: capRrule[" . serialize($capRrule) .
 				"] VS originRrule[" . serialize($originRrule) . "]");
-			if (empty($this->__arrayRecursiveDiff($capRrule, $originRrule)) &&
-				empty($this->__arrayRecursiveDiff($originRrule, $capRrule))) {
+			$diff1 = $this->__arrayRecursiveDiff($capRrule, $originRrule);
+			$diff2 =$this->__arrayRecursiveDiff($originRrule, $capRrule);
+			if (empty($diff1) && empty($diff2)) {
 				//a集合=>b集合の差集合、b集合=>a集合の差集合、ともに空なので
 				//集合要素に差はない、と判断する。
 			} else {
