@@ -103,7 +103,12 @@ class CalendarsAppController extends AppController {
 				$vars['day'] = 1;
 			}
 		}
-		$vars['dayOfTheWeek'] = date('w', strtotime($userNowYmdHis));
+		////$vars['dayOfTheWeek'] = date('w', strtotime($userNowYmdHis));	//date()は使わない
+		$userTz = (new NetCommonsTime())->getUserTimezone();
+		$date = new DateTime('now', (new DateTimeZone($userTz)));	//ユーザー系
+		$date->setDate($userNowArray['year'], $userNowArray['month'], $userNowArray['day']);
+		$date->setTime($userNowArray['hour'], $userNowArray['min'], $userNowArray['sec']);
+		$vars['dayOfTheWeek'] = $date->format('w');
 	}
 
 /**

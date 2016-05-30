@@ -704,7 +704,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 			CakeLog::debug("DBG: capRrule[" . serialize($capRrule) .
 				"] VS originRrule[" . serialize($originRrule) . "]");
 			$diff1 = $this->__arrayRecursiveDiff($capRrule, $originRrule);
-			$diff2 =$this->__arrayRecursiveDiff($originRrule, $capRrule);
+			$diff2 = $this->__arrayRecursiveDiff($originRrule, $capRrule);
 			if (empty($diff1) && empty($diff2)) {
 				//a集合=>b集合の差集合、b集合=>a集合の差集合、ともに空なので
 				//集合要素に差はない、と判断する。
@@ -734,7 +734,7 @@ class CalendarActionPlan extends CalendarsAppModel {
  *
  * @param array $cap $data['CalendarActionPlan']情報
  * @param array $originEvent 元イベント関連情報
- * @param &$timeRepeatModCnt 変更数。タイムゾーンが変更されいていたら１加算する。
+ * @param int &$timeRepeatModCnt 変更数。タイムゾーンが変更されいていたら１加算する。
  * @return void
  */
 	private function __compareTz($cap, $originEvent, &$timeRepeatModCnt) {
@@ -764,7 +764,7 @@ class CalendarActionPlan extends CalendarsAppModel {
  *
  * @param array $cap $data['CalendarActionPlan']情報
  * @param array $originEvent 元イベント関連情報
- * @param &$timeRepeatModCnt 変更数。日付時刻情報が変更されいていたら１加算する。
+ * @param int &$timeRepeatModCnt 変更数。日付時刻情報が変更されいていたら１加算する。
  * @return void
  */
 	private function __compareDatetime($cap, $originEvent, &$timeRepeatModCnt) {
