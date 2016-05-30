@@ -203,7 +203,7 @@ class CalendarMonthlyHelper extends AppHelper {
 				if ($year == $tmaStart['year'] && $month == $tmaStart['month'] && $day == $tmaStart['day']) { // 日跨ぎの初日である
 					/* HTML追加 */
 					$html .= "<div class='hidden-xs calendar-plan-line " . $calendarLinePlanMark . "'  id='" . $id . '_' . $this->_week . "'>";
-					$html .= '<a href=' . $url . '>';
+					$html .= '<a href=' . $url . ' class="calendar-line-link">';
 					$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
 					$html .= h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...'));
 					$html .= '</a>';
@@ -230,7 +230,7 @@ class CalendarMonthlyHelper extends AppHelper {
 
 						//HTML追加
 						$html .= "<div class='hidden-xs calendar-plan-line " . $calendarLinePlanMark . "'  id='" . $id . '_' . $this->_week . "'>";
-						$html .= '<a href=' . $url . '>';
+						$html .= '<a href=' . $url . ' class="calendar-line-link">';
 						$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
 						$html .= h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...'));
 						$html .= '</a>';

@@ -930,10 +930,14 @@ padding:10px;
 	height: 1.5em;
 	/*width:183px;  dummy */
 	border-radius:5px;
-	font-color:#ffffff;
 	z-index:2;
 	padding-left:3px;
 }
+
+a.calendar-line-link {
+	color:#fff !important;
+}
+
 
 .calendar-lineplan-public {
 	background-color: #428bca;
