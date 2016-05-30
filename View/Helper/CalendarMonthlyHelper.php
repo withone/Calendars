@@ -29,8 +29,54 @@ class CalendarMonthlyHelper extends AppHelper {
 		'Form',
 		'Calendars.CalendarCommon',
 		'Calendars.CalendarUrl',
+		'Calendars.CalendarPlan',
 		'NetCommons.TitleIcon',
 	);
+
+/**
+ * line plan data
+ *
+ * @var array
+ */
+	protected $_lineData = array();
+
+/**
+ * line week data
+ * 処理中の週数
+ * @var array
+ */
+	protected $_week = 0;
+
+/**
+ * line plan week data
+ * 処理中のセル数（左から何セル目か）
+ * @var array
+ */
+	protected $_celCnt = 0; //処理中セル（左から何セル目か）
+
+/**
+ * line plan count data
+ * 処理中の週の日跨ぎプラン数
+ * @var array
+ */
+
+	protected $_linePlanCnt = 0; //この週の連続プランの数
+
+/**
+ * line plan proceess data
+ * 
+ * @var array
+ */
+	protected $_lineProcess = false; //処理中の予定（true:連続プランである/false連続プランではない）
+
+/**
+ * TimelineDataの取得
+ *
+ * @return array
+ */
+	public function getLineData() {
+		return $this->_lineData;
+	}
 
 /**
  * _getPlanIfMatchThisDay
@@ -48,6 +94,7 @@ class CalendarMonthlyHelper extends AppHelper {
 	/*
 	protected function _getPlanIfMatchThisDay($plan, $beginOfDay, $endOfDay, $fromTimeOfDay,
 		$toTimeOfDay, &$nctm) {
+//		$plan['CalendarEvent']['line'] = false; //日跨ぎPlan判定 kuma add
 		//begin-end, dtstart-dtendともに、以上-未満であることに注意すること。
 		if ($beginOfDay <= $plan['CalendarEvent']['dtstart'] &&
 			$plan['CalendarEvent']['dtstart'] < $endOfDay) {
@@ -74,6 +121,7 @@ class CalendarMonthlyHelper extends AppHelper {
 			//この日が、予定の期間(開始日時-終了日時)に包含される時
 			$plan['CalendarEvent']['fromTime'] = $fromTimeOfDay;
 			$plan['CalendarEvent']['toTime'] = $toTimeOfDay;
+//			$plan['CalendarEvent']['line'] = true; // kuma add
 			return $plan;
 		}
 		return false;
@@ -101,6 +149,106 @@ class CalendarMonthlyHelper extends AppHelper {
 	}
 
 /**
+ * isLinePlan
+ *
+ * 日跨ぎ(日跨ぎLine)判定
+ *
+ * @param array $plan 予定
+ * @return bool
+ */
+	public function isLinePlan($plan) {
+		$startUserDate = $this->CalendarPlan->makeDateWithUserSiteTz($plan['CalendarEvent']['dtstart'], $plan['CalendarEvent']['is_allday']);
+		$endUserDate = $this->CalendarPlan->makeDateWithUserSiteTz($plan['CalendarEvent']['dtend'], $plan['CalendarEvent']['is_allday']);
+	
+		if ($startUserDate != $endUserDate && $plan['CalendarEvent']['is_allday'] == false) { //日跨ぎ（ユーザー時刻で同一日ではない）
+			return true;
+		}
+		
+		return false;
+	}
+
+/**
+ * getPlanSummariesLineHtml
+ *
+ * 予定概要群(日跨ぎLine)html取得
+ *
+ * @param array &$vars カレンダー情報
+ * @param int $year 年
+ * @param int $month 月
+ * @param int $day 日
+ * @param string $fromTime この日の１日のスタート時刻
+ * @param string $toTime この日の１日のエンド時刻
+ * @param array $plans この日の予定群
+ * @return string HTML
+ */
+	public function getPlanSummariesLineHtml(&$vars, $year, $month, $day, $fromTime, $toTime, $plans) {
+		$html = '';
+		$nctm = new NetCommonsTime();
+		$id = '';
+
+		foreach ($plans as $plan) {
+			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
+
+			$id = 'planline' . (string)$plan['CalendarEvent']['id']; //位置制御用id
+
+			$checkStartDate = $nctm->toUserDatetime($plan['CalendarEvent']['dtstart']);
+			$calendarLinePlanMark = $this->CalendarCommon->getLinePlanMarkClassName(
+				$vars, $plan['CalendarEvent']['room_id']);
+
+			$tmaStart = CalendarTime::transFromYmdHisToArray($checkStartDate);
+			//期間（日跨ぎの場合） 
+			$isLine = $this->isLinePlan($plan);
+			//$startUserDate = $this->CalendarPlan->makeDateWithUserSiteTz($plan['CalendarEvent']['dtstart'], $plan['CalendarEvent']['is_allday']);
+			//$endUserDate = $this->CalendarPlan->makeDateWithUserSiteTz($plan['CalendarEvent']['dtend'], $plan['CalendarEvent']['is_allday']);
+			//if ($startUserDate != $endUserDate && $plan['CalendarEvent']['is_allday'] == false) { //日跨ぎ（ユーザー時刻で同一日ではない）
+			if ($isLine == true) {
+				if ($year == $tmaStart['year'] && $month == $tmaStart['month'] && $day == $tmaStart['day']) { // 日跨ぎの初日である
+					/* HTML追加 */
+					$html .= "<div class='hidden-xs calendar-plan-line " . $calendarLinePlanMark . "'  id='" . $id . '_' . $this->_week . "'>";
+					$html .= '<a href=' . $url . '>';
+					$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
+					$html .= h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...'));
+					$html .= '</a>';
+					$html .= '</div>';
+					$this->_lineData[$this->_week][$this->_linePlanCnt]['id'] = $plan['CalendarEvent']['id'];
+					$this->_lineData[$this->_week][$this->_linePlanCnt]['fromCell'] = $this->_celCnt;
+					$this->_lineData[$this->_week][$this->_linePlanCnt]['toCell'] = $this->_celCnt;
+					$this->_linePlanCnt++;//連続するplanの数（この週内）
+				}
+				else { // 日跨ぎの初日ではない
+					$find = false;
+					$i = 0;
+					foreach($this->_lineData[$this->_week] as $linePlan) {
+						if ($linePlan['id'] == $plan['CalendarEvent']['id']) {
+							$this->_lineData[$this->_week][$i]['toCell'] = $this->_celCnt;
+							$find = true;
+						}
+						$i++;
+					}
+					if ($find == false) { //この週では最初
+						/* HTML追加 */
+						$this->_lineData[$this->_week][$this->_linePlanCnt]['id'] = $plan['CalendarEvent']['id'];
+						$this->_lineData[$this->_week][$this->_linePlanCnt]['fromCell'] = $this->_celCnt;
+						$this->_lineData[$this->_week][$this->_linePlanCnt]['toCell'] = $this->_celCnt;
+
+						//HTML追加
+						$html .= "<div class='hidden-xs calendar-plan-line " . $calendarLinePlanMark . "'  id='" . $id . '_' . $this->_week . "'>";
+						$html .= '<a href=' . $url . '>';
+						$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
+						$html .= h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...'));
+						$html .= '</a>';
+						$html .= '</div>';
+
+						$this->_linePlanCnt++;//連続するplanの数（この週内）
+					}
+				}
+				continue;
+			}
+		}
+		return $html;
+	}
+
+/**
  * getPlanSummariesHtml
  *
  * 予定概要群html取得
@@ -116,13 +264,40 @@ class CalendarMonthlyHelper extends AppHelper {
  */
 	public function getPlanSummariesHtml(&$vars, $year, $month, $day, $fromTime, $toTime, $plans) {
 		$html = '';
+		//$nctm = new NetCommonsTime();
+
+		if ($this->_lineProcess == true) {
+
+			$html = $this->getPlanSummariesLineHtml($vars, $year, $month, $day, $fromTime, $toTime,
+			$plans);
+			return $html;
+		}
+
+		$id = 'divline' . (string)$this->_week . '_' . (string)$this->_celCnt;
+		$html .= "<div class='hidden-xs' style='z-index:1;' id='" . $id . "'></div>"; //縦位置調整用
+		//$linePlanCnt = 0;
 		foreach ($plans as $plan) {
+
+			//$startUserDate = $this->CalendarPlan->makeDateWithUserSiteTz($plan['CalendarEvent']['dtstart'], $plan['CalendarEvent']['is_allday']);
+			//$endUserDate = $this->CalendarPlan->makeDateWithUserSiteTz($plan['CalendarEvent']['dtend'], $plan['CalendarEvent']['is_allday']);
+
+			//期間（日跨ぎの場合） 
+			//if ($startUserDate != $endUserDate && $plan['CalendarEvent']['is_allday'] == false) { //日跨ぎ（ユーザー時刻で同一日ではない）
+			//	continue;
+			//}
+			$isLine = $this->isLinePlan($plan);
+			if ($isLine == true) {
+				continue;
+			}
+
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName(
 				$vars, $plan['CalendarEvent']['room_id']);
 			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
 
 			// 大枠
+			$html .= '<div class="row calendar-plan-noline"><div class="col-xs-12">';
 			$html .= '<div class="row"><div class="col-xs-12">';
+
 			// スペースごとの枠
 			$html .= '<div class="calendar-plan-mark ' . $calendarPlanMark . '">';
 			// ステータスラベル
@@ -202,8 +377,18 @@ class CalendarMonthlyHelper extends AppHelper {
 					'week' => $week,
 					'frame_id' => Current::read('Frame.id'),
 				));
+				//$html .= "<tr><th rowspan='2' class='calendar-col-week hidden-xs' data-url='" . $url . "'>";
 				$html .= "<tr><th class='calendar-col-week hidden-xs' data-url='" . $url . "'>";
 				$html .= $week . __d('calendars', '週') . '</th>';
+
+				/**Line**/
+				$this->_week = $week-1;
+				$this->_lineData[$this->_week] = array();
+				$this->_celCnt = 0; //左から何セル目か
+				$this->_linePlanCnt = 0;  // この週の連続する予定数
+				/**Line**/
+
+
 			}
 		}
 		return $html;
@@ -374,14 +559,33 @@ class CalendarMonthlyHelper extends AppHelper {
 		$html .= "<div class='col-xs-12'>";
 		$html .= "<span class='calendar-sunday'><small>";
 		$html .= (($holidayTitle === '') ? '&nbsp;' : $holidayTitle) . '</small></span>';
-		$html .= "</div>";
 		$html .= '</div>';
 		$html .= '</div>';
+		$html .= '</div>';
+
+		/* forLINE add */
+		$html .= "<div class='col-xs-9 col-sm-12'>";
+					$html .= "<div class='calendar-col-day-line calendar-period_" . $week . $this->_celCnt ."'>";
+
+					$this->_lineProcess = true; //line予定の追加
+					//予定概要群
+					$html .= $this->_makePlanSummariesHtml($vars, $nctm, $year, $month, $day);
+					$html .= '</div>';
+
+					$this->_lineProcess = false; //line以外の予定の追加
+					//予定概要群
+					$html .= $this->_makePlanSummariesHtml($vars, $nctm, $year, $month, $day);
+		/* forline add */
+
+		/* org
 		//予定概要群
 		$html .= "<div class='col-xs-9 col-sm-12'>";
 		//$html .= $this->_makePlanSummariesHtml($vars, $nctm, $vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day);
 		$html .= $this->_makePlanSummariesHtml($vars, $nctm, $year, $month, $day);
 		$html .= '</div>';
+		*/
+
+		$this->_celCnt++;
 		$html .= '</td>';
 	}
 
@@ -402,7 +606,6 @@ class CalendarMonthlyHelper extends AppHelper {
 		//初週の前月部
 		for ($idx = 0; $idx < $vars['mInfo']['wdayOf1stDay']; ++$idx) {
 			$html .= $this->_makeStartTr($cnt, $vars, $week);
-
 			$html .= "<td class='calendar-col-day calendar-tbl-td-pos calendar-out-of-range'>";
 			$day = $vars['mInfo']['daysInPrevMonth'] - $vars['mInfo']['wdayOf1stDay'] + ($idx + 1);
 			$holidayTitle = $this->CalendarCommon->getHolidayTitle(
@@ -438,7 +641,7 @@ class CalendarMonthlyHelper extends AppHelper {
 				$vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars);
 			$html .= '<div class="row">';
 			$html .= '<div class="col-xs-3 col-sm-12">';
-			$html .= '<div class="row">';
+			$html .= '<div class="row calendar-day-num">';
 			$html .= '<div class="col-xs-12">';
 			$html .= '<span class="calendar-day calendar-daily-disp ';
 			$html .= $textColor . '" data-url="' . $url . '">' . $day . '</span>';
@@ -456,14 +659,21 @@ class CalendarMonthlyHelper extends AppHelper {
 			$html .= '</div>';
 			//予定概要群
 			$html .= '<div class="col-xs-9 col-sm-12">';
+			//line start
+			$tdColor = '';
+			$html .= "<div class='calendar-col-day-line calendar-period_" . $week . $this->_celCnt ."'>";
+			$this->_lineProcess = true; //line予定の追加
+			//予定概要群
 			$html .= $this->_makePlanSummariesHtml($vars, $nctm, $vars['mInfo']['year'],
 				$vars['mInfo']['month'], $day);
 			$html .= '</div>';
-			$html .= '</div>';
-			$html .= '</div></td>';
-
+			$this->_lineProcess = false; //line以外の予定の追加
+			//予定概要群
+			$html .= $this->_makePlanSummariesHtml($vars, $nctm, $vars['mInfo']['year'],
+				$vars['mInfo']['month'], $day);
+			$this->_celCnt++;
 			$html .= $this->_makeEndTr($cnt);
-
+			// line end
 			++$cnt;
 		}
 
@@ -471,14 +681,12 @@ class CalendarMonthlyHelper extends AppHelper {
 		for ($idx = $vars['mInfo']['wdayOfLastDay'], $day = 1; $idx < 6; ++$idx, ++$day) {
 
 			$html .= $this->_makeStartTr($cnt, $vars, $week);
-
 			$html .= "<td class='calendar-col-day calendar-tbl-td-pos calendar-out-of-range'>";
 			$holidayTitle = $this->CalendarCommon->getHolidayTitle(
 				$vars['mInfo']['yearOfNextMonth'], $vars['mInfo']['nextMonth'], $day,
 				$vars['holidays'], $cnt);
 			$this->_doPrevNextMonthPart( //生成結果等は、参照で返す.
 				$nctm, 'next', $vars, $html, $cnt, $week, $idx, $day, $holidayTitle);
-
 			$html .= $this->_makeEndTr($cnt);
 
 			++$cnt;

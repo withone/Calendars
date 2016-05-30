@@ -62,6 +62,30 @@ class CalendarPlanHelper extends AppHelper {
 	}
 
 /**
+ * makeDateWithUserSiteTz
+ *
+ * サーバ系日付時刻、タイムゾーン、言語より、言語別ユーザ系日付文字列を生成
+ * ユーザーTZ or サイトTZ を暗黙裡に使う。登録時の現地TZは、ここではつかわない。
+ *
+ * @param string $YmdHis "YYYYMMDDhhmmss"形式のシステム系日付時刻
+ * @param bool $isAllday 終日フラグ
+ * @return string HTML
+ */
+	public function makeDateWithUserSiteTz($YmdHis, $isAllday) {
+		$nctm = new NetCommonsTime();
+		$serverDatetime = CalendarTime::addDashColonAndSp($YmdHis);
+		//toUserDatetime()が内部でユーザTZorサイトTZを使う.
+		$userDatetime = $nctm->toUserDatetime($serverDatetime);
+		$tma = CalendarTime::transFromYmdHisToArray($userDatetime);
+		//$unixtm = mktime(intval($tma['hour']), intval($tma['min']), intval($tma['sec']),
+		//	intval($tma['month']), intval($tma['day']), intval($tma['year']));
+
+		$html = sprintf(__d('calendars', '%s年%s月%s日'), $tma['year'], $tma['month'], $tma['day']);
+		return $html;
+	}
+
+
+/**
  * makeShowDetailEditBtnHtml
  *
  * 特定日の特定予定画面(show画面)での編集キャンセルボタンHTML生成

@@ -306,6 +306,145 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
 
 });
 
+NetCommonsApp.controller('CalendarsMonthlyLinePlan', function($scope) {
+  $scope.calendarPlans = [];
+  console.log('MONTHLYLINE.Plan!!!..%d', $scope.rowHeight);
+
+  $scope.initialize = function(data) {
+    console.log('MONTHLYLINE.Plan!INIT!..');
+    $scope.calendarLinePlans = data.calendarLinePlans;
+    console.log('calendarLinePlan length! %d', data.calendarLinePlans.length);
+
+
+  //行(日)のtop
+  var line1 = $('.calendar-monthly-line-1');
+  var line1Top = line1[0].getBoundingClientRect().top;
+  var line1Left = line1[0].getBoundingClientRect().left;
+
+  console.log('line1Top! %d Left %d', line1Top, line1Left);
+
+  //行（土）のtop
+  var line7 = $('.calendar-monthly-line-7');
+  var line7Top = line7[0].getBoundingClientRect().top;
+  var line7Left = line7[0].getBoundingClientRect().left;
+
+  console.log('line7Top! %d Left %d', line7Top, line7Left);
+
+  //1日cellの横幅基準
+  aDayWidth = ( line7Left - line1Left ) / 6;
+  $scope.aDayWidth = aDayWidth;
+  console.log('aDayWidth %d', $scope.aDayWidth);
+
+  //初期化
+  $scope.week = [];
+  $scope.week[0] = [];
+  $scope.week[0].maxLineNum = 0;
+  $scope.week[0].prevMargin = 0; //蓄積されているマージン
+  $scope.week[0].Column = []; //保持するデータ（重なりチェック）
+
+  for (var i = 0; i < $scope.calendarLinePlans.length; i++) {  //第n週ループ
+    $scope.week[i] = [];
+    $scope.week[i].maxLineNum = 0;
+    $scope.week[i].prevMargin = 0; //蓄積されているマージン
+    $scope.week[i].Column = []; //保持するデータ（重なりチェック）
+    $scope.week[i].Column[0] = [];
+  }
+
+  //LINE高さと横幅の調整
+    for (var i = 0; i < $scope.calendarLinePlans.length; i++) {  //第n週ループ
+      for (var j=0; j < $scope.calendarLinePlans[i].length; j++) {
+        $scope.setLinePos(i, $scope.calendarLinePlans[i][j].id, $scope.calendarLinePlans[i][j].fromCell, $scope.calendarLinePlans[i][j].toCell);
+      }
+    }
+
+  //縦位置の調整
+    for (var i = 0; i < $scope.calendarLinePlans.length; i++) {  //第n週ループ
+      $scope.week[i].celCnt = [];
+      for (var celCnt = 0; celCnt < 7; celCnt++ ) { // cell数カウント
+        $scope.week[i].celCnt[celCnt] = 0;
+      }
+      for (var j=0; j < $scope.calendarLinePlans[i].length; j++) { //各セルに+1
+        var fromCell = $scope.calendarLinePlans[i][j].fromCell;
+        for (; fromCell <= $scope.calendarLinePlans[i][j].toCell; fromCell++) {
+          $scope.week[i].celCnt[fromCell]++;
+        }
+      }
+      for (var celCnt = 0; celCnt < 7; celCnt++ ) { // 各セルに高さ設定
+        var divObj = document.getElementById('divline' + String(i) + '_' + String(celCnt));
+        divObj.style.height = String($scope.week[i].celCnt[celCnt] * 25)+ 'px';
+      }
+    }
+
+  //var planObj = document.getElementById('divline1_6');
+  //planObj.style.height = '30px'; //test
+
+  };
+
+  $scope.setLinePos = function(week, id, fromCell, toCell) {
+    console.log('LINE.Plan!setLinePos!.id[%d] fromCell [%d] toCell[%d].', id, fromCell, toCell);
+    var planObj = document.getElementById('planline' + String(id) + '_' + String(week));
+
+    //幅設定
+    planObj.style.width = String((toCell - fromCell + 1) * $scope.aDayWidth ) + 'px';
+    
+    //重ならない行数を取得
+    var lineNum = $scope.getLineNum(week, fromCell, toCell);
+    
+    //Top設定
+    planObj.style.top =  String(((25 * lineNum ) + 5)) + 'px'; // 重なったライン数分だけずらす
+    //planObj.style.position = 'relative';
+
+    //次回の重なりチェックのため、値保持
+    var data = {a: fromCell, b: toCell};
+    $scope.week[week].Column[lineNum].push(data);
+  }
+
+  $scope.getLineNum = function(week, a, b) {
+    console.log('Monthly.Plan!getLineNum!week[%d] a[%d] b[%d]',week, a, b);
+
+    //0行目からチェック
+    for (var i = 0; i <= $scope.week[week].maxLineNum; i++) {
+      if ($scope.checkColumn(week, i, a, b) == false) {
+        return i; //重なりの無い列を返却
+      }
+    }
+
+    $scope.week[week].maxLineNum++; //新しい列
+    $scope.week[week].Column[$scope.week[week].maxLineNum] = [];
+    return $scope.week[week].maxLineNum;
+  };
+
+  $scope.checkColumn = function(week, checkColumn, a, b) {
+    console.log('Monthly.Plan!checkColumn!..');
+
+    //指定列の重なりチェック
+    for (var i = 0; i < $scope.week[week].Column[checkColumn].length; i++) {
+      if ($scope.checkOverlap($scope.week[week].Column[checkColumn][i].
+          a, $scope.week[week].Column[checkColumn][i].b, a, b) == true) {
+        console.log('OVER!!!!!! checkColumn %d', i);
+        return true;
+      }
+    }
+    return false; //重なりなし
+  };
+
+  $scope.checkOverlap = function(a1, b1, a2, b2) {
+    console.log('Monthly.Plan!checkOverlap!..a1[%d] b1[%d] a2[%d] b2[%d]');
+
+    //線分1と線分2の重なりチェック
+    if (a1 > a2 && a1 > b2 &&
+        b1 > a2 && b1 > a2) {
+      return false;
+    }
+    if (a2 > a1 && a2 > b1 &&
+        b2 > a1 && b2 > b1) {
+      return false;
+    }
+    return true; //重なりあり
+  };
+
+
+});
 
 NetCommonsApp.controller('CalendarDetailEditWysiwyg',
     ['$scope', 'NetCommonsWysiwyg', function($scope, NetCommonsWysiwyg) {

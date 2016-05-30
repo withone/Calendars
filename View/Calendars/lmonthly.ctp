@@ -17,17 +17,19 @@
 				<table class='calendar-monthly-table'>
 					<tbody>
 						<tr class="hidden-xs">
-							<td class='calendar-col-week-head'>&nbsp;</td>
-							<td class='calendar-col-day-head'><span class='calendar-sunday h4'><?php echo __d('calendars', '日'); ?></span></td>
-							<td class='calendar-col-day-head'><span class='h4'><?php echo __d('calendars', '月'); ?></span></td>
-							<td class='calendar-col-day-head'><span class='h4'><?php echo __d('calendars', '火'); ?></span></td>
-							<td class='calendar-col-day-head'><span class='h4'><?php echo __d('calendars', '水'); ?></span></td>
-							<td class='calendar-col-day-head'><span class='h4'><?php echo __d('calendars', '木'); ?></span></td>
-							<td class='calendar-col-day-head'><span class='h4'><?php echo __d('calendars', '金'); ?></span></td>
-							<td class='calendar-col-day-head'><span class='calendar-saturday h4'><?php echo __d('calendars', '土'); ?></span></td>
+							<td class='calendar-col-week-head calendar-monthly-line-0'>&nbsp;</td>
+							<td class='calendar-col-day-head calendar-monthly-line-1'><span class='calendar-sunday h4'><?php echo __d('calendars', '日'); ?></span></td>
+							<td class='calendar-col-day-head calendar-monthly-line-2'><span class='h4'><?php echo __d('calendars', '月'); ?></span></td>
+							<td class='calendar-col-day-head calendar-monthly-line-3'><span class='h4'><?php echo __d('calendars', '火'); ?></span></td>
+							<td class='calendar-col-day-head calendar-monthly-line-4'><span class='h4'><?php echo __d('calendars', '水'); ?></span></td>
+							<td class='calendar-col-day-head calendar-monthly-line-5'><span class='h4'><?php echo __d('calendars', '木'); ?></span></td>
+							<td class='calendar-col-day-head calendar-monthly-line-6'><span class='h4'><?php echo __d('calendars', '金'); ?></span></td>
+							<td class='calendar-col-day-head calendar-monthly-line-7'><span class='calendar-saturday h4'><?php echo __d('calendars', '土'); ?></span></td>
 						</tr>
 
 						<?php echo $this->CalendarMonthly->makeLargeMonthyBodyHtml($vars); ?>
+						<?php $calendarLinePlans = $this->CalendarMonthly->getLineData(); ?>
+						<div ng-controller="CalendarsMonthlyLinePlan" ng-init="initialize(<?php echo h(json_encode(array('calendarLinePlans' => $calendarLinePlans))) ?>)"></div>
 
 					</tbody>
 				</table>

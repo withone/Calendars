@@ -148,11 +148,20 @@
 .calendar-col-day {
 	width: 13.7%;
 	border: 1px solid #ddd;
+	/*border-left: 1px solid #ddd;*/
+	/*border-right: 1px solid #ddd;*/
 }
 .calendar-col-day > div {
-	padding: 3px;
+	/*padding: 3px;*/
 	position:relative !important;
 }
+
+.calendar-col-day-line > div {
+	/*padding: 3px;*/
+	position:relative !important;
+	padding-top:2px;
+}
+
 .calendar-col-day .calendar-day {
 	font-size:2.0em;
 	display:inline-block;
@@ -340,6 +349,7 @@
 
 .calendar-monthly-table {
 	width: 100%;
+	table-layout: fixed; //2016.05.20
 }
 
 /*-- カレンダー月縮小 --*/
@@ -598,7 +608,7 @@
 .calendar-out-of-range {
 	background-color: #F5F5F5;
 }
-td.calendar-col-day.calendar-out-of-range  .calendar-day {
+td.calendar-col-day .calendar-out-of-range  .calendar-day {
 	font-size:1.4em;
 	margin-top:0.2em;
 }
@@ -912,3 +922,52 @@ padding:10px;
 	margin-bottom: 0.8em;
 	margin-top:1.2em;
 }
+
+/* カレンダー日跨ぎ予定ライン */
+.calendar-plan-line {
+	/*background-color:#f0ad4e;  dummy #e4f7f8 */
+	white-space: nowrap;
+	height: 1.5em;
+	/*width:183px;  dummy */
+	border-radius:5px;
+	font-color:#ffffff;
+	z-index:2;
+	padding-left:3px;
+}
+
+.calendar-lineplan-public {
+	background-color: #428bca;
+}
+
+.calendar-lineplan-group {
+	background-color: #5cb85c;
+}
+
+.calendar-lineplan-private {
+	background-color: #f0ad4e;
+}
+
+.calendar-lineplan-member {
+	background-color: #d9534f;
+}
+
+
+.calendar-lineplan-share {
+	background-color: #e888ec;
+}
+
+.calendar-day-num {
+padding:3px;
+}
+
+.calendar-plan-noline {
+/*padding:3px;*/
+/*
+padding-left:3px;
+padding-top:3px;
+padding-bottom:3px;
+padding-right:3px;
+*/
+}
+
+

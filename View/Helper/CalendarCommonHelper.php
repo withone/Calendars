@@ -64,6 +64,26 @@ class CalendarCommonHelper extends AppHelper {
 	}
 
 /**
+ * getLinePlanMarkClassName
+ *
+ * 予定(日跨ぎライン)マーククラス名取得
+ *
+ * @param array &$vars カレンダー情報
+ * @param int $roomId ルームID
+ * @return string ClassName
+ */
+	public function getLinePlanMarkClassName(&$vars, $roomId) {
+		if ($key = array_search($roomId, $vars['parentIdType'])) {
+			//公開、プライベード、または、全会員
+			$html = 'calendar-lineplan-' . $key;
+		} else {
+			//グループ空間
+			$html = 'calendar-lineplan-group';
+		}
+		return $html;
+	}
+
+/**
  * makeWorkFlowLabel
  *
  * 承認フローステータスよりラベル生成
