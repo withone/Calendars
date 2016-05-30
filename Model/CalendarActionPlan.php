@@ -822,8 +822,8 @@ class CalendarActionPlan extends CalendarsAppModel {
  *
  * ２配列の集合の比較
  *
- * @param $aArray1 配列１
- * @param $aArray2 配列２
+ * @param array $aArray1 配列１
+ * @param array $aArray2 配列２
  * @return array 配列１の内、配列２にふくまれてない要素を配列で返す。
  */
 	private function __arrayRecursiveDiff($aArray1, $aArray2) {
@@ -832,7 +832,9 @@ class CalendarActionPlan extends CalendarsAppModel {
 			if (array_key_exists($mKey, $aArray2)) {
 				if (is_array($mValue)) {
 					$aRecursiveDiffResult = arrayRecursiveDiff($mValue, $aArray2[$mKey]);
-					if (count($aRecursiveDiffResult)) { $aReturn[$mKey] = $aRecursiveDiffResult; }
+					if (count($aRecursiveDiffResult)) {
+						$aReturn[$mKey] = $aRecursiveDiffResult;
+					}
 				} else {
 					if ($mValue != $aArray2[$mKey]) {
 						$aReturn[$mKey] = $mValue;

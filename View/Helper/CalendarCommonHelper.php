@@ -279,6 +279,7 @@ class CalendarCommonHelper extends AppHelper {
 		// 予定の終了日時が、この日に含まれる時、予定を返す。
 		$this->_includeToTimeOfDay($vars, $plan, $beginOfDay, $endOfDay, $fromTimeOfDay,
 			$toTimeOfDay, $nctm, $planOfThisDay);
+
 		/*
 		if (($planOfThisDay === false) && $beginOfDay < $plan['CalendarEvent']['dtend'] &&
 			$plan['CalendarEvent']['dtend'] <= $endOfDay) {
@@ -318,6 +319,13 @@ class CalendarCommonHelper extends AppHelper {
  */
 	public function canDisplayThisPlan(&$vars, $plan) {
 		//FIXME: この関数は簡易版。正確にはcanRead, canEdit, canDeleteなどを利用・参考にしながら追加実装すること。
+		//
+		//Calendars/Model/Behavior/CalendarSearchPlanBehavior.phpのgetPlans()の中で、
+		//filter機能をいれるようにしたので、個々の関数は、NOP(無条件true)に変える。 hashi
+		//
+		return true;
+
+		/* comment out hashi
 		if (!$plan) {
 			return false;
 		}
@@ -344,6 +352,7 @@ class CalendarCommonHelper extends AppHelper {
 		//FAXME: ここにログイン後の予定表示可否の詳細な判断ロジックを描くこと。
 
 		return true;
+		*/
 	}
 /**
  * getWeekName
