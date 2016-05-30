@@ -349,7 +349,7 @@
 
 .calendar-monthly-table {
 	width: 100%;
-	table-layout: fixed; //2016.05.20
+	table-layout: fixed;
 }
 
 /*-- カレンダー月縮小 --*/
