@@ -360,6 +360,7 @@
 */
 .calendar-weekly-table {
 	width: 100%;
+	table-layout: fixed;
 }
 
 .calendar-daily-timeline-table {
