@@ -471,7 +471,7 @@ NetCommonsApp.controller('CalendarsMonthlyLinePlan', function($scope) {
   };
 
   $scope.checkOverlap = function(a1, b1, a2, b2) {
-    console.log('Monthly.Plan!checkOverlap!..a1[%d] b1[%d] a2[%d] b2[%d]');
+    //console.log('Monthly.Plan!checkOverlap!..a1[%d] b1[%d] a2[%d] b2[%d]');
 
     //線分1と線分2の重なりチェック
     if (a1 > a2 && a1 > b2 &&
