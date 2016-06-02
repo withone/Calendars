@@ -928,7 +928,8 @@ padding:10px;
 .calendar-plan-line {
 	/*background-color:#f0ad4e;  dummy #e4f7f8 */
 	white-space: nowrap;
-	height: 1.5em;
+	/*height: 1.5em;*/
+	height:20px;
 	/*width:183px;  dummy */
 	border-radius:5px;
 	z-index:2;

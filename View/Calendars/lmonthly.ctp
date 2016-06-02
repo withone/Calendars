@@ -29,7 +29,8 @@
 
 						<?php echo $this->CalendarMonthly->makeLargeMonthyBodyHtml($vars); ?>
 						<?php $calendarLinePlans = $this->CalendarMonthly->getLineData(); ?>
-						<div ng-controller="CalendarsMonthlyLinePlan" ng-init="initialize(<?php echo h(json_encode(array('calendarLinePlans' => $calendarLinePlans))) ?>)"></div>
+						<div ng-controller="CalendarsMonthlyLinePlan" ng-style="initialize(<?php echo h(json_encode(array('calendarLinePlans' => $calendarLinePlans))) ?>)" resize>
+
 
 					</tbody>
 				</table>
