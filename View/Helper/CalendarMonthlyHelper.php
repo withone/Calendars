@@ -291,16 +291,18 @@ class CalendarMonthlyHelper extends AppHelper {
 			//}
 			$isLine = $this->isLinePlan($plan);
 			if ($isLine == true) {
-				continue;
+				//continue;
+				// 大枠
+				$html .= '<div class="row calendar-plan-noline visible-xs"><div class="col-xs-12">';
+				$html .= '<div class="row"><div class="col-xs-12">';
+			} else {
+				$html .= '<div class="row calendar-plan-noline"><div class="col-xs-12">';
+				$html .= '<div class="row"><div class="col-xs-12">';
 			}
 
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName(
 				$vars, $plan['CalendarEvent']['room_id']);
 			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
-
-			// 大枠
-			$html .= '<div class="row calendar-plan-noline"><div class="col-xs-12">';
-			$html .= '<div class="row"><div class="col-xs-12">';
 
 			// スペースごとの枠
 			$html .= '<div class="calendar-plan-mark ' . $calendarPlanMark . '">';
