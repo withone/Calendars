@@ -58,7 +58,7 @@ class CalendarValidateAppBehavior extends ModelBehavior {
 					array();
 				$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['DAILY'][] =
 					__d('calendars',
-						'繰返し指定ありの単位が日、週、月、年のいずれでもありません');
+						'繰返し指定ありの単位が日、週、月、年のいずれでもありません。');
 				return false;
 		}
 		return $ret;

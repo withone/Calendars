@@ -248,7 +248,8 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 
 			//$html .= $htmlPlan;
 			//$html .= '</div></div>';
-			$html .= '<p class="calendar-schedule-row-plan">予定はありません</p>';
+			$html .= '<p class="calendar-schedule-row-plan">' .
+				__d('calendars', '予定はありません。') . '</p>';
 
 		} else {
 			$html .= '<table class="table table-hover calendar-tablestyle"><tbody>';
@@ -291,7 +292,8 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 				$html .= '<div class="row calendar-schedule-row calendar-tablecontainer" ';
 				$html .= 'uib-collapse="isCollapsed[' . $idx . ']">';
 				$html .= '<div class="col-xs-12">';
-				$html .= '<p class="calendar-schedule-row-plan">予定はありません</p>';
+				$html .= '<p class="calendar-schedule-row-plan">' .
+					__d('calendars', '予定はありません。') . '</p>';
 				$html .= '</div></div>';
 			}
 
