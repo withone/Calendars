@@ -155,7 +155,7 @@ class CalendarMonthlyHelper extends AppHelper {
  * @param array $plan 予定
  * @return bool
  */
- /*
+	/*
 	public function isLinePlan($plan) {
 		$startUserDate = $this->CalendarPlan->makeDateWithUserSiteTz(
 			$plan['CalendarEvent']['dtstart'], $plan['CalendarEvent']['is_allday']);
@@ -169,7 +169,7 @@ class CalendarMonthlyHelper extends AppHelper {
 
 		return false;
 	}
-*/
+	*/
 
 /**
  * isExistLinePlan
