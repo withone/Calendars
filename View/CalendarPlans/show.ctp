@@ -186,7 +186,7 @@
 
 <div name="writer">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
-	<label><?php echo __d('calendars', '記入者'); ?></label>
+	<label><?php echo __d('calendars', '作成者'); ?></label>
 		<div class="clearfix"></div>
 		<!-- <span><?php echo h(Hash::get($createdUserInfo, 'UsersLanguage.0.name')); ?></span> -->
 		<span><?php echo $this->DisplayUser->handleLink($event, array('avatar' => false)); ?></span>
@@ -195,7 +195,7 @@
 
 <div name="updateDate">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
-	<label><?php echo __d('calendars', '更新日'); ?></label>
+	<label><?php echo __d('calendars', '更新日時'); ?></label>
 	<div class="clearfix"></div>
 	<span><?php echo h((new NetCommonsTime())->toUserDatetime($event['CalendarEvent']['modified'])); ?></span>
 </div><!-- col-sm-10おわり -->
