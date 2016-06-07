@@ -694,6 +694,7 @@ td.calendar-col-day .calendar-out-of-range  .calendar-day {
 /*-- カレンダー 予定追加・編集 詳細（添え文字）2016.3.2  --*/
 .calendar-detailedit-addchar {
 	padding-top:1em;
+	padding-left:0px;
 }
 
 /*-- カレンダー 特定予定の情報（間隔）2016.3.3  --*/

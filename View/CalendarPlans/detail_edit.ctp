@@ -900,7 +900,7 @@
 <?php
 	echo "<div class='form-group calendar-plan-share_" . $frameId . "' name='planShare' style='display: " . $dispValue . "; margin-top:0.5em;'>";
 ?>
-<div class="col-xs-12 col-sm-8 col-sm-offset-2">
+<div class="col-xs-12 col-sm-9 col-sm-offset-2">
 
 	<?php echo $this->element('Calendars.CalendarPlans/edit_plan_share', array('shareUsers', $shareUsers)); ?>
 
