@@ -29,8 +29,16 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		'Calendars.CalendarUrl',
 		'Calendars.CalendarDaily',
 		'Calendars.CalendarMonthly',
+		'Calendars.CalendarPlan',
 		'NetCommons.TitleIcon',
 	);
+
+/**
+ * line room data
+ * 処理中のroom数(月拡大の週を使用する)
+ * @var array
+ */
+	//	protected $_week = 0;
 
 /**
  * getPlanSummariesHtml
@@ -48,11 +56,28 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
  */
 	public function getPlanSummariesHtml(&$vars, $year, $month, $day, $fromTime, $toTime, $plans) {
 		$html = '';
+
+		if ($this->_lineProcess == true) {
+
+			$html .= $this->getPlanSummariesLineHtml($vars, $year, $month, $day, $fromTime, $toTime,
+			$plans, $vars['currentRoomId']);
+			return $html;
+		}
+
+		$id = 'divline' . (string)$this->_week . '_' . (string)$this->_celCnt;
+		//$html .= "<div class='hidden-xs' style='z-index:1;' id='" . $id . "'></div>"; //縦位置調整用
+		$html .= "<div style='z-index:1;' id='" . $id . "'></div>"; //縦位置調整用
+
 		foreach ($plans as $plan) {
 			//仕様
 			//予定が１件以上あるとき）
 			//※roomIdが一致するデータ
 			if ($vars['currentRoomId'] != $plan['CalendarEvent']['room_id']) {
+				continue;
+			}
+
+			$isLine = $this->CalendarPlan->isLinePlan($plan);
+			if ($isLine == true) {
 				continue;
 			}
 
@@ -160,7 +185,8 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 			$holidayTitle = $this->CalendarCommon->getHolidayTitle(
 				$years[$i], $months[$i], $days[$i], $vars['holidays'], $i);
 
-			$html .= '<td class="calendar-weekly-col-day-head ' . $tdColor[$i] . '">';
+			$html .= "<td class='calendar-monthly-line-" . ($i + 1) .
+				" calendar-weekly-col-day-head " . $tdColor[$i] . "'>";
 			$html .= '<span class=';
 			$html .= '"calendar-day calendar-daily-disp ';
 			$html .= $textColor . '" data-url="' . $url . '">';
@@ -208,6 +234,14 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $roomID[0]);
 			$html .= '<tr><div class="row">'; //1行の開始
+
+			/**Line**/
+			$this->_week = $cnt - 1;
+			$this->_lineData[$this->_week] = array();
+			$this->_celCnt = 0; //左から何セル目か
+			$this->_linePlanCnt = 0; // この週の連続する予定数
+			/**Line**/
+
 			//ルーム名
 			$html .= '<td class="calendar-weekly-col-room-name calendar-tbl-td-pos">';
 			$html .= '<div class="row"><div class="col-xs-12">';
@@ -236,7 +270,19 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 				$html .= 'calendar-weekly-col-day calendar-tbl-td-pos calendar-tbl-td-room-plan ';
 				$html .= $tdColor . '"><div>';
 				//ルームID($cnt)が一致するの当日の予定を取得 pending
+				//line----start
+				$html .= "<div class=
+					'calendar-col-day-line calendar-period_" . $this->_week . $this->_celCnt . "'>";
+
+				$this->_lineProcess = true; //line予定の追加
 				$html .= $this->_makePlanSummariesHtml($vars, $nctm, $year, $month, $day);
+				$html .= "</div>";
+
+				$this->_lineProcess = false; //line予定の追加
+				$html .= $this->_makePlanSummariesHtml($vars, $nctm, $year, $month, $day);
+
+				$this->_celCnt++;
+				//line test------end
 				$html .= "</div></td>";
 			}
 
@@ -244,4 +290,5 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		}
 		return $html;
 	}
+
 }

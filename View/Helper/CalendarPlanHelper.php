@@ -85,57 +85,26 @@ class CalendarPlanHelper extends AppHelper {
 	}
 
 /**
- * makeShowDetailEditBtnHtml
+ * isLinePlan
  *
- * 特定日の特定予定画面(show画面)での編集キャンセルボタンHTML生成
+ * 日跨ぎ(日跨ぎLine)判定
  *
- * @param array $vars カレンダー情報
- * @param int $eventId イベントID
- * @return string HTML
+ * @param array $plan 予定
+ * @return bool
  */
-	/* 未使用
-	public function makeShowDetailEditBtnHtml($vars, $eventId) {
-		$html = '';
-		$urlOptions = array(
-			'controller' => 'calendars',
-			'action' => 'index',
-			'year' => $vars['year'],
-			'month' => $vars['month'],
-			'frame_id' => Current::read('Frame.id'),
-		);
-		if (isset($vars['return_style'])) {
-			//cancel時の戻り先としてstyleを指定する。
-			$urlOptions['style'] = $vars['return_style'];
-		}
-		if (isset($vars['return_sort'])) {
-			//cancel時の戻り先としてsortオプションがあればそれもセットで指定する.
-			$urlOptions['sort'] = $vars['return_sort'];
-		}
-		$cancelUrl = NetCommonsUrl::actionUrl($urlOptions);
+	public function isLinePlan($plan) {
+		$startUserDate = $this->makeDateWithUserSiteTz(
+			$plan['CalendarEvent']['dtstart'], $plan['CalendarEvent']['is_allday']);
+		$endUserDate = $this->makeDateWithUserSiteTz(
+			$plan['CalendarEvent']['dtend'], $plan['CalendarEvent']['is_allday']);
 
-		$html .= "<button class='btn btn-default calendar-detail-edit'
-			type='button' data-url='" . $cancelUrl . "'>";
-		$html .= "<span class='glyphicon glyphicon-remove'></span>";
-		$html .= __d('calendars', 'キャンセル');
-		$html .= '</button>';
+		//日跨ぎ（ユーザー時刻で同一日ではない）
+		if ($startUserDate != $endUserDate && $plan['CalendarEvent']['is_allday'] == false) {
+			return true;
+		}
 
-		$detailEditUrl = NetCommonsUrl::actionUrl(array(
-			'controller' => 'calendar_plans',
-			'action' => 'edit',
-			'style' => 'detail',
-			'year' => $vars['year'],
-			'month' => $vars['month'],
-			'day' => $vars['day'],
-			'event' => $eventId,
-			'frame_id' => Current::read('Frame.id'),
-		));
-		$html .= "<button class='btn btn-primary calendar-detail-edit calendar-margin-left-adjust'
-		 data-url='" . $detailEditUrl . "'>";
-		$html .= "<span class='glyphicon glyphicon-edit'></span>";
-		$html .= '</button>';
-		return $html;
+		return false;
 	}
-	*/
 
 /**
  * makeDetailEditBtnHtml

@@ -20,8 +20,12 @@
 							echo $this->CalendarWeekly->makeWeeklyHeaderHtml($vars);
 						?>
 						<!-- 予定の内容 -->
+						<?php echo $this->CalendarWeekly->makeWeeklyBodyHtml($vars); ?>
+						<?php $calendarLinePlans = $this->CalendarWeekly->getLineData() ?>
+						<div ng-controller="CalendarsMonthlyLinePlan" ng-style="initialize(<?php echo h(json_encode(array('calendarLinePlans' => $calendarLinePlans))) ?>)" resize>
+
 						<?php
-							echo $this->CalendarWeekly->makeWeeklyBodyHtml($vars);
+							//echo $this->CalendarWeekly->makeWeeklyBodyHtml($vars);
 						?>
 
 					</tbody>

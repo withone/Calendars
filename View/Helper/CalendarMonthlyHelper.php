@@ -155,6 +155,7 @@ class CalendarMonthlyHelper extends AppHelper {
  * @param array $plan 予定
  * @return bool
  */
+ /*
 	public function isLinePlan($plan) {
 		$startUserDate = $this->CalendarPlan->makeDateWithUserSiteTz(
 			$plan['CalendarEvent']['dtstart'], $plan['CalendarEvent']['is_allday']);
@@ -167,6 +168,57 @@ class CalendarMonthlyHelper extends AppHelper {
 		}
 
 		return false;
+	}
+*/
+
+/**
+ * isExistLinePlan
+ *
+ * 日跨ぎ(日跨ぎLine)存在判定
+ *
+ * @param array $plan 予定
+ * @return bool
+ */
+	public function isExistLinePlan($plan) {
+		$idx = 0;
+
+		foreach ($this->_lineData[$this->_week] as $linePlan) {
+			if ($linePlan['id'] == $plan['CalendarEvent']['id']) {
+				$this->_lineData[$this->_week][$idx]['toCell'] = $this->_celCnt;
+				return true;
+			}
+			$idx++;
+		}
+		return false;
+	}
+
+/**
+ * addLinePlanHTML
+ *
+ * 日跨ぎ(日跨ぎLine)HTML取得
+ *
+ * @param array $plan 予定
+ * @param array $calendarLinePlanMark cssクラス名
+ * @param array $url リンクURL
+ * @return string HTML
+ */
+	public function addLinePlanHTML($plan, $calendarLinePlanMark, $url) {
+		$html = '';
+		$id = 'planline' . (string)$plan['CalendarEvent']['id']; //位置制御用id
+
+		$html .= "<div class='hidden-xs calendar-plan-line " . $calendarLinePlanMark .
+						"'  id='" . $id . '_' . $this->_week . "'>";
+		$html .= '<a href=' . $url . ' class="calendar-line-link">';
+		$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
+		$html .= h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...'));
+		$html .= '</a>';
+		$html .= '</div>';
+		$this->_lineData[$this->_week][$this->_linePlanCnt]['id'] = $plan['CalendarEvent']['id'];
+		$this->_lineData[$this->_week][$this->_linePlanCnt]['fromCell'] = $this->_celCnt;
+		$this->_lineData[$this->_week][$this->_linePlanCnt]['toCell'] = $this->_celCnt;
+		$this->_linePlanCnt++;//連続するplanの数（この週内）
+
+		return $html;
 	}
 
 /**
@@ -181,69 +233,46 @@ class CalendarMonthlyHelper extends AppHelper {
  * @param string $fromTime この日の１日のスタート時刻
  * @param string $toTime この日の１日のエンド時刻
  * @param array $plans この日の予定群
+ * @param int $roomId ルームIDによる絞り込み（週表示用）
  * @return string HTML
  */
-	public function getPlanSummariesLineHtml(&$vars, $year, $month, $day, $fromTime, $toTime, $plans) {
+	public function getPlanSummariesLineHtml(&$vars, $year, $month, $day, $fromTime, $toTime,
+		$plans, $roomId = -1) {
 		$html = '';
 		$nctm = new NetCommonsTime();
-		$id = '';
+		//$id = '';
 
 		foreach ($plans as $plan) {
+
+			//※roomIdが一致するデータ
+			if ($roomId != -1) {
+				//print_r($roomId);
+				if ($vars['currentRoomId'] != $plan['CalendarEvent']['room_id']) {
+					continue;
+				}
+			}
+
 			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
-
-			$id = 'planline' . (string)$plan['CalendarEvent']['id']; //位置制御用id
-
 			$checkStartDate = $nctm->toUserDatetime($plan['CalendarEvent']['dtstart']);
 			$calendarLinePlanMark = $this->CalendarCommon->getLinePlanMarkClassName(
 				$vars, $plan['CalendarEvent']['room_id']);
 
 			$tmaStart = CalendarTime::transFromYmdHisToArray($checkStartDate);
 			//期間（日跨ぎの場合）
-			$isLine = $this->isLinePlan($plan);
-			//$startUserDate = $this->CalendarPlan->makeDateWithUserSiteTz($plan['CalendarEvent']['dtstart'], $plan['CalendarEvent']['is_allday']);
-			//$endUserDate = $this->CalendarPlan->makeDateWithUserSiteTz($plan['CalendarEvent']['dtend'], $plan['CalendarEvent']['is_allday']);
-			//if ($startUserDate != $endUserDate && $plan['CalendarEvent']['is_allday'] == false) { //日跨ぎ（ユーザー時刻で同一日ではない）
+			$isLine = $this->CalendarPlan->isLinePlan($plan);
 			if ($isLine == true) {
 				if ($year == $tmaStart['year'] && $month == $tmaStart['month'] &&
 					$day == $tmaStart['day']) { // 日跨ぎの初日である
 					/* HTML追加 */
-					$html .= "<div class='hidden-xs calendar-plan-line " . $calendarLinePlanMark .
-						"'  id='" . $id . '_' . $this->_week . "'>";
-					$html .= '<a href=' . $url . ' class="calendar-line-link">';
-					$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
-					$html .= h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...'));
-					$html .= '</a>';
-					$html .= '</div>';
-					$this->_lineData[$this->_week][$this->_linePlanCnt]['id'] = $plan['CalendarEvent']['id'];
-					$this->_lineData[$this->_week][$this->_linePlanCnt]['fromCell'] = $this->_celCnt;
-					$this->_lineData[$this->_week][$this->_linePlanCnt]['toCell'] = $this->_celCnt;
-					$this->_linePlanCnt++;//連続するplanの数（この週内）
+					$html .= $this->addLinePlanHtml($plan, $calendarLinePlanMark, $url);
+
 				} else { // 日跨ぎの初日ではない
 					$find = false;
-					$i = 0;
-					foreach ($this->_lineData[$this->_week] as $linePlan) {
-						if ($linePlan['id'] == $plan['CalendarEvent']['id']) {
-							$this->_lineData[$this->_week][$i]['toCell'] = $this->_celCnt;
-							$find = true;
-						}
-						$i++;
-					}
+					$find = $this->isExistLinePlan($plan);
 					if ($find == false) { //この週では最初
 						/* HTML追加 */
-						$this->_lineData[$this->_week][$this->_linePlanCnt]['id'] = $plan['CalendarEvent']['id'];
-						$this->_lineData[$this->_week][$this->_linePlanCnt]['fromCell'] = $this->_celCnt;
-						$this->_lineData[$this->_week][$this->_linePlanCnt]['toCell'] = $this->_celCnt;
+						$html .= $this->addLinePlanHtml($plan, $calendarLinePlanMark, $url);
 
-						//HTML追加
-						$html .= "<div class='hidden-xs calendar-plan-line " . $calendarLinePlanMark .
-							"'  id='" . $id . '_' . $this->_week . "'>";
-						$html .= '<a href=' . $url . ' class="calendar-line-link">';
-						$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
-						$html .= h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...'));
-						$html .= '</a>';
-						$html .= '</div>';
-
-						$this->_linePlanCnt++;//連続するplanの数（この週内）
 					}
 				}
 				continue;
@@ -281,23 +310,17 @@ class CalendarMonthlyHelper extends AppHelper {
 		$html .= "<div class='hidden-xs' style='z-index:1;' id='" . $id . "'></div>"; //縦位置調整用
 		//$linePlanCnt = 0;
 		foreach ($plans as $plan) {
-
-			//$startUserDate = $this->CalendarPlan->makeDateWithUserSiteTz($plan['CalendarEvent']['dtstart'], $plan['CalendarEvent']['is_allday']);
-			//$endUserDate = $this->CalendarPlan->makeDateWithUserSiteTz($plan['CalendarEvent']['dtend'], $plan['CalendarEvent']['is_allday']);
-
 			//期間（日跨ぎの場合）
-			//if ($startUserDate != $endUserDate && $plan['CalendarEvent']['is_allday'] == false) { //日跨ぎ（ユーザー時刻で同一日ではない）
-			//	continue;
-			//}
-			$isLine = $this->isLinePlan($plan);
-			if ($isLine == true) {
+			$isLine = $this->CalendarPlan->isLinePlan($plan);
+			if ($isLine === true) {
 				//continue;
 				// 大枠
 				$html .= '<div class="row calendar-plan-noline visible-xs"><div class="col-xs-12">';
-				$html .= '<div class="row"><div class="col-xs-12">';
+				//$html .= '<div class="row"><div class="col-xs-12">';
 			} else {
 				$html .= '<div class="row calendar-plan-noline"><div class="col-xs-12">';
-				$html .= '<div class="row"><div class="col-xs-12">';
+				//$html .= '<div class="row"><div class="col-xs-12">';
+				//print_r($plan['CalendarEvent']['title']);
 			}
 
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName(

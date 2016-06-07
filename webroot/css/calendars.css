@@ -474,12 +474,13 @@
 .calendar-weekly-col-day {
 	width: 12%;
 	border: 1px solid #ddd;
-	padding: 3px;
+	padding: 3px 3px 3px 0px;
 	text-align:left;
 }
 .calendar-weekly-col-day > div {
-	position:relative;
+	position:relative !important;
 }
+
 .calendar-weekly-subroom, .calendar-daily-nontimeline-plan, .calendar-schedule-row-title {
 	margin-left: 10px;
 	padding-bottom: 10px;
