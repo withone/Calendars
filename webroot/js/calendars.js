@@ -956,7 +956,7 @@ NetCommonsApp.controller('CalendarFrameSettings', [
         $scope.isShowTimelineStart = false;
       } else if (type == variables.CALENDAR_DISP_TYPE_WEEKLY) {
         $scope.isShowStartPos = false;
-        $scope.isShowDisplayCount = true;
+        $scope.isShowDisplayCount = false;
         $scope.isShowTimelineStart = false;
       } else if (type == variables.CALENDAR_DISP_TYPE_DAILY) {
         $scope.isShowStartPos = false;

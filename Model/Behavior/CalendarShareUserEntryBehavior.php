@@ -40,12 +40,14 @@ class CalendarShareUserEntryBehavior extends CalendarAppBehavior {
  * @return void
  */
 	public function insertShareUsers(Model &$model, $shareUsers, $eventId) {
-		//CakeLog::debug("DBG: insertShareUsers(shareUsers[" . print_r($shareUsers, true) . "] eventId[" . $eventId . "])");
+		//CakeLog::debug("DBG: insertShareUsers(shareUsers[" . print_r($shareUsers, true) .
+		//	"] eventId[" . $eventId . "])");
 
 		if (!(isset($model->CalendarEventShareUser))) {
 			$model->loadModels(['CalendarEventShareUser' => 'Calendar.CalendarEventShareUser']);
 		}
-		if (!is_array($shareUsers)) {
+		if (empty($shareUsers)) {
+			CakeLog::debug("DBG: shareUsersは空です");
 			return;
 		}
 

@@ -72,7 +72,13 @@ class CalendarLegendHelper extends AppHelper {
 	protected function _getPrivateLegend($vars) {
 		$html = '';
 		if (in_array(Space::PRIVATE_SPACE_ID, $vars['roomSpaceMaps'])) {
-			$html = $this->_getLegend($vars, Room::PRIVATE_PARENT_ID);
+			////$html = $this->_getLegend($vars, Room::PRIVATE_PARENT_ID);
+
+			//PRIVATE_PARENT_IDでは、各ユーザ毎のprivateRoomIdにはならない。
+			//myselfに、各ユーザ毎のprivateRoomIdをセットするように変えたので
+			//見直した。
+			//
+			$html = $this->_getLegend($vars, $vars['myself']);
 		}
 		return $html;
 	}

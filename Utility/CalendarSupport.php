@@ -334,10 +334,20 @@ class CalendarSupport {
 		//YYYY-MM-DD hh:mm:ss
 		$userStartDatetime = CalendarTime::addDashColonAndSp($userStartYmdHis);
 
-		$userEndYmdHis =
-			(new CalendarTime())->svr2UserYmdHis($event['CalendarEvent']['dtend']);
-		//YYYY-MM-DD hh:mm:ss
-		$userEndDatetime = CalendarTime::addDashColonAndSp($userEndYmdHis);
+		if ($event['CalendarEvent']['is_allday']) {
+			//注) 終日なので、dtendは、dtstar+24時間になっており、そのままViewに渡すと
+			//翌日になってしまうので、ここではdtendを使わずdtstartを代理利用する。
+			$userEndYmdHis =
+				(new CalendarTime())->svr2UserYmdHis($event['CalendarEvent']['dtstart']);
+			//YYYY-MM-DD hh:mm:ss
+			$userEndDatetime = CalendarTime::addDashColonAndSp($userEndYmdHis);
+		} else {
+			//開始、終了なので、dtendを素直にそのまま使う
+			$userEndYmdHis =
+				(new CalendarTime())->svr2UserYmdHis($event['CalendarEvent']['dtend']);
+			//YYYY-MM-DD hh:mm:ss
+			$userEndDatetime = CalendarTime::addDashColonAndSp($userEndYmdHis);
+		}
 
 		$userTz = (new NetCommonsTime())->getUserTimezone();
 		$tmArray = CalendarTime::transFromYmdHisToArray($userStartDatetime);

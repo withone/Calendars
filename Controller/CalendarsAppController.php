@@ -229,6 +229,22 @@ class CalendarsAppController extends AppController {
 		);
 
 		//room_idとspace_idの対応表を載せておく。
+		$this->__setRoomInfos($vars);
+
+		//公開対象一覧のoptions配列と自分自身のroom_idとルーム毎空間名配列を取得
+		$this->__setExposeRoomOptionsEtc($vars);
+	}
+
+/**
+ * __setRoomInfos
+ *
+ * ルーム関連変数の取得とセット
+ *
+ * @param array &$vars カレンダー用共通変数
+ * @return void
+ */
+	private function __setRoomInfos(&$vars) {
+		//room_idとspace_idの対応表を載せておく。
 		$rooms = $this->Room->find('all', array(
 			'recursive' => -1,
 			'conditions' => array(
@@ -241,7 +257,31 @@ class CalendarsAppController extends AppController {
 		$vars['roomSpaceMaps'] = Hash::combine($rooms, '{n}.Room.id', '{n}.Room.space_id');
 		$roomsLanguages = $this->RoomsLanguages->find('all', array('recursive' => -1)); //pending
 		$vars['roomsLanguages'] = $roomsLanguages;
-		//CakeLog::debug("DBG: roomSpaceMaps[" . print_r($vars['roomSpaceMaps'], true) . "]");
 	}
 
+/**
+ * __setExposeRoomOptionsEtc
+ * 
+ * 公開対象一覧のoptions配列と自分自身のroom_idとルーム毎空間名配列を取得
+ *
+ * @param array &$vars カレンダー用共通変数
+ * @return void
+ */
+	private function __setExposeRoomOptionsEtc(&$vars) {
+		//表示方法設定情報を取り出し、
+		//公開対象一覧のoptions配列と自分自身のroom_idとルーム毎空間名配列を取得。
+		//spaceNameOfRoomsは、ViewのCalendarCommon->getPlanMarkClassName()の中で
+		//どの画面でも利用するので、共通処理としておく。
+		//
+		$frameSetting = $this->CalendarFrameSetting->find('first', array(
+			'recursive' => 1,	//hasManyでCalendarFrameSettingSelectRoomのデータも取り出す。
+			'conditions' => array('frame_key' => Current::read('Frame.key')),
+		));
+		//公開対象一覧のoptions配列と自分自身のroom_idとルーム毎空間名配列を取得
+		list($exposeRoomOptions, $myself, $spaceNameOfRooms) =
+			$this->CalendarActionPlan->getExposeRoomOptions($frameSetting);
+		$vars['exposeRoomOptions'] = $exposeRoomOptions;
+		$vars['myself'] = $myself;
+		$vars['spaceNameOfRooms'] = $spaceNameOfRooms;
+	}
 }

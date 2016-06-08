@@ -896,8 +896,19 @@
 <!-- 予定の共有 START -->
 <?php
 	$dispValue = 'none';
-	if ($this->request->data['CalendarActionPlan']['plan_room_id'] == $myself) {
-		$dispValue = 'block';
+	CakeLog::debug("DBG: myself[" . $myself . "] request_data[plan_room_id]=[" . $this->request->data['CalendarActionPlan']['plan_room_id'] . "] options[" . print_r($exposeRoomOptions, true) . "]");
+
+	if (!empty($myself)) {
+		if ($this->request->data['CalendarActionPlan']['plan_room_id'] == $myself) {
+			$dispValue = 'block';
+		}
+		if (count($exposeRoomOptions) === 1) {
+			$keys = array_keys($exposeRoomOptions);
+			if (array_shift($keys) == $myself) {
+				//ルーム選択肢が１つだけで、それがプライベートの時の、特例対応
+				$dispValue = 'block';
+			}
+		}
 	}
 ?>
 <?php

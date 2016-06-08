@@ -365,9 +365,8 @@ class CalendarPlansController extends CalendarsAppController {
 		$this->request->data['CalendarFrameSettingSelectRoom'] =
 			$this->CalendarFrameSetting->getSelectRooms($frameSettingId);
 
-		//公開対象一覧のoptions配列と、自分自身のroom_idを取得
-		//FIXME: ここのmyselfはprivate_parent_idの方を返す！
-		list($exposeRoomOptions, $myself) =
+		//公開対象一覧のoptions配列と自分自身のroom_idとルーム別空間名を取得
+		list($exposeRoomOptions, $myself, ) =
 			$this->CalendarActionPlan->getExposeRoomOptions($frameSetting);
 		//CakeLog::debug("DBG: exposeRoomOptions[" . print_r($exposeRoomOptions, true) . "]");
 		//CakeLog::debug("DBG: myself[" . $myself . "]");

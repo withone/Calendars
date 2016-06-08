@@ -51,6 +51,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		'Calendars.CalendarPlanRruleValidate',	//予定（Rrule関連）バリデーション専用
 		'Calendars.CalendarPlanValidate',	//予定バリデーション専用
 		////'Calendars.CalendarRruleHandle',	//concatRrule()など
+		//'Calendars.CalendarNextGenPlan',	//元予定の次世代予定生成関連
 	);
 	// @codingStandardsIgnoreStart
 	// $_schemaはcakePHP2の予約語だが、宣言するとphpcsが警告を出すので抑止する。
@@ -503,7 +504,26 @@ class CalendarActionPlan extends CalendarsAppModel {
 			//
 			$planParam = $this->convertToPlanParamFormat($data);
 
-			$this->insertPlan($planParam);
+			//CakeLog::debug("DBG: request_data[" . print_r($data, true) . "]");
+
+			if ($procMode === CalendarsComponent::PLAN_ADD) {
+				//新規追加処理
+				//CakeLog::debug("DBG: PLAN_ADD case.");
+
+				$this->insertPlan($planParam);
+			} else {	//PLAN_EDIT
+				//変更処理
+
+				//CakeLog::debug("DBG: PLAN_EDIT case.");
+
+
+				//現予定を元に、次世代予定を作成する
+				//FIXME: 修正中
+				//////$nextPlan = $this->makeNextGenPlan($data);
+				//$this->updatePlan($planParam, $nextPlan);
+
+				$this->insertPlan($planParam);
+			}
 
 			$this->_enqueueEmail($data);
 
@@ -685,7 +705,6 @@ class CalendarActionPlan extends CalendarsAppModel {
 			//１）タイムゾーンの比較
 			$this->__compareTz($cap, $originEvent, $timeRepeatModCnt);
 
-//aaaaaaaaaaaaaaa
 			//２）日付時刻の比較
 			//入力されたユーザ日付（時刻）を、選択TZを考慮し、サーバ系日付時刻に直してから比較する。
 			$this->__compareDatetime($cap, $originEvent, $timeRepeatModCnt);
@@ -701,8 +720,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 			//eventの親rruleモデルよりrruleを取り出し配列化する。
 			$originRrule = $cru->parseRrule($originEvent['CalendarRrule']['rrule']);
 
-			CakeLog::debug("DBG: capRrule[" . serialize($capRrule) .
-				"] VS originRrule[" . serialize($originRrule) . "]");
+			//CakeLog::debug("DBG: capRrule[" . serialize($capRrule) .
+			//	"] VS originRrule[" . serialize($originRrule) . "]");
 			$diff1 = $this->__arrayRecursiveDiff($capRrule, $originRrule);
 			$diff2 = $this->__arrayRecursiveDiff($originRrule, $capRrule);
 			if (empty($diff1) && empty($diff2)) {
@@ -711,8 +730,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 			} else {
 				//差がみつかったので、繰返しに変更あり。
 				++$timeRepeatModCnt;
-				CakeLog::debug("DBG 繰返しに変化あり! capRrule[" . serialize($capRrule) .
-				"] VS originRrule[" . serialize($originRrule) . "]");
+				//CakeLog::debug("DBG 繰返しに変化あり! capRrule[" . serialize($capRrule) .
+				//"] VS originRrule[" . serialize($originRrule) . "]");
 			}
 		}
 
@@ -721,8 +740,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 			$isTimeOrRepeatMod = true;
 		}
 
-		CakeLog::debug("DBG: 結果. procMode[" . $procMode . "] isOriginRepeat[" .
-			$isOriginRepeat . "] isTimeOrRepeatMod[" . $isTimeOrRepeatMod . "]");
+		//CakeLog::debug("DBG: 結果. procMode[" . $procMode . "] isOriginRepeat[" .
+		//	$isOriginRepeat . "] isTimeOrRepeatMod[" . $isTimeOrRepeatMod . "]");
 
 		return array($procMode, $isOriginRepeat, $isTimeOrRepeatMod);
 	}
@@ -751,8 +770,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 		if ($originTzId != $cap['timezone_offset']) {
 			//選択したＴＺが変更されている。
 			++$timeRepeatModCnt;
-			CakeLog::debug("DBG: TZに変更あり！ originTzId=[" . $originTzId .
-				"] VS cap[timezone_offset]=[" . $cap['timezone_offset'] . "]");
+			//CakeLog::debug("DBG: TZに変更あり！ originTzId=[" . $originTzId .
+			//	"] VS cap[timezone_offset]=[" . $cap['timezone_offset'] . "]");
 		}
 	}
 
@@ -806,7 +825,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		} else {
 			//サーバ日付時刻に変更あり。
 			++$timeRepeatModCnt;
-
+			/*
 			CakeLog::debug("DBG: dtstar,dtendに変更あり！ POSTオリジナル enable_time[" .
 				$cap['enable_time'] . "] detail_start_datetime[" . $cap['detail_start_datetime'] .
 				"] detail_end_datetime[" . $cap['detail_end_datetime'] .
@@ -814,6 +833,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 				$capDtstart . "] capDtend[" . $capDtend . "] VS origin dtstart[" .
 				$originEvent['CalendarEvent']['dtstart'] . "] dtend[" .
 				$originEvent['CalendarEvent']['dtend'] . "]");
+			*/
 		}
 	}
 

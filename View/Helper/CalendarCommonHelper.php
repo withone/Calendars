@@ -53,14 +53,38 @@ class CalendarCommonHelper extends AppHelper {
  * @return string ClassName
  */
 	public function getPlanMarkClassName(&$vars, $roomId) {
+		//CakeLog::debug("DBG: IN getPlanMarkClassName(). vars[spaceNameOfRooms]=[" .
+		//	print_r($vars['spaceNameOfRooms'], true) . "] roomId[" . $roomId . "]");
+
+		if (empty($vars['spaceNameOfRooms'][$roomId])) {
+			return '';
+		}
+		switch ($vars['spaceNameOfRooms'][$roomId]) {
+			case 'public':
+			case 'group':
+			case 'member':
+			case 'private':
+				$html = 'calendar-plan-mark-' . $vars['spaceNameOfRooms'][$roomId];
+				break;
+			default:
+				CakeLog::error("roomId[" . $roomId . "]のspaceNameOfRooms[" .
+					$vars['spaceNameOfRooms'][$roomId] . "]は不明です。");
+				$html = 'calendar-plan-mark-group';
+		}
+		return $html;
+		/*
 		if ($key = array_search($roomId, $vars['parentIdType'])) {
-			//公開、プライベード、または、全会員
+			//公開、または、全会員
 			$html = 'calendar-plan-mark-' . $key;
+		} elseif (!empty($vars['myself']) && $vars['myself'] == $roomId) {
+			//roomIdがmyself(myPrivateRoomId)と一致した時は、プライベート空間
+			$html = 'calendar-plan-mark-private';
 		} else {
 			//グループ空間
 			$html = 'calendar-plan-mark-group';
 		}
 		return $html;
+		*/
 	}
 
 /**
