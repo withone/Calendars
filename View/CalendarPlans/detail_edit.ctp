@@ -983,7 +983,6 @@
 
 ?>
 
-		<div class="col-xs-6">
 <?php
 		echo $this->NetCommonsForm->select('CalendarActionPlan.email_send_timing', $options, array(
 			'value' => $this->request->data['CalendarActionPlan']['email_send_timing'], //valueは初期値
@@ -994,7 +993,6 @@
 			'style' => 'float: left',
 		));
 ?>
-		</div>
 
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->
