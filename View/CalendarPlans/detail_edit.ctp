@@ -739,11 +739,10 @@
 
 
 				<div class="form-group calendar-repeat-limit_<?php echo $frameId; ?>" name="calendarRepeatLimit">
-				<div class="col-xs-12 col-sm-5"><label>繰返しの終了</label>
-				</div>
-
-				<div class="col-xs-12 col-sm-12">
-				<div class="form-inline form-group">
+				<!-- <div class="col-xs-12 col-sm-5"><label>繰返しの終了</label> -->
+				<!-- </div> -->
+				<!-- <div class="col-xs-12 col-sm-12"> -->
+				<div class="col-xs-12 col-sm-12 form-inline form-group" style="margin-left:0px;">
 				<?php
 					//input radio をon状態にする index文字列 (COUNT=回数指定,UNTIL=終了日指定)
 					if ($this->request->data['CalendarActionPlan']['rrule_term'] === 'COUNT') {
@@ -773,18 +772,22 @@
 							//	'before' => "<li>",
 							//	'after' => '</li>',
 							//	'separator' => "</li><li>",
+							'before' => '<label class="radio-inline">',
+							'separator' => '</label><label class="radio-inline">',
+							'after' => '</label>',
 								'div' => false,
-								'label' => false,
+								'label' => __d('calendars', '繰返しの終了'),
 								'class' => '',
 								'ng-model' => 'selectRepeatEndType[' . $frameId . ']',
 								'ng-init' => 'setInitRepeatEndType(' . $frameId . ',"' . $repeatEndTypeIndex . '")',
 								'ng-change' => 'changeRepeatEndType(' . $frameId . ')',
-								'style' => 'margin-left:10px;padding-right:10px;',
+								'style' => '',
 					));
 
 				?>
-				</div>
+				<!-- </div> -->
 				</div><!--col-sm-12おわり-->
+
 <?php
 	echo "<div class='col-xs-12 col-sm-12 calendar-repeat-end-count-info_" . $frameId . " " . $countDisplayClass . "' name='countInfo'>";
 ?>
