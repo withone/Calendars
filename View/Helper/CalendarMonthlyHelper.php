@@ -243,19 +243,18 @@ class CalendarMonthlyHelper extends AppHelper {
 		//$id = '';
 
 		foreach ($plans as $plan) {
-
 			//※roomIdが一致するデータ
-			if ($roomId != -1) {
-				//print_r($roomId);
-				if ($vars['currentRoomId'] != $plan['CalendarEvent']['room_id']) {
-					continue;
-				}
+			if (!$this->_isTargetPlan($roomId, $vars, $plan)) {
+				continue;
 			}
 
 			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
 			$checkStartDate = $nctm->toUserDatetime($plan['CalendarEvent']['dtstart']);
-			$calendarLinePlanMark = $this->CalendarCommon->getLinePlanMarkClassName(
-				$vars, $plan['CalendarEvent']['room_id']);
+
+			//予定クラス名取得関数に予定(日跨ぎライン)マーククラス名取得を統合した
+			$roomId = null;
+			$calendarLinePlanMark = $this->CalendarCommon->getPlanMarkClassName(
+				$vars, $plan, $roomId, 'calendar-lineplan-');
 
 			$tmaStart = CalendarTime::transFromYmdHisToArray($checkStartDate);
 			//期間（日跨ぎの場合）
@@ -323,8 +322,7 @@ class CalendarMonthlyHelper extends AppHelper {
 				//print_r($plan['CalendarEvent']['title']);
 			}
 
-			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName(
-				$vars, $plan['CalendarEvent']['room_id']);
+			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan);
 			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
 
 			// スペースごとの枠
@@ -722,4 +720,44 @@ class CalendarMonthlyHelper extends AppHelper {
 		return $html;
 	}
 
+/**
+ * _isTargetPlan
+ *
+ * 対象となる予定かどうかの判断
+ *
+ * @param int &$roomId roomId
+ * @param array &$vars vars
+ * @param array &$plan plan
+ * @return bool 対象となる場合true。そうでない場合false。
+ */
+	protected function _isTargetPlan(&$roomId, &$vars, &$plan) {
+		if ($roomId != -1) {	// roomId == -1はMonthly, roomId != -1はWeeklyを想定
+
+			//Monthlyの時は、roomId == currentRoomId == emptyの時のみ
+			//
+			//Weeklyの時は、roomId==empty && currentRoomId >= 1 (含む high-value)の時と、
+			// roomId == currentRoomId >= 1 (含む higt-value)の時の２つある。
+			//
+
+			if (!empty($vars['currentRoomId'])) {
+				//Weeklyで roomIdが有るとき、ない時それぞれある。
+
+				if (!($vars['currentRoomId'] == $plan['CalendarEvent']['room_id'])) {
+					//Weeklyで、currentRoomIdとroom_idが一致した時、続行
+
+					if ($vars['currentRoomId'] == CalendarsComponent::FRIEND_PLAN_VIRTUAL_ROOM_ID
+						&& !empty($plan['CalendarEvent']['pseudo_friend_share_plan'])) {
+						//このルームは「仲間の予定」仮想ルームで、かつ、
+						//予定($plan['CalendarEvent'])の擬似項目pseudo_friend_share_planに値(1)がセットされている「仲間の予定」
+						//データである。よって、room_idが一致しなくても、表示する例外ケース。
+						//続行
+					} else {
+						//次の予定へ
+						return false; //continue;
+					}
+				}
+			}
+		}
+		return true;
+	}
 }

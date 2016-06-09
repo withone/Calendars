@@ -100,8 +100,7 @@ class CalendarDailyTimelineHelper extends CalendarMonthlyHelper {
 
 		if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !==
 			$plan['CalendarEvent']['toTime']) {
-			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName(
-				$vars, $plan['CalendarEvent']['room_id']);
+			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan);
 			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
 
 			$html .= "<div class='calendar-daily-timeline-slit-deco {$calendarPlanMark}' id='" . $id . "'>";

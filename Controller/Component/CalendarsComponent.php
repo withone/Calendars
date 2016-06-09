@@ -214,6 +214,12 @@ class CalendarsComponent extends Component {
 	const PLAN_EDIT = 'edit';
 
 /**
+ * 「仲間の予定」仮想ルームID
+ * @val int
+ */
+	const FRIEND_PLAN_VIRTUAL_ROOM_ID = 2147483647;	//符号付32bit整数のHigh-Valueとする
+
+/**
  * カレンダータイムゾーン情報の要素の位置
  *
  * @val integer

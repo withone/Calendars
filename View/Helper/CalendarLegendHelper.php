@@ -132,7 +132,7 @@ class CalendarLegendHelper extends AppHelper {
 				$vars,
 				null,
 				__d('calendars', '共有した予定'),
-				'calendar-plan-mark-share',
+				'calendar-plan-mark-private',
 				'share'
 			);
 		}
@@ -175,7 +175,7 @@ class CalendarLegendHelper extends AppHelper {
 	protected function _getLegend($vars, $roomId, $spaceName = '', $calendarPlanMark = '',
 		$icon = '') {
 		if ($calendarPlanMark == '') {
-			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $roomId);
+			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, null, $roomId);
 		}
 		if ($spaceName == '') {
 			$spaceName = $this->CalendarDaily->getSpaceName($vars, $roomId, Current::read('Language.id'));

@@ -44,65 +44,58 @@ class CalendarCommonHelper extends AppHelper {
 	}
 
 /**
- * getPlanMarkClassName
+ * makePseudoPlanFromEvent
  *
- * 予定マーククラス名取得
+ * イベント情報から擬似予定を生成
  *
  * @param array &$vars カレンダー情報
- * @param int $roomId ルームID
- * @return string ClassName
+ * @param array $event イベント情報
+ * @return array 擬似的な予定情報($plan)を生成して返す。
  */
-	public function getPlanMarkClassName(&$vars, $roomId) {
-		//CakeLog::debug("DBG: IN getPlanMarkClassName(). vars[spaceNameOfRooms]=[" .
-		//	print_r($vars['spaceNameOfRooms'], true) . "] roomId[" . $roomId . "]");
-
-		if (empty($vars['spaceNameOfRooms'][$roomId])) {
-			return '';
+	public function makePseudoPlanFromEvent(&$vars, $event) {
+		$plan = $event;
+		$shareUsers = Hash::extract($plan, 'CalendarEventShareUser.{n}.share_user');
+		if (!empty($shareUsers) && in_array(Current::read('User.id'), $shareUsers)) {
+			//共有者の一覧に「自分がある」＝共有「された」仲間の予定である。
+			//なので、その印として、$plan['CalendarEvent'] に擬似項目と値
+			//array('pseudo_friend_share_plan' => 1)をセットする。
+			$plan['CalendarEvent']['pseudo_friend_share_plan'] = 1;
 		}
-		switch ($vars['spaceNameOfRooms'][$roomId]) {
-			case 'public':
-			case 'group':
-			case 'member':
-			case 'private':
-				$html = 'calendar-plan-mark-' . $vars['spaceNameOfRooms'][$roomId];
-				break;
-			default:
-				CakeLog::error("roomId[" . $roomId . "]のspaceNameOfRooms[" .
-					$vars['spaceNameOfRooms'][$roomId] . "]は不明です。");
-				$html = 'calendar-plan-mark-group';
-		}
-		return $html;
-		/*
-		if ($key = array_search($roomId, $vars['parentIdType'])) {
-			//公開、または、全会員
-			$html = 'calendar-plan-mark-' . $key;
-		} elseif (!empty($vars['myself']) && $vars['myself'] == $roomId) {
-			//roomIdがmyself(myPrivateRoomId)と一致した時は、プライベート空間
-			$html = 'calendar-plan-mark-private';
-		} else {
-			//グループ空間
-			$html = 'calendar-plan-mark-group';
-		}
-		return $html;
-		*/
+		return $plan;
 	}
 
 /**
- * getLinePlanMarkClassName
+ * getPlanMarkClassName
  *
- * 予定(日跨ぎライン)マーククラス名取得
+ * 予定マーククラス名または予定(日跨ぎライン)マーククラス名の取得
  *
  * @param array &$vars カレンダー情報
- * @param int $roomId ルームID
+ * @param array $plan 予定情報. 指定する予定がない場合nullにする。その場合、第３引数がroomIdとして利用される。
+ * @param int $roomId roomId
+ * @param string $prefix prefix
  * @return string ClassName
  */
-	public function getLinePlanMarkClassName(&$vars, $roomId) {
-		if ($key = array_search($roomId, $vars['parentIdType'])) {
-			//公開、プライベード、または、全会員
-			$html = 'calendar-lineplan-' . $key;
-		} else {
-			//グループ空間
-			$html = 'calendar-lineplan-group';
+	public function getPlanMarkClassName(&$vars, $plan = null, $roomId = null,
+		$prefix = 'calendar-plan-mark-') {
+		if ($plan !== null) {
+			$roomId = $plan['CalendarEvent']['room_id'];
+		}
+		if (empty($vars['spaceNameOfRooms'][$roomId])) {
+			//「仲間の予定」の場合、その１
+			$html = $prefix . 'share';
+			return $html;
+		}
+		//public,group,member,privateに該当しなかったら「仲間の予定」となるよう、初期値を指定しておく。
+		$html = $prefix . 'share';
+		if (preg_match('/^(public|group|member|private)$/', $vars['spaceNameOfRooms'][$roomId]) === 1) {
+			$html = $prefix . $vars['spaceNameOfRooms'][$roomId];
+		}
+		if ($vars['spaceNameOfRooms'][$roomId] === 'private' && $plan !== null) {
+			$shareUsers = Hash::extract($plan, 'CalendarEventShareUser.{n}.share_user');
+			if (!empty($shareUsers) && !in_array(Current::read('User.id'), $shareUsers)) {
+				//共有者の一覧は「全て自分以外」である＝「共有した予定」なのでshareグリフを追加しておく。
+				$html .= ' glyphicon glyphicon-share';
+			}
 		}
 		return $html;
 	}
@@ -397,4 +390,39 @@ class CalendarCommonHelper extends AppHelper {
 		);
 		return $weeks[$cnt % 7];
 	}
+
+	/*
+	 * getVirtualShareRoomInfo
+	 *
+	 * 「仲間の予定」仮想ルームのIDと名前の取得
+	 *
+	 * @return array 「仲間の予定」仮想ルームのIDと名前を配列で返す。
+	 */
+	/*
+	public function getVirtualShareRoomInfo() {
+		return array(
+			CalendarsComponent::FRIEND_PLAN_VIRTUAL_ROOM_ID,
+			__d('calendars', '仲間の予定')
+		);
+	}
+	*/
+
+/**
+ * decideRoomName
+ *
+ * 仲間の予定を考慮したルーム名取得関数
+ *
+ * @param string $roomName 候補ルーム名
+ * @param string $class 判断基準となるクラス名
+ * @return string 判断基準をもとに決定したルーム名
+ */
+	public function decideRoomName($roomName, $class) {
+		if (strpos($class, 'private') === false &&
+			(strpos($class, 'share') !== false)) {
+			//仲間の予定
+			$roomName = __d('calendars', '仲間の予定');
+		}
+		return $roomName;
+	}
+
 }

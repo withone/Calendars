@@ -130,14 +130,7 @@ class CalendarAppBehavior extends ModelBehavior {
 		//採番されたidをeventDataにセット
 		$rEventData['CalendarEvent']['id'] = $model->CalendarEvent->id;
 
-		//関連コンテンツの登録
-		if (isset($rEventData['CalendarEventContent']) &&
-			$rEventData['CalendarEventContent']['linked_model'] !== '') {
-			if (!(isset($this->CalendarEventContent))) {
-				$model->loadModels(['CalendarEventContent' => 'Calendar.CalendarEventContent']);
-			}
-			$this->CalendarEventContent->saveLinkedData($rEventData);
-		}
+		$this->_insertChidren($model, $planParams, $rEventData);
 
 		return $rEventData;
 	}
@@ -442,6 +435,34 @@ class CalendarAppBehavior extends ModelBehavior {
 			$model->loadModels([
 				'CalendarRrule' => 'Calendars.CalendarRrule'
 			]);
+		}
+	}
+
+/**
+ * _insertChidren
+ *
+ * 関連する(hasMany関係にある）子レコードを登録する
+ *
+ * @param Model &$model モデル
+ * @param array $planParams planParams
+ * @param array $eventData eventData
+ * @return void
+ */
+	protected function _insertChidren(&$model, $planParams, $eventData) {
+		//カレンダ共有ユーザ登録
+		if (!$model->Behaviors->hasMethod('insertShareUsers')) {
+			$model->Behaviors->load('Calendars.CalendarShareUserEntry');
+		}
+		$model->insertShareUsers($planParams['share_users'], $eventData['CalendarEvent']['id']);
+		//注: 他のモデルの組み込みBehaviorをcallする場合、第一引数に$modelの指定はいらない。
+
+		//関連コンテンツの登録
+		if (isset($eventData['CalendarEventContent']) &&
+			$eventData['CalendarEventContent']['linked_model'] !== '') {
+			if (!(isset($model->CalendarEventContent))) {
+				$model->loadModels(['CalendarEventContent' => 'Calendar.CalendarEventContent']);
+			}
+			$model->CalendarEventContent->saveLinkedData($eventData);
 		}
 	}
 }

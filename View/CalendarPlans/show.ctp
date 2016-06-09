@@ -18,6 +18,13 @@
 <!--- 編集ボタン -->
 
 		<?php /*if ($this->Workflow->canEdit('CalendarPlan', $event['CalendarEvent'])) :*/ ?>
+		<?php
+			$pseudoPlan = $this->CalendarCommon->makePseudoPlanFromEvent($vars, $event);
+			$planMarkClassName = $this->CalendarCommon->getPlanMarkClassName($vars, $pseudoPlan);
+		?>
+		<?php /* 「仲間の予定」は他人のプライベート予定なので編集してはいけない。 */ ?>
+		<?php if (!(strpos($planMarkClassName, 'private') === false && strpos($planMarkClassName, 'share') !== false)) : ?>
+
 			<div class="text-right">
 				<?php echo $this->Button->editLink('', array(
 			'controller' => 'calendar_plans',
@@ -31,7 +38,7 @@
 						//'iconSize' => 'btn-xs'
 					)); ?>
 			</div>
-		<?php /*endif;*/ ?>
+		<?php endif; ?>
 
 <?php /* CakeLog::debug("event[" . print_r($event, true) . "]"); */ ?>
 
@@ -117,13 +124,15 @@
 	</div><!-- おわり-->
 <?php endif; ?>
 
-
 <div name="dispRoomForOpen">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
 	<label><?php echo __d('calendars', '公開対象'); ?></label>
 	<div class="clearfix"></div>
 	<?php
-		echo "<span class='calendar-plan-mark " . $this->CalendarCommon->getPlanMarkClassName($vars, $event['CalendarEvent']['room_id']) . "'></span><span>" . h($roomLang['RoomsLanguage']['name']) . '</span>';
+		$roomName = $this->CalendarCommon->decideRoomName(
+			$roomLang['RoomsLanguage']['name'], $planMarkClassName);
+		echo "<span class='calendar-plan-mark " .
+			$planMarkClassName . "'></span><span>" . h($roomName) . '</span>';
 	?>
 <div class="clearfix"></div>
 </div><!-- col-sm-10おわり -->
@@ -133,7 +142,7 @@
 <?php if (count($shareUserNames) > 0) : ?>
 	<div name="sharePersons">
 	<div class="col-xs-12 col-sm-10 col-sm-offset-1 calendar-eachplan-box">
-		<label>' . <?php echo __d('calendars', '予定を共有する人'); ?></label>
+		<label><?php echo __d('calendars', '予定を共有する人'); ?></label>
 		<div class="clearfix"></div>
 	<?php
 	foreach ($shareUserNames as $idx => $shareUserName) {

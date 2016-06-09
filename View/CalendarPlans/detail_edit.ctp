@@ -896,7 +896,7 @@
 <!-- 予定の共有 START -->
 <?php
 	$dispValue = 'none';
-	CakeLog::debug("DBG: myself[" . $myself . "] request_data[plan_room_id]=[" . $this->request->data['CalendarActionPlan']['plan_room_id'] . "] options[" . print_r($exposeRoomOptions, true) . "]");
+	//CakeLog::debug("DBG: myself[" . $myself . "] request_data[plan_room_id]=[" . $this->request->data['CalendarActionPlan']['plan_room_id'] . "] options[" . print_r($exposeRoomOptions, true) . "]");
 
 	if (!empty($myself)) {
 		if ($this->request->data['CalendarActionPlan']['plan_room_id'] == $myself) {

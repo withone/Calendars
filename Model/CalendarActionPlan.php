@@ -866,5 +866,5 @@ class CalendarActionPlan extends CalendarsAppModel {
 		}
 		return $aReturn;
 	}
-	
+
 }

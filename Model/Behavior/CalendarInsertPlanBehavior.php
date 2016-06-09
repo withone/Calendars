@@ -72,21 +72,21 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 		}
 		$eventId = $eventData['CalendarEvent']['id'];
 
-		if (!$model->Behaviors->hasMethod('insertShareUsers')) {
-			$model->Behaviors->load('Calendars.CalendarShareUserEntry');
-		}
-
-		//カレンダ共有ユーザ登録
-		$model->insertShareUsers($planParams['share_users'], $eventId);
-		//注: 他のモデルの組み込みBehaviorをcallする場合、第一引数に$modelの指定はいらない。
-
-		//関連コンテンツの登録
-		if ($eventData['CalendarEventContent']['linked_model'] !== '') {
-			if (!(isset($model->CalendarEventContent))) {
-				$model->loadModels(['CalendarEventContent' => 'Calendars.CalendarEventContent']);
-			}
-			$model->CalendarEventContent->saveLinkedData($eventData);
-		}
+		//ShareUserとContentへの登録は、insertEventData()の中に移動した。
+		//if (!$model->Behaviors->hasMethod('insertShareUsers')) {
+		//	$model->Behaviors->load('Calendars.CalendarShareUserEntry');
+		//}
+		////カレンダ共有ユーザ登録
+		//$model->insertShareUsers($planParams['share_users'], $eventId);
+		////注: 他のモデルの組み込みBehaviorをcallする場合、第一引数に$modelの指定はいらない。
+		//
+		////関連コンテンツの登録
+		//if ($eventData['CalendarEventContent']['linked_model'] !== '') {
+		//	if (!(isset($model->CalendarEventContent))) {
+		//		$model->loadModels(['CalendarEventContent' => 'Calendars.CalendarEventContent']);
+		//	}
+		//	$model->CalendarEventContent->saveLinkedData($eventData);
+		//}
 
 		if ($rruleData['CalendarRrule']['rrule'] !== '') {	//Rruleの登録
 			if (!$model->Behaviors->hasMethod('insertRrule')) {
@@ -213,6 +213,24 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 
 		//採番されたidをeventDataにセットしておく
 		$eventData['CalendarEvent']['id'] = $model->CalendarEvent->id;
+
+		//ShareUsersとContentは、calendar_event_id単位に登録するので、ここにもってきた。
+		//
+		if (!$model->Behaviors->hasMethod('insertShareUsers')) {
+			$model->Behaviors->load('Calendars.CalendarShareUserEntry');
+		}
+		//カレンダ共有ユーザ登録
+		$model->insertShareUsers($planParams['share_users'], $eventData['CalendarEvent']['id']);
+		//注: 他のモデルの組み込みBehaviorをcallする場合、第一引数に$modelの指定はいらない。
+
+		//関連コンテンツの登録
+		if ($eventData['CalendarEventContent']['linked_model'] !== '') {
+			if (!(isset($model->CalendarEventContent))) {
+				$model->loadModels(['CalendarEventContent' => 'Calendars.CalendarEventContent']);
+			}
+			$model->CalendarEventContent->saveLinkedData($eventData);
+		}
+
 		return $eventData;
 	}
 

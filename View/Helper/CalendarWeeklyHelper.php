@@ -8,6 +8,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 App::uses('AppHelper', 'View/Helper');
+App::uses('CalendarComponent', 'Calendars.Controller/Component');
 /**
  * Calendar weekly Helper
  *
@@ -72,8 +73,19 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 			//仕様
 			//予定が１件以上あるとき）
 			//※roomIdが一致するデータ
+
 			if ($vars['currentRoomId'] != $plan['CalendarEvent']['room_id']) {
-				continue;
+				if ($vars['currentRoomId'] == CalendarsComponent::FRIEND_PLAN_VIRTUAL_ROOM_ID
+					&& !empty($plan['CalendarEvent']['pseudo_friend_share_plan'])) {
+					//このルームは「仲間の予定」仮想ルームで、かつ、
+					//予定($plan['CalendarEvent])の擬似項目pseudo_friend_share_planに値(1)がセットされている「仲間の予定」
+					//データである。よって、room_idが一致しなくても、表示する例外ケース。
+				} else {
+					//ルームIDが予定のルームIDと一致もしないし、
+					//「仲間の予定」仮想ルーム時の「仲間の予定」データでもないので、
+					//次の予定に進む。
+					continue;
+				}
 			}
 
 			$isLine = $this->CalendarPlan->isLinePlan($plan);
@@ -104,8 +116,7 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		$url = '';
 		$html = '';
 		$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
-		$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName(
-			$vars, $plan['CalendarEvent']['room_id']);
+		$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan);
 		// 大枠
 		$html .= '<div class="row">';
 		$html .= '<div class="col-xs-12">';
@@ -219,6 +230,12 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 	public function makeWeeklyBodyHtml($vars) {
 		$html = '';
 		$rooms = $vars['exposeRoomOptions'];
+
+		//「仲間の予定」仮想ルーム情報を追記
+		//list($shareRoomId, $shareRoomName) = $this->CalendarCommon->getVirtualShareRoomInfo();
+		$rooms[CalendarsComponent::FRIEND_PLAN_VIRTUAL_ROOM_ID] = __d('calendars', '仲間の予定');
+		//CakeLog::debug("DBG: rooms[" . print_r($rooms, true) . "]");
+
 		//ルーム数分繰り返し
 		//for ($idx = 0; $idx < $roomNum; $idx++) {
 		$cnt = 0;
@@ -231,8 +248,9 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		foreach ($rooms as $room) {
 			$cnt++;
 			$roomID = array_keys($rooms, $room);
-
-			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $roomID[0]);
+			//週の行の左のルーム名の場合、具体的な予定($plan)を渡せないので、第２引数はnullにし、
+			//第３引数で直接roomIdを渡すようにしている。
+			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, null, $roomID[0]);
 			$html .= '<tr><div class="row">'; //1行の開始
 
 			/**Line**/

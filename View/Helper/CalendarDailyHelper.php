@@ -102,8 +102,7 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 		$url = '';
 		$html = '';
 
-		$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName(
-			$vars, $plan['CalendarEvent']['room_id']);
+		$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan);
 
 		$html = "<div class='calendar-plan-mark {$calendarPlanMark}'>";
 
@@ -119,13 +118,14 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 		}
 		$spaceName = $this->getSpaceName(
 			$vars, $plan['CalendarEvent']['room_id'], $plan['CalendarEvent']['language_id']);
-		$html .= '<p class="calendar-plan-spacename small">' . $spaceName . '</p>';
+		$spaceName = $this->CalendarCommon->decideRoomName($spaceName, $calendarPlanMark);
+		$html .= '<p class="calendar-plan-spacename small">' . h($spaceName) . '</p>';
 
 		$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>';
 
 		//タイトルアイコン
 		$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
-		$html .= $plan['CalendarEvent']['title'];
+		$html .= h($plan['CalendarEvent']['title']);
 		$html .= '</a></h3>';
 
 		$html .= '</p>';
