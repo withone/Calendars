@@ -284,5 +284,6 @@ class CalendarsAppController extends AppController {
 		$vars['exposeRoomOptions'] = $exposeRoomOptions;
 		$vars['myself'] = $myself;
 		$vars['spaceNameOfRooms'] = $spaceNameOfRooms;
+
 	}
 }
