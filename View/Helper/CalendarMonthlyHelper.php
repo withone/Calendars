@@ -573,7 +573,7 @@ class CalendarMonthlyHelper extends AppHelper {
 		//$html .= $this->makeGlyphiconPlusWithUrl($year, $month, $day, $vars);
 		$html .= "<div class='row'>";
 		$html .= "<div class='col-xs-3 col-sm-12'>";
-		$html .= "<div class='row'>";
+		$html .= "<div class='row calendar-day-num'>";
 		$html .= "<div class='col-xs-12'>";
 		$html .= "<span class='text-muted calendar-day calendar-daily-disp' ";
 		$html .= "data-url='" . $url . "'>" . $day . '</span>';
@@ -582,8 +582,12 @@ class CalendarMonthlyHelper extends AppHelper {
 		$html .= '</div>';
 		//<!-- 2row --> 祝日タイトル
 		$html .= "<div class='col-xs-12'>";
-		$html .= "<span class='calendar-sunday'><small>";
-		$html .= (($holidayTitle === '') ? '&nbsp;' : $holidayTitle) . '</small></span>';
+		//$html .= "<span class='calendar-sunday'><small>";
+		//$html .= (($holidayTitle === '') ? '&nbsp;' : $holidayTitle) . '</small></span>';
+
+		$html .= "<small class='calendar-sunday'>";
+		$html .= (($holidayTitle === '') ? '&nbsp;' : $holidayTitle) . '</small>';
+
 		$html .= '</div>';
 		$html .= '</div>';
 		$html .= '</div>';
@@ -601,14 +605,6 @@ class CalendarMonthlyHelper extends AppHelper {
 		//予定概要群
 		$html .= $this->_makePlanSummariesHtml($vars, $nctm, $year, $month, $day);
 		/* forline add */
-
-		/* org
-		//予定概要群
-		$html .= "<div class='col-xs-9 col-sm-12'>";
-		//$html .= $this->_makePlanSummariesHtml($vars, $nctm, $vars['mInfo']['yearOfPrevMonth'], $vars['mInfo']['prevMonth'], $day);
-		$html .= $this->_makePlanSummariesHtml($vars, $nctm, $year, $month, $day);
-		$html .= '</div>';
-		*/
 
 		$this->_celCnt++;
 		$html .= '</td>';

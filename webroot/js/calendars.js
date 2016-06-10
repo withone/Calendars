@@ -346,7 +346,7 @@ NetCommonsApp.controller('CalendarsMonthlyLinePlan', function($scope) {
     //初期化
     $scope.week = [];
 
-    $scope.week.prevTop = 0; //前回のtop位置（divタグの高さ調整用）
+    //$scope.week.prevTop = 0; //前回のtop位置（divタグの高さ調整用）
 
     for (var i = 0; i < $scope.calendarLinePlans.length; i++) {  //第n週ループ
       $scope.week[i] = [];
@@ -368,15 +368,17 @@ NetCommonsApp.controller('CalendarsMonthlyLinePlan', function($scope) {
     }
 
     //LINE高さと横幅の調整
-    var beforeHeight = 0;// 一つ前の高さ
+    //var beforeHeight = 0;// 一つ前の高さ
     var beforeFromCell = -1; //一つ前の開始セル
 
     for (var i = 0; i < $scope.calendarLinePlans.length; i++) {  //第n週ループ
+      beforeFromCell = -1;
       for (var j = 0; j < $scope.calendarLinePlans[i].length; j++) {
-        beforeHeight = $scope.setLinePos(
+        //beforeHeight = 
+        $scope.setLinePos(
             i, $scope.calendarLinePlans[i][j].id,
             $scope.calendarLinePlans[i][j].fromCell,
-            $scope.calendarLinePlans[i][j].toCell, beforeHeight, beforeFromCell);
+            $scope.calendarLinePlans[i][j].toCell, beforeFromCell);
         beforeFromCell = $scope.calendarLinePlans[i][j].fromCell;
       }
     }
@@ -398,7 +400,7 @@ NetCommonsApp.controller('CalendarsMonthlyLinePlan', function($scope) {
     }
   };
 
-  $scope.setLinePos = function(week, id, fromCell, toCell, beforeHeight, beforeFromCell) {
+  $scope.setLinePos = function(week, id, fromCell, toCell, beforeFromCell) {
     //console.log('LINE.Plan!setLinePos!.id[%d] fromCell [%d] toCell[%d] beforeHeight[%d]
     // beforeFromCell[%d].', id, fromCell, toCell, beforeHeight, beforeFromCell);
     var planObj = document.getElementById('planline' + String(id) + '_' + String(week));
@@ -408,29 +410,31 @@ NetCommonsApp.controller('CalendarsMonthlyLinePlan', function($scope) {
 
     //重ならない行数を取得
     var lineNum = $scope.getLineNum(week, fromCell, toCell);
-	console.log('lineNum %d', lineNum);
+	//console.log('lineNum %d', lineNum);
     //Top設定
     var top = 0;
     if (fromCell == beforeFromCell) { // 開始divが同じ場合
       //console.log('SameBefore!! id[%d] fromCell[%d] prevTop[%d]',id , fromCell, $scope.prevTop);
-      top = $scope.prevTop + 5; //前回のtopから5pxだけずらす（divタグの高さ分考慮する）
-      console.log('divTopTotal!! week[%d] Cell[%d] divTopTotal[%d]',
-       week , fromCell, $scope.week[week].divTopTotal[fromCell]);
+      //top = $scope.prevTop + 5; //前回のtopから5pxだけずらす（divタグの高さ分考慮する）
+
+      top = (25 * lineNum) - 20; //
+
+      //console.log('divTopTotal!! week[%d] Cell[%d] divTopTotal[%d]',
+       //week , fromCell, $scope.week[week].divTopTotal[fromCell]);
       $scope.week[week].divTopTotal[fromCell] =
           $scope.week[week].divTopTotal[fromCell] + 20; //div高さの差分を累積
     } else { //開始divが異なる
       top = (25 * lineNum);
       $scope.week[week].divTopTotal[fromCell] =
           $scope.week[week].divTopTotal[fromCell] + 20; //div高さの差分を累積
-      //$scope.week[week].divTopTotal[fromCell] = $top;
     }
 
-	console.log('top %d', top);
+	//console.log('top %d', top);
 
 
     planObj.style.top = (top) + 'px'; // Top設定
     //planObj.style.position = 'relative';
-    $scope.prevTop = top; // 前回の値を保持(開始divのあるセルはずらす幅が異なるため)
+    //$scope.prevTop = top; // 前回の値を保持(開始divのあるセルはずらす幅が異なるため)
 
     //fromからToまでlineNumを入れておく
     var celCnt = fromCell;
@@ -443,7 +447,7 @@ NetCommonsApp.controller('CalendarsMonthlyLinePlan', function($scope) {
     //次回の重なりチェックのため、値保持
     var data = {a: fromCell, b: toCell};
     $scope.week[week].Column[lineNum].push(data);
-    return planObj.getBoundingClientRect().top;
+    return; //planObj.getBoundingClientRect().top;
   };
 
   $scope.getLineNum = function(week, a, b) {
