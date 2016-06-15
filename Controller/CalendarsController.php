@@ -120,7 +120,7 @@ class CalendarsController extends CalendarsAppController {
 				$style = 'smallmonthly';
 			}
 		}
-
+		$this->_storeRedirectPath($vars);
 		$ctpName = $this->getCtpAndVars($style, $vars);
 
 		$frameId = Current::read('Frame.id');
@@ -138,6 +138,8 @@ class CalendarsController extends CalendarsAppController {
  * @return array $vars 月（縮小用）データ
  */
 	public function getMonthlyVars($vars) {
+		//$this->storeRedirectPath(); test
+		//print_r($this->referer());
 		$this->setCalendarCommonVars($vars);
 
 		/* 藤原さんのソースとマージした後、以下のソースを有効化すること。

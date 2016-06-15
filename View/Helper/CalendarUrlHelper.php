@@ -78,12 +78,12 @@ class CalendarUrlHelper extends AppHelper {
 			'block_id' => Current::read('Block.id'),
 			'frame_id' => Current::read('Frame.id'),
 		);
-		if (isset($vars['return_style'])) {
-			$options['return_style'] = $vars['return_style'];
-		}
-		if (isset($vars['return_sort'])) {
-			$options['return_sort'] = $vars['return_sort'];
-		}
+		//if (isset($vars['return_style'])) { 未使用
+		//	$options['return_style'] = $vars['return_style'];
+		//}
+		//if (isset($vars['return_sort'])) {
+		//	$options['return_sort'] = $vars['return_sort'];
+		//}
 		$url = NetCommonsUrl::actionUrl($options);
 		return $url;
 	}
@@ -124,6 +124,7 @@ class CalendarUrlHelper extends AppHelper {
  * @param array $vars カレンダー情報
  * @return string URL
  */
+	/* 未使用
 	public function getPlanListUrl($place, $year, $month, $day, $vars) {
 		if ($place === 'thisMonth') {
 			$backYear = $year;
@@ -147,4 +148,5 @@ class CalendarUrlHelper extends AppHelper {
 		$url = NetCommonsUrl::actionUrl($options);
 		return $url;
 	}
+	*/
 }

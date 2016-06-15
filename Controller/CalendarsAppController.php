@@ -119,6 +119,7 @@ class CalendarsAppController extends AppController {
  * @param array &$vars カレンダー用共通変数
  * @return void
  */
+	/* 未使用のため削除
 	public function setReturnVars(&$vars) {
 		if (isset($this->request->params['named']['back_year'])) {
 			$vars['back_year'] = intval($this->request->params['named']['back_year']);
@@ -144,6 +145,7 @@ class CalendarsAppController extends AppController {
 			$vars['return_sort'] = $this->request->params['named']['return_sort'];
 		}	//無いケースもある
 	}
+	*/
 
 /**
  * setCalendarCommonVars
@@ -163,7 +165,8 @@ class CalendarsAppController extends AppController {
 		$this->setDateTimeVars($vars, $nctm);
 
 		//戻り先変数を設定する
-		$this->setReturnVars($vars);
+		//$this->setReturnVars($vars); ※未使用
+		//$this->storeRedirectPath($vars);
 
 		//mInfo情報
 		//月カレンダー情報
@@ -285,4 +288,38 @@ class CalendarsAppController extends AppController {
 		$vars['myself'] = $myself;
 		$vars['spaceNameOfRooms'] = $spaceNameOfRooms;
 	}
+
+/**
+ * storeRedirectPath
+ * 
+ * リダイレクトURLの保存
+ *
+ * @param array &$vars カレンダー用共通変数
+ * @return void
+ */
+	protected function _storeRedirectPath(&$vars) {
+		//print_r($vars);
+		//if ( isset($this->request->params['named']['style']) && ($this->request->params['named']['style'] == 'weekly' ||
+		//	$this->request->params['named']['style'] == 'largemonthly' ||
+		//	$this->request->params['named']['style'] == 'daily' ||
+		//	$this->request->params['named']['style'] == 'schedule')) {
+			$currentPath = Router::url();
+		//	print_r('WRITE');print_r($currentPath);
+			// リダイレクトURLを記録
+			$this->Session->write(CakeSession::read('Config.userAgent') . 'calendars',
+			$currentPath . '?frame_id=' . Current::read('Frame.id'));
+			$vars['returnUrl'] = $currentPath . '?frame_id=' . Current::read('Frame.id');
+			//print_r($vars['returnUrl']);
+			//print_r(CakeSession::read('Config.userAgent'));
+			//$this->log('currentlog!!!', 'debug');
+			//$this->log($currentPath, 'debug');
+		//} else {
+		//	$url = $this->Session->read(CakeSession::read('Config.userAgent'));
+		//	if ($url != '' ) {
+		//		$vars['returnUrl'] = $url . '?frame_id=' . Current::read('Frame.id');
+		//		print_r('READ');print_r($vars['returnUrl']);
+		//	}
+		//}
+	}
+
 }
