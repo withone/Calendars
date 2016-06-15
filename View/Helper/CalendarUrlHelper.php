@@ -9,6 +9,7 @@
  */
 App::uses('AppHelper', 'View/Helper');
 App::uses('WorkflowComponent', 'Workflow.Controller/Component');
+App::uses('CalendarFrameSetting', 'Calendars.Model');
 
 /**
  * Calendar url Helper
@@ -28,6 +29,7 @@ class CalendarUrlHelper extends AppHelper {
 		'NetCommonsHtml',
 		'Form',
 		'Calendars.CalendarCommon',
+		'NetCommons.BackTo',
 	);
 
 /**
@@ -110,6 +112,36 @@ class CalendarUrlHelper extends AppHelper {
 			'frame_id' => Current::read('Frame.id'),
 		));
 		return $url;
+	}
+
+/**
+ * getBackFirstButton
+ *
+ * 最初の画面に戻るUrlリンクボタンの取得
+ *
+ * @param array $vars カレンダー情報
+ * @return string URL
+ */
+	public function getBackFirstButton($vars) {
+		//print_r($vars);
+		$html = '';
+		$displayType = $vars['CalendarFrameSetting']['display_type'];
+		//print_r($displayType);
+		//$displayType = Current::read('CalendarFrameSetting.display_type');
+		//print_r($displayType);
+
+		if ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY ||
+			$displayType == CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY) {
+			$html = $this->BackTo->indexLinkButton(__d('calendars', '今月に戻る'));
+		} elseif ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY) {
+			$html = $this->BackTo->indexLinkButton(__d('calendars', '今週に戻る'));
+		} elseif ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_DAILY) {
+			$html = $this->BackTo->indexLinkButton(__d('calendars', '今日に戻る'));
+		} else {
+			$html = $this->BackTo->indexLinkButton(__d('calendars', '最初の画面に戻る'));
+		}
+
+		return $html;
 	}
 
 /**

@@ -34,7 +34,8 @@
 ?>
 <div class="row text-center calendar-backto-btn">
 	<?php
-		echo $this->BackTo->indexLinkButton(__d('calendars', '最初の画面に戻る'));
+		echo $this->CalendarUrl->getBackFirstButton($vars);
+		//echo $this->BackTo->indexLinkButton(__d('calendars', '最初の画面に戻る'));
 	?>
 </div>
 </form>
