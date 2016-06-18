@@ -211,7 +211,7 @@ class CalendarPlansController extends CalendarsAppController {
 		if ($this->request->is('post')) {
 			//登録処理
 
-			//CakeLog::debug("DBG: request_data[" . print_r($this->request->data, true) . "]");
+			//CakeLog::debug("DBG: add() POST直後. request_data[" . print_r($this->request->data, true) . "]");
 
 			$this->CalendarActionPlan->set($this->request->data);
 
@@ -246,15 +246,15 @@ class CalendarPlansController extends CalendarsAppController {
 				$originEvent = $this->__getEvent($this->request->data['CalendarActionPlan']['origin_event_id']);
 			}
 			//追加・変更、元データ繰返し有無、及び時間・繰返し系変更タイプの判断処理
-			list($procMode, $isOriginRepeat, $isTimeOrRepeatMod) =
+			list($procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod) =
 				$this->CalendarActionPlan->getProcModeOriginRepeatAndModType(
 					$this->request->data, $originEvent);
 
 			//成功なら元画面(カレンダーorスケジューラー)に戻る。
 			//FIXME: 遷移元がshow.ctpなら、戻り先をshow.ctpに変える必要あり。
 			//
-			$eventId = $this->CalendarActionPlan->saveCalendarPlan($this->request->data,
-				$procMode, $isOriginRepeat, $isTimeOrRepeatMod);
+			$eventId = $this->CalendarActionPlan->saveCalendarPlan(
+				$this->request->data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod);
 			if (!$eventId) {
 				//保存失敗
 				CakeLog::error("保存失敗");	//FIXME: エラー処理を記述のこと。
@@ -379,6 +379,7 @@ class CalendarPlansController extends CalendarsAppController {
  * edit
  *
  * @return void
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
 	public function edit() {
 		//表示用の設定
@@ -431,9 +432,24 @@ class CalendarPlansController extends CalendarsAppController {
 			//
 			$capForView = (new CalendarSupport())->getCalendarActionPlanForView($event);
 
-			//eventの兄弟も探しておく。
+			//eventの兄弟も探しておく。この時、dtstartでソートし繰返し先頭データが取得できるようにしておく。
 			$eventSiblings = $this->CalendarEvent->getSiblings(
 				$event['CalendarEvent']['calendar_rrule_id']);
+
+			//自分もふくむので1件以上あることはまちがいない。
+			$capForViewOf1stSib = (new CalendarSupport())->getCalendarActionPlanForView($eventSiblings[0]);
+			$year1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 0, 4);
+			$month1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 5, 2);
+			$day1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 8, 2);
+
+			$firstSib = array(
+				'CalendarActionPlan' => array(
+					'first_sib_event_id' => intval($eventSiblings[0]['CalendarEvent']['id']),
+					'first_sib_year' => intval($year1stSib),
+					'first_sib_month' => intval($month1stSib),
+					'first_sib_day' => intval($day1stSib),
+				),
+			);
 		} else {
 			//eventが空の場合、初期値でFILLした表示用配列を取得する。
 			//
@@ -441,6 +457,20 @@ class CalendarPlansController extends CalendarsAppController {
 				$this->CalendarWorks->getDateTimeParam($this->request->params);
 			$capForView = (new CalendarSupport())->getInitialCalendarActionPlanForView(
 				$year, $month, $day, $hour, $minitue, $second, $exposeRoomOptions);
+			$capForViewOf1stSib = $capForView;	//eventが空なので、1stSibも初期値でFILLしておく
+
+			$year1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 0, 4);
+			$month1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 5, 2);
+			$day1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 8, 2);
+
+			$firstSib = array(
+				'CalendarActionPlan' => array(
+					'first_sib_event_id' => 0,	//新規だからidは未設定をあらわす0
+					'first_sib_year' => intval($year1stSib),
+					'first_sib_month' => intval($month1stSib),
+					'first_sib_day' => intval($day1stSib),
+				),
+			);
 		}
 
 		//capForViewのrequest->data反映
@@ -472,7 +502,7 @@ class CalendarPlansController extends CalendarsAppController {
 
 		$this->set(compact('frameId', 'languageId', 'vars', 'frameSetting', 'exposeRoomOptions',
 			'myself', 'emailOptions', 'event', 'capForView', 'mailSettingInfo', 'shareUsers',
-			'eventSiblings', 'planViewMode'));
+			'eventSiblings', 'planViewMode', 'firstSib'));
 		$this->render($ctpName);
 	}
 

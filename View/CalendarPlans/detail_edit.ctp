@@ -18,13 +18,15 @@
 
 	<?php
 		echo $this->element('Calendars.CalendarPlans/detail_edit_hiddens', array(
-			'event' => $event, 'eventSiblings' => $eventSiblings,
+			'event' => $event, 'eventSiblings' => $eventSiblings, 'firstSib' => $firstSib,
 		));
 	?>
 
 <div class="panel-body">
 
 <?php $this->NetCommonsForm->unlockField('CalendarActionPlan.edit_rrule'); ?>
+
+<?php $editRrule = true; ?>
 
 <?php if (count($eventSiblings) > 1 || (isset($this->request->data['CalendarActionPlan']['origin_num_of_event_siblings']) &&
 	$this->request->data['CalendarActionPlan']['origin_num_of_event_siblings'] > 1)) : ?>
@@ -34,17 +36,99 @@
 	<?php echo $this->TitleIcon->titleIcon('/net_commons/img/title_icon/10_070_warning.svg'); ?>
 	</h2>
 	<div style='padding-top: 1.5em'>
-	<?php echo __d('calendars', 'この予定は繰り返し設定されています。変更した予定を下記項目から選択し、予定編集してください。'); ?>
+	<?php
+		//全選択用に、繰返し先頭eventのeditボタのリンクを生成しておく
+		//
+		$firstSibYear = $firstSibMonth = $firstSibDay = $firstSibEventId = 0;
+		if (!empty($this->request->data['CalendarActionPlan']['first_sib_event_id'])) {
+			$firstSibEventId = $this->request->data['CalendarActionPlan']['first_sib_event_id'];
+			$firstSibYear = $this->request->data['CalendarActionPlan']['first_sib_year'];
+			$firstSibMonth = $this->request->data['CalendarActionPlan']['first_sib_month'];
+			$firstSibDay = $this->request->data['CalendarActionPlan']['first_sib_day'];
+
+		} else {
+			if (!empty($firstSib)) {
+				$firstSibEventId = $firstSib['CalendarActionPlan']['first_sib_event_id'];
+				$firstSibYear = $firstSib['CalendarActionPlan']['first_sib_year'];
+				$firstSibMonth = $firstSib['CalendarActionPlan']['first_sib_month'];
+				$firstSibDay = $firstSib['CalendarActionPlan']['first_sib_day'];
+			}
+		}
+		$firstSibEditLink = '';
+		if (!empty($firstSibEventId)) {
+			$firstSibEditLink = $this->Button->editLink('', array(
+				'controller' => 'calendar_plans',
+				'action' => 'edit',
+				'style' => 'detail',
+				'year' => $firstSibYear,
+				'month' => $firstSibMonth,
+				'day' => $firstSibDay,
+				'event' => $firstSibEventId,
+				'editrrule' => 2,
+				'frame_id' => Current::read('Frame.id'),
+			));
+			$firstSibEditLink = str_replace('&quot;', '"', $firstSibEditLink);
+			if (preg_match('/href="([^"]+)"/', $firstSibEditLink, $matches) === 1) {
+				$firstSibEditLink = $matches[1];
+			}
+		}
+
+		$originEventId = 0;
+		if (!empty($event)) {
+			$originEventId = $event['CalendarEvent']['id'];
+		} else {
+			if (!empty($this->request->data['CalendarActionPlan']['origin_event_id'])) {
+				$originEventId = $this->request->data['CalendarActionPlan']['origin_event_id'];
+			}
+		}
+
+		//$dispAfterThisPlan = true;
+		//if (!empty($originEventId) && $originEventId == $firstSibEventId) {
+		//	//このeventは繰り返しの先頭eventなので、「設定した全ての予定」と「この予定以降」は同等を指す。
+		//	$dispAfterThisPlan = false;
+		//} else {
+		//	//このeventは繰り返しの先頭eventではないので、「設定した全ての予定」と「この予定以降」は異なるので
+		//	//「この予定以降」と「設定した全ての予定」の両方を出す。
+		//}
+
+		echo __d('calendars', 'この予定は繰り返し設定されています。変更した予定を下記項目から選択し、予定編集してください。なお「この予定のみ」の時は予定の繰返しは表示されません。「設定した全ての予定」を選択すると内容が繰返しの初回予定に再設定されます。');
+
+		$isRecurrence = false;
+		if ((!empty($event) && !empty($event['CalendarEvent']['recurrence_event_id'])) ||
+			!empty($this->request->data['CalendarActionPlan']['origin_event_recurrence'])) {
+			$isRecurrence = true;
+			echo __d('calendars', '<br />「この予定のみ」指定で変更された予定なので、予定の繰返しは指定できません。');
+		}
+	?>
+	
+
 	</div>
 	<div class="alert alert-warning">
 	<?php
-		echo $this->NetCommonsForm->radio('CalendarActionPlan.edit_rrule', array(
-				'0' => __d('calendars', 'この予定のみ'),
-				'1' => __d('calendars', 'これ以降に指定した全ての予定'),
-				'2' => __d('calendars', '設定した全ての予定')
-			),
+		if (isset($this->request->params['named']) && isset($this->request->params['named']['editrrule'])) {
+			$editRrule = intval($this->request->params['named']['editrrule']);
+			//CakeLog::debug("DBG: 名前付きeditrruleの値をeditRrule[" . $editRrule . "]にセットしました");
+		} else {
+			$editRrule = (empty($this->request->data['CalendarActionPlan']['edit_rrule'])) ? 0 :
+				$this->request->data['CalendarActionPlan']['edit_rrule'];
+		}
+
+		$options = array();
+		$options['0'] = __d('calendars', 'この予定のみ');
+		if (!$isRecurrence) {
+			//「この予定のみ」指定で変更された予定ではないので、1,2も選択肢に加える。
+			//if ($dispAfterThisPlan) {
+				$options['1'] = __d('calendars', 'これ以降に指定した全ての予定');
+			//}
+			$options['2'] = __d('calendars', '設定した全ての予定');
+		}
+		echo $this->NetCommonsForm->radio('CalendarActionPlan.edit_rrule', $options,
 			array(
 				'div' => 'form-inline',
+				'value' => $editRrule,
+				'ng-model' => 'editRrule',
+				'ng-init' => "editRrule = '" . $editRrule . "'",
+				'ng-change' => "changeEditRrule(" . $frameId . ",'" . $firstSibEditLink . "')",
 			)
 		);
 	?>
@@ -344,8 +428,7 @@
 
 
 
-
-<div class="form-group" name="inputRruleInfo">
+<div class="form-group" name="inputRruleInfo" style="display: <?php echo ($editRrule) ? 'block' : 'none'; ?>">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
 
 	<!-- <uib-accordion close-others="oneAtATime"> -->
@@ -613,7 +696,7 @@
 				<div class="col-xs-8 col-sm-5">
 <?php
 					$options = $this->CalendarPlan->makeOptionsOfWdayInNthWeek('', __d('calendars', '-曜日指定-'));
-					CakeLog::debug("DBG: bydaMONTHLY[" . print_r($this->request->data['CalendarActionPlan']['rrule_byday']['MONTHLY'], true) . "]");
+					//CakeLog::debug("DBG: bydaMONTHLY[" . print_r($this->request->data['CalendarActionPlan']['rrule_byday']['MONTHLY'], true) . "]");
 					/*
 					*/
 

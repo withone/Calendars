@@ -16,8 +16,40 @@ App::uses('CalendarTime', 'Calendars.Utility');
  *
  * @author Allcreator <info@allcreator.net>
  * @package NetCommons\Calendars\Utility
+ * @SuppressWarnings(PHPMD)
  */
 class CalendarRruleUtil {
+
+/**
+ * addKeyToIcalUid
+ *
+ * iCalendar仕様UIDのユニーク部にkeyをappendする（最大４つまで）
+ *
+ * @param string $icalUid icalUid
+ * @param string $key key
+ * @return string iCalendar仕様のUIDのパーツを生成して返す
+ */
+	public static function addKeyToIcalUid($icalUid, $key = '') {
+		if ($key === '') {
+			return $icalUid;
+		}
+		if (preg_match('/^([^-]+)-([^@]+)@(.*)$/', $icalUid, $matches) === 1) {
+			$elms = explode('#', $matches[2]);
+			if (count($elms) >= 4) {
+				//入れ物(255バイト)におさめるため
+				//FIXME: ４連続分割追跡が限界。限界をのばすならicalendar_uidのサイズを増やす必要あり。
+				//
+				array_shift($elms);
+				$uniqid = implode('#', $elms) . '#' . $key;
+			} else {
+				$uniqid = $matches[2] . '#' . $key;
+			}
+			$icalUid = $matches[1] . '-' . $uniqid . '@' . $matches[3];
+		} else {
+			//echo "NO match\n";
+		}
+		return $icalUid;
+	}
 
 /**
  * generateIcalUid
@@ -33,7 +65,9 @@ class CalendarRruleUtil {
 		if (preg_match("/(?:.+)(?:\/\/)([^\/]+)/", FULL_BASE_URL, $matches) === 1) {
 			$domain = $matches[1];
 		}
-		$iCalendarUid = $startDate . 'T' . $startTime . 'Z' . '-' . uniqid() . '@' . $domain;
+		//$iCalendarUid = $startDate . 'T' . $startTime . 'Z' . '-' . uniqid() . '@' . $domain;
+		//ドメインは可変なのと、出力時に付加できる要素なので、省略しておく。
+		$iCalendarUid = $startDate . 'T' . $startTime . 'Z' . '-' . uniqid() . '@';
 		return $iCalendarUid;
 	}
 
@@ -44,7 +78,7 @@ class CalendarRruleUtil {
  * @return $resultArray rrule配列
  */
 	public function &parseRrule($rruleStr = '') {
-		CakeLog::debug("DBGRRULE: parseRrule() CALLed!");
+		//CakeLog::debug("DBGRRULE: parseRrule() CALLed!");
 		$resultArray = array();
 		if ($rruleStr === '') {
 			$rruleStr = 'FREQ=NONE';

@@ -20,6 +20,7 @@ App::uses('CalendarsComponent', 'Calendars.Controller/Component');
  *
  * @author AllCreator Co., Ltd. <info@allcreator.net>
  * @package NetCommons\Calendars\Model
+ * @SuppressWarnings(PHPMD)
  */
 class CalendarActionPlan extends CalendarsAppModel {
 
@@ -51,7 +52,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		'Calendars.CalendarPlanRruleValidate',	//予定（Rrule関連）バリデーション専用
 		'Calendars.CalendarPlanValidate',	//予定バリデーション専用
 		////'Calendars.CalendarRruleHandle',	//concatRrule()など
-		//'Calendars.CalendarNextGenPlan',	//元予定の次世代予定生成関連
+		'Calendars.CalendarNewGenPlan',	//元予定の新世代予定生成関連
 	);
 	// @codingStandardsIgnoreStart
 	// $_schemaはcakePHP2の予約語だが、宣言するとphpcsが警告を出すので抑止する。
@@ -75,12 +76,38 @@ class CalendarActionPlan extends CalendarsAppModel {
 		'origin_event_id' => array('type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
 		//カレンダー元eventKey
 		'origin_event_key' => array('type' => 'string', 'default' => ''),
+		//カレンダー元eventRecurrence
+		'origin_event_recurrence' => array('type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
+		//カレンダー元eventException
+		'origin_event_exception' => array('type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
+
 		//カレンダー元rruleId
 		'origin_rrule_id' => array('type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
 		//カレンダー元rruleKey
 		'origin_rrule_key' => array('type' => 'string', 'default' => ''),
-		//カレンダー元rruleを共有するeventの数（＝自分もふくめた兄弟の数）
+		//カレンダー元rruleを共有する兄弟eventの数
 		'origin_num_of_event_siblings' => array('type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
+
+		// 全変更選択時、繰返し先頭eventのeditボタンを擬似クリックする方式用の項目
+		// editLink()を呼ぶときの必要パラメータ
+		'first_sib_year' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+		'first_sib_month' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+		'first_sib_day' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+		'first_sib_event_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+
+		/*
+		// -- 以下のcapForViewOf1stSibによるデータすり替え方式用の項目(first_sib_cap_xxx)は、--
+		// -- 全変更選択時、繰返し先頭eventのeditボタンを擬似クリックする方式にかえたので、削除. --
+
+		//先頭兄弟（繰返しの先頭）capForView(表示用CalendarActionPlan)の情報
+		'first_sib_cap_enable_time' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+		'first_sib_cap_easy_start_date' => array('type' => 'string', 'default' => ''),	//YYYY-MM-DD
+		'first_sib_cap_easy_hour_minute_from' => array('type' => 'string', 'default' => ''), //hh:mm
+		'first_sib_cap_easy_hour_minute_to' => array('type' => 'string', 'default' => ''),	//hh:mm
+		'first_sib_cap_detail_start_datetime' => array('type' => 'string', 'default' => ''),	//YYYY-MM-DD or YYYY-MM-DD hh:mm
+		'first_sib_cap_detail_end_datetime' => array('type' => 'string', 'default' => ''), //YYYY-MM-DD or YYYY-MM-DD hh:mm
+		'first_sib_cap_timezone_offset' => array('type' => 'string', 'default' => ''),
+		*/
 
 		//タイトル
 		'title' => array('type' => 'string', 'default' => ''),
@@ -489,10 +516,11 @@ class CalendarActionPlan extends CalendarsAppModel {
  * @param array $data POSTされたデータ
  * @param string $procMode procMode
  * @param bool $isOriginRepeat isOriginRepeat
- * @param bool $isTimeOrRepeatMod isTimeOrRepeatMod
- * @return int 成功時EventId, 失敗時false
+ * @param bool $isTimeMod isTimeMod
+ * @param bool $isRepeatMod isRepeatMod
+ * @return bool 成功時true, 失敗時false
  */
-	public function saveCalendarPlan($data, $procMode, $isOriginRepeat, $isTimeOrRepeatMod) {
+	public function saveCalendarPlan($data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod) {
 		$this->begin();
 		$eventId = 0;
 		$this->aditionalData = $data['WorkflowComment'];
@@ -508,6 +536,14 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 			//CakeLog::debug("DBG: request_data[" . print_r($data, true) . "]");
 
+			//$data['save_N']のN(=status)を抜き出す。
+			$status = $this->_getStatus($data);
+			if ($status === false) {
+				CakeLog::error("save_Nより、statusが決定できませんでした。data[" .
+					serialize($data) . "]");
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+
 			if ($procMode === CalendarsComponent::PLAN_ADD) {
 				//新規追加処理
 				//CakeLog::debug("DBG: PLAN_ADD case.");
@@ -517,14 +553,13 @@ class CalendarActionPlan extends CalendarsAppModel {
 			} else {	//PLAN_EDIT
 				//変更処理
 
-				//CakeLog::debug("DBG: PLAN_EDIT case.");
+				//現予定を元に、新世代予定を作成する
+				$newPlan = $this->makeNewGenPlan($data, $status);
+				//CakeLog::debug("DBG: newPlan[" . print_r($newPlan, true) . "]");
 
-				//現予定を元に、次世代予定を作成する
-				//FIXME: 修正中
-				//////$nextPlan = $this->makeNextGenPlan($data);
-				//$this->updatePlan($planParam, $nextPlan);
+				$editRrule = $this->getEditRruleForUpdate($data);
 
-				$eventId = $this->insertPlan($planParam);
+				$eventId = $this->updatePlan($planParam, $newPlan, $status, $isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule);
 			}
 
 			$this->_enqueueEmail($data);
@@ -680,11 +715,12 @@ class CalendarActionPlan extends CalendarsAppModel {
  *
  * @param array $data $this->request->data配列が渡される
  * @param array $originEvent 変更元のevent関連データ
- * @return array 処理モードと元データ繰返し有無
+ * @return array 処理モード、元データ繰返し有無、時間系変更有無、繰返し系変更有無を配列で返す。
  */
 	public function getProcModeOriginRepeatAndModType($data, $originEvent) {
 		$cap = $data['CalendarActionPlan'];
 
+		////////////////////////////////
 		//追加処理か変更処理かの判断
 		//
 		$procMode = CalendarsComponent::PLAN_ADD;
@@ -692,6 +728,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 			$procMode = CalendarsComponent::PLAN_EDIT;
 		}
 
+		////////////////////////////////
 		//元データが繰返しタイプかどうかの判断
 		$isOriginRepeat = false;
 		if (isset($cap['origin_num_of_event_siblings']) &&
@@ -699,20 +736,31 @@ class CalendarActionPlan extends CalendarsAppModel {
 			$isOriginRepeat = true;
 		}
 
-		//変更内容が、時間・繰返し系の変更を含むかどうかの判断
+		////////////////////////////////
+		//変更内容が、時間系の変更を含むかどうかの判断
 		//（Googleカレンダーの考え方の導入）
 		//
-		$timeRepeatModCnt = 0;
-
+		$timeModCnt = 0;
 		if (!empty($originEvent)) {
 			//１）タイムゾーンの比較
-			$this->__compareTz($cap, $originEvent, $timeRepeatModCnt);
+			$this->__compareTz($cap, $originEvent, $timeModCnt);
 
 			//２）日付時刻の比較
 			//入力されたユーザ日付（時刻）を、選択TZを考慮し、サーバ系日付時刻に直してから比較する。
-			$this->__compareDatetime($cap, $originEvent, $timeRepeatModCnt);
+			$this->__compareDatetime($cap, $originEvent, $timeModCnt);
+		}
+		$isTimeMod = false;
+		if ($timeModCnt) {	//1箇所以上変化があればtrueにする。
+			$isTimeMod = true;
+		}
 
-			//３）繰返しの比較
+		////////////////////////////////
+		//変更内容が、繰返し系の変更を含むかどうかの判断
+		//（Googleカレンダーの考え方の導入）
+		//
+		$repeatModCnt = 0;
+		if (!empty($originEvent)) {
+			//１）繰返しの比較
 			$cru = new CalendarRruleUtil();
 
 			//POSTされたデータよりrrule配列を生成する。
@@ -732,21 +780,18 @@ class CalendarActionPlan extends CalendarsAppModel {
 				//集合要素に差はない、と判断する。
 			} else {
 				//差がみつかったので、繰返しに変更あり。
-				++$timeRepeatModCnt;
+				CakeLog::debug("DBG: 差がみつかったので、繰返しに変更あり。");
+				++$repeatModCnt;
 				//CakeLog::debug("DBG 繰返しに変化あり! capRrule[" . serialize($capRrule) .
 				//"] VS originRrule[" . serialize($originRrule) . "]");
 			}
 		}
-
-		$isTimeOrRepeatMod = false;
-		if ($timeRepeatModCnt) {	//1箇所以上変化があればtrueにする。
-			$isTimeOrRepeatMod = true;
+		$isRepeatMod = false;
+		if ($repeatModCnt) {	//1箇所以上変化があればtrueにする。
+			$isRepeatMod = true;
 		}
 
-		//CakeLog::debug("DBG: 結果. procMode[" . $procMode . "] isOriginRepeat[" .
-		//	$isOriginRepeat . "] isTimeOrRepeatMod[" . $isTimeOrRepeatMod . "]");
-
-		return array($procMode, $isOriginRepeat, $isTimeOrRepeatMod);
+		return array($procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod);
 	}
 
 /**
@@ -772,6 +817,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		}
 		if ($originTzId != $cap['timezone_offset']) {
 			//選択したＴＺが変更されている。
+			CakeLog::debug("DBG: 選択したＴＺが変更されている。");
 			++$timeRepeatModCnt;
 			//CakeLog::debug("DBG: TZに変更あり！ originTzId=[" . $originTzId .
 			//	"] VS cap[timezone_offset]=[" . $cap['timezone_offset'] . "]");
@@ -827,6 +873,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 			//サーバ日付時間はすべて一致。
 		} else {
 			//サーバ日付時刻に変更あり。
+			CakeLog::debug("DBG: サーバ日付時刻に変更あり。");
 			++$timeRepeatModCnt;
 			/*
 			CakeLog::debug("DBG: dtstar,dtendに変更あり！ POSTオリジナル enable_time[" .
@@ -869,5 +916,4 @@ class CalendarActionPlan extends CalendarsAppModel {
 		}
 		return $aReturn;
 	}
-
 }

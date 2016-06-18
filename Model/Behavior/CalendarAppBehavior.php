@@ -254,10 +254,12 @@ class CalendarAppBehavior extends ModelBehavior {
  * @param array $planParams 予定パラメータ
  * @param array &$rruleData rruleデータ
  * @param string $mode mode insert時:self::CALENDAR_INSERT_MODE(デフォルト値) update時:self::CALENDAR_UPDATE_MODE
+ * @param string $rruleKey rruleKey 未指定時はnull. null以外の文字列の時はこのkeyを使う。
+ * @param int $rruleId rruleId updateの時、このrruleIdをidに使う
  * @return void
  */
 	public function setRruleData(&$model, $planParams, &$rruleData,
-		$mode = self::CALENDAR_INSERT_MODE) {
+		$mode = self::CALENDAR_INSERT_MODE, $rruleKey = null, $rruleId = 0) {
 		if (!(isset($model->Calendar))) {
 			$model->loadModels(['Calendar' => 'Calendars.Calendar']);
 		}
@@ -277,7 +279,7 @@ class CalendarAppBehavior extends ModelBehavior {
 			'icalendar_uid' => CalendarRruleUtil::generateIcalUid(
 				$planParams['start_date'], $planParams['start_time']),
 			'icalendar_comp_name' => self::CALENDAR_PLUGIN_NAME,
-			'room_id' => Current::read('Room.id'),
+			'room_id' => Current::read('Room.id'),	//FIXME: eventのroom_idと合わせるべきでは？
 			//'language_id' => Current::read('Language.id'),
 			//'status' => WorkflowComponent::STATUS_IN_DRAFT,
 		);
@@ -291,10 +293,17 @@ class CalendarAppBehavior extends ModelBehavior {
 		//レコード $rrule_data  の初期化と'CalendarRrule'キーセットはおわっているので省略
 		//rruleDataに詰める。
 
-		//idはcreate()の後なので、不要。
+		//INSERT_MODEの時はidは自動採番されるので、セット不要
+		if ($mode === self::CALENDAR_UPDATE_MODE && $rruleId !== 0) {
+			//UPDATE_MODEの時は、更新対象のrruleIdを指定
+			$rruleData['CalendarRrule']['id'] = $rruleId;
+		}
+
 		$rruleData['CalendarRrule']['calendar_id'] = $params['calendar_id'];
-		//keyは、Workflowが自動セット
 		$rruleData['CalendarRrule']['name'] = $params['name'];
+		if ($rruleKey !== null) {
+			$rruleData['CalendarRrule']['key'] = $rruleKey;
+		}
 		$rruleData['CalendarRrule']['rrule'] = $params['rrule'];
 		if ($mode === self::CALENDAR_INSERT_MODE) {
 			$rruleData['CalendarRrule']['icalendar_uid'] = $params['icalendar_uid'];
@@ -346,11 +355,16 @@ class CalendarAppBehavior extends ModelBehavior {
  * @return void
  */
 	public function setEventData($planParams, $rruleData, &$eventData) {
+		//
+		//補足）ここでは、idとkeyは一切セットしていない。なので、$eventDataに値がなければ
+		//新規生成されるし、あればその値がそのまま利用されます。
+		//
 		//初期化
 		$params = array(
 			'calendar_rrule_id' => $rruleData['CalendarRrule']['id'],	//外部キーをセット
 			//keyは、Workflowが自動セット
-			'room_id' => $rruleData['CalendarRrule']['room_id'],
+			////'room_id' => $rruleData['CalendarRrule']['room_id'],	//rruleDataにroom_idがあるのはおかしい。
+			'room_id' => $planParams['room_id'],	//画面で指定したroom_idとなるように修正.
 			'language_id' => Current::read('Language.id'),
 			'target_user' => Current::read('User.id'),
 			'title' => '',
@@ -464,5 +478,25 @@ class CalendarAppBehavior extends ModelBehavior {
 			}
 			$model->CalendarEventContent->saveLinkedData($eventData);
 		}
+	}
+
+/**
+ * shareUser変数を整える
+ *
+ * @param array &$planParams planParamsパラメータ
+ * @return void
+ * @throws InternalErrorException
+ */
+	protected function _arrangeShareUsers(&$planParams) {
+		if (!isset($planParams['share_users'])) {
+			$planParams['share_users'] = null;
+			return;
+		}
+		if (!is_null($planParams['share_users']) && !is_string($planParams['share_users']) &&
+			!is_array($planParams['share_users'])) {
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		}
+		$planParams['share_users'] = is_string($planParams['share_users']) ?
+			array($planParams['share_users']) : $planParams['share_users'];
 	}
 }

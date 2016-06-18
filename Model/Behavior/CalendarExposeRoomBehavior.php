@@ -260,7 +260,8 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 				$myself = $roomId;
 				if (!empty($userId)) {
 					//ログインしている時、optionに積む
-					$options[$roomId] = $title;
+					/////$options[$roomId] = $title;
+					$options[$roomId] = $this->__getPrivateRoomName($model, $myself);
 					$spaceNameOfRooms[$roomId] = 'private';
 				}
 			}
@@ -296,5 +297,26 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 		//CakeLog::debug("DBG: getRoomsOfSpace conditions[" . print_r($conditions, true) . "]");
 		$rooms = Hash::combine(($model->Room->find('all', $conditions)), '{n}.Room.id', '{n}');
 		return $rooms;
+	}
+
+/**
+ * __getPrivateRoomName
+ *
+ * プライベートルーム名の取得
+ *
+ * @param Model &$model 実際のモデル名
+ * @param string $myself プライベートルームのroom_id
+ * @return array 取得されたプライベートルーム名
+ */
+	private function __getPrivateRoomName(&$model, $myself) {
+		if (!isset($model->RoomsLanguage)) {
+			$model->loadModels(['RoomsLanguage' => 'Rooms.RoomsLanguage']);
+		}
+		$roomsLang = $model->RoomsLanguage->findByRoomIdAndLanguageId(
+			$myself, Current::read('Language.id'));
+		if (empty($roomsLang['RoomsLanguage']['name'])) {
+			return __d('calendars', '不明なマイルーム');
+		}
+		return $roomsLang['RoomsLanguage']['name'];
 	}
 }

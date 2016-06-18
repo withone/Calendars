@@ -22,16 +22,6 @@ App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');
 class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 
 /**
- * use behaviors
- *
- * @var array
- */
-	//public $actsAs = array(
-	//	'Calendars.CalendarLinkEntry',
-	//	'Calendars.CalendarShareUserEntry',
-	//);
-
-/**
  * Default settings
  *
  * VeventTime(+VeventRRule)の値自動変更
@@ -105,13 +95,6 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  */
 	public function arrangeData(&$planParams) {
-		//if (!isset($planParams['timezone_offset'])) {
-		//	//NC2仕様: timezone_offsetがなければ、カレンダーのセッションから取得する。
-		//	//->
-		//	//NC3仕様: timezone_offsetがなければ、0.0(UTC)とする。
-		//	$planParams['timezone_offset'] = 0.0;
-		//}
-
 		//開始日付と開始時刻は必須
 		if (!isset($planParams['start_date']) && !isset($planParams['start_time'])) {
 			//throw new InternalErrorException(__d('Calendars', 'No start_date or start_time'));
@@ -134,7 +117,7 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
-		$this->arrangeShareUsers($planParams);
+		$this->_arrangeShareUsers($planParams);
 	}
 
 /**
@@ -142,10 +125,11 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
  *
  * @param Model &$model モデル 
  * @param array $planParams 予定パラメータ
+ * @param string $icalUidPart icalUidPart
  * @return array $rruleDataを返す
  * @throws InternalErrorException
  */
-	public function insertRruleData(Model &$model, $planParams) {
+	public function insertRruleData(Model &$model, $planParams, $icalUidPart = '') {
 		if (!(isset($model->CalendarRrule) && is_callable($model->CalendarRrule->create))) {
 			$model->loadModels([
 				'CalendarRrule' => 'Calendars.CalendarRrule',
@@ -156,6 +140,15 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 
 		//rruleDataにplanParamデータを詰め、それをモデルにセット
 		$this->setRruleData($model, $planParams, $rruleData);
+
+		//icalUidパーツの指定があれば、それをセットしておく。
+		//「この予定以降の変更」で１つのCalenarRruleが２つにスプリットする
+		//ケースを想定している。
+		//
+		if ($icalUidPart !== '') {
+			$rruleData['CalendarRrule']['icalendar_uid'] = $icalUidPart;
+		}
+
 		$model->CalendarRrule->set($rruleData);
 
 		if (!$model->CalendarRrule->validates()) {		//rruleDataをチェック
@@ -232,26 +225,5 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 		}
 
 		return $eventData;
-	}
-
-/**
- * shareUser変数を整える
- *
- * @param array &$planParams planParamsパラメータ
- * @return void
- * @throws InternalErrorException
- */
-	public function arrangeShareUsers(&$planParams) {
-		if (!isset($planParams['share_users'])) {
-			$planParams['share_users'] = null;
-			return;
-		}
-		if (!is_null($planParams['share_users']) && !is_string($planParams['share_users']) &&
-			!is_array($planParams['share_users'])) {
-			//throw new InternalErrorException(__d('Calendars', 'share_users must be null or string or array.'));
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-		$planParams['share_users'] = is_string($planParams['share_users']) ?
-			array($planParams['share_users']) : $planParams['share_users'];
 	}
 }

@@ -25,6 +25,7 @@ class CalendarEventContent extends CalendarsAppModel {
  * @var array
  */
 	public $actsAs = array(
+		'NetCommons.Trackable',
 	);
 
 /**

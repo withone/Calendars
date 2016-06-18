@@ -256,16 +256,24 @@ class CalendarEvent extends CalendarsAppModel {
  *
  * @param interger $rruleId 兄弟が共通にもつrruleのid
  * @param interger $needLatest 最新に限定するかどうか。0:最新に限定しない。1:最新に限定する。
+ * @param int $languageId 言語ID
  * @return array 兄弟一覧の配列
  */
-	public function getSiblings($rruleId, $needLatest = 0) {
+	public function getSiblings($rruleId, $needLatest = 0, $languageId = 0) {
+		if (empty($languageId)) {
+			$languageId = Current::read('Language.id');
+		}
 		$options = array(
 			'conditions' => array(
 				$this->alias . '.calendar_rrule_id' => $rruleId,
 				//$this->alias . '.is_latest' => 1,
+				$this->alias . '.language_id' => $languageId,
+				$this->alias . '.exception_event_id' => 0,	//除外でない
 			),
-			'recursive' => -1, //eventだけとる
+			//'recursive' => -1, //eventだけとる
+			'recursive' => 1, //belongsTo, hasOne, hasManyをとる
 			'callbacks' => false,
+			'order' => array($this->alias . '.dtstart' => 'ASC'),
 		);
 
 		if ($needLatest) {

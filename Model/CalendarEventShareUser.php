@@ -27,15 +27,15 @@ class CalendarEventShareUser extends CalendarsAppModel {
  * @var array
  */
 	public $actsAs = array(
-		'NetCommons.OriginalKey',
+		//'NetCommons.OriginalKey',
 		'NetCommons.Trackable',
-		'Workflow.WorkflowComment',
-		'Workflow.Workflow',
-		'Calendars.CalendarValidate',
-		'Calendars.CalendarApp',	//baseビヘイビア
-		'Calendars.CalendarInsertPlan', //Insert用
-		'Calendars.CalendarUpdatePlan', //Update用
-		'Calendars.CalendarDeletePlan', //Delete用
+		//'Workflow.WorkflowComment',
+		//'Workflow.Workflow',
+		//'Calendars.CalendarValidate',
+		//'Calendars.CalendarApp',	//baseビヘイビア
+		//'Calendars.CalendarInsertPlan', //Insert用
+		//'Calendars.CalendarUpdatePlan', //Update用
+		//'Calendars.CalendarDeletePlan', //Delete用
 	);
 
 /**
@@ -51,6 +51,14 @@ class CalendarEventShareUser extends CalendarsAppModel {
 			'fields' => '',
 			'order' => ''
 		)
+	);
+
+/**
+ * hasMany associations
+ *
+ * @var array
+ */
+	public $hasMany = array(
 	);
 
 /**

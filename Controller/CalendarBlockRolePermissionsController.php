@@ -102,9 +102,8 @@ class CalendarBlockRolePermissionsController extends CalendarsAppController {
 		$this->set('spaces', $spaces);
 
 		// デフォルトロール
-		$defaultRoles = $this->CalendarPermission->getDefaultRoles();
+		$defaultRoles = $this->CalendarPermission->getDefaultRoles();	//Modelメソッド
 		$this->set('defaultRoles', $defaultRoles);
-		$this->set('defaultRoleCount', count($defaultRoles));
 
 		// カレンダー＋ブロック+ルーム
 		// ただし全会員を除く
@@ -125,8 +124,10 @@ class CalendarBlockRolePermissionsController extends CalendarsAppController {
 		// 全会員ルーム情報取得
 		$allMemberRoom = $this->CalendarPermission->getCalendarAllMemberRoomBlocks($this->Workflow);
 		$this->set('allMemberRoomBlocks', $allMemberRoom);
+
 		// 全会員ルーム情報もマージしてしまう
 		$rooms = Hash::mergeDiff($rooms, $allMemberRoom);
+
 		if (! $this->request->is('post')) {
 			$this->request->data = $rooms;
 		}

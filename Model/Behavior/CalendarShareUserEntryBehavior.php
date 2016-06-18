@@ -40,19 +40,15 @@ class CalendarShareUserEntryBehavior extends CalendarAppBehavior {
  * @return void
  */
 	public function insertShareUsers(Model &$model, $shareUsers, $eventId) {
-		//CakeLog::debug("DBG: insertShareUsers(shareUsers[" . print_r($shareUsers, true) .
-		//	"] eventId[" . $eventId . "])");
-
 		if (!(isset($model->CalendarEventShareUser))) {
 			$model->loadModels(['CalendarEventShareUser' => 'Calendar.CalendarEventShareUser']);
 		}
 		if (empty($shareUsers)) {
-			CakeLog::debug("DBG: shareUsersは空です");
+			//CakeLog::debug("DBG: shareUsersは空です");
 			return;
 		}
 
 		$func = function ($value) use($eventId) {
-
 			$elm = array(
 				'calendar_event_id' => $eventId,
 				'share_user' => intval($value),
@@ -61,13 +57,9 @@ class CalendarShareUserEntryBehavior extends CalendarAppBehavior {
 			return $elm;
 		};
 
-		//CakeLog::debug("a3");
-
 		$shareUserData = array();
 		$shareUserData[$model->CalendarEventShareUser->alias] = array_map($func, $shareUsers);
 		$model->CalendarEventShareUser->saveAll($shareUserData[$model->CalendarEventShareUser->alias]);
-
-		//CakeLog::debug("saveAll() result[" . serialize($result) . "] shareUserData [" . print_r($shareUserData) . "]");
 	}
 
 /**
@@ -76,34 +68,37 @@ class CalendarShareUserEntryBehavior extends CalendarAppBehavior {
  * @param Model &$model 実際のモデル名
  * @param array $shareUsers shareUsers
  * @param int $eventId eventId
+ * @param array $oldShareUserDataAry oldShareUserDataAry
  * @return void
  */
-	public function updateShareUsers(Model &$model, $shareUsers, $eventId) {
+	public function updateShareUsers(Model &$model, $shareUsers, $eventId, $oldShareUserDataAry) {
+		//CakeLog::debug("DBG: IN updateShareUsers(). shareUsers[" .
+		//	print_r($shareUsers, true) . "] eventId[" . $eventId .
+		//	"] oldShareUserDataAry[" . print_r($oldShareUserDataAry, true) . "]");
+
 		if (!is_array($shareUsers)) {
 			$shareUsers = array();
 		}
 
-		if (!(isset($this->CalendarEventShareUser))) {
-			$model->loadModels(['CalendarEventShareUser' => 'Calendar.CalendarEventShareUser']);
-		}
+		//CakeLog::debug("DBG: oldShareUserDataAry1[" . print_r($oldShareUserDataAry, true) . "]");
+		$oldShareUsers = Hash::extract($oldShareUserDataAry, '{n}.share_user');
+		//CakeLog::debug("DBG: oldShareUserUsers[" . print_r($oldShareUsers, true) . "]");
 
-		$params = array(
-			'conditons' => array('CalendarEventShareUser.calender_event_id' => $eventId),
-			'recursive' => (-1),
-			'order' => array('CalendarEventShareUser.share_user'),
-		);
-		$oldShareUserDataAry = $model->CalendarEventShareUser->find('all', $params);
-		$oldShareUsers = Hash::extract($oldShareUserDataAry, '{n}.CalendarEventShareUser.share_user');
-
-		$shareUsers = sort($shareUsers, SORT_NUMERIC);		//新しい共有ユーザ群
-		$oldShareUsers = sort($oldShareUsers, SORT_NUMERIC);	//古い共有ユーザ群
+		sort($shareUsers, SORT_NUMERIC);		//新しい共有ユーザ群
+		sort($oldShareUsers, SORT_NUMERIC);	//古い共有ユーザ群
 
 		//新しい共有ユーザ群より、追加すべきユーザ群を抽出
-		$insShareUsers = array_diff($oldShareUsers, $shareUsers);
+		$insShareUsers = array_diff($shareUsers, $oldShareUsers);
+		//CakeLog::debug("DBG: insShareUsers[" . print_r($insShareUsers, true) .
+		//	"] oldShareUsers[" . print_r($oldShareUsers, true) .
+		//	"] shareUsers[" . print_r($shareUsers, true) . "]");
 		$this->insertShareUsers($model, $insShareUsers, $eventId);
 
 		//古い共有ユーザ群より、削除すべきユーザ群を抽出
-		$delShareUsers = array_diff($shareUsers, $oldShareUsers);
+		$delShareUsers = array_diff($oldShareUsers, $shareUsers);
+		//CakeLog::debug("DBG: delShareUsers[" . print_r($delShareUsers, true) .
+		//	"] oldlShareUsers[" . print_r($oldShareUsers, true) .
+		//	"] shareUsers[" . print_r($shareUsers, true) . "]");
 		$this->deleteShareUsers($model, $delShareUsers, $eventId);
 
 		//新しい共有ユーザ群と、古い共有ユーザ群両方に存在するユーザは、そのままとしておく。
@@ -119,17 +114,15 @@ class CalendarShareUserEntryBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  */
 	public function deleteShareUsers(Model &$model, $shareUsers, $eventId) {
-		if (!(isset($this->CalendarEventShareUser))) {
+		if (!(isset($model->CalendarEventShareUser))) {
 			$model->loadModels(['CalendarEventShareUser' => 'Calendar.CalendarEventShareUser']);
 		}
-
 		$conditions = array(
-			'CalendarEventShareUsers.calendar_event_id' => $eventId,
-			'CalendarEventShareUsers.share_user' => $shareUsers,	//shareUsersは配列なのでIN指定
+			'CalendarEventShareUser.calendar_event_id' => $eventId,
+			'CalendarEventShareUser.share_user' => $shareUsers,	//shareUsersは配列なのでIN指定
 		);
 		if (!$model->CalendarEventShareUser->deleteAll($conditions, false)) {
 			//deleteAll失敗
-			//throw new InternalErrorException(__d('Calendars', 'delete all error.'));
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 	}

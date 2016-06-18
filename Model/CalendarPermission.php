@@ -274,7 +274,7 @@ class CalendarPermission extends CalendarsAppModel {
 				}
 				foreach ($rooms as $roomId => $room) {
 					// Calendar.idが空っぽ
-					if (empty($room['Calendar']['id'])) {
+					//if (empty($room['Calendar']['id'])) {
 						// その場合はブロック未作成なので前もってブロック&Calendar作る
 						$block = $this->_saveBlock($roomId);
 						// そのブロックキーを設定して
@@ -282,7 +282,7 @@ class CalendarPermission extends CalendarsAppModel {
 							$perm['block_key'] = $block['Block']['key'];
 						}
 						$room['Calendar']['block_key'] = $block['Block']['key'];
-					}
+					//}
 					// 保存する
 					$this->create();
 					$this->set($room);
@@ -325,6 +325,7 @@ class CalendarPermission extends CalendarsAppModel {
 		if ($block) {
 			return $block;
 		}
+		$this->Block->create();
 		$block = $this->Block->save(array(
 			'room_id' => $roomId,
 			'language_id' => Current::read('Language.id'),

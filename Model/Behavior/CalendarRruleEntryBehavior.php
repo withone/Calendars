@@ -75,7 +75,6 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 			//'fields' => array('CalendarEvent.*'),
 			'callbacks' => false
 		);
-
 		$eventData = $model->CalendarEvent->find('first', $params);
 		if (!is_array($eventData) || !isset($eventData['CalendarEvent'])) {
 			$model->validationErrors = Hash::merge(
@@ -83,21 +82,26 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
-		$conditions = array(
-			$model->CalendarEvent->alias .
-				'.calendar_rrule_id' => $eventData['CalendarEvent']['calendar_rrule_id'],
-			$model->CalendarEvent->alias . '.id <>' => $eventData['CalendarEvent']['id'],
-		);
-
-		//FIXME: deleteAll(同じrruleをもつ、自分意外のeventsをすべて消しているが、、これは、
-		//こうするのではなく、is_latestをoffにするのが正しい。
+		//////////////////////////////
+		//ここのロジック(同じrrule_idをもつ兄弟eventの自分以外の全削除）について
+		//新規の時は、そもそも消す対象がない
+		//更新の時は、自分以外を消す（物理削除or除外フラグon)のは、NC3カレンダでは
+		//insertRrule()に来る前に済ませているので、やはり意味がない。
+		//よって、ここのロジックはOffする。
+		//$conditions = array(
+		//	$model->CalendarEvent->alias .
+		//		'.calendar_rrule_id' => $eventData['CalendarEvent']['calendar_rrule_id'],
+		//	$model->CalendarEvent->alias . '.id <>' => $eventData['CalendarEvent']['id'],
+		//);
 		//
-		if (!$model->CalendarEvent->deleteAll($conditions, false)) {
-			$model->validationErrors = Hash::merge(
-				$model->validationErrors, $model->CalendarEvent->validationErrors);
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
+		//if (!$model->CalendarEvent->deleteAll($conditions, false)) {
+		//	$model->validationErrors = Hash::merge(
+		//		$model->validationErrors, $model->CalendarEvent->validationErrors);
+		//	throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		//}
 
+		/////////////////////////////
+		//周期性による、eventの順次登録
 		//rruleのin/outは、$modelのインスタンス変数をつかっておこなう。
 		$this->insertPriodEntry($model, $planParams, $rruleData, $eventData);
 	}

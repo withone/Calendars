@@ -90,23 +90,23 @@ class CalendarWorksComponent extends Component {
 
 			//FREQ,TERM以外
 			if (isset($data['CalendarActionPlan'][$item])) {
-				CakeLog::debug("DBG: item[$item]はdata[CalendarActionPlan]に有り。値は[" .
-					serialize($data['CalendarActionPlan'][$item]) . "]");
+				//CakeLog::debug("DBG: item[$item]はdata[CalendarActionPlan]に有り。値は[" .
+				//	serialize($data['CalendarActionPlan'][$item]) . "]");
 			} else {
 				$data['CalendarActionPlan'][$item] = $val;
-				CakeLog::debug("DBG: item[" . $item .
-					"]はrequest_data[CalendarActionPlan]に無し。よって、capForView値[" .
-					serialize($val) . "]を代入");
+				//CakeLog::debug("DBG: item[" . $item .
+				//	"]はrequest_data[CalendarActionPlan]に無し。よって、capForView値[" .
+				//	serialize($val) . "]を代入");
 			}
 		}
 
 		if (isset($data['GroupsUser'])) {
-			CakeLog::debug("DBG: data[GroupsUser]は有り。値は[" .
-				serialize($data['GroupsUser']) . "]");
+			//CakeLog::debug("DBG: data[GroupsUser]は有り。値は[" .
+			//	serialize($data['GroupsUser']) . "]");
 		} else {
 			$data['GroupsUser'] = $capForView['GroupsUser'];
-			CakeLog::debug("DBG: data[GroupsUser]は無し。よって、capForView[GroupsUser][" .
-				serialize($capForView['GroupsUser']) . "]を代入");
+			//CakeLog::debug("DBG: data[GroupsUser]は無し。よって、capForView[GroupsUser][" .
+			//	serialize($capForView['GroupsUser']) . "]を代入");
 		}
 
 		return $data;

@@ -402,4 +402,29 @@ class CalendarsAppModel extends AppModel {
 			$rrule['BYDAY'] = $this->__makeArrayOfRruleByDay($rruleByday, $repeatFreq);
 		}
 	}
+
+/**
+ * _getStatus
+ *
+ * $data['save_N']のN(=status)を抜き出す
+ *
+ * @param array $data request->data配列
+ * @return mixed 成功した時はstatus。失敗した時はfalseを返す。
+ */
+	protected function _getStatus($data) {
+		$statuses = array(
+			WorkflowComponent::STATUS_PUBLISHED,
+			WorkflowComponent::STATUS_APPROVED,
+			WorkflowComponent::STATUS_IN_DRAFT,
+			WorkflowComponent::STATUS_DISAPPROVED,
+		);
+		foreach ($statuses as $status) {
+			$saveStatus = 'save_' . $status;
+			//save_Nの値は空なので、emptyではなくissetで判断すること
+			if (isset($data[$saveStatus])) {
+				return $status;
+			}
+		}
+		return false;
+	}
 }
