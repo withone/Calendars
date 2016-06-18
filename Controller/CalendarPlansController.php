@@ -150,6 +150,11 @@ class CalendarPlansController extends CalendarsAppController {
  * @return void
  */
 	public function delete() {
+		//$this->log("edit params!!", 'debug');
+		//$this->log($this->request->params, 'debug');
+		//$this->log("edit data!!", 'debug');
+		//$this->log($this->request->data, 'debug');
+
 		if (! $this->request->is('delete')) {
 			$this->throwBadRequest();
 			return;
@@ -189,7 +194,9 @@ class CalendarPlansController extends CalendarsAppController {
 			return;
 		}
 
-		$this->redirect(NetCommonsUrl::backToPageUrl());
+		//$this->redirect(NetCommonsUrl::backToPageUrl());
+		$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars'); //testセッション方式
+		$this->redirect($url);
 	}
 
 /**
@@ -246,17 +253,42 @@ class CalendarPlansController extends CalendarsAppController {
 			//成功なら元画面(カレンダーorスケジューラー)に戻る。
 			//FIXME: 遷移元がshow.ctpなら、戻り先をshow.ctpに変える必要あり。
 			//
-			if (!$this->CalendarActionPlan->saveCalendarPlan($this->request->data,
-				$procMode, $isOriginRepeat, $isTimeOrRepeatMod)) {
+			$eventId = $this->CalendarActionPlan->saveCalendarPlan($this->request->data,
+				$procMode, $isOriginRepeat, $isTimeOrRepeatMod);
+			if (!$eventId) {
 				//保存失敗
 				CakeLog::error("保存失敗");	//FIXME: エラー処理を記述のこと。
 			}
 			//保存成功
 
 			//$options = $this->_getOptions();
+			/*
 			$options = $this->CalendarWorks->getOptions();
 			$url = NetCommonsUrl::actionUrl($options);
+			*/
+			//$url = $this->Session->read(CakeSession::read('Config.userAgent')); //testセッション方式
+
+			$url = NetCommonsUrl::actionUrl(array(
+				'controller' => 'calendar_plans',
+				'action' => 'show',
+				//'year' => $this->request->params['named']['year'],
+				//'month' => $this->request->params['named']['month'],
+				//'day' => $this->request->params['named']['day'],
+				'event' => $eventId,
+				'frame_id' => Current::read('Frame.id'),
+			));
+
 			$this->redirect($url);
+			//print_r($this->request->data);
+			//$this->redirect($this->referer()); //test ng 追加画面に戻ってしまう。
+			//$this->redirect($this->request->referer());test ng 追加画面に戻ってしまう。
+			/* test ng
+			//不要パラメータ除去
+			unset($this->request->data['save'], $this->request->data['active_lang_id']);
+			$redirectUrl = Hash::get($this->request->data, '_user.redirect');
+			$this->redirect($redirectUrl);
+			*/
+
 			//return; ここには到達しない.
 		} else {
 			//GETなので edit()を実行
@@ -318,6 +350,11 @@ class CalendarPlansController extends CalendarsAppController {
 		$frameId = Current::read('Frame.id');
 		$languageId = Current::read('Language.id');
 		$isRepeat = $event['CalendarRrule']['rrule'] !== '' ? true : false;
+
+		$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars'); //testセッション方式
+		//print_r('SHOW return');print_r($url);
+		$vars['returnUrl'] = $url;
+
 		$this->set(
 			compact('event', 'roomLang', 'shareUserInfos', 'createdUserInfo', 'frameId',
 			'languageId', 'isRepeat', 'vars'));
@@ -344,8 +381,6 @@ class CalendarPlansController extends CalendarsAppController {
  * @return void
  */
 	public function edit() {
-		//CakeLog::debug("DBG: edit()直後. request_param[" . print_r($this->request->params, true) . "]");
-
 		//表示用の設定
 		$ctpName = '';
 		$vars = $event = $eventSiblings = array(); //0件を意味する空配列を入れておく。
@@ -429,6 +464,11 @@ class CalendarPlansController extends CalendarsAppController {
 			$comments = $this->CalendarEvent->getCommentsByContentKey($event['CalendarEvent']['key']);
 			$this->set('comments', $comments);
 		}
+
+		//キャンセル時のURLセット
+		$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars'); //testセッション方式
+		//print_r('SHOW return');print_r($url);
+		$vars['returnUrl'] = $url;
 
 		$this->set(compact('frameId', 'languageId', 'vars', 'frameSetting', 'exposeRoomOptions',
 			'myself', 'emailOptions', 'event', 'capForView', 'mailSettingInfo', 'shareUsers',

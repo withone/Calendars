@@ -59,12 +59,12 @@ class CalendarWorksComponent extends Component {
 			'action' => 'index',
 			'frame_id' => Current::read('Frame.id'),
 		);
-		if (isset($this->request->data['return_style']) && $this->request->data['return_style']) {
-			$options['style'] = $this->request->data['return_style'];
-		}
-		if (isset($this->request->data['return_sort']) && $this->request->data['return_sort']) {
-			$options['sort'] = $this->request->data['return_sort'];
-		}
+		//if (isset($this->request->data['return_style']) && $this->request->data['return_style']) { 未使用
+		//	$options['style'] = $this->request->data['return_style'];
+		//}
+		//if (isset($this->request->data['return_sort']) && $this->request->data['return_sort']) {
+		//	$options['sort'] = $this->request->data['return_sort'];
+		//}
 		return $options;
 	}
 

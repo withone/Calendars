@@ -230,14 +230,14 @@
 <div class="text-center">
 <!--- 戻るボタン -->
 		<?php 
-		if (isset($vars['return_style'])) {
+		//if (isset($vars['return_style'])) {
 			//cancel時の戻り先としてstyleを指定する。
-			$urlOptions['style'] = $vars['return_style'];
-		}
-		if (isset($vars['return_sort'])) {
+		//	$urlOptions['style'] = $vars['return_style'];
+		//}
+		//if (isset($vars['return_sort'])) {
 			//cancel時の戻り先としてsortオプションがあればそれもセットで指定する.
-			$urlOptions['sort'] = $vars['return_sort'];
-		}
+		//	$urlOptions['sort'] = $vars['return_sort'];
+		//}
 
 			$urlOptions = array(
 				'controller' => 'calendars',
@@ -246,10 +246,15 @@
 				'month' => $vars['month'],
 				'frame_id' => Current::read('Frame.id'),
 			);
-
+			if (isset($vars['returnUrl'])) {
+				$cancelUrl = $vars['returnUrl'];
+			} else {
+				$cancelUrl = NetCommonsUrl::actionUrl($urlOptions);
+			}
 			echo $this->Button->cancel(
 				__d('Calendars', '戻る'),
-				$this->NetCommonsHtml->url( NetCommonsUrl::actionUrl($urlOptions))
+				//$this->NetCommonsHtml->url( NetCommonsUrl::actionUrl($urlOptions))
+				$cancelUrl
 			);
 		?>
 

@@ -203,46 +203,48 @@ class CalendarActionPlan extends CalendarsAppModel {
  * @param bool $isDetailEdit 詳細画面かどうか true=詳細(detail)画面, false=簡易(easy)画面
  * @return void
  */
-	protected function _doMergeDisplayParamValidate($isDetailEdit) {
-		$this->validate = Hash::merge($this->validate, array(
-			'return_style' => array(
-				'rule1' => array(
-					'rule' => array('inList', array(
-						CalendarsComponent::CALENDAR_STYLE_SMALL_MONTHLY,
-						CalendarsComponent::CALENDAR_STYLE_LARGE_MONTHLY,
-						CalendarsComponent::CALENDAR_STYLE_WEEKLY,
-						CalendarsComponent::CALENDAR_STYLE_DAILY,
-						CalendarsComponent::CALENDAR_STYLE_SCHEDULE,
-					)),
-					'required' => false,
-					'allowEmpty' => true,
-					'message' => __d('calendars', '戻り先のスタイル指定が不正です。'),
-				),
-			),
-			'return_sort' => array(
-				'rule1' => array(
-					'rule' => array('inList', array(
-						CalendarsComponent::CALENDAR_SCHEDULE_SORT_TIME,
-						CalendarsComponent::CALENDAR_SCHEDULE_SORT_MEMBER,
-					)),
-					'required' => false,	//sort指定はスケジュールの時だけ
-					'allowEmpty' => true,
-					'message' => __d('calendars', '戻り先のソート指定が不正です。'),
-				),
-			),
-			'return_tab' => array(
-				'rule1' => array(
-					'rule' => array('inList', array(
-						CalendarsComponent::CALENDAR_DAILY_TAB_LIST,
-						CalendarsComponent::CALENDAR_DAILY_TAB_TIMELINE,
-					)),
-					'required' => false,	//tab指定は単一日の時だけ
-					'allowEmpty' => true,
-					'message' => __d('calendars', '戻り先のタブ指定が不正です。'),
-				),
-			),
-		));
-	}
+	// 未使用
+	//protected function _doMergeDisplayParamValidate($isDetailEdit) {
+	//	$this->validate = Hash::merge($this->validate, array(
+	//		'return_style' => array(
+	//			'rule1' => array(
+	//				'rule' => array('inList', array(
+	//					CalendarsComponent::CALENDAR_STYLE_SMALL_MONTHLY,
+	//					CalendarsComponent::CALENDAR_STYLE_LARGE_MONTHLY,
+	//					CalendarsComponent::CALENDAR_STYLE_WEEKLY,
+	//					CalendarsComponent::CALENDAR_STYLE_DAILY,
+	//					CalendarsComponent::CALENDAR_STYLE_SCHEDULE,
+	//				)),
+	//				'required' => false,
+	//				'allowEmpty' => true,
+	//				'message' => __d('calendars', '戻り先のスタイル指定が不正です。'),
+	//			),
+	//		),
+	//		'return_sort' => array(
+	//			'rule1' => array(
+	//				'rule' => array('inList', array(
+	//					CalendarsComponent::CALENDAR_SCHEDULE_SORT_TIME,
+	//					CalendarsComponent::CALENDAR_SCHEDULE_SORT_MEMBER,
+	//				)),
+	//				'required' => false,	//sort指定はスケジュールの時だけ
+	//				'allowEmpty' => true,
+	//				'message' => __d('calendars', '戻り先のソート指定が不正です。'),
+	//			),
+	//		),
+	//		'return_tab' => array(
+	//			'rule1' => array(
+	//				'rule' => array('inList', array(
+	//					CalendarsComponent::CALENDAR_DAILY_TAB_LIST,
+	//					CalendarsComponent::CALENDAR_DAILY_TAB_TIMELINE,
+	//				)),
+	//				'required' => false,	//tab指定は単一日の時だけ
+	//				'allowEmpty' => true,
+	//				'message' => __d('calendars', '戻り先のタブ指定が不正です。'),
+	//			),
+	//		),
+	//	));
+	//}
+
 /**
  * _doMergeRruleValidate
  *
@@ -426,7 +428,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 	public function beforeValidate($options = array()) {
 		//CakeLog::debug("request_data[" . print_r($this->data, true) . "]");
 		$isDetailEdit = (isset($this->data['CalendarActionPlan']['is_detail']) && $this->data['CalendarActionPlan']['is_detail']) ? true : false;
-		$this->_doMergeDisplayParamValidate($isDetailEdit);	//画面パラメータ関連validation
+		//$this->_doMergeDisplayParamValidate($isDetailEdit);	//画面パラメータ関連validation
 		$this->_doMergeTitleValidate($isDetailEdit);	//タイトル関連validation
 		$this->_doMergeDatetimeValidate($isDetailEdit);	//日付時刻関連validation
 		$this->validate = Hash::merge($this->validate, array(	//コンテンツ関連validation
@@ -488,11 +490,11 @@ class CalendarActionPlan extends CalendarsAppModel {
  * @param string $procMode procMode
  * @param bool $isOriginRepeat isOriginRepeat
  * @param bool $isTimeOrRepeatMod isTimeOrRepeatMod
- * @return bool 成功時true, 失敗時false
+ * @return int 成功時EventId, 失敗時false
  */
 	public function saveCalendarPlan($data, $procMode, $isOriginRepeat, $isTimeOrRepeatMod) {
 		$this->begin();
-
+		$eventId = 0;
 		$this->aditionalData = $data['WorkflowComment'];
 
 		try {
@@ -510,19 +512,19 @@ class CalendarActionPlan extends CalendarsAppModel {
 				//新規追加処理
 				//CakeLog::debug("DBG: PLAN_ADD case.");
 
-				$this->insertPlan($planParam);
+				//$this->insertPlan($planParam);
+				$eventId = $this->insertPlan($planParam);
 			} else {	//PLAN_EDIT
 				//変更処理
 
 				//CakeLog::debug("DBG: PLAN_EDIT case.");
-
 
 				//現予定を元に、次世代予定を作成する
 				//FIXME: 修正中
 				//////$nextPlan = $this->makeNextGenPlan($data);
 				//$this->updatePlan($planParam, $nextPlan);
 
-				$this->insertPlan($planParam);
+				$eventId = $this->insertPlan($planParam);
 			}
 
 			$this->_enqueueEmail($data);
@@ -535,7 +537,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 			return false;
 		}
 
-		return true;
+		//return true;
+		return $eventId;
 	}
 
 /**

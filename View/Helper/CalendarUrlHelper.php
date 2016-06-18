@@ -9,6 +9,7 @@
  */
 App::uses('AppHelper', 'View/Helper');
 App::uses('WorkflowComponent', 'Workflow.Controller/Component');
+App::uses('CalendarFrameSetting', 'Calendars.Model');
 
 /**
  * Calendar url Helper
@@ -28,6 +29,7 @@ class CalendarUrlHelper extends AppHelper {
 		'NetCommonsHtml',
 		'Form',
 		'Calendars.CalendarCommon',
+		'NetCommons.BackTo',
 	);
 
 /**
@@ -78,12 +80,12 @@ class CalendarUrlHelper extends AppHelper {
 			'block_id' => Current::read('Block.id'),
 			'frame_id' => Current::read('Frame.id'),
 		);
-		if (isset($vars['return_style'])) {
-			$options['return_style'] = $vars['return_style'];
-		}
-		if (isset($vars['return_sort'])) {
-			$options['return_sort'] = $vars['return_sort'];
-		}
+		//if (isset($vars['return_style'])) { 未使用
+		//	$options['return_style'] = $vars['return_style'];
+		//}
+		//if (isset($vars['return_sort'])) {
+		//	$options['return_sort'] = $vars['return_sort'];
+		//}
 		$url = NetCommonsUrl::actionUrl($options);
 		return $url;
 	}
@@ -113,6 +115,36 @@ class CalendarUrlHelper extends AppHelper {
 	}
 
 /**
+ * getBackFirstButton
+ *
+ * 最初の画面に戻るUrlリンクボタンの取得
+ *
+ * @param array $vars カレンダー情報
+ * @return string URL
+ */
+	public function getBackFirstButton($vars) {
+		//print_r($vars);
+		$html = '';
+		$displayType = $vars['CalendarFrameSetting']['display_type'];
+		//print_r($displayType);
+		//$displayType = Current::read('CalendarFrameSetting.display_type');
+		//print_r($displayType);
+
+		if ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY ||
+			$displayType == CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY) {
+			$html = $this->BackTo->indexLinkButton(__d('calendars', '今月に戻る'));
+		} elseif ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY) {
+			$html = $this->BackTo->indexLinkButton(__d('calendars', '今週に戻る'));
+		} elseif ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_DAILY) {
+			$html = $this->BackTo->indexLinkButton(__d('calendars', '今日に戻る'));
+		} else {
+			$html = $this->BackTo->indexLinkButton(__d('calendars', '最初の画面に戻る'));
+		}
+
+		return $html;
+	}
+
+/**
  * getPlanListUrl
  *
  * 予定一覧表示Url取得
@@ -124,6 +156,7 @@ class CalendarUrlHelper extends AppHelper {
  * @param array $vars カレンダー情報
  * @return string URL
  */
+	/* 未使用
 	public function getPlanListUrl($place, $year, $month, $day, $vars) {
 		if ($place === 'thisMonth') {
 			$backYear = $year;
@@ -147,4 +180,5 @@ class CalendarUrlHelper extends AppHelper {
 		$url = NetCommonsUrl::actionUrl($options);
 		return $url;
 	}
+	*/
 }
