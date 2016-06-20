@@ -1,6 +1,6 @@
 <?php echo $this->element('Calendars.scripts'); ?>
 
-<div ng-controller="CalendarsDetailEdit" class="block-setting-body"
+<div ng-controller='CalendarsDetailEdit' class='block-setting-body'
 	ng-init="initialize(<?php echo h(json_encode(array('frameId' => Current::read('Frame.id')))); ?>)">
 
 <?php if ($planViewMode === CalendarsComponent::PLAN_EDIT) : ?>
@@ -9,8 +9,8 @@
 		<div class='h3'><?php echo __d('calendars', '予定の追加'); ?></div>
 <?php endif; ?>
 
-<div class="panel panel-default">
-<?php echo $this->element('Calendars.CalendarPlans/edit_form_create'); ?>
+<div class='panel panel-default'>
+	<?php echo $this->element('Calendars.CalendarPlans/edit_form_create'); ?>
 
 	<?php echo $this->element('Calendars.CalendarPlans/required_hiddens'); ?>
 
@@ -22,20 +22,21 @@
 		));
 	?>
 
-<div class="panel-body">
+	<div class='panel-body'>
 
-<?php $this->NetCommonsForm->unlockField('CalendarActionPlan.edit_rrule'); ?>
+		<?php $this->NetCommonsForm->unlockField('CalendarActionPlan.edit_rrule'); ?>
 
-<?php $editRrule = true; ?>
+		<?php $editRrule = true; ?>
 
-<?php if (count($eventSiblings) > 1 || (isset($this->request->data['CalendarActionPlan']['origin_num_of_event_siblings']) &&
-	$this->request->data['CalendarActionPlan']['origin_num_of_event_siblings'] > 1)) : ?>
-	<div class="form-group" name="RepeatSet">
-	<div class="col-xs-12 col-sm-10 col-sm-offset-1">
-	<h2 style='float: left'>
-	<?php echo $this->TitleIcon->titleIcon('/net_commons/img/title_icon/10_070_warning.svg'); ?>
-	</h2>
-	<div style='padding-top: 1.5em'>
+		<?php if (count($eventSiblings) > 1 || (isset($this->request->data['CalendarActionPlan']['origin_num_of_event_siblings']) &&
+			$this->request->data['CalendarActionPlan']['origin_num_of_event_siblings'] > 1)) : ?>
+		<div class="form-group" name="RepeatSet">
+
+			<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+				<h2 style='float: left'>
+				<?php echo $this->TitleIcon->titleIcon('/net_commons/img/title_icon/10_070_warning.svg'); ?>
+				</h2>
+				<div style='padding-top: 1.5em'>
 	<?php
 		//全選択用に、繰返し先頭eventのeditボタのリンクを生成しておく
 		//
@@ -102,8 +103,8 @@
 	?>
 	
 
-	</div>
-	<div class="alert alert-warning">
+				</div>
+				<div class='alert alert-warning'>
 	<?php
 		if (isset($this->request->params['named']) && isset($this->request->params['named']['editrrule'])) {
 			$editRrule = intval($this->request->params['named']['editrrule']);
@@ -132,40 +133,44 @@
 			)
 		);
 	?>
-	</div>
-	</div><!-- col-sm-10おわり -->
-	</div><!-- form-groupおわり-->
+				</div>
+			</div><!-- col-sm-10おわり -->
+		</div><!-- form-groupおわり-->
 <?php endif; ?>
 
-<div class="form-group" name="inputTitle">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
-	<?php echo $this->element('Calendars.CalendarPlans/edit_title'); ?>
-
-</div><!-- col-sm-10おわり -->
-</div><!-- form-groupおわり-->
+		<div class='form-group' name='inputTitle'>
+			<div class='row'>
+				<div class='col-xs-12 col-sm-10 col-sm-offset-1'>
+					<?php echo $this->element('Calendars.CalendarPlans/edit_title'); ?>
+				</div><!-- col-sm-10おわり -->
+			</div>
+		</div><!-- form-groupおわり-->
 
 <br />
-<div class="form-group" name="checkTime">
-  <div class="form-inline col-xs-12 col-sm-10 col-sm-offset-1">
-   <label class="control-label" style="margin-right:1em;">
-    <?php echo __d('calendars', '予定日の設定') . $this->element('NetCommons.required'); ?>
-   </label>
-   <?php
-		$useTime = 'useTime[' . $frameId . ']';
-	?>
-	<?php echo $this->NetCommonsForm->checkbox('CalendarActionPlan.enable_time', array(
-	'label' => __d('calendars', '時間の指定'),
-	'class' => 'calendar-specify-a-time_' . $frameId,
-	'div' => false,
-	'ng-model' => $useTime,
-	'ng-change' => 'toggleEnableTime(' . $frameId . ')',
-	'ng-false-value' => 'false',
-	'ng-true-value' => 'true',
-	'ng-init' => (($this->request->data['CalendarActionPlan']['enable_time']) ? ($useTime . ' = true') : ($useTime . ' = false')),
-	));
-	?>
- </div><!-- col-sm-10おわり -->
- </div><!-- form-groupおわり-->
+
+		<div class="form-group" name="checkTime">
+			<div class='row'>
+				<div class='form-inline col-xs-12 col-sm-10 col-sm-offset-1'>
+ 					<label class='control-label' style='margin-right:1em;'>
+						<?php echo __d('calendars', '予定日の設定') . $this->element('NetCommons.required'); ?>
+					</label>
+		<?php
+			$useTime = 'useTime[' . $frameId . ']';
+		?>
+		<?php echo $this->NetCommonsForm->checkbox('CalendarActionPlan.enable_time', array(
+			'label' => __d('calendars', '時間の指定'),
+			'class' => 'calendar-specify-a-time_' . $frameId,
+			'div' => false,
+			'ng-model' => $useTime,
+			'ng-change' => 'toggleEnableTime(' . $frameId . ')',
+			'ng-false-value' => 'false',
+			'ng-true-value' => 'true',
+			'ng-init' => (($this->request->data['CalendarActionPlan']['enable_time']) ? ($useTime . ' = true') : ($useTime . ' = false')),
+			));
+		?>
+				</div><!-- col-sm-10おわり -->
+			</div><!-- row おわり -->
+ 		</div><!-- form-groupおわり-->
 
 <?php 
 	$startDatetimeValue = '';
@@ -184,27 +189,24 @@
 ?>
 
 
+		<div class='form-group' name='inputStartEndDateTime'>
+			<div class='row'>
+				<div class='form-inline'>
+				<div class='col-xs-12 col-sm-4 col-sm-offset-1'>
+					<div>
+						<label>
+							<div ng-hide="<?php echo $useTime; ?>">
+								<?php echo __d('calendars', '終日');	?>
+							</div><!-- ng-hideおわり -->
+							<div ng-show="<?php echo $useTime; ?>">
+								<?php echo __d('calendars', '開始');	?>
+							</div><!-- ng-showおわり -->
+						</label>
+					</div><!-- col-sm-10おわり-->
 
+					<div>
 
-<div class="form-group" name="inputStartEndDateTime">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
-	<label>
-<div ng-hide="<?php echo $useTime; ?>">
-		<?php echo __d('calendars', '終日');	?>
-</div><!-- ng-hideおわり -->
-<div ng-show="<?php echo $useTime; ?>">
-		<?php echo __d('calendars', '開始');	?>
-</div><!-- ng-showおわり -->
-
-	</label>
-</div><!-- col-sm-10おわり-->
-
-<div class="clearfix"></div><!-- 次行 -->
-
-<div class="col-xs-12 col-sm-5 col-sm-offset-1">
-
-<div ng-show="<?php echo $useTime; ?>" style="float:left"><!--表示条件１START-->
-<!--<div class="input-group">--><!-- 表示条件１のinput-group -->
+						<div ng-show="<?php echo $useTime; ?>"><!--表示条件１START-->
 
 
 <?php
@@ -279,13 +281,9 @@
 
 	));
 ?>
-	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>-->
 
-<!--</div>--><!-- 表示条件１のinput-groupおわり -->
-</div><!--ng-show 表示条件１END-->
-
-<div ng-show="<?php echo '!' . $useTime; ?>"><!--表示条件２START-->
-<!-- <div class="input-group">--><!-- 表示条件２のinput-group -->
+					</div><!--ng-show 表示条件１END-->
+					<div ng-show="<?php echo '!' . $useTime; ?>"><!--表示条件２START-->
 
 <?php
 	$ngModel = 'detailStartDate'; //[' . $frameId . ']';
@@ -319,35 +317,31 @@
 	));
 
 ?>
-	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><i class="glyphicon glyphicon-time"></i></div> -->
 
-<!-- </div>--><!-- 表示条件２のinput-groupおわり -->
-</div><!--ng-show 表示条件２END-->
 
-</div><!--class="col-sm-5"おわり-->
+					</div><!--ng-show 表示条件２END-->
+				</div>
+			</div><!-- row おわり -->
 
-<div class="clearfix"></div><!-- 次行 -->
+			<div ng-show="<?php echo $useTime; ?>">
+				<br class="visible-xs-block">
 
-<div ng-show="<?php echo $useTime; ?>">
-<br />
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
-	<label>
-		<?php echo __d('calendars', '終了');	?>
-	</label>
-</div><!-- col-sm-10おわり-->
-</div><!-- ng-showおわり -->
+				<div class='col-xs-12 col-sm-1'>
+					<div class='hidden-xs calendar-range-to'>
+						<?php echo __d('calendars', '-'); ?>
+					</div>
+				</div>
 
-<div class="clearfix"></div><!-- 次行 -->
+				<div class='col-xs-12 col-sm-4'>
+					<div>
+						<label>
+							<br class="visible-xs-block">
+							<?php echo __d('calendars', '終了');	?>
+						</label>
+					</div><!-- col-sm-10おわり-->
 
-<div class="col-xs-12 col-sm-5 col-sm-offset-1">
 
-<div ng-show="<?php echo $useTime; ?>" style="float:left"><!--表示条件１START-->
-<!-- <div class="input-group">--><!-- 表示条件１のinput-group -->
-
-<?php
-	////echo $this->element('NetCommons.datetimepicker');	//すでに、From側で組み込み済なのでcommentout
-
-?>
+					<div>
 
 <?php
 	$ngModel = 'detailEndDatetime'; //[' . $frameId . ']';
@@ -378,14 +372,9 @@
 		'ng-init' => sprintf("%s = '%s'; ", 'detailEndDatetime', $toYmdHiOfLastHour) . $addNgInit,
 	));
 ?>
-	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div> -->
 
-<!--</div>--><!-- 表示条件１のinput-groupおわり -->
-</div><!-- ng-show 表示条件１END-->
-
-<!-- <div ng-show="<?php echo '!' . $useTime; ?>"> --><!--表示条件２START *これはつねにHIDEすることになった -->
-<div ng-hide="1">
-<!--<div class="input-group">--><!-- 表示条件２のinput-group -->
+				</div>
+				<div ng-hide="1">
 
 <?php
 	$ngModel = 'detailEndDate'; //[' . $frameId . ']';
@@ -417,16 +406,12 @@
 		'ng-init' => sprintf("%s = '%s'; ", $ngModel, $tovarsYmd) . $addNgInit,
 	));
 ?>
-	<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><i class="glyphicon glyphicon-time"></i></div> -->
 
-<!--</div>--><!-- 表示条件２のinput-groupおわり -->
-<!-- </div> --><!-- ng-show 表示条件２END-->
-</div><!-- ng-hide -->
-
-</div><!-- form-group name="inputStartEndDateTime"おわり -->
-</div><!-- kuma add -->
-
-
+					</div><!-- ng-hide -->
+				</div>
+			</div>
+			</div><!--row おわり -->
+		</div><!-- form-group name="inputStartEndDateTime"おわり -->
 
 <div class="form-group" name="inputRruleInfo" style="display: <?php echo ($editRrule) ? 'block' : 'none'; ?>">
 <div class="col-xs-12 col-sm-10 col-sm-offset-1">
@@ -453,6 +438,7 @@
 				'style' => 'float: left',
 			));*/
 			?>
+	<br />
 
 	<?php echo $this->NetCommonsForm->checkbox('CalendarActionPlan.is_repeat', array(
 		'ng-checked' => (($this->request->data['CalendarActionPlan']['is_repeat']) ? 'true' : 'false'),
