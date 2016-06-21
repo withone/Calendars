@@ -27,9 +27,10 @@
 ?>
 
 <div class="form-group">
+<div class='row'>
 <?php echo $this->NetCommonsForm->label('CalendarFrameSetting.display_type',
-	__d('calendars', '表示方法'), array('class' => 'col-xs-12 col-sm-3')); ?>
-<div class="col-xs-12 col-sm-9">
+	__d('calendars', '表示方法'), array('class' => 'col-xs-12')); ?>
+<div class='col-xs-12'>
 <?php
 	echo $this->NetCommonsForm->input('CalendarFrameSetting.display_type', array(
 		'type' => 'select',
@@ -43,8 +44,9 @@
 	));
 ?>
 
-</div><!-- col-xs-10おわり -->
+</div>
 <div class="clearfix"></div>
+</div>
 </div><!-- form-groupおわり-->
 
 <?php

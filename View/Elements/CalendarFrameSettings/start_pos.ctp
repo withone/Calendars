@@ -11,9 +11,10 @@
 ?>
 <div class="form-group" ng-show="isShowStartPos">
 	<?php echo $this->NetCommonsForm->label('CalendarFrameSetting.start_pos',
-		__d('calendars', '開始位置'), array('class' => 'col-xs-12 col-sm-3')); ?>
+		__d('calendars', '開始位置'), array('class' => 'col-xs-12 col-sm-12')); ?>
 	<div class="col-xs-12 col-sm-9">
-
+<div class='form-inline'>
+<div class='input-group'>
 	<?php
 	$options = array(
 		CalendarsComponent::CALENDAR_START_POS_WEEKLY_TODAY => __d('calendars', '今日'),
@@ -28,6 +29,8 @@
 	'checked' => $this->request->data['CalendarFrameSetting']['start_pos'],
 	'separator' => '<br />',
 	)); ?>
+</div>
+</div>
 	</div><!-- col-xs-10のおわり -->
 	<div class="clearfix"></div>
 </div><!-- form-groupおわり -->

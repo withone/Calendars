@@ -10,7 +10,7 @@
  */
 ?>
 <div class="form-group" ng-show="isShowTimelineStart">
-	<?php echo $this->NetCommonsForm->label('CalendarFrameSetting.timeline_base_time', __d('calendars', 'タイムライン開始時刻'), array('class' => 'col-xs-12 col-sm-3')); ?>
+	<?php echo $this->NetCommonsForm->label('CalendarFrameSetting.timeline_base_time', __d('calendars', 'タイムライン開始時刻'), array('class' => 'col-xs-12')); ?>
 	<div class="col-xs-12 col-sm-9">
 
 		<?php

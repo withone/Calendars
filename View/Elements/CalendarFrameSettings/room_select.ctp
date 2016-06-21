@@ -11,8 +11,8 @@
 ?>
 
 <div class="form-group" name="dispTargetRooms">
-	<?php echo $this->NetCommonsForm->label('CalendarFrameSetting.is_select_room', __d('calendars', '表示対象ルーム'), array('class' => 'col-xs-12 col-sm-3')); ?>
-	<div class="col-xs-12 col-sm-9">
+	<!-- <?php echo $this->NetCommonsForm->label('CalendarFrameSetting.is_select_room', __d('calendars', '表示対象ルーム'), array('class' => 'col-xs-12 col-sm-3')); ?> -->
+	<div class='col-xs-11 col-xs-offset-1'>
 		<div class="checkbox">
 			<label>
 				<?php
@@ -33,7 +33,8 @@
 			<div class="panel-body">
 				<!-- <accordion close-others="true"> -->
 				<uib-accordion close-others="true">
-					<small><?php echo __d('calendars', '参加させるルームは、ルーム名の前にあるマークを <span class="glyphicon glyphicon-eye-open"></span>  にしてください。'); ?></small>
+					<!--<small><?php echo __d('calendars', '参加させるルームは、ルーム名の前にあるマークを <span class="glyphicon glyphicon-eye-open"></span>  にしてください。'); ?></small>-->
+					<small><?php echo __d('calendars', '表示させるルームは、ルーム名の前にあるマークを <span class="glyphicon glyphicon-eye-open"></span>  にしてください。'); ?></small>
 					<?php echo $this->CalendarRoomSelect->spaceSelector($spaces); ?>
 				<!-- </accordion> -->
 				</uib-accordion>
