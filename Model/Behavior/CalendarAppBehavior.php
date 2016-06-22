@@ -21,6 +21,7 @@ App::uses('WorkflowComponent', 'Workflow.Controller/Component');
  *
  * @author Allcreator <info@allcreator.net>
  * @package NetCommons\Calendars\Model\Behavior
+ * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 class CalendarAppBehavior extends ModelBehavior {
 	const CALENDAR_PLAN_EDIT_THIS = '0';	//この日の予定のみ変更(削除)

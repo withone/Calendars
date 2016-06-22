@@ -53,6 +53,7 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 		'Calendars.CalendarPlanTimeValidate',	//予定（時間関連）バリデーション専用
 		'Calendars.CalendarPlanRruleValidate',	//予定（Rrule関連）バリデーション専用
 		'Calendars.CalendarPlanValidate',	//予定バリデーション専用
+		'Calendars.CalendarPlanGeneration',	//予定世代
 	);
 	// @codingStandardsIgnoreStart
 	// $_schemaはcakePHP2の予約語だが、宣言するとphpcsが警告を出すので抑止する。
@@ -72,17 +73,20 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 		//削除ルール
 		'edit_rrule' => array('type' => 'string', 'default' => ''),
 
-		//カレンダーイベントID
-		'calendar_event_id' => array('type' => 'integer', 'null' => false, 'unsigned' => false),
+		//単一予定(0)or繰返し予定(1)
+		'is_repeat' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
 
-		//カレンダーRruleID
-		'calendar_rrule_id' => array('type' => 'integer', 'null' => false, 'unsigned' => false),
+		//繰返し時の最初のイベントID(１件だけのときは、origin_event_idと一致)
+		'first_sib_event_id' => array(
+			'type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
 
-		//カレンダーID
-		'calendar_id' => array('type' => 'integer', 'null' => false, 'unsigned' => false),
+		//編集画面にでている対象イベントID
+		'origin_event_id' => array(
+			'type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
 
-		//カレンダーRrule key
-		'calendar_rrule_key' => array('type' => 'string', 'null' => false),
+		//このイベントが「この予定のみ」指定ですでに変更されていた場合、1が立つ。
+		'is_recurrence' => array(
+			'type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
 	);
 
 /**
@@ -130,36 +134,36 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 					'message' => __d('calendars', 'rrule編集指定が不正です'),
 				),
 			),
-			'calendar_event_id' => array(
+			'is_repeat' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'required' => true,
 					'allowEmpty' => false,
-					'message' => __d('calendars', 'カレンダーイベントIDが不正です'),
+					'message' => __d('calendars', '先頭のイベントIDが不正です'),
 				),
 			),
-			'calendar_rrule_id' => array(
+			'first_sib_event_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'required' => true,
 					'allowEmpty' => false,
-					'message' => __d('calendars', 'カレンダー繰返しIDが不正です'),
+					'message' => __d('calendars', 'イベントの繰り返しフラグが不正です'),
 				),
 			),
-			'calendar_id' => array(
+			'origin_event_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'required' => true,
 					'allowEmpty' => false,
-					'message' => __d('calendars', 'カレンダーIDが不正です'),
+					'message' => __d('calendars', 'オリジナルのイベントIDが不正です'),
 				),
 			),
-			'calendar_rrule_key' => array(
+			'is_recurrence' => array(
 				'rule1' => array(
-					'rule' => array('notBlank'),
+					'rule' => array('numeric'),
 					'required' => true,
 					'allowEmpty' => false,
-					'message' => __d('calendars', 'カレンダー繰返しkeyが不正です'),
+					'message' => __d('calendars', 'イベントの置換フラグが不正です'),
 				),
 			),
 		));
@@ -169,29 +173,68 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 /**
  * deleteCalendarPlan
  *
- * 予定データ削除
+ * 単一・繰返し３選択肢対応の予定データ削除
  *
  * @param array $data POSTされたデータ
- * @return bool 成功時true, 失敗時false
+ * @param int $originEventId originEventId （現eventのid）
+ * @param string $originEventKey originEventKey（現eventのkey）
+ * @param int $originRruleId originRruleId （現eventのcalendar_rrule_id）
+ * @param bool $isOriginRepeat 元データが繰返しかどうか
+ * @return int 成功時、削除した指定のeventIdを返す.
  */
-	public function deleteCalendarPlan($data) {
+	public function deleteCalendarPlan($data, $originEventId, $originEventKey,
+		$originRruleId, $isOriginRepeat) {
 		$this->begin();
+		$eventId = 0;
 
 		try {
 			$this->_dequeueEmail($data); //mailQueueからのDequeueを先にする。
 
-			$this->deletePlan($data['CalendarDeletePlan']['calendar_event_id'],
-				$data['CalendarDeletePlan']['edit_rrule']);
+			//現世代予定の情報を一式取り出す
+
+			$curPlan = $this->makeCurGenPlan($data,
+				$originEventId, $originEventKey, $originRruleId);
+			//CakeLog::debug("DBG: curPlan[" . print_r($curPlan, true) . "]");
+
+			$editRrule = $this->getEditRruleForDelete($data);
+
+			$eventId = $this->deletePlan($curPlan, $isOriginRepeat, $editRrule);
 
 			$this->commit();
 		} catch (Exception $ex) {
 
 			$this->rollback($ex);
 
-			return false;
+			return 0;
 		}
 
-		return true;
+		return $eventId;
+	}
+
+/**
+ * getEditRruleForDelete
+ *
+ * request->data情報より、editRruleモードを決定し返す。
+ *
+ * @param array $data data
+ * @return string 成功時editRruleモード(0/1/2)を返す。失敗時 例外をthrowする
+ * @throws InternalErrorException
+ */
+	public function getEditRruleForDelete($data) {
+		if (empty($data['CalendarDeleteActionPlan']['edit_rrule'])) {
+			//edit_rruleが存在しないか'0'ならば、「この予定のみ変更」
+			return CalendarAppBehavior::CALENDAR_PLAN_EDIT_THIS;
+		}
+		if ($data['CalendarDeleteActionPlan']['edit_rrule'] ==
+			CalendarAppBehavior::CALENDAR_PLAN_EDIT_AFTER) {
+			return CalendarAppBehavior::CALENDAR_PLAN_EDIT_AFTER;
+		}
+		if ($data['CalendarDeleteActionPlan']['edit_rrule'] ==
+			CalendarAppBehavior::CALENDAR_PLAN_EDIT_ALL) {
+			return CalendarAppBehavior::CALENDAR_PLAN_EDIT_ALL;
+		}
+		//ここに流れてくる時は、モードの値がおかしいので、例外throw
+		throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 	}
 
 /**

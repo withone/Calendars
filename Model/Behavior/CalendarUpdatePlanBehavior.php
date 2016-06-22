@@ -93,7 +93,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		if ($editRrule === self::CALENDAR_PLAN_EDIT_ALL) {
 			//「この予定ふくめ全て更新」
 			$isArray = array($isOriginRepeat, $isTimeMod, $isRepeatMod);
-			$eventId = $this->updateRruleDataAll($model, $planParams, $rruleData, $eventData,
+			$eventId = $this->updatePlanAll($model, $planParams, $rruleData, $eventData,
 				$newPlan, $isArray, $status, $editRrule);
 			return $eventId;	//復帰
 
@@ -234,7 +234,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 	}
 
 /**
- * RruleDataのデータ更新
+ * 予定データの全更新
  *
  * @param Model &$model モデル 
  * @param array $planParams 予定パラメータ
@@ -248,7 +248,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
-	public function updateRruleDataAll(Model &$model, $planParams, $rruleData, $eventData,
+	public function updatePlanAll(Model &$model, $planParams, $rruleData, $eventData,
 		$newPlan, $isArray, $status, $editRrule) {
 		$isOriginRepeat = $isArray[0];
 		$isTimeMod = $isArray[1];

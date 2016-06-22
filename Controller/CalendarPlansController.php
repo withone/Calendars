@@ -148,55 +148,125 @@ class CalendarPlansController extends CalendarsAppController {
  * delete
  *
  * @return void
+ * @SuppressWarnings(PHPMD)
  */
 	public function delete() {
-		//$this->log("edit params!!", 'debug');
-		//$this->log($this->request->params, 'debug');
-		//$this->log("edit data!!", 'debug');
-		//$this->log($this->request->data, 'debug');
+		//CakeLog::debug("DBG: delete()開始");
 
-		if (! $this->request->is('delete')) {
-			$this->throwBadRequest();
-			return;
+		//レイアウトの設定
+		$this->viewClass = 'View';
+		$this->layout = 'NetCommons.modal';
+		if ($this->request->is('delete')) {
+			//CakeLog::debug("DBG: 削除処理がPOSTされました。");
+
+			//Eventデータ取得
+			//内部でCurrent::permission('content_creatable'),Current::permission('content_editable')
+			//が使われている。
+			//
+			$eventData = $this->CalendarEvent->getWorkflowContents('first', array(
+				'recursive' => -1,
+				'conditions' => array(
+					$this->CalendarEvent->alias . '.id' =>
+						$this->data['CalendarDeleteActionPlan']['origin_event_id'],
+				)
+			));
+			if (!$eventData) {
+				//該当eventが存在しない。
+				//他の人が先に削除した、あるいは、自分が他のブラウザから削除
+				//した可能性があるので、エラーとせず、
+				//削除成功扱いにする。
+				CakeLog::notice("指定したevent_id[" .
+					$this->data['CalendarDeleteActionPlan']['origin_event_id'] .
+					"]はすでに存在しませんでした。");
+
+				//testセッション方式
+				$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars');
+				$this->redirect($url);
+				return;	//redirect後なので、ここには到達しない
+			}
+			if ($eventData) {
+				//削除対象イベントあり
+
+				//カレンダー権限管理の承認を考慮した、Event削除権限チェック
+				$roomId = Current::read('Room.id');
+				if ($this->CalendarEvent->isContentPublishableWithCalRoleAndPerm($roomId)) {
+					//ルーム管理を上書きする形でカレンダー権限管理で承認あり
+				} elseif ($this->CalendarEvent->canDeleteWorkflowContent($eventData)) {
+					//WFでcanDeleteとなっている
+				} else {
+					$this->throwBadRequest();
+					return false;
+				}
+				$this->CalendarDeleteActionPlan->set($this->request->data);
+				if (!$this->CalendarDeleteActionPlan->validates()) {
+					//バリデーションエラー
+					$this->NetCommons->handleValidationError($this->CalendarDeleteActionPlan->validationErrors);
+				} else {
+					//削除実行
+					//
+
+					//元データ繰返し有無の取得
+					$eventSiblings = $this->CalendarEvent->getSiblings(
+						$eventData['CalendarEvent']['calendar_rrule_id']);
+					$isOriginRepeat = false;
+					if (count($eventSiblings) > 1) {
+						$isOriginRepeat = true;
+					}
+
+					if ($this->CalendarDeleteActionPlan->deleteCalendarPlan($this->request->data,
+						$eventData['CalendarEvent']['id'],
+						$eventData['CalendarEvent']['key'],
+						$eventData['CalendarEvent']['calendar_rrule_id'],
+						$isOriginRepeat)) {
+						//削除成功
+						//testセッション方式
+						$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars');
+						$this->redirect($url);
+						return;	//redirect後なので、ここには到達しない
+					} else {
+						CakeLog::error("削除実行エラー");
+						//エラーメッセージのセット. 便宜的にis_repeatを利用
+						$this->CalendarDeleteActionPlan->validationErrors['is_repeat'] =
+							__d('calendars', '削除に失敗しました');
+					}
+				}
+			}
 		}
 
-		//Eventデータ取得
-		$calendarEvent = $this->CalendarEvent->getWorkflowContents('first', array(
-			'recursive' => -1,
-			'conditions' => array(
-				$this->CalendarEvent->alias . '.id' =>
-					$this->data['CalendarDeletePlan']['calendar_id'],
-			)
-		));
+		//Viewに必要な処理があれば以下にかく。
 
-		//Event削除権限チェック
-		if (! $this->CalendarEvent->canDeleteWorkflowContent($calendarEvent)) {
-			$this->throwBadRequest();
-			return false;
+		$this->request->data['CalendarDeleteActionPlan']['is_repeat'] = 0;
+		if (!empty($this->request->params['named']['action'])) {
+			if ($this->request->params['named']['action'] == 'repeatdelete') {
+				$this->request->data['CalendarDeleteActionPlan']['is_repeat'] = 1;
+			}
 		}
+		$isRepeat = $this->request->data['CalendarDeleteActionPlan']['is_repeat'];
 
-		//指定Rrule配下の指定event存在チェック
-		$count = $this->CalendarEvent->find('count', array(
-			'recursive' => -1,
-			'conditions' => array(
-				$this->CalendarEvent->alias . '.calendar_rrule_id' =>
-					$this->data['CalendarDeletePlan']['calendar_rrule_id'],
-				$this->CalendarEvent->alias . '.id' => $this->data['CalendarDeletePlan']['calendar_event_id'],
-			),
-		));
-		if ($count <= 0) {
-			$this->throwBadRequest();
-			return false;
+		$this->request->data['CalendarDeleteActionPlan']['first_sib_event_id'] = 0;
+		if (!empty($this->request->params['named']['first_sib_event_id'])) {
+			$this->request->data['CalendarDeleteActionPlan']['first_sib_event_id'] =
+				intval($this->request->params['named']['first_sib_event_id']);
 		}
+		$firstSibEventId = $this->request->data['CalendarDeleteActionPlan']['first_sib_event_id'];
 
-		if (!$this->CalendarDeleteActionPlan->deleteCalendarPlan($this->request->data)) {
-			$this->throwBadRequest();
-			return;
+		$this->request->data['CalendarDeleteActionPlan']['origin_event_id'] = 0;
+		if (!empty($this->request->params['named']['origin_event_id'])) {
+			$this->request->data['CalendarDeleteActionPlan']['origin_event_id'] =
+				intval($this->request->params['named']['origin_event_id']);
 		}
+		$originEventId = $this->request->data['CalendarDeleteActionPlan']['origin_event_id'];
 
-		//$this->redirect(NetCommonsUrl::backToPageUrl());
-		$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars'); //testセッション方式
-		$this->redirect($url);
+		$this->request->data['CalendarDeleteActionPlan']['is_recurrence'] = 0;
+		if (!empty($this->request->params['named']['is_recurrence'])) {
+			$this->request->data['CalendarDeleteActionPlan']['is_recurrence'] =
+				intval($this->request->params['named']['is_recurrence']);
+		}
+		$isRecurrence = $this->request->data['CalendarDeleteActionPlan']['is_recurrence'];
+
+		$this->set(compact('isRepeat', 'firstSibEventId', 'originEventId', 'isRecurrence'));
+
+		//renderを発行しないので、デフォルトのdelete.ctpがレンダリングされる。
 	}
 
 /**
@@ -351,7 +421,8 @@ class CalendarPlansController extends CalendarsAppController {
 		$languageId = Current::read('Language.id');
 		$isRepeat = $event['CalendarRrule']['rrule'] !== '' ? true : false;
 
-		$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars'); //testセッション方式
+		//testセッション方式
+		$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars');
 		//print_r('SHOW return');print_r($url);
 		$vars['returnUrl'] = $url;
 
@@ -496,7 +567,8 @@ class CalendarPlansController extends CalendarsAppController {
 		}
 
 		//キャンセル時のURLセット
-		$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars'); //testセッション方式
+		//testセッション方式
+		$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars');
 		//print_r('SHOW return');print_r($url);
 		$vars['returnUrl'] = $url;
 

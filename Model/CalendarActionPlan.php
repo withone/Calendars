@@ -52,7 +52,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		'Calendars.CalendarPlanRruleValidate',	//予定（Rrule関連）バリデーション専用
 		'Calendars.CalendarPlanValidate',	//予定バリデーション専用
 		////'Calendars.CalendarRruleHandle',	//concatRrule()など
-		'Calendars.CalendarNewGenPlan',	//元予定の新世代予定生成関連
+		'Calendars.CalendarPlanGeneration',	//元予定の新世代予定生成関連
 	);
 	// @codingStandardsIgnoreStart
 	// $_schemaはcakePHP2の予約語だが、宣言するとphpcsが警告を出すので抑止する。
@@ -519,6 +519,7 @@ class CalendarActionPlan extends CalendarsAppModel {
  * @param bool $isTimeMod isTimeMod
  * @param bool $isRepeatMod isRepeatMod
  * @return bool 成功時true, 失敗時false
+ * @throws InternalErrorException
  */
 	public function saveCalendarPlan($data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod) {
 		$this->begin();
@@ -543,7 +544,6 @@ class CalendarActionPlan extends CalendarsAppModel {
 					serialize($data) . "]");
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
-
 			if ($procMode === CalendarsComponent::PLAN_ADD) {
 				//新規追加処理
 				//CakeLog::debug("DBG: PLAN_ADD case.");
@@ -561,10 +561,10 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 				$eventId = $this->updatePlan($planParam, $newPlan, $status, $isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule);
 			}
-
 			$this->_enqueueEmail($data);
 
 			$this->commit();
+
 		} catch (Exception $ex) {
 
 			$this->rollback($ex);
@@ -780,7 +780,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 				//集合要素に差はない、と判断する。
 			} else {
 				//差がみつかったので、繰返しに変更あり。
-				CakeLog::debug("DBG: 差がみつかったので、繰返しに変更あり。");
+				//CakeLog::debug("DBG: 差がみつかったので、繰返しに変更あり。");
 				++$repeatModCnt;
 				//CakeLog::debug("DBG 繰返しに変化あり! capRrule[" . serialize($capRrule) .
 				//"] VS originRrule[" . serialize($originRrule) . "]");
@@ -817,7 +817,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		}
 		if ($originTzId != $cap['timezone_offset']) {
 			//選択したＴＺが変更されている。
-			CakeLog::debug("DBG: 選択したＴＺが変更されている。");
+			//CakeLog::debug("DBG: 選択したＴＺが変更されている。");
 			++$timeRepeatModCnt;
 			//CakeLog::debug("DBG: TZに変更あり！ originTzId=[" . $originTzId .
 			//	"] VS cap[timezone_offset]=[" . $cap['timezone_offset'] . "]");
@@ -873,7 +873,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 			//サーバ日付時間はすべて一致。
 		} else {
 			//サーバ日付時刻に変更あり。
-			CakeLog::debug("DBG: サーバ日付時刻に変更あり。");
+			//CakeLog::debug("DBG: サーバ日付時刻に変更あり。");
 			++$timeRepeatModCnt;
 			/*
 			CakeLog::debug("DBG: dtstar,dtendに変更あり！ POSTオリジナル enable_time[" .

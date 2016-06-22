@@ -116,7 +116,7 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
  * @return void
  */
 	public function insertPriodEntry(Model &$model, $planParams, $rruleData, $startEventData) {
-		CakeLog::debug("DBG: In insertPriodEntry(). i set model->rrule[INDEX] to 1.");
+		//CakeLog::debug("DBG: In insertPriodEntry(). i set model->rrule[INDEX] to 1.");
 
 		$model->rrule['INDEX'] = 1;
 

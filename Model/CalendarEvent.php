@@ -39,6 +39,7 @@ class CalendarEvent extends CalendarsAppModel {
 		'Calendars.CalendarUpdatePlan',	//Update用
 		'Calendars.CalendarDeletePlan',	//Delete用
 		'Calendars.CalendarSearchPlan',	//Search用
+		'Calendars.CalendarRoleAndPerm', //カレンダー役割・権限
 	);
 
 /**

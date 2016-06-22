@@ -509,7 +509,7 @@ NetCommonsApp.controller('CalendarDetailEditWysiwyg',
     }]
 );
 NetCommonsApp.controller('CalendarsDetailEdit',
-    ['$scope', '$location', 'ConfirmRepeat', 'NetCommonsModal', function($scope, $location, ConfirmRepeat, NetCommonsModal) {
+    ['$scope', '$location', 'ConfirmRepeat', 'NetCommonsModal', '$http', function($scope, $location, ConfirmRepeat, NetCommonsModal, $http) {
       $scope.repeatArray = [];  //key=Frame.id、value=T/F of checkbox
       //key=Frame.id,value=index number
       //of option elements
@@ -874,8 +874,69 @@ NetCommonsApp.controller('CalendarsDetailEdit',
         }
       };
 
-      $scope.showRepeatConfirmEx = function (frameId, action, $event) {
-        if (confirm('３選択の削除Confirmケースです。３択画面組込中...今は全て削除のみ')) {
+      $scope.showRepeatConfirmEx = function (frameId,
+        action, $event, firstSibEventId, originEventId, isRecurrence) {
+        console.log('frameId[' + frameId + '] action[' + action +
+          '] $event firstSibEventId[' + firstSibEventId + '] originEventId[' +
+          originEventId + '] isRecurrence[' + isRecurrence + ']');
+
+        var url = $scope.baseUrl + '/calendars/calendar_plans/delete';
+        if (action != '') {
+          url = url + '/action:' + action;
+        }
+        if (firstSibEventId > 0) {
+          url = url + '/first_sib_event_id:' + firstSibEventId;
+        }
+        if (originEventId > 0) {
+          url = url + '/origin_event_id:' + originEventId;
+        }
+        if (isRecurrence == 1) {
+          url = url + '/is_recurrence:1';
+        } else {
+          url = url + '/is_recurrence:0';
+        }
+        url = url + '?frame_id=' + frameId;
+        console.log('生成したurlは[ ' + url + ']です');
+
+        //NetCommonsModal.show()の実体は
+        // $uibModal.open()です。
+        //show()の戻り値は、$udiModal.open()の戻り値です。
+        //
+        var modalInstance = NetCommonsModal.show(
+          $scope,
+          'Calendars.showRepeatConfirmExModal',
+          url
+        );
+
+        //callbackの登録をします。
+        modalInstance.result.then(
+          function(result) {
+            //決定ボタンをクリック
+            console.log('ＯＫ case');
+
+            //クリックのデフォルト動作(この場合form のsubmit)を抑止しておく。
+            $event.preventDefault();
+            return true;
+
+          },
+          function() {
+            //背景部分クリックや
+            //キャンセルボタンクリックをすると
+            //失敗扱いで、ここにくる。
+            console.log('キャンセル case');
+
+            //クリックのデフォルト動作(この場合form のsubmit)を抑止しておく。
+            $event.preventDefault();
+            return false;
+
+          }
+        );
+
+        $event.preventDefault();
+        return false;
+
+        /*
+        if (result) {
           return true;
         } else {
           //$event.preventDefault()発行しないと、
@@ -884,40 +945,10 @@ NetCommonsApp.controller('CalendarsDetailEdit',
           return false;
         }
         return;
-
-        /*
-        console.log('frameId[' + frameId + '] action[' + action + '] $event');
-
-        console.log('繰返し処理');
-        var modalInstance = ConfirmRepeat($scope, frameId, action);
-        modalInstance.result.then(
-          function(result) {
-            console.log('成功 case');
-          },
-          function() {
-            console.log('失敗 case');
-          }
-        );
-        console.log('プロミスを登録しておいた');
-
-        if (action === 'delete') {
-          if (confirm('delete ok')) {
-            //
-            //予定の削除処理をpostします。
-            //
-            console.log('削除実行する');
-          } else {
-            console.log('削除実行しない');
-            $event.preventDefault();
-          }
-          return;
-        } else {
-          console.log('action[' + action + ']は不明です。');
-          $event.preventDefault();
-        }
         */
       };
 
+      /*
       $scope.showRepeatConfirm = function(frameId, isRepeat, action) {
         if (isRepeat === 'On') {
           console.log('繰返し処理');
@@ -947,6 +978,7 @@ NetCommonsApp.controller('CalendarsDetailEdit',
           return;
         }
       };
+      */
 
       $scope.setInitNoticeMailSetting = function(frameId, bVal) {
         $scope.useNoticeMail[frameId] = bVal;  //画面をリフレッシュ
@@ -961,7 +993,33 @@ NetCommonsApp.controller('CalendarsDetailEdit',
           $('.calendar-mail-setting_' + frameId).hide();
         }
       };
+
     }]
+);
+
+/**
+ * showRepeatConfirmEx Modal
+ */
+NetCommonsApp.controller('Calendars.showRepeatConfirmExModal',
+    ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
+      /**
+       * dialog cancel
+       *
+       * @return {void}
+       */
+      $scope.cancel = function() {
+        //alert('キャンセルＡ');
+        //削除POPUPでメニューのＸマークや、
+        //「キャンセル」ボタンがクリックされた時は、
+        //ここがcallされる。
+        $uibModalInstance.dismiss('cancel');
+      };
+    }]
+);
+
+NetCommonsApp.controller('CalendarsDelete',
+  ['$scope', function($scope, $uibModalInstance) {
+  }]
 );
 
 NetCommonsApp.controller('CalendarModalCtrl', [

@@ -1,6 +1,6 @@
 <?php
 /**
- * CalendarNewGenPlan Behavior
+ * CalendarPlanGeneration Behavior
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Allcreator <info@allcreator.net>
@@ -13,14 +13,14 @@ App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');
 App::uses('WorkflowComponent', 'Workflow.Controller/Component');
 
 /**
- * CalendarNewGenPlanBehavior
+ * CalendarPlanGenerationBehavior
  *
  * @property array $calendarWdayArray calendar weekday array カレンダー曜日配列
  * @property array $editRrules editRules　編集ルール配列
  * @author Allcreator <info@allcreator.net>
  * @package NetCommons\Calendars\Model\Behavior
  */
-class CalendarNewGenPlanBehavior extends CalendarAppBehavior {
+class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 
 /**
  * Default settings
@@ -33,6 +33,68 @@ class CalendarNewGenPlanBehavior extends CalendarAppBehavior {
  */
 	protected $_defaults = array(
 		);
+
+/**
+ * 現世代の予定を作り出す
+ *
+ * @param Model &$model 実際のモデル名
+ * @param array $data data POSTされたrequest->data配列
+ * @param int $originEventId originEventId（現eventのid）
+ * @param string $originEventKey originEventKey（現eventのkey）
+ * @param int $originRruleId originRruleId（現eventのkey）
+ * @return int 成功時 現世代予定を返す。失敗時 InternalErrorExceptionを投げる。
+ * @throws InternalErrorException
+ */
+	public function makeCurGenPlan(Model &$model, $data,
+		$originEventId, $originEventKey, $originRruleId) {
+		if (!isset($model->CalendarRrule)) {
+			$model->loadModels(['CalendarRrule' => 'Calendars.CalendarRrule']);
+		}
+		$options = array(
+			'conditions' => array(
+				$model->CalendarRrule->alias . '.id' => $originRruleId,
+			),
+			'recursive' => 1,
+			//'callbacks' => false,	//callbackは呼ばない
+		);
+		$plan = $model->CalendarRrule->find('first', $options);
+		if (empty($plan)) {
+			CakeLog::error("削除時に指定された元予定(calendar_rrule_id=[" .
+				$data['origin_rrule_id'] . "])が存在しない。");
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		}
+
+		//CalendarEventsの関係データをとってきて必要なもののみ加える。
+		//
+		if (!isset($model->CalendarEvent)) {
+			$model->loadModels(['CalendarEvent' => 'Calendars.CalendarEvent']);
+		}
+		foreach ($plan['CalendarEvent'] as &$event) {
+			$options2 = array(
+				'conditions' => array(
+					//copyはdeadcopyイメージなので、言語ID,除去フラグに関係なくとってくる。
+					$model->CalendarEvent->alias . '.id' => $event['id'],
+				),
+				'recursive' => 1,
+				'order' => array($model->CalendarEvent->alias . '.dtstart' => 'ASC'),
+			);
+			$eventData = $model->CalendarEvent->find('first', $options2);
+			//event配下の配下関連テーブルだけ追加しておく
+			//
+			$event['CalendarEventShareUser'] = $eventData['CalendarEventShareUser'];
+			$event['CalendarEventContent'] = $eventData['CalendarEventContent'];
+		}
+
+		//現世代予定のrruleDataのidとkeyをマーキングしておく.
+		$plan['cur_rrule_id'] = $plan['CalendarRrule']['id'];
+		$plan['cur_rrule_key'] = $plan['CalendarRrule']['key'];
+
+		//現世代予定の指定されたeventDataのidとkeyをマーキングしておく.
+		$plan['cur_event_id'] = $originEventId;
+		$plan['cur_event_key'] = $originEventKey;
+
+		return $plan;
+	}
 
 /**
  * 元予定の新世代予定を作り出す

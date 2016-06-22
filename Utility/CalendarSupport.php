@@ -57,20 +57,20 @@ class CalendarSupport {
 			//なので、calendarDateFormatをつかってTZ考慮したcalendarDateFormatはつかわなくてＯＫ。
 			$until = substr($rrule['UNTIL'], 0, 8) . substr($rrule['UNTIL'], -6);
 
-			CakeLog::debug("DBG:
-				In isRepeatable(). startDateTime[" . $startDateTime . "] until[" . $until . "]");
+			//CakeLog::debug("DBG:
+			//	In isRepeatable(). startDateTime[" . $startDateTime . "] until[" . $until . "]");
 			if ($startDateTime >= $until) {
-				CakeLog::debug("DBG: isRepeatable() return FALSE!
-					 startDateTime[" . $startDateTime . "] >= until[" . $until . "]");
+				//CakeLog::debug("DBG: isRepeatable() return FALSE!
+				//	 startDateTime[" . $startDateTime . "] >= until[" . $until . "]");
 				return false;
 			}
 		} else {
 			$count = isset($rrule['COUNT']) ? intval($rrule['COUNT']) : 3;	//初期値は３回繰り返す
-			CakeLog::debug("DBG: In isRepeatable(COUNT case).
-				 rrule[INDEX][" . $rrule['INDEX'] . "] count[" . $count . "]");
+			//CakeLog::debug("DBG: In isRepeatable(COUNT case).
+			//	 rrule[INDEX][" . $rrule['INDEX'] . "] count[" . $count . "]");
 			if ($rrule['INDEX'] > $count) {
-				CakeLog::debug("DBG: isRepeatable(COUNT case) return FALSE!
-					 rrule[INDEX][" . $rrule['INDEX'] . "] > count[" . $count . "]");
+				//CakeLog::debug("DBG: isRepeatable(COUNT case) return FALSE!
+				//	 rrule[INDEX][" . $rrule['INDEX'] . "] > count[" . $count . "]");
 				return false;
 			}
 		}

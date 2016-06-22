@@ -14,8 +14,6 @@
 
 	<?php echo $this->element('Calendars.CalendarPlans/required_hiddens'); ?>
 
-	<?php //未使用 echo $this->element('Calendars.CalendarPlans/return_hiddens', array('model' => 'CalendarActionPlan')); ?>
-
 	<?php
 		echo $this->element('Calendars.CalendarPlans/detail_edit_hiddens', array(
 			'event' => $event, 'eventSiblings' => $eventSiblings, 'firstSib' => $firstSib,
@@ -26,35 +24,55 @@
 
 		<?php $this->NetCommonsForm->unlockField('CalendarActionPlan.edit_rrule'); ?>
 
-		<?php $editRrule = true; ?>
+<?php
+	//変数の初期化を先頭に集める
+	$editRrule = true;
 
-		<?php if (count($eventSiblings) > 1 || (isset($this->request->data['CalendarActionPlan']['origin_num_of_event_siblings']) &&
-			$this->request->data['CalendarActionPlan']['origin_num_of_event_siblings'] > 1)) : ?>
-		<div class="form-group" name="RepeatSet">
+	$firstSibYear = $firstSibMonth = $firstSibDay = $firstSibEventId = 0;
+	if (!empty($this->request->data['CalendarActionPlan']['first_sib_event_id'])) {
+		$firstSibEventId = $this->request->data['CalendarActionPlan']['first_sib_event_id'];
+		$firstSibYear = $this->request->data['CalendarActionPlan']['first_sib_year'];
+		$firstSibMonth = $this->request->data['CalendarActionPlan']['first_sib_month'];
+		$firstSibDay = $this->request->data['CalendarActionPlan']['first_sib_day'];
+	} else {
+		if (!empty($firstSib)) {
+			$firstSibEventId = $firstSib['CalendarActionPlan']['first_sib_event_id'];
+			$firstSibYear = $firstSib['CalendarActionPlan']['first_sib_year'];
+			$firstSibMonth = $firstSib['CalendarActionPlan']['first_sib_month'];
+			$firstSibDay = $firstSib['CalendarActionPlan']['first_sib_day'];
+		}
+	}
 
-			<div class="col-xs-12 col-sm-10 col-sm-offset-1">
-				<h2 style='float: left'>
-				<?php echo $this->TitleIcon->titleIcon('/net_commons/img/title_icon/10_070_warning.svg'); ?>
-				</h2>
-				<div style='padding-top: 1.5em'>
+	$originEventId = 0;
+	if (!empty($event)) {
+		$originEventId = $event['CalendarEvent']['id'];
+	} else {
+		if (!empty($this->request->data['CalendarActionPlan']['origin_event_id'])) {
+			$originEventId = $this->request->data['CalendarActionPlan']['origin_event_id'];
+		}
+	}
+
+	$isRecurrence = false;
+	if ((!empty($event) && !empty($event['CalendarEvent']['recurrence_event_id'])) ||
+		!empty($this->request->data['CalendarActionPlan']['origin_event_recurrence'])) {
+		$isRecurrence = true;
+	}
+?>
+
+<?php
+	if (count($eventSiblings) > 1 || (isset($this->request->data['CalendarActionPlan']['origin_num_of_event_siblings']) && $this->request->data['CalendarActionPlan']['origin_num_of_event_siblings'] > 1)) :
+	?>
+	<div class="form-group" name="RepeatSet">
+	<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+	<h2 style='float: left'>
+	<?php echo $this->TitleIcon->titleIcon('/net_commons/img/title_icon/10_070_warning.svg'); ?>
+	</h2>
+	<div style='padding-top: 1.5em'>
+
 	<?php
 		//全選択用に、繰返し先頭eventのeditボタのリンクを生成しておく
 		//
-		$firstSibYear = $firstSibMonth = $firstSibDay = $firstSibEventId = 0;
-		if (!empty($this->request->data['CalendarActionPlan']['first_sib_event_id'])) {
-			$firstSibEventId = $this->request->data['CalendarActionPlan']['first_sib_event_id'];
-			$firstSibYear = $this->request->data['CalendarActionPlan']['first_sib_year'];
-			$firstSibMonth = $this->request->data['CalendarActionPlan']['first_sib_month'];
-			$firstSibDay = $this->request->data['CalendarActionPlan']['first_sib_day'];
 
-		} else {
-			if (!empty($firstSib)) {
-				$firstSibEventId = $firstSib['CalendarActionPlan']['first_sib_event_id'];
-				$firstSibYear = $firstSib['CalendarActionPlan']['first_sib_year'];
-				$firstSibMonth = $firstSib['CalendarActionPlan']['first_sib_month'];
-				$firstSibDay = $firstSib['CalendarActionPlan']['first_sib_day'];
-			}
-		}
 		$firstSibEditLink = '';
 		if (!empty($firstSibEventId)) {
 			$firstSibEditLink = $this->Button->editLink('', array(
@@ -74,31 +92,12 @@
 			}
 		}
 
-		$originEventId = 0;
-		if (!empty($event)) {
-			$originEventId = $event['CalendarEvent']['id'];
+		echo __d('calendars', 'この予定は繰り返し設定されています。変更した予定を下記項目から選択し、予定編集してください。なお「この予定のみ」の時は予定の繰返しは表示されません。');
+
+		if ($isRecurrence) {
+			echo __d('calendars', '「この予定のみ」指定で変更された予定なので、予定の繰返しは指定できません。');
 		} else {
-			if (!empty($this->request->data['CalendarActionPlan']['origin_event_id'])) {
-				$originEventId = $this->request->data['CalendarActionPlan']['origin_event_id'];
-			}
-		}
-
-		//$dispAfterThisPlan = true;
-		//if (!empty($originEventId) && $originEventId == $firstSibEventId) {
-		//	//このeventは繰り返しの先頭eventなので、「設定した全ての予定」と「この予定以降」は同等を指す。
-		//	$dispAfterThisPlan = false;
-		//} else {
-		//	//このeventは繰り返しの先頭eventではないので、「設定した全ての予定」と「この予定以降」は異なるので
-		//	//「この予定以降」と「設定した全ての予定」の両方を出す。
-		//}
-
-		echo __d('calendars', 'この予定は繰り返し設定されています。変更した予定を下記項目から選択し、予定編集してください。なお「この予定のみ」の時は予定の繰返しは表示されません。「設定した全ての予定」を選択すると内容が繰返しの初回予定に再設定されます。');
-
-		$isRecurrence = false;
-		if ((!empty($event) && !empty($event['CalendarEvent']['recurrence_event_id'])) ||
-			!empty($this->request->data['CalendarActionPlan']['origin_event_recurrence'])) {
-			$isRecurrence = true;
-			echo __d('calendars', '<br />「この予定のみ」指定で変更された予定なので、予定の繰返しは指定できません。');
+			echo __d('calendars', '「設定した全ての予定」を選択すると内容が繰返しの初回予定に再設定されます。');
 		}
 	?>
 	
@@ -1199,7 +1198,9 @@
 <!--
 <?php if (isset($event['CalendarEvent']) && ($this->request->params['action'] === 'edit' && $this->Workflow->canDelete('Calendars.CalendarEvent', $event))) : ?>
 	<div class="panel-footer text-right">
-		<?php echo $this->element('Calendars.CalendarPlans/delete_form'); ?>
+		<?php
+			echo $this->element('Calendars.CalendarPlans/delete_form', array());
+		?>
 	</div>
 <?php endif; ?>
 -->
@@ -1212,7 +1213,21 @@
 
 <?php if (isset($event['CalendarEvent']) && ($this->request->params['action'] === 'edit' && $this->Workflow->canDelete('Calendars.CalendarEvent', $event))) : ?>
 	<div class="panel-footer text-right">
-		<?php echo $this->element('Calendars.CalendarPlans/delete_form', array('frameId' => $frameId, 'event' => $event, 'capForView' => $capForView)); ?>
+		<?php
+			echo $this->element('Calendars.CalendarPlans/delete_form', array(
+				'frameId' => $frameId,
+				'event' => $event,
+				'capForView' => $capForView,
+				'eventSiblings' => $eventSiblings,
+				'firstSib' => $firstSib,
+				'firstSibYear' => $firstSibYear,
+				'firstSibMonth' => $firstSibMonth,
+				'firstSibDay' => $firstSibDay,
+				'firstSibEventId' => $firstSibEventId,
+				'originEventId' => $originEventId,
+				'isRecurrence' => $isRecurrence,
+			));
+		?>
 	</div>
 <?php endif; ?>
 
