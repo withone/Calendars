@@ -31,17 +31,16 @@
 		</div>
 		<div name="roomSelect" ng-show="data.calendarFrameSetting.isSelectRoom">
 			<div class="panel-body">
-				<!-- <accordion close-others="true"> -->
-				<uib-accordion close-others="true">
-					<!--<small><?php echo __d('calendars', '参加させるルームは、ルーム名の前にあるマークを <span class="glyphicon glyphicon-eye-open"></span>  にしてください。'); ?></small>-->
-					<small><?php echo __d('calendars', '表示させるルームは、ルーム名の前にあるマークを <span class="glyphicon glyphicon-eye-open"></span>  にしてください。'); ?></small>
+				<!-- <uib-accordion close-others="true"> -->
+					<!-- <small><?php echo __d('calendars', '表示させるルームは、ルーム名の前にあるマークを <span class="glyphicon glyphicon-eye-open"></span>  にしてください。'); ?></small> -->
+					<?php echo __d('calendars', '表示させるルームを選択してください。'); ?>
+					<div class='calendar-list-wrapper'>
 					<?php echo $this->CalendarRoomSelect->spaceSelector($spaces); ?>
-				<!-- </accordion> -->
-				</uib-accordion>
+				<!-- </uib-accordion> -->
+					</div>
 			</div><!--panel-bodyおわり-->
 		</div><!--panelおわり-->
 
 	</div><!-- col-xs-12 col-sm-10 -->
-
 	<div class="clearfix"></div><!-- 幅広画面整えるため追加 -->
 </div><!-- form-groupおわり -->

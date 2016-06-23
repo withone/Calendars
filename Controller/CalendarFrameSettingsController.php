@@ -52,6 +52,7 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 			),
 		),
 		'Paginator',
+		'Rooms.RoomsForm',
 	);
 
 /**
