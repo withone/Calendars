@@ -107,7 +107,25 @@ class CalendarRoomSelectHelper extends AppHelper {
 		//$html = '<div class="panel panel-default"' . $ngClass . '>';
 		//$html .= '<div class="panel-heading">';
 		//$html .= '<h4 class="panel-title calendar-room-select">' . $checkbox . $title . '</h4>';
-		$html .= '<tr><td ' . $ngClass . '>' . $checkbox . $title . '</td></tr>';
+
+		//$html .= '<tr><td ' . $ngClass . '>' . $checkbox . $title . '</td></tr>';
+
+		$html .= '<tr><td ' . $ngClass . '>';
+		$html .= $checkbox;
+
+		$className = 'calendar-plan-mark-';
+		if (isset($room['Room']['space_id'])) {
+			$className .= ($room['Room']['space_id'] == Space::PRIVATE_SPACE_ID) ? 'private' : 'public';
+		} else {
+			$className .= 'member';
+		}
+		$html .= "<span class='calendar-plan-mark {$className}'>";
+
+		$html .= $title;
+		$html .= '</span>';
+
+		$html .= '</td></tr>';
+
 		//$html .= '</div></div>';
 		return $html;
 	}
@@ -210,8 +228,12 @@ class CalendarRoomSelectHelper extends AppHelper {
 		//$html = '<dl class="list-group">';
 		//$html = '<tr>';
 		$html = '';
+		$className = 'calendar-plan-mark-';
+
 		if ($roomTreeList) {
 			foreach ($roomTreeList as $roomId => $tree) {
+				$className = 'calendar-plan-mark-';
+
 				if (Hash::get($rooms, $roomId)) {
 					$nest = substr_count($tree, Room::$treeParser);
 					$ngClass = $this->__getNgClass(
@@ -230,12 +252,20 @@ class CalendarRoomSelectHelper extends AppHelper {
 					for ($i = 0; $i < $nest; $i++) {
 						$html .= '<span class="rooms-tree"></span>';
 					}
-
+					//print_r($rooms[$roomId]);
+					//print_r('SPACEID');
+					//print_r($rooms[$roomId]['Room']['space_id']);
+					$className .= ($rooms[$roomId]['Room']['space_id'] == Space::ROOM_SPACE_ID) ?
+						'group' : 'public';
+					//print_r($className);
 					$html .= $this->_getRoomSelectCheckbox($roomId);
+					$html .= "<span class='calendar-plan-mark {$className}'>";
 					//$html .= str_repeat('&nbsp;', $nest * 4) . $this->Rooms->roomName($rooms[$roomId]);
 					$html .= $this->Rooms->roomName($rooms[$roomId]);
 					//$html .= '</dd>';
+					$html .= '</span>';
 					$html .= '</td></tr>';
+
 				}
 			}
 		}
