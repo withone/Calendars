@@ -131,7 +131,7 @@
 				'ng-change' => "changeEditRrule(" . $frameId . ",'" . $firstSibEditLink . "')",
 			)
 		);
-	?>
+	?>-
 				</div>
 			</div><!-- col-sm-10おわり -->
 		</div><!-- form-groupおわり-->
@@ -139,7 +139,7 @@
 
 		<div class='form-group' name='inputTitle'>
 			<div class='row'>
-				<div class='col-xs-12 col-sm-10 col-sm-offset-1'>
+				<div class='col-xs-12 col-sm-11 col-sm-offset-1'>
 					<?php echo $this->element('Calendars.CalendarPlans/edit_title'); ?>
 				</div><!-- col-sm-10おわり -->
 			</div>
@@ -191,24 +191,21 @@
 		<div class='form-group' name='inputStartEndDateTime'>
 			<div class='row'>
 				<div class='form-inline'>
-				<div class='col-xs-12 col-sm-4 col-sm-offset-1'>
-					<div>
-						<label>
-							<div ng-hide="<?php echo $useTime; ?>">
+				<div class='col-xs-12 col-sm-11 col-sm-offset-1'>
+
+						<div ng-hide="<?php echo $useTime; ?>" class="col-xs-12">
+							<label>
 								<?php echo __d('calendars', '終日');	?>
-							</div><!-- ng-hideおわり -->
-							<div ng-show="<?php echo $useTime; ?>">
-								<?php echo __d('calendars', '開始');	?>
-							</div><!-- ng-showおわり -->
-						</label>
-					</div><!-- col-sm-10おわり-->
+							</label>
 
-					<div>
+						</div>
 
-						<div ng-show="<?php echo $useTime; ?>"><!--表示条件１START-->
 
+						<div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-4" style="box-sizing:inherit;"><!--表示条件１START-->
 
 <?php
+	$label = __d('calendars', '開始');
+
 	//**Controllerで値が整理・補充された$this->request->dataを使うことにしたので、以下は割愛。**
 	//
 	//現在日付時刻(Y/m/d H:i:s形式)からの直近１時間の日付時刻(from,to)を取得.
@@ -259,10 +256,11 @@
 	if ($this->request->data['CalendarActionPlan']['enable_time']) {
 		$addNgInit = "changeDetailStartDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')";
 	}
+	
 	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_start_datetime',
 	array(
 		'div' => false,
-		'label' => false,
+		'label' => $label,
 		'datetimepicker' => 'datetimepicker',
 		'datetimepicker-options' => $pickerOpt,
 		'convert_timezone' => false,	//日付だけの場合、User系の必要あるのでoffし、カレンダー側でhandlingする。
@@ -282,7 +280,7 @@
 ?>
 
 					</div><!--ng-show 表示条件１END-->
-					<div ng-show="<?php echo '!' . $useTime; ?>"><!--表示条件２START-->
+					<div ng-show="<?php echo '!' . $useTime; ?>" class="col-xs-12 col-sm-4"><!--表示条件２START-->
 
 <?php
 	$ngModel = 'detailStartDate'; //[' . $frameId . ']';
@@ -316,31 +314,30 @@
 	));
 
 ?>
-
-
 					</div><!--ng-show 表示条件２END-->
-				</div>
-			</div><!-- row おわり -->
 
-			<div ng-show="<?php echo $useTime; ?>">
+			<div ng-show="<?php echo $useTime; ?>" class="col-xs-6 col-sm-1 text-center">
+				<div style="margin-top:2em;margin-left:15px;" class="hidden-xs">
+				<?php echo __d('calendars', '-'); ?>
+				</div>
+			</div>
+
+			<div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-4" style="box-sizing:inherit;">
 				<br class="visible-xs-block">
 
-				<div class='col-xs-12 col-sm-1'>
-					<div class='hidden-xs calendar-range-to'>
+				<!--<div class='col-xs-12 col-sm-1 text-center'>
+					<div class='hidden-xs'>
 						<?php echo __d('calendars', '-'); ?>
 					</div>
-				</div>
+				</div> -->
+				<!--		<?php echo __d('calendars', '-'); ?> -->
 
-				<div class='col-xs-12 col-sm-4'>
-					<div>
+					<!-- <div>
 						<label>
 							<br class="visible-xs-block">
 							<?php echo __d('calendars', '終了');	?>
 						</label>
-					</div><!-- col-sm-10おわり-->
-
-
-					<div>
+					</div>--><!-- col-sm-10おわり-->
 
 <?php
 	$ngModel = 'detailEndDatetime'; //[' . $frameId . ']';
@@ -354,7 +351,7 @@
 	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_end_datetime',
 	array(
 		'div' => false,
-		'label' => false,
+		'label' => __d('calendars', '終了'),
 		'datetimepicker' => 'datetimepicker',
 		'datetimepicker-options' => $pickerOpt,
 		'convert_timezone' => false,	//日付だけの場合、User系の必要あるのでoffし、カレンダー側でhandlingする。
@@ -372,7 +369,6 @@
 	));
 ?>
 
-				</div>
 				<div ng-hide="1">
 
 <?php
