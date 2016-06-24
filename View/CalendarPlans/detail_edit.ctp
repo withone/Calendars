@@ -196,7 +196,7 @@
 								<?php echo __d('calendars', '終日');	?>
 							</label>
 						</div>
-						<div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-4" style="box-sizing:inherit;"><!--表示条件１START-->
+						<div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-4"><!--表示条件１START-->
 
 <?php
 	$label = __d('calendars', '開始');
@@ -317,7 +317,7 @@
 							</div>
 						</div>
 
-						<div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-4" style="box-sizing:inherit;">
+						<div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-4">
 							<br class="visible-xs-block">
 
 
