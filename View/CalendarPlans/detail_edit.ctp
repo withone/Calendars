@@ -131,7 +131,7 @@
 				'ng-change' => "changeEditRrule(" . $frameId . ",'" . $firstSibEditLink . "')",
 			)
 		);
-	?>-
+	?>
 				</div>
 			</div><!-- col-sm-10おわり -->
 		</div><!-- form-groupおわり-->
