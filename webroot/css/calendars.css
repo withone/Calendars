@@ -977,12 +977,8 @@ padding-bottom:3px;
 padding-right:3px;
 */
 }
-.calendar-range-to {
-margin-top:2em;
-}
 
 .calendar-list-wrapper {
 	max-height: 450px;
 	overflow-y:scroll;
 }
-

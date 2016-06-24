@@ -190,17 +190,12 @@
 
 		<div class='form-group' name='inputStartEndDateTime'>
 			<div class='row'>
-				<div class='form-inline'>
 				<div class='col-xs-12 col-sm-11 col-sm-offset-1'>
-
 						<div ng-hide="<?php echo $useTime; ?>" class="col-xs-12">
 							<label>
 								<?php echo __d('calendars', '終日');	?>
 							</label>
-
 						</div>
-
-
 						<div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-4" style="box-sizing:inherit;"><!--表示条件１START-->
 
 <?php
@@ -279,8 +274,8 @@
 	));
 ?>
 
-					</div><!--ng-show 表示条件１END-->
-					<div ng-show="<?php echo '!' . $useTime; ?>" class="col-xs-12 col-sm-4"><!--表示条件２START-->
+						</div><!--ng-show 表示条件１END-->
+						<div ng-show="<?php echo '!' . $useTime; ?>" class="col-xs-12 col-sm-4"><!--表示条件２START-->
 
 <?php
 	$ngModel = 'detailStartDate'; //[' . $frameId . ']';
@@ -314,30 +309,17 @@
 	));
 
 ?>
-					</div><!--ng-show 表示条件２END-->
+						</div><!--ng-show 表示条件２END-->
 
-			<div ng-show="<?php echo $useTime; ?>" class="col-xs-6 col-sm-1 text-center">
-				<div style="margin-top:2em;margin-left:15px;" class="hidden-xs">
-				<?php echo __d('calendars', '-'); ?>
-				</div>
-			</div>
+						<div ng-show="<?php echo $useTime; ?>" class="col-xs-6 col-sm-1 text-center">
+							<div style="line-height:4.5em;" class="hidden-xs">
+								<?php echo __d('calendars', '-'); ?>
+							</div>
+						</div>
 
-			<div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-4" style="box-sizing:inherit;">
-				<br class="visible-xs-block">
-
-				<!--<div class='col-xs-12 col-sm-1 text-center'>
-					<div class='hidden-xs'>
-						<?php echo __d('calendars', '-'); ?>
-					</div>
-				</div> -->
-				<!--		<?php echo __d('calendars', '-'); ?> -->
-
-					<!-- <div>
-						<label>
+						<div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-4" style="box-sizing:inherit;">
 							<br class="visible-xs-block">
-							<?php echo __d('calendars', '終了');	?>
-						</label>
-					</div>--><!-- col-sm-10おわり-->
+
 
 <?php
 	$ngModel = 'detailEndDatetime'; //[' . $frameId . ']';
@@ -369,7 +351,7 @@
 	));
 ?>
 
-				<div ng-hide="1">
+							<div ng-hide="1">
 
 <?php
 	$ngModel = 'detailEndDate'; //[' . $frameId . ']';
@@ -402,9 +384,9 @@
 	));
 ?>
 
-					</div><!-- ng-hide -->
-				</div>
-			</div>
+							</div><!-- ng-hide -->
+						</div>
+					</div>
 			</div><!--row おわり -->
 		</div><!-- form-group name="inputStartEndDateTime"おわり -->
 
