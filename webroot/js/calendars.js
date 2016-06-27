@@ -375,7 +375,6 @@ NetCommonsApp.controller('CalendarsMonthlyLinePlan', function($scope) {
     for (var i = 0; i < $scope.calendarLinePlans.length; i++) {  //第n週ループ
       beforeFromCell = -1;
       for (var j = 0; j < $scope.calendarLinePlans[i].length; j++) {
-        //beforeHeight = 
         $scope.setLinePos(
             i, $scope.calendarLinePlans[i][j].id,
             $scope.calendarLinePlans[i][j].fromCell,
@@ -384,7 +383,7 @@ NetCommonsApp.controller('CalendarsMonthlyLinePlan', function($scope) {
       }
     }
 
-	console.log('$scope.calendarLinePlans.length %d', $scope.calendarLinePlans.length);
+    //console.log('$scope.calendarLinePlans.length %d', $scope.calendarLinePlans.length);
 
     //縦位置の調整
     for (var i = 0; i < $scope.calendarLinePlans.length; i++) {  //第n週ループ
@@ -411,7 +410,7 @@ NetCommonsApp.controller('CalendarsMonthlyLinePlan', function($scope) {
 
     //重ならない行数を取得
     var lineNum = $scope.getLineNum(week, fromCell, toCell);
-	//console.log('lineNum %d', lineNum);
+
     //Top設定
     var top = 0;
     if (fromCell == beforeFromCell) { // 開始divが同じ場合
@@ -421,7 +420,7 @@ NetCommonsApp.controller('CalendarsMonthlyLinePlan', function($scope) {
       top = (25 * lineNum) - (20 * $scope.sameDiv); //
 
       //console.log('divTopTotal!! week[%d] Cell[%d] divTopTotal[%d]',
-       //week , fromCell, $scope.week[week].divTopTotal[fromCell]);
+      //week , fromCell, $scope.week[week].divTopTotal[fromCell]);
       $scope.week[week].divTopTotal[fromCell] =
           $scope.week[week].divTopTotal[fromCell] + 20; //div高さの差分を累積
     } else { //開始divが異なる
@@ -431,8 +430,7 @@ NetCommonsApp.controller('CalendarsMonthlyLinePlan', function($scope) {
           $scope.week[week].divTopTotal[fromCell] + 20; //div高さの差分を累積
     }
 
-	//console.log('top %d', top);
-
+    //console.log('top %d', top);
 
     planObj.style.top = (top) + 'px'; // Top設定
     //planObj.style.position = 'relative';
@@ -509,71 +507,80 @@ NetCommonsApp.controller('CalendarDetailEditWysiwyg',
     }]
 );
 NetCommonsApp.controller('CalendarsDetailEdit',
-    ['$scope', '$location', 'ConfirmRepeat', 'NetCommonsModal', '$http', function($scope, $location, ConfirmRepeat, NetCommonsModal, $http) {
-      $scope.repeatArray = [];  //key=Frame.id、value=T/F of checkbox
-      //key=Frame.id,value=index number
-      //of option elements
-      $scope.exposeRoomArray = [];
-      //key=Frame.id,value=T/F of checkbox
-      $scope.selectRepeatPeriodArray = [];
-      $scope.targetYear = '2016';
-      $scope.startDate = [];
-      $scope.startDatetime = [];
-      $scope.useTime = [];
-      $scope.monthlyDayOfTheWeek = [];
-      $scope.monthlyDate = [];
-      $scope.yearlyDayOfTheWeek = [];
-      $scope.selectRepeatEndType = [];
-      $scope.useNoticeMail = [];
+    ['$scope', '$location', 'ConfirmRepeat', 'NetCommonsModal', '$http', function($scope, $location,
+     ConfirmRepeat, NetCommonsModal, $http) {
+       $scope.repeatArray = [];  //key=Frame.id、value=T/F of checkbox
+       //key=Frame.id,value=index number
+       //of option elements
+       $scope.exposeRoomArray = [];
+       //key=Frame.id,value=T/F of checkbox
+       $scope.selectRepeatPeriodArray = [];
+       $scope.targetYear = '2016';
+       $scope.startDate = [];
+       $scope.startDatetime = [];
+       $scope.useTime = [];
+       $scope.monthlyDayOfTheWeek = [];
+       $scope.monthlyDate = [];
+       $scope.yearlyDayOfTheWeek = [];
+       $scope.selectRepeatEndType = [];
+       $scope.useNoticeMail = [];
 
-      $scope.detailStartDate;
-      $scope.detailStartDatetime;
-      $scope.detailEndDate;
-      $scope.detailEndDatetime;
+       $scope.detailStartDate;
+       $scope.detailStartDatetime;
+       $scope.detailEndDate;
+       $scope.detailEndDatetime;
 
-      $scope.rruleUntil;
+       $scope.rruleUntil;
 
-      console.log('DEBUGGING...');
+       console.log('DEBUGGING...');
 
-      $scope.initialize = function(data) {
-        $scope.data = angular.fromJson(data);
-      };
+       $scope.initialize = function(data) {
+         $scope.data = angular.fromJson(data);
+       };
 
-      $scope.changeEditRrule = function(frameId, firstSibEditLink) {
-        console.log('changeEditRrule() frameId[' + frameId + '] firstSibEditLink[' + firstSibEditLink + ']');
-        var nums = [ '0', '1', '2' ];
-        for (var num in nums) {
-          var checked = $('#CalendarActionPlanEditRrule' + num).prop('checked');
-          if (checked) {
-            if (num === '0') { //0
-              console.log('num[' + num + ']が選択されたので、予定の繰り返しを非表示にします。');
-              $('div.form-group[name=inputRruleInfo]').css('display', 'none');
-            } else {  //1, 2
-              console.log('num[' + num + ']が選択されたので、予定の繰り返しを表示します。');
-              $('div.form-group[name=inputRruleInfo]').css('display', 'block');
+       $scope.changeEditRrule = function(frameId, firstSibEditLink) {
+         console.log(
+         'changeEditRrule() frameId[' + frameId + '] firstSibEditLink[' + firstSibEditLink + ']');
+         var nums = ['0', '1', '2'];
+         for (var num in nums) {
+           var checked = $('#CalendarActionPlanEditRrule' + num).prop('checked');
+           if (checked) {
+             if (num === '0') { //0
+               console.log('num[' + num + ']が選択されたので、予定の繰り返しを非表示にします。');
+               $('div.form-group[name=inputRruleInfo]').css('display', 'none');
+             } else {  //1, 2
+               console.log('num[' + num + ']が選択されたので、予定の繰り返しを表示します。');
+               $('div.form-group[name=inputRruleInfo]').css('display', 'block');
 
-              if (num === '2') {
-                if (firstSibEditLink !== '') {
-                  window.location = firstSibEditLink;
-                } else {
-                  console.log('全ての繰り返しを選択したのに、繰返しの先頭eventへのeditLinkがないのはおかしい');
-                }
+               if (num === '2') {
+                 if (firstSibEditLink !== '') {
+                   window.location = firstSibEditLink;
+                 } else {
+                   console.log('全ての繰り返しを選択したのに、繰返しの先頭eventへのeditLinkがないのはおかしい');
+                 }
 
-                /*
-                // -- 以下のcapForViewOf1stSibによるデータすり替え方式用は、--
-                // -- 全変更選択時、繰返し先頭eventのeditボタンを擬似クリックする方式にかえたので、削除. --
+                 /*
+                 // -- 以下のcapForViewOf1stSibによるデータすり替え方式用は、--
+                 // -- 全変更選択時、繰返し先頭eventのeditボタンを擬似クリックする方式にかえたので、削除. --
 
-                console.log('「設定した全ての予定」が選択されたので、予定の設定を' +
-                  '繰返しの先頭予定の値にセットします「含むTZも」');
-                  var enableTime = $('#CalendarActionPlanFirstSibCapEnableTime').prop('value');
-                  var detailStartDatetime = $('#CalendarActionPlanFirstSibCapDetailStartDatetime').prop('value');
-                  var detailEndDatetime = $('#CalendarActionPlanFirstSibCapDetailEndDatetime').prop('value');
-                  var timezoneOffset = $('#CalendarActionPlanFirstSibCapTimezoneOffset').prop('value');
+                 console.log('「設定した全ての予定」が選択されたので、予定の設定を' +
+                   '繰返しの先頭予定の値にセットします「含むTZも」');
+                   var enableTime = $('#CalendarActionPlanFirstSibCapEnableTime').prop('value');
+                   var detailStartDatetime = $('#CalendarActionPlanFirstSibCapDetailStartDatetime').
+                     prop('value');
+                   var detailEndDatetime = $('#CalendarActionPlanFirstSibCapDetailEndDatetime').
+                     prop('value');
+                   var timezoneOffset = $('#CalendarActionPlanFirstSibCapTimezoneOffset').
+                     prop('value');
 
-                  //easy系はhiddenなので値をかえるとblackhole行き。将来hiddenでなくなったときに復活させる。
-                  //var easyStartDate = $('#CalendarActionPlanFirstSibCapEasyStartDate').prop('value');
-                  //var easyHourMinuteFrom = $('#CalendarActionPlanFirstSibCapEasyHourMinuteFrom').prop('value');
-                  //var easyHourMinuteTo = $('#CalendarActionPlanFirstSibCapEasyHourMinuteTo').prop('value');
+                  //easy系はhiddenなので値をかえるとblackhole行き。
+                  //将来hiddenでなくなったときに復活させる。
+                  //var easyStartDate = $('#CalendarActionPlanFirstSibCapEasyStartDate').
+                  //  prop('value');
+                  //var easyHourMinuteFrom = $('#CalendarActionPlanFirstSibCapEasyHourMinuteFrom').
+                  //  prop('value');
+                  //var easyHourMinuteTo = $('#CalendarActionPlanFirstSibCapEasyHourMinuteTo').
+                  // prop('value');
 
                   //予定日の設定
                   if (enableTime === '1') {
@@ -604,338 +611,337 @@ NetCommonsApp.controller('CalendarsDetailEdit',
                   $('#CalendarActionPlanTimezoneOffset').val(timezoneOffset);
 
                   */
-              }
+               }
 
-            }
-            break;
-          }
-        }
-      };
+             }
+             break;
+           }
+         }
+       };
 
-      $scope.changeDetailStartDate = function(targetId) {
-        //
-        if ($scope.detailStartDate != '') {
-          $('#' + targetId).val($scope.detailStartDate);
+       $scope.changeDetailStartDate = function(targetId) {
+         //
+         if ($scope.detailStartDate != '') {
+           $('#' + targetId).val($scope.detailStartDate);
 
-          //簡易では、開始日と終了日が統一され「終日」
-          //(実質開始のみ）１つとなった。
-          //そのため、開始日の値を、終了日のDOMの値に代入する
-          //
-          var endTargetId = targetId.replace(/Start/g, 'End');
-          $('#' + endTargetId).val($scope.detailStartDate);
-    
-        }
-      };
+           //簡易では、開始日と終了日が統一され「終日」
+           //(実質開始のみ）１つとなった。
+           //そのため、開始日の値を、終了日のDOMの値に代入する
+           //
+           var endTargetId = targetId.replace(/Start/g, 'End');
+           $('#' + endTargetId).val($scope.detailStartDate);
 
-      $scope.changeDetailStartDatetime = function(targetId) {
-        //
-        if ($scope.detailStartDatetime != '') {
-          $('#' + targetId).val($scope.detailStartDatetime);
-          //
-        }
-      };
+         }
+       };
 
-      $scope.changeDetailEndDate = function(targetId) {
-        //
-        if ($scope.detailEndDate != '') {
-          $('#' + targetId).val($scope.detailEndDate);
-          //
-        }
-      };
+       $scope.changeDetailStartDatetime = function(targetId) {
+         //
+         if ($scope.detailStartDatetime != '') {
+           $('#' + targetId).val($scope.detailStartDatetime);
+           //
+         }
+       };
 
-      $scope.changeDetailEndDatetime = function(targetId) {
-        //
-        if ($scope.detailEndDatetime != '') {
-          $('#' + targetId).val($scope.detailEndDatetime);
-          //
-        }
-      };
+       $scope.changeDetailEndDate = function(targetId) {
+         //
+         if ($scope.detailEndDate != '') {
+           $('#' + targetId).val($scope.detailEndDate);
+           //
+         }
+       };
 
-      $scope.changeYearMonth = function(prototypeUrl) {
-        var elms = $scope.targetYear.split('-');
-        var url = prototypeUrl.replace('YYYY', elms[0]);
-        url = url.replace('MM', elms[1]);
-        //console.log('frameId[' + frameId + '] prototypeUrl[' +
-        //  prototypeUrl + '] targetYear[' + $scope.targetYear +
-        //  '] url[' + url + ']');
-        window.location = url;
-      };
-      $scope.changeYearMonthDay = function(prototypeUrl) {
-        //console.log('DEBUGGING...' + $scope.targetYear);
+       $scope.changeDetailEndDatetime = function(targetId) {
+         //
+         if ($scope.detailEndDatetime != '') {
+           $('#' + targetId).val($scope.detailEndDatetime);
+           //
+         }
+       };
 
-        var elms = $scope.targetYear.split('-');
-        var url = prototypeUrl.replace('YYYY', elms[0]);
-        url = url.replace('MM', elms[1]);
+       $scope.changeYearMonth = function(prototypeUrl) {
+         var elms = $scope.targetYear.split('-');
+         var url = prototypeUrl.replace('YYYY', elms[0]);
+         url = url.replace('MM', elms[1]);
+         //console.log('frameId[' + frameId + '] prototypeUrl[' +
+         //  prototypeUrl + '] targetYear[' + $scope.targetYear +
+         //  '] url[' + url + ']');
+         window.location = url;
+       };
+       $scope.changeYearMonthDay = function(prototypeUrl) {
+         //console.log('DEBUGGING...' + $scope.targetYear);
+
+         var elms = $scope.targetYear.split('-');
+         var url = prototypeUrl.replace('YYYY', elms[0]);
+         url = url.replace('MM', elms[1]);
          url = url.replace('DD', elms[2]);
-        //console.log('frameId[' + frameId + '] prototypeUrl[' +
-        //  prototypeUrl + '] targetYear[' + $scope.targetYear +
-        //  '] url[' + url + ']');
-        window.location = url;
-      };
+         //console.log('frameId[' + frameId + '] prototypeUrl[' +
+         //  prototypeUrl + '] targetYear[' + $scope.targetYear +
+         //  '] url[' + url + ']');
+         window.location = url;
+       };
 
-      $scope.toggleRepeatArea = function(frameId) {
-        var elm = $('.calendar-repeat-a-plan-detail_' + frameId);
-        if ($scope.repeatArray[frameId]) {
-          elm.show();
-        } else {
-          elm.hide();
-        }
-      };
+       $scope.toggleRepeatArea = function(frameId) {
+         var elm = $('.calendar-repeat-a-plan-detail_' + frameId);
+         if ($scope.repeatArray[frameId]) {
+           elm.show();
+         } else {
+           elm.hide();
+         }
+       };
 
-      $scope.changeRoom = function(myself, frameId) {
-        var elm = $('.calendar-plan-share_' + frameId);
-        if ($scope.exposeRoomArray[frameId].toString() === myself.toString()) {
-          //console.log('グループ共有が有効になる');
-          elm.show();
-        } else {
-          //console.log('グループ共有が無効になる');
-          elm.hide();
-        }
-      };
+       $scope.changeRoom = function(myself, frameId) {
+         var elm = $('.calendar-plan-share_' + frameId);
+         if ($scope.exposeRoomArray[frameId].toString() === myself.toString()) {
+           //console.log('グループ共有が有効になる');
+           elm.show();
+         } else {
+           //console.log('グループ共有が無効になる');
+           elm.hide();
+         }
+       };
 
-      $scope.setInitRepeatPeriod = function(frameId, idx) {
-        //これで、画面をリフレッシュ
-        console.log(frameId + '/' + idx);
-        $scope.selectRepeatPeriodArray[frameId] = idx;
-      };
+       $scope.setInitRepeatPeriod = function(frameId, idx) {
+         //これで、画面をリフレッシュ
+         console.log(frameId + '/' + idx);
+         $scope.selectRepeatPeriodArray[frameId] = idx;
+       };
 
-      $scope.changePeriodType = function(frameId) {
-        var elmDaily = $('.calendar-daily-info_' + frameId);
-        var elmWeekly = $('.calendar-weekly-info_' + frameId);
-        var elmMonthly = $('.calendar-monthly-info_' + frameId);
-        var elmYearly = $('.calendar-yearly-info_' + frameId);
+       $scope.changePeriodType = function(frameId) {
+         var elmDaily = $('.calendar-daily-info_' + frameId);
+         var elmWeekly = $('.calendar-weekly-info_' + frameId);
+         var elmMonthly = $('.calendar-monthly-info_' + frameId);
+         var elmYearly = $('.calendar-yearly-info_' + frameId);
 
-        switch ($scope.selectRepeatPeriodArray[frameId]) {
-          case CalendarJS.variables.REPEAT_FREQ_DAILY:
-            console.log('日単位');
-            elmDaily.removeClass('hidden').addClass('show');
-            elmWeekly.removeClass('show').addClass('hidden');
-            elmMonthly.removeClass('show').addClass('hidden');
-            elmYearly.removeClass('show').addClass('hidden');
-            break;
-          case CalendarJS.variables.REPEAT_FREQ_WEEKLY:
-            console.log('週単位');
-            elmDaily.removeClass('show').addClass('hidden');
-            elmWeekly.removeClass('hidden').addClass('show');
-            elmMonthly.removeClass('show').addClass('hidden');
-            elmYearly.removeClass('show').addClass('hidden');
-            break;
-          case CalendarJS.variables.REPEAT_FREQ_MONTHLY:
-            console.log('月単位');
-            elmDaily.removeClass('show').addClass('hidden');
-            elmWeekly.removeClass('show').addClass('hidden');
-            elmMonthly.removeClass('hidden').addClass('show');
-            elmYearly.removeClass('show').addClass('hidden');
-            break;
-          case CalendarJS.variables.REPEAT_FREQ_YEARLY:
-            console.log('年単位');
-            elmDaily.removeClass('show').addClass('hidden');
-            elmWeekly.removeClass('show').addClass('hidden');
-            elmMonthly.removeClass('show').addClass('hidden');
-            elmYearly.removeClass('hidden').addClass('show');
-            break;
-        }
-      };
+         switch ($scope.selectRepeatPeriodArray[frameId]) {
+           case CalendarJS.variables.REPEAT_FREQ_DAILY:
+             console.log('日単位');
+             elmDaily.removeClass('hidden').addClass('show');
+             elmWeekly.removeClass('show').addClass('hidden');
+             elmMonthly.removeClass('show').addClass('hidden');
+             elmYearly.removeClass('show').addClass('hidden');
+             break;
+           case CalendarJS.variables.REPEAT_FREQ_WEEKLY:
+             console.log('週単位');
+             elmDaily.removeClass('show').addClass('hidden');
+             elmWeekly.removeClass('hidden').addClass('show');
+             elmMonthly.removeClass('show').addClass('hidden');
+             elmYearly.removeClass('show').addClass('hidden');
+             break;
+           case CalendarJS.variables.REPEAT_FREQ_MONTHLY:
+             console.log('月単位');
+             elmDaily.removeClass('show').addClass('hidden');
+             elmWeekly.removeClass('show').addClass('hidden');
+             elmMonthly.removeClass('hidden').addClass('show');
+             elmYearly.removeClass('show').addClass('hidden');
+             break;
+           case CalendarJS.variables.REPEAT_FREQ_YEARLY:
+             console.log('年単位');
+             elmDaily.removeClass('show').addClass('hidden');
+             elmWeekly.removeClass('show').addClass('hidden');
+             elmMonthly.removeClass('show').addClass('hidden');
+             elmYearly.removeClass('hidden').addClass('show');
+             break;
+         }
+       };
 
-      $scope.initDescription = function(descriptionVal) {
-        $scope.calendarActionPlan = {};
-        $scope.calendarActionPlan.description = descriptionVal;
-      };
+       $scope.initDescription = function(descriptionVal) {
+         $scope.calendarActionPlan = {};
+         $scope.calendarActionPlan.description = descriptionVal;
+       };
 
-      $scope.toggleEnableTime = function(frameId) {
-        console.log('useTime[' + $scope.useTime + ']');
-        if ($scope.useTime[frameId]) {
-          //時刻なし(YYYY-MM-DD) -> 時刻あり(YYYY-MM-DD HH:mm)
-          if ($scope.detailStartDatetime && $scope.detailStartDatetime.indexOf(':') >= 0) {
-            //$scopeの方はYYYY-MM-DD HH:mm
-            var domVal = $('#CalendarActionPlanDetailStartDatetime').val();
-            if (!domVal || domVal.indexOf(':') === (-1)) {
-              //DOMの方は YYYY-MM-DD HH:mm「ではない」.未定義かYYYY-MM-DD
-              //なので、$scopeの値を、DOMに反映する。
-              $('#CalendarActionPlanDetailStartDatetime').val($scope.detailStartDatetime);
-            }
-          }
-          if ($scope.detailEndDatetime && $scope.detailEndDatetime.indexOf(':') >= 0) {
-            //$scopeの方はYYYY-MM-DD HH:mm
-            var domVal = $('#CalendarActionPlanDetailEndDatetime').val();
-            if(!domVal || domVal.indexOf(':') === (-1)) {
-              //DOMの方は YYYY-MM-DD HH:mm「ではない」.未定義かYYYY-MM-DD
-              //なので、$scopeの値を、DOMに反映する。
-              $('#CalendarActionPlanDetailEndDatetime').val($scope.detailEndDatetime);
-            }
-          }
-          console.log('時刻なし(YYYY-MM-DD) -> 時刻あり(YYYY-MM-DD HH:mm)');
-        } else {
-          //時刻あり(YYYY-MM-DD HH:mm) -> 時刻なし(YYYY-MM-DD)
-          if ($scope.detailStartDate && $scope.detailStartDate.indexOf(':') === (-1)) {
-            //$scopeの方はYYYY-MM-DD
-            var domVal = $('#CalendarActionPlanDetailStartDatetime').val();
-            if (!domVal || domVal.indexOf(':') > 0) {
-              //DOMの方は YYYY-MM-DD「ではない」.未定義かYYYY-MM-DD HH:mm
-              //なので、$scopeの値を、DOMに反映する。
-              $('#CalendarActionPlanDetailStartDatetime').val($scope.detailStartDate);
-            }
-          }
-          if ($scope.detailEndDate && $scope.detailEndDate.indexOf(':') === (-1)) {
-            //$scopeの方はYYYY-MM-DD
-            var domVal = $('#CalendarActionPlanDetailEndDatetime').val();
-            if (!domVal || domVal.indexOf(':') > 0) {
-              //DOMの方は YYYY-MM-DD「ではない」.未定義かYYYY-MM-DD HH:mm
-              //なので、$scopeの値を、DOMに反映する。
-              $('#CalendarActionPlanDetailEndDatetime').val($scope.detailEndDate);
-            }
-          }
-          console.log('時刻あり(YYYY-MM-DD HH:mm) -> 時刻なし(YYYY-MM-DD)');
+       $scope.toggleEnableTime = function(frameId) {
+         console.log('useTime[' + $scope.useTime + ']');
+         if ($scope.useTime[frameId]) {
+           //時刻なし(YYYY-MM-DD) -> 時刻あり(YYYY-MM-DD HH:mm)
+           if ($scope.detailStartDatetime && $scope.detailStartDatetime.indexOf(':') >= 0) {
+             //$scopeの方はYYYY-MM-DD HH:mm
+             var domVal = $('#CalendarActionPlanDetailStartDatetime').val();
+             if (!domVal || domVal.indexOf(':') === (-1)) {
+               //DOMの方は YYYY-MM-DD HH:mm「ではない」.未定義かYYYY-MM-DD
+               //なので、$scopeの値を、DOMに反映する。
+               $('#CalendarActionPlanDetailStartDatetime').val($scope.detailStartDatetime);
+             }
+           }
+           if ($scope.detailEndDatetime && $scope.detailEndDatetime.indexOf(':') >= 0) {
+             //$scopeの方はYYYY-MM-DD HH:mm
+             var domVal = $('#CalendarActionPlanDetailEndDatetime').val();
+             if (!domVal || domVal.indexOf(':') === (-1)) {
+               //DOMの方は YYYY-MM-DD HH:mm「ではない」.未定義かYYYY-MM-DD
+               //なので、$scopeの値を、DOMに反映する。
+               $('#CalendarActionPlanDetailEndDatetime').val($scope.detailEndDatetime);
+             }
+           }
+           console.log('時刻なし(YYYY-MM-DD) -> 時刻あり(YYYY-MM-DD HH:mm)');
+         } else {
+           //時刻あり(YYYY-MM-DD HH:mm) -> 時刻なし(YYYY-MM-DD)
+           if ($scope.detailStartDate && $scope.detailStartDate.indexOf(':') === (-1)) {
+             //$scopeの方はYYYY-MM-DD
+             var domVal = $('#CalendarActionPlanDetailStartDatetime').val();
+             if (!domVal || domVal.indexOf(':') > 0) {
+               //DOMの方は YYYY-MM-DD「ではない」.未定義かYYYY-MM-DD HH:mm
+               //なので、$scopeの値を、DOMに反映する。
+               $('#CalendarActionPlanDetailStartDatetime').val($scope.detailStartDate);
+             }
+           }
+           if ($scope.detailEndDate && $scope.detailEndDate.indexOf(':') === (-1)) {
+             //$scopeの方はYYYY-MM-DD
+             var domVal = $('#CalendarActionPlanDetailEndDatetime').val();
+             if (!domVal || domVal.indexOf(':') > 0) {
+               //DOMの方は YYYY-MM-DD「ではない」.未定義かYYYY-MM-DD HH:mm
+               //なので、$scopeの値を、DOMに反映する。
+               $('#CalendarActionPlanDetailEndDatetime').val($scope.detailEndDate);
+             }
+           }
+           console.log('時刻あり(YYYY-MM-DD HH:mm) -> 時刻なし(YYYY-MM-DD)');
 
-          //checkboxのDOMの値も同期させておく。
-          /////$('#CalendarActionPlanEnableTime').prop('checked', true);
+           //checkboxのDOMの値も同期させておく。
+           /////$('#CalendarActionPlanEnableTime').prop('checked', true);
 
-        }
-        //結果
-        console.log('$scope:');
-        console.log('sdt[' + $scope.detailStartDatetime + ']');
-        console.log('sd [' + $scope.detailStartDate + ']');
-        console.log('edt[' + $scope.detailEndDatetime + ']');
-        console.log('ed [' + $scope.detailEndDate + ']');
-        console.log('DOM:');
-        console.log('sdt[' + $('#CalendarActionPlanDetailStartDatetime').val()  + ']');
-        console.log('edt[' + $('#CalendarActionPlanDetailEndDatetime').val()  + ']');
+         }
+         //結果
+         console.log('$scope:');
+         console.log('sdt[' + $scope.detailStartDatetime + ']');
+         console.log('sd [' + $scope.detailStartDate + ']');
+         console.log('edt[' + $scope.detailEndDatetime + ']');
+         console.log('ed [' + $scope.detailEndDate + ']');
+         console.log('DOM:');
+         console.log('sdt[' + $('#CalendarActionPlanDetailStartDatetime').val() + ']');
+         console.log('edt[' + $('#CalendarActionPlanDetailEndDatetime').val() + ']');
 
-        console.log('enable_time[' + $('#CalendarActionPlanEnableTime').prop('checked') + ']');
-      };
+         console.log('enable_time[' + $('#CalendarActionPlanEnableTime').prop('checked') + ']');
+       };
 
-      $scope.changeMonthlyDayOfTheWeek = function(frameId) {
-        if ($scope.monthlyDayOfTheWeek[frameId] !== '') {
-          $scope.monthlyDate[frameId] = '';
-        }
-      };
+       $scope.changeMonthlyDayOfTheWeek = function(frameId) {
+         if ($scope.monthlyDayOfTheWeek[frameId] !== '') {
+           $scope.monthlyDate[frameId] = '';
+         }
+       };
 
-      $scope.changeMonthlyDate = function(frameId) {
-        if ($scope.monthlyDate[frameId] !== '') {
-          $scope.monthlyDayOfTheWeek[frameId] = '';
-        }
-      };
+       $scope.changeMonthlyDate = function(frameId) {
+         if ($scope.monthlyDate[frameId] !== '') {
+           $scope.monthlyDayOfTheWeek[frameId] = '';
+         }
+       };
 
-      $scope.changeYearlyDayOfTheWeek = function(frameId) {
-        //yearlyの方は、monthlyと違いDateの方がない.つまり
-        //DayOfTheWeekとDateをトグルする必要がないので、なにもしない。
-      };
+       $scope.changeYearlyDayOfTheWeek = function(frameId) {
+         //yearlyの方は、monthlyと違いDateの方がない.つまり
+         //DayOfTheWeekとDateをトグルする必要がないので、なにもしない。
+       };
 
-      $scope.setInitRepeatEndType = function(frameId, idx) {
-        $scope.selectRepeatEndType[frameId] = idx;  //画面をリフレッシュ
-      };
+       $scope.setInitRepeatEndType = function(frameId, idx) {
+         $scope.selectRepeatEndType[frameId] = idx;  //画面をリフレッシュ
+       };
 
-      $scope.changeRepeatEndType = function(frameId) {
-        var elmCount = $('.calendar-repeat-end-count-info_' + frameId);
-        var elmEndDate = $('.calendar-repeat-end-enddate-info_' + frameId);
+       $scope.changeRepeatEndType = function(frameId) {
+         var elmCount = $('.calendar-repeat-end-count-info_' + frameId);
+         var elmEndDate = $('.calendar-repeat-end-enddate-info_' + frameId);
 
-        switch ($scope.selectRepeatEndType[frameId]) {
-          case CalendarJS.variables.RRULE_TERM_COUNT:
-            console.log('回数指定');
-            elmCount.removeClass('hidden').addClass('show');
-            elmEndDate.removeClass('show').addClass('hidden');
-            break;
-          case CalendarJS.variables.RRULE_TERM_UNTIL:
-            console.log('終了日指定');
-            elmCount.removeClass('show').addClass('hidden');
-            elmEndDate.removeClass('hidden').addClass('show');
-            break;
-        }
-      };
+         switch ($scope.selectRepeatEndType[frameId]) {
+           case CalendarJS.variables.RRULE_TERM_COUNT:
+             console.log('回数指定');
+             elmCount.removeClass('hidden').addClass('show');
+             elmEndDate.removeClass('show').addClass('hidden');
+             break;
+           case CalendarJS.variables.RRULE_TERM_UNTIL:
+             console.log('終了日指定');
+             elmCount.removeClass('show').addClass('hidden');
+             elmEndDate.removeClass('hidden').addClass('show');
+             break;
+         }
+       };
 
-      $scope.selectCancel = function() {
-        console.log("selectCancelがクリックされました");
-      };
-      $scope.doSelect = function() {
-        console.log("selectしました");
-      };
+       $scope.selectCancel = function() {
+         console.log('selectCancelがクリックされました');
+       };
+       $scope.doSelect = function() {
+         console.log('selectしました');
+       };
 
+       $scope.showRepeatTypeSelect = function(frameId, action, $event, eventId) {
+         console.log('1');
+         //クリックのデフォルト動作(この場合form のsubmit)を抑止しておく。
+         $event.preventDefault();
+         if (action === 'delete') {
+           //３選択をエコーバックさせるために、modalを使う。modalの中ではCRUDはさせない.
+           var modalInstance = NetCommonsModal.show($scope, 'CalendarsDetailEdit',
+           $scope.baseUrl + '/calendars/calendar_plans/select/event:' + eventId +
+           '?frame_id=' + frameId);
+           //コールバックセット
+           modalInstance.result.then(
+           function(result) {
+             $scope.result = result;
+             $scope.event = 'close';
+           },
+           function(resutl) {
+             $scope.result = result;
+             $scope.event = 'dismiss';
+           }
+           );
+         }
+       };
 
-      $scope.showRepeatTypeSelect = function (frameId, action, $event, eventId) {
-        console.log('1');
-        //クリックのデフォルト動作(この場合form のsubmit)を抑止しておく。
-        $event.preventDefault();
-        if (action === 'delete') {
-          //３選択をエコーバックさせるために、modalを使う。modalの中ではCRUDはさせない.
-          var modalInstance = NetCommonsModal.show($scope, 'CalendarsDetailEdit',
-            $scope.baseUrl + '/calendars/calendar_plans/select/event:' + eventId + '?frame_id=' + frameId
-          );
-          //コールバックセット
-          modalInstance.result.then(
-            function(result) {
-              $scope.result = result;
-              $scope.event = "close";
-            },
-            function(resutl) {
-              $scope.result = result;
-              $scope.event = "dismiss";
-            }
-          );
-        }
-      };
+       $scope.showRepeatConfirmEx = function(frameId,
+       action, $event, firstSibEventId, originEventId, isRecurrence) {
+         console.log('frameId[' + frameId + '] action[' + action +
+         '] $event firstSibEventId[' + firstSibEventId + '] originEventId[' +
+         originEventId + '] isRecurrence[' + isRecurrence + ']');
 
-      $scope.showRepeatConfirmEx = function (frameId,
-        action, $event, firstSibEventId, originEventId, isRecurrence) {
-        console.log('frameId[' + frameId + '] action[' + action +
-          '] $event firstSibEventId[' + firstSibEventId + '] originEventId[' +
-          originEventId + '] isRecurrence[' + isRecurrence + ']');
+         var url = $scope.baseUrl + '/calendars/calendar_plans/delete';
+         if (action != '') {
+           url = url + '/action:' + action;
+         }
+         if (firstSibEventId > 0) {
+           url = url + '/first_sib_event_id:' + firstSibEventId;
+         }
+         if (originEventId > 0) {
+           url = url + '/origin_event_id:' + originEventId;
+         }
+         if (isRecurrence == 1) {
+           url = url + '/is_recurrence:1';
+         } else {
+           url = url + '/is_recurrence:0';
+         }
+         url = url + '?frame_id=' + frameId;
+         console.log('生成したurlは[ ' + url + ']です');
 
-        var url = $scope.baseUrl + '/calendars/calendar_plans/delete';
-        if (action != '') {
-          url = url + '/action:' + action;
-        }
-        if (firstSibEventId > 0) {
-          url = url + '/first_sib_event_id:' + firstSibEventId;
-        }
-        if (originEventId > 0) {
-          url = url + '/origin_event_id:' + originEventId;
-        }
-        if (isRecurrence == 1) {
-          url = url + '/is_recurrence:1';
-        } else {
-          url = url + '/is_recurrence:0';
-        }
-        url = url + '?frame_id=' + frameId;
-        console.log('生成したurlは[ ' + url + ']です');
+         //NetCommonsModal.show()の実体は
+         // $uibModal.open()です。
+         //show()の戻り値は、$udiModal.open()の戻り値です。
+         //
+         var modalInstance = NetCommonsModal.show(
+         $scope,
+         'Calendars.showRepeatConfirmExModal',
+         url
+         );
 
-        //NetCommonsModal.show()の実体は
-        // $uibModal.open()です。
-        //show()の戻り値は、$udiModal.open()の戻り値です。
-        //
-        var modalInstance = NetCommonsModal.show(
-          $scope,
-          'Calendars.showRepeatConfirmExModal',
-          url
-        );
+         //callbackの登録をします。
+         modalInstance.result.then(
+         function(result) {
+           //決定ボタンをクリック
+           console.log('ＯＫ case');
 
-        //callbackの登録をします。
-        modalInstance.result.then(
-          function(result) {
-            //決定ボタンをクリック
-            console.log('ＯＫ case');
+           //クリックのデフォルト動作(この場合form のsubmit)を抑止しておく。
+           $event.preventDefault();
+           return true;
 
-            //クリックのデフォルト動作(この場合form のsubmit)を抑止しておく。
-            $event.preventDefault();
-            return true;
+         },
+         function() {
+           //背景部分クリックや
+           //キャンセルボタンクリックをすると
+           //失敗扱いで、ここにくる。
+           console.log('キャンセル case');
 
-          },
-          function() {
-            //背景部分クリックや
-            //キャンセルボタンクリックをすると
-            //失敗扱いで、ここにくる。
-            console.log('キャンセル case');
+           //クリックのデフォルト動作(この場合form のsubmit)を抑止しておく。
+           $event.preventDefault();
+           return false;
 
-            //クリックのデフォルト動作(この場合form のsubmit)を抑止しておく。
-            $event.preventDefault();
-            return false;
+         }
+         );
 
-          }
-        );
+         $event.preventDefault();
+         return false;
 
-        $event.preventDefault();
-        return false;
-
-        /*
+         /*
         if (result) {
           return true;
         } else {
@@ -946,9 +952,9 @@ NetCommonsApp.controller('CalendarsDetailEdit',
         }
         return;
         */
-      };
+       };
 
-      /*
+       /*
       $scope.showRepeatConfirm = function(frameId, isRepeat, action) {
         if (isRepeat === 'On') {
           console.log('繰返し処理');
@@ -980,22 +986,23 @@ NetCommonsApp.controller('CalendarsDetailEdit',
       };
       */
 
-      $scope.setInitNoticeMailSetting = function(frameId, bVal) {
-        $scope.useNoticeMail[frameId] = bVal;  //画面をリフレッシュ
-      };
+       $scope.setInitNoticeMailSetting = function(frameId, bVal) {
+         $scope.useNoticeMail[frameId] = bVal;  //画面をリフレッシュ
+       };
 
-      $scope.toggleNoticeMailSetting = function(frameId) {
-        if ($scope.useNoticeMail[frameId]) {
-          //メール通知を使用する
-          $('.calendar-mail-setting_' + frameId).show();
-        } else {
-          //メール通知を使用しない
-          $('.calendar-mail-setting_' + frameId).hide();
-        }
-      };
+       $scope.toggleNoticeMailSetting = function(frameId) {
+         if ($scope.useNoticeMail[frameId]) {
+           //メール通知を使用する
+           $('.calendar-mail-setting_' + frameId).show();
+         } else {
+           //メール通知を使用しない
+           $('.calendar-mail-setting_' + frameId).hide();
+         }
+       };
 
-    }]
+     }]
 );
+
 
 /**
  * showRepeatConfirmEx Modal
@@ -1018,8 +1025,8 @@ NetCommonsApp.controller('Calendars.showRepeatConfirmExModal',
 );
 
 NetCommonsApp.controller('CalendarsDelete',
-  ['$scope', function($scope, $uibModalInstance) {
-  }]
+    ['$scope', function($scope, $uibModalInstance) {
+    }]
 );
 
 NetCommonsApp.controller('CalendarModalCtrl', [
