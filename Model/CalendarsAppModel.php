@@ -89,19 +89,29 @@ class CalendarsAppModel extends AppModel {
 			//時間指定あり
 			$nctm = new NetCommonsTime();
 
-			$serverStartDatetime = $nctm->toServerDatetime($data[$this->alias]['detail_start_datetime'] . ':00', $data[$this->alias]['timezone_offset']);
-			$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($serverStartDatetime, 0, 10));
-			$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($serverStartDatetime, 11, 8));
+			$serverStartDatetime = $nctm->toServerDatetime(
+			$data[$this->alias]['detail_start_datetime'] . ':00', $data[$this->alias]['timezone_offset']);
+			$planParam['start_date'] =
+				CalendarTime::stripDashColonAndSp(substr($serverStartDatetime, 0, 10));
+			$planParam['start_time'] =
+				CalendarTime::stripDashColonAndSp(substr($serverStartDatetime, 11, 8));
 			$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
 
-			$serverEndDatetime = $nctm->toServerDatetime($data[$this->alias]['detail_end_datetime'] . ':00', $data[$this->alias]['timezone_offset']);
-			$planParam['end_date'] = CalendarTime::stripDashColonAndSp(substr($serverEndDatetime, 0, 10));
+			$serverEndDatetime =
+				$nctm->toServerDatetime($data[$this->alias]['detail_end_datetime'] . ':00',
+				$data[$this->alias]['timezone_offset']);
+			$planParam['end_date'] =
+				CalendarTime::stripDashColonAndSp(substr($serverEndDatetime, 0, 10));
 			$planParam['end_time'] = CalendarTime::stripDashColonAndSp(substr($serverEndDatetime, 11, 8));
 			$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
 		} else {
 			$planParam['is_allday'] = 1;
 			//ユーザー系の開始日と終了日とタイムゾーンを、サーバ系の開始日の00:00:00から終了翌日の00:00:00に変換する
-			list($serverStartDate, $serverEndNextDate) = (new CalendarTime())->convUserFromTo2SvrFromTo($data[$this->alias]['detail_start_datetime'], $data[$this->alias]['detail_end_datetime'], $data[$this->alias]['timezone_offset']);
+			list($serverStartDate, $serverEndNextDate) =
+				(new CalendarTime())->convUserFromTo2SvrFromTo(
+					$data[$this->alias]['detail_start_datetime'],
+					$data[$this->alias]['detail_end_datetime'],
+					$data[$this->alias]['timezone_offset']);
 
 			$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($serverStartDate, 0, 10));
 			$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($serverStartDate, 11, 8));
@@ -133,25 +143,43 @@ class CalendarsAppModel extends AppModel {
 		if ($data[$this->alias]['enable_time']) {
 			$planParam['is_allday'] = 0;
 			//その日の時間指定あり
-			$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_from'], 0, 10));
-			$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_from'], 11, 8));
+			$planParam['start_date'] =
+				CalendarTime::stripDashColonAndSp(
+					substr($data[$this->alias]['easy_hour_minute_from'], 0, 10));
+			$planParam['start_time'] =
+				CalendarTime::stripDashColonAndSp(
+				substr($data[$this->alias]['easy_hour_minute_from'], 11, 8));
 			$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
 
-			$planParam['end_date'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_to'], 0, 10));
-			$planParam['end_time'] = CalendarTime::stripDashColonAndSp(substr($data[$this->alias]['easy_hour_minute_to'], 11, 8));
+			$planParam['end_date'] =
+				CalendarTime::stripDashColonAndSp(
+					substr($data[$this->alias]['easy_hour_minute_to'], 0, 10));
+			$planParam['end_time'] =
+				CalendarTime::stripDashColonAndSp(
+					substr($data[$this->alias]['easy_hour_minute_to'], 11, 8));
 			$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
 
 		} else {
 			$planParam['is_allday'] = 1;
 			//その日の終日
-			list($serverStartDateZero, $serverNextDateZero) = (new CalendarTime())->convUserDate2SvrFromToDateTime($data[$this->alias]['easy_start_date'], $data[$this->alias]['timezone_offset']);
+			list($serverStartDateZero, $serverNextDateZero) =
+				(new CalendarTime())->convUserDate2SvrFromToDateTime(
+					$data[$this->alias]['easy_start_date'], $data[$this->alias]['timezone_offset']);
 
-			$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($serverStartDateZero, 0, 10));
-			$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($serverStartDateZero, 11, 8));
+			$planParam['start_date'] =
+				CalendarTime::stripDashColonAndSp(
+					substr($serverStartDateZero, 0, 10));
+			$planParam['start_time'] =
+				CalendarTime::stripDashColonAndSp(
+					substr($serverStartDateZero, 11, 8));
 			$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
 
-			$planParam['end_date'] = CalendarTime::stripDashColonAndSp(substr($serverNextDateZero, 0, 10));
-			$planParam['end_time'] = CalendarTime::stripDashColonAndSp(substr($serverNextDateZero, 11, 8));
+			$planParam['end_date'] =
+				CalendarTime::stripDashColonAndSp(
+					substr($serverNextDateZero, 0, 10));
+			$planParam['end_time'] =
+				CalendarTime::stripDashColonAndSp(
+					substr($serverNextDateZero, 11, 8));
 			$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
 		}
 		return $planParam;
@@ -196,7 +224,8 @@ class CalendarsAppModel extends AppModel {
 			}
 
 			if ($rruleTerm === 'UNTIL') {
-				$this->__doRruleTermUntil($planParam, $data, $rrule, $repeatFreq, $rruleInterval, $rruleByday, $rruleBymonthday, $rruleBymonth, $rruleTerm);
+				$this->__doRruleTermUntil($planParam, $data, $rrule, $repeatFreq, $rruleInterval,
+				$rruleByday, $rruleBymonthday, $rruleBymonth, $rruleTerm);
 			}
 
 			//
@@ -213,10 +242,14 @@ class CalendarsAppModel extends AppModel {
 					$rrule['BYDAY'] = $rruleByday[$repeatFreq];
 					break;
 				case CalendarsComponent::CALENDAR_REPEAT_FREQ_MONTHLY:	//月単位
-					$this->__doRruleRepeatFreqMonthly($planParam, $data, $rrule, $repeatFreq, $rruleInterval, $rruleByday, $rruleBymonthday, $rruleBymonth, $rruleTerm);
+					$this->__doRruleRepeatFreqMonthly(
+						$planParam, $data, $rrule, $repeatFreq, $rruleInterval,
+						$rruleByday, $rruleBymonthday, $rruleBymonth, $rruleTerm);
 					break;
 				case CalendarsComponent::CALENDAR_REPEAT_FREQ_YEARLY:	//年単位
-					$this->__doRruleRepeatFreqYearly($planParam, $data, $rrule, $repeatFreq, $rruleInterval, $rruleByday, $rruleBymonthday, $rruleBymonth, $rruleTerm);
+					$this->__doRruleRepeatFreqYearly(
+						$planParam, $data, $rrule, $repeatFreq, $rruleInterval, $rruleByday,
+						$rruleBymonthday, $rruleBymonth, $rruleTerm);
 					break;
 				default:
 					$rrule['FREQ'] = 'NONE';
@@ -225,8 +258,8 @@ class CalendarsAppModel extends AppModel {
 			//繰返しなし
 			$rrule['FREQ'] = 'NONE';
 		}
-
-		$planParam['rrule'] = (new CalendarRruleUtil())->concatRrule($rrule);	//rrule配列を、concatRrule()を使って文字列化
+		//rrule配列を、concatRrule()を使って文字列化
+		$planParam['rrule'] = (new CalendarRruleUtil())->concatRrule($rrule);
 
 		return $planParam;
 	}
@@ -247,7 +280,8 @@ class CalendarsAppModel extends AppModel {
  * @param array &$rruleTerm rruleTerm
  * @return void 参照引数$rruleに値をセットして返すので戻り値なし
  */
-	private function __doRruleTermUntil(&$planParam, &$data, &$rrule, &$repeatFreq, &$rruleInterval, &$rruleByday, &$rruleBymonthday, &$rruleBymonth, &$rruleTerm) {
+	private function __doRruleTermUntil(&$planParam, &$data, &$rrule, &$repeatFreq, &$rruleInterval,
+		&$rruleByday, &$rruleBymonthday, &$rruleBymonth, &$rruleTerm) {
 		//$rruleUntil = $data[$this->alias]['rrule_until'];
 		//validateはすでにおわっているので省略
 
@@ -255,11 +289,15 @@ class CalendarsAppModel extends AppModel {
 		//
 		$untilDateS = $data[$this->alias]['rrule_until'] . ' 00:00:00'; //Y-m-d H:i:s形式
 		$untilDateA = CalendarTime::transFromYmdHisToArray($untilDateS);
-		list($yearOfNextDay, $monthOfNextDay, $nextDay) = CalendarTime::getNextDay($untilDateA['year'], $untilDateA['month'], $untilDateA['day']);
-		$nextDayOfUntilDateS = sprintf("%04d-%02d-%02d 00:00:00", (int)$yearOfNextDay, (int)$monthOfNextDay, (int)$nextDay);
+		list($yearOfNextDay, $monthOfNextDay, $nextDay) =
+			CalendarTime::getNextDay($untilDateA['year'], $untilDateA['month'], $untilDateA['day']);
+		$nextDayOfUntilDateS =
+			sprintf("%04d-%02d-%02d 00:00:00", (int)$yearOfNextDay, (int)$monthOfNextDay,
+				(int)$nextDay);
 		//untilDateSの翌日00:00:00を作り出し、サーバー系に直す
 		$nctm = new NetCommonsTime();
-		$svrNxtDayOfUntilDtS = $nctm->toServerDatetime($nextDayOfUntilDateS, $data[$this->alias]['timezone_offset']);
+		$svrNxtDayOfUntilDtS =
+			$nctm->toServerDatetime($nextDayOfUntilDateS, $data[$this->alias]['timezone_offset']);
 		$ymdHis = CalendarTime::dt2CalDt($svrNxtDayOfUntilDtS);
 		$rrule['UNTIL'] = substr($ymdHis, 0, 8) . 'T' . substr($ymdHis, 8);
 	}
@@ -280,7 +318,9 @@ class CalendarsAppModel extends AppModel {
  * @param array &$rruleTerm rruleTerm
  * @return void 参照引数$rruleに値をセットして返すので戻り値なし
  */
-	private function __doRruleRepeatFreqMonthly(&$planParam, &$data, &$rrule, &$repeatFreq, &$rruleInterval, &$rruleByday, &$rruleBymonthday, &$rruleBymonth, &$rruleTerm) {
+	private function __doRruleRepeatFreqMonthly(
+		&$planParam, &$data, &$rrule, &$repeatFreq, &$rruleInterval, &$rruleByday,
+			&$rruleBymonthday, &$rruleBymonth, &$rruleTerm) {
 		$rrule['FREQ'] = $repeatFreq;
 		$rrule['INTERVAL'] = intval($rruleInterval[$repeatFreq]);
 
@@ -384,7 +424,9 @@ class CalendarsAppModel extends AppModel {
  * @param array &$rruleTerm rruleTerm
  * @return void 参照引数$rruleに値をセットして返すので戻り値なし
  */
-	private function __doRruleRepeatFreqYearly(&$planParam, &$data, &$rrule, &$repeatFreq, &$rruleInterval, &$rruleByday, &$rruleBymonthday, &$rruleBymonth, &$rruleTerm) {
+	private function __doRruleRepeatFreqYearly(
+		&$planParam, &$data, &$rrule, &$repeatFreq, &$rruleInterval, &$rruleByday,
+			&$rruleBymonthday, &$rruleBymonth, &$rruleTerm) {
 		$rrule['FREQ'] = $repeatFreq;
 		$rrule['INTERVAL'] = intval($rruleInterval[$repeatFreq]);
 

@@ -44,8 +44,10 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
  * @param int $first 最初のデータかどうか 1:最初である  0:最初ではない. 初期値は0
  * @return mixed boolean true:登録せず終了 false:失敗、array 登録成功: array(登録した開始年月日時分秒, 登録した終了年月日時分秒)
  */
-	public function insertMonthlyByMonthday(Model &$model, $planParams, $rruleData, $eventData, $bymonthday, $first = 0) {
-		CakeLog::debug("DBG: insertMonthlyByMonthday() start. rrule[INDEX]=[" . $model->rrule['INDEX'] . "]");
+	public function insertMonthlyByMonthday(Model &$model, $planParams, $rruleData,
+	$eventData, $bymonthday, $first = 0) {
+		CakeLog::debug("DBG: insertMonthlyByMonthday() start. 
+			rrule[INDEX]=[" . $model->rrule['INDEX'] . "]");
 
 		$model->rrule['INDEX']++;
 
@@ -55,13 +57,18 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 		//開始日付時刻の処理
 		$userStartTime = '';
 		$startTimestamp = $currentDay = $interval = $intervalDay = 0;
-		$this->__setMonthlyByMonthdayStartDtProc($eventData, $userStartTime, $startTimestamp, $userTz, $currentDay, $first, $model, $interval, $intervalDay);
+		$this->__setMonthlyByMonthdayStartDtProc($eventData, $userStartTime, $startTimestamp,
+			$userTz, $currentDay, $first, $model, $interval, $intervalDay);
 
-		CakeLog::debug("DBG: 開始日付時刻処理. startTimestamp[" . $startTimestamp . "] first[" . $first . "] currentDay[" . $currentDay . "] rrule[BYMONTHDAY][0]=[" . $model->rrule['BYMONTHDAY'][0] . "] interval[" . $interval . "] intervalDay[" . $intervalDay . "]");
+		CakeLog::debug("DBG: 開始日付時刻処理. startTimestamp[" . $startTimestamp . "]
+			 first[" . $first . "] currentDay[" . $currentDay . "] 
+			 rrule[BYMONTHDAY][0]=[" . $model->rrule['BYMONTHDAY'][0] . "]
+			 interval[" . $interval . "] intervalDay[" . $intervalDay . "]");
 
 		//終了日付時刻の処理
 		//NC3は内部はサーバー系時刻なのでtimezoneDateはつかわない
-		$eTime = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time']; //catしてYmdHisにする
+		$eTime = $eventData['CalendarEvent']['end_date'] .
+			$eventData['CalendarEvent']['end_time']; //catしてYmdHisにする
 
 		//以下で使う時間系は、00:00:00など画面上（=ユーザー系）でのカレンダ日付時刻を
 		//さしているので、ユーザー系に直す。
@@ -79,7 +86,8 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 		//開始日と終了日の差分日数の計算
 		$diffNum = ($endTimestamp - $startTimestamp) / 86400;
 
-		CakeLog::debug("DBG: 終了日付時刻処理. eTime[" . $eTime . "] endTimestamp[" . $endTimestamp . "] 開始日と終了日の差分日数[" . $diffNum . "]");
+		CakeLog::debug("DBG: 終了日付時刻処理. eTime[" . $eTime . "]
+			endTimestamp[" . $endTimestamp . "] 開始日と終了日の差分日数[" . $diffNum . "]");
 
 		//ユーザー系開始日、終了日をつかった、インターバル月数とインター
 		//バル日数を考慮した開始・終了日付時刻の実計算
@@ -107,7 +115,10 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 		$svrEndDate = $date->format('Ymd');
 		$svrEndTime = $date->format('His');
 
-		CakeLog::debug("DBG: startTimestamp[" . $startTimestamp . "] svrStartDate[" . $svrStartDate . "] svrStartTime[" . $svrStartTime . "] endTimestamp[" . $endTimestamp . "] svrEndDate[" . $svrEndDate . "] svrEndTime[" . $svrEndTime . "]");
+		CakeLog::debug("DBG: startTimestamp[" . $startTimestamp . "]
+			svrStartDate[" . $svrStartDate . "] svrStartTime[" . $svrStartTime . "]
+			endTimestamp[" . $endTimestamp . "] svrEndDate[" . $svrEndDate . "]
+			svrEndTime[" . $svrEndTime . "]");
 
 		if (!CalendarSupport::isRepeatable($model->rrule, ($svrStartDate . $svrStartTime),
 			$eventData['CalendarEvent']['timezone_offset'])) {
@@ -116,7 +127,8 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 			return true;
 		}
 
-		CakeLog::debug("DBG: insert(svrStartDateTime[" . $svrStartDate . $svrStartTime . "] svrEndDateTime[" . $svrEndDate . $svrEndTime . "])実行");
+		CakeLog::debug("DBG: insert(svrStartDateTime[" . $svrStartDate . $svrStartTime . "]
+			svrEndDateTime[" . $svrEndDate . $svrEndTime . "])実行");
 		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData,
 			($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime));
 		if ($rEventData['CalendarEvent']['id'] === null) {
@@ -136,7 +148,8 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
  * @param int $first 最初のデータかどうか 1:最初である  0:最初ではない
  * @return mixed boolean true:登録せず終了 false:失敗、array 登録成功: array(登録した開始年月日時分秒, 登録した終了年月日時分秒)
  */
-	public function insertMonthlyByDay(Model &$model, $planParams, $rruleData, $eventData, $first = 0) {
+	public function insertMonthlyByDay(Model &$model, $planParams, $rruleData, $eventData,
+		$first = 0) {
 		CakeLog::debug("DBG: insertMonthlyByDay() start. rrule[INDEX]=[" . $model->rrule['INDEX'] . "]");
 		$model->rrule['INDEX']++;
 
@@ -146,11 +159,13 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 		//setStimeEtimeAndByday()返ってくる$sTime, $eTime, $bydayはすべてサーバー系日付時刻です。
 		$this->setStimeEtimeAndByday($model->rrule, $eventData, $first, $userTz, $sTime, $eTime, $byday);
 
-		CakeLog::debug("DBG: setStimeEtimeAndByday(first[" . $first . "] userTz[" . $userTz . "]) 結果. sTime[" . $sTime . "] eTime[" . $eTime . "] byday[" . $byday . "]");
+		CakeLog::debug("DBG: setStimeEtimeAndByday(first[" . $first . "] userTz[" . $userTz . "])
+			結果. sTime[" . $sTime . "] eTime[" . $eTime . "] byday[" . $byday . "]");
 
 		//call復帰条件のチェック
 		if ($first && $sTime >= $byday) {
-			CakeLog::debug("DBG: first[" . $first . "] is TRUE and sTime[" . $sTime . "] >= byday[" . $byday, "]. i DEC and ReCall.");
+			CakeLog::debug("DBG: first[" . $first . "] is TRUE and
+				sTime[" . $sTime . "] >= byday[" . $byday, "]. i DEC and ReCall.");
 			//開始日(対象日？）が繰返しENDのb(第x週第y曜日の実日）を超したら、行き過ぎなので、INDEXをデクリメントして、自分を再帰callする。
 			$model->rrule['INDEX']--;
 			return $this->insertMonthlyByDay($model, $planParams, $rruleData, $eventData);
@@ -158,21 +173,28 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 
 		//setStartDateTiemAndEndDateTime()より返される時刻系はサーバー系です
 		$svrStartDate = $svrStartTime = $svrEndDate = $svrEndTime = '';
-		$this->setStartDateTiemAndEndDateTime($sTime, $eTime, $byday, $userTz, $svrStartDate, $svrStartTime, $svrEndDate, $svrEndTime);
+		$this->setStartDateTiemAndEndDateTime($sTime, $eTime, $byday, $userTz, $svrStartDate,
+			$svrStartTime, $svrEndDate, $svrEndTime);
 
-		CakeLog::debug("DBG: setStartDateTiemAndEndDateTime処理結果. svrStartDate[" . $svrStartDate . "] svrStartTime[" . $svrStartTime . "] svrEndDate[" . $svrEndDate . "] svrEndTime[" . $svrEndTime . "]");
+		CakeLog::debug("DBG: setStartDateTiemAndEndDateTime処理結果.
+			svrStartDate[" . $svrStartDate . "] svrStartTime[" . $svrStartTime . "]
+			svrEndDate[" . $svrEndDate . "] svrEndTime[" . $svrEndTime . "]");
 
-		if (!CalendarSupport::isRepeatable($model->rrule, ($svrStartDate . $svrStartTime), $eventData['CalendarEvent']['timezone_offset'])) {
+		if (!CalendarSupport::isRepeatable($model->rrule, ($svrStartDate . $svrStartTime),
+			$eventData['CalendarEvent']['timezone_offset'])) {
 
-			CakeLog::debug("DBG: isRepeatable() がFALSEを返したので、繰返しをとめて復帰します。");
+			CakeLog::debug("DBG: isRepeatable() がFALSEを返したので、
+				繰返しをとめて復帰します。");
 
 			//繰り返しがとまったので、復帰いたします。
 			return true;
 		}
 
-		CakeLog::debug("DBG: insert(svrStartDateTime[" . $svrStartDate . $svrStartTime . "] svrEndDateTime[" . $svrEndDate . $svrEndTime . "])実行");
+		CakeLog::debug("DBG: insert(svrStartDateTime[" . $svrStartDate . $svrStartTime . "]
+			svrEndDateTime[" . $svrEndDate . $svrEndTime . "])実行");
 
-		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData, ($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime));
+		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData,
+			($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime));
 		if ($rEventData['CalendarEvent']['id'] === null) {
 			return false;
 		}
@@ -192,7 +214,8 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
  * @param string &$byday byday
  * @return void
  */
-	public function setStimeEtimeAndByday($rrule, $eventData, $first, $userTz, &$sTime, &$eTime, &$byday) {
+	public function setStimeEtimeAndByday($rrule, $eventData, $first, $userTz, &$sTime,
+		&$eTime, &$byday) {
 		//BYDAYは'2MO','3SA'といった形式である
 		//よって、wdayNumにはSUなら0, SAなら6とった値になる。
 		$wdayNum = array_search(substr($rrule['BYDAY'][0], -2), self::$calendarWdayArray);
@@ -201,8 +224,10 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 
 		//NC3は内部はサーバー系時刻なのでtimezoneDateはつかわない
 		//このsTime, eTimeはcall元に返すための変数.
-		$sTime = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time']; //catしてYmdHisにする
-		$eTime = $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time']; //catしてYmdHisにする
+		$sTime = $eventData['CalendarEvent']['start_date'] .
+			$eventData['CalendarEvent']['start_time']; //catしてYmdHisにする
+		$eTime = $eventData['CalendarEvent']['end_date'] .
+			$eventData['CalendarEvent']['end_time']; //catしてYmdHisにする
 
 		//以下で使うmkdateの「1日00:00:00」とは、画面上（=ユーザー系）でのカレンダ
 		//日付時刻をさしているので、ユーザー系に直す。
@@ -238,9 +263,11 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
  * @param int &$intervalDay intervalDay
  * @return void
  */
-	private function __setMonthlyByMonthdayStartDtProc(&$eventData, &$userStartTime, &$startTimestamp, &$userTz, &$currentDay, &$first, &$model, &$interval, &$intervalDay) {
+	private function __setMonthlyByMonthdayStartDtProc(&$eventData, &$userStartTime,
+		&$startTimestamp, &$userTz, &$currentDay, &$first, &$model, &$interval, &$intervalDay) {
 		//NC3は内部はサーバー系時刻なのでtimezoneDateはつかわない
-		$sTime = $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time']; //catしてYmdHisにする
+		$sTime = $eventData['CalendarEvent']['start_date'] .
+			$eventData['CalendarEvent']['start_time']; //catしてYmdHisにする
 
 		//以下で使う時間系は「1日00:00:00」など、画面上（=ユーザー系）でのカレンダ
 		//日付時刻をさしているので、ユーザー系に直す。
@@ -250,7 +277,8 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 
 		//ユーザー系開始日の00:00:00のタイムスタンプを取得
 		$date = new DateTime('now', (new DateTimeZone($userTz)));
-		$date->setDate(substr($userStartTime, 0, 4), substr($userStartTime, 4, 2), substr($userStartTime, 6, 2));
+		$date->setDate(substr($userStartTime, 0, 4), substr($userStartTime, 4, 2),
+			substr($userStartTime, 6, 2));
 		$date->setTime(0, 0, 0);
 		$startTimestamp = $date->getTimestamp();
 

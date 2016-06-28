@@ -29,7 +29,9 @@ class CalendarActionPlan extends CalendarsAppModel {
  *
  * @var array
  */
-	public $useTable = false;	//このモデルはvalidateとinsert/update/deletePlan()呼び出しが主目的なのでテーブルを使用しない。
+	//このモデルはvalidateと
+	//insert/update/deletePlan()呼び出しが主目的なのでテーブルを使用しない。
+	public $useTable = false;
 
 /**
  * use behaviors
@@ -70,42 +72,58 @@ class CalendarActionPlan extends CalendarsAppModel {
 		// 入力カラムの定義、データ型とdefault値、必要ならlength値
 		//繰返し編集の指定(0/1/2). このフィールドは渡ってこない時もあるので
 		//ViewにてunlockField指定しておくこと。
-		'edit_rrule' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+		'edit_rrule' => array(
+			'type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
 
 		//カレンダー元eventId
-		'origin_event_id' => array('type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
+		'origin_event_id' => array(
+			'type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
 		//カレンダー元eventKey
-		'origin_event_key' => array('type' => 'string', 'default' => ''),
+		'origin_event_key' => array(
+			'type' => 'string', 'default' => ''),
 		//カレンダー元eventRecurrence
-		'origin_event_recurrence' => array('type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
+		'origin_event_recurrence' => array(
+			'type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
 		//カレンダー元eventException
-		'origin_event_exception' => array('type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
+		'origin_event_exception' => array(
+			'type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
 
 		//カレンダー元rruleId
-		'origin_rrule_id' => array('type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
+		'origin_rrule_id' => array(
+			'type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
 		//カレンダー元rruleKey
-		'origin_rrule_key' => array('type' => 'string', 'default' => ''),
+		'origin_rrule_key' => array(
+			'type' => 'string', 'default' => ''),
 		//カレンダー元rruleを共有する兄弟eventの数
-		'origin_num_of_event_siblings' => array('type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
+		'origin_num_of_event_siblings' => array(
+			'type' => 'integer', 'null' => false, 'default' => 0, 'unsigned' => false),
 
 		// 全変更選択時、繰返し先頭eventのeditボタンを擬似クリックする方式用の項目
 		// editLink()を呼ぶときの必要パラメータ
-		'first_sib_year' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
-		'first_sib_month' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
-		'first_sib_day' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
-		'first_sib_event_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+		'first_sib_year' => array(
+			'type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+		'first_sib_month' => array(
+			'type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+		'first_sib_day' => array(
+			'type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+		'first_sib_event_id' => array(
+			'type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
 
 		/*
 		// -- 以下のcapForViewOf1stSibによるデータすり替え方式用の項目(first_sib_cap_xxx)は、--
 		// -- 全変更選択時、繰返し先頭eventのeditボタンを擬似クリックする方式にかえたので、削除. --
 
 		//先頭兄弟（繰返しの先頭）capForView(表示用CalendarActionPlan)の情報
-		'first_sib_cap_enable_time' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+		'first_sib_cap_enable_time' => array(
+			'type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
 		'first_sib_cap_easy_start_date' => array('type' => 'string', 'default' => ''),	//YYYY-MM-DD
 		'first_sib_cap_easy_hour_minute_from' => array('type' => 'string', 'default' => ''), //hh:mm
-		'first_sib_cap_easy_hour_minute_to' => array('type' => 'string', 'default' => ''),	//hh:mm
-		'first_sib_cap_detail_start_datetime' => array('type' => 'string', 'default' => ''),	//YYYY-MM-DD or YYYY-MM-DD hh:mm
-		'first_sib_cap_detail_end_datetime' => array('type' => 'string', 'default' => ''), //YYYY-MM-DD or YYYY-MM-DD hh:mm
+		'first_sib_cap_easy_hour_minute_to' => array(
+			'type' => 'string', 'default' => ''),	//hh:mm
+		'first_sib_cap_detail_start_datetime' => array(
+			'type' => 'string', 'default' => ''),	//YYYY-MM-DD or YYYY-MM-DD hh:mm
+		'first_sib_cap_detail_end_datetime' => array(
+			'type' => 'string', 'default' => ''), //YYYY-MM-DD or YYYY-MM-DD hh:mm
 		'first_sib_cap_timezone_offset' => array('type' => 'string', 'default' => ''),
 		*/
 
@@ -118,7 +136,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 		'title_icon' => array('type' => 'string', 'default' => ''),
 
 		//時間の指定(1/0)
-		'enable_time' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+		'enable_time' => array(
+			'type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
 
 		////完全なる開始日付時刻と終了日付時刻(hidden)
 		////'full_start_datetime' => array('type' => 'string', 'default' => ''),	//hidden
@@ -129,11 +148,14 @@ class CalendarActionPlan extends CalendarsAppModel {
 		'easy_hour_minute_from' => array('type' => 'string', 'default' => ''), //hh:mm
 		'easy_hour_minute_to' => array('type' => 'string', 'default' => ''),	//hh:mm
 		//詳細編集の日付時刻エリア
-		'detail_start_datetime' => array('type' => 'string', 'default' => ''),	//YYYY-MM-DD or YYYY-MM-DD hh:mm
-		'detail_end_datetime' => array('type' => 'string', 'default' => ''), //YYYY-MM-DD or YYYY-MM-DD hh:mm
+		'detail_start_datetime' => array(
+			'type' => 'string', 'default' => ''),	//YYYY-MM-DD or YYYY-MM-DD hh:mm
+		'detail_end_datetime' => array(
+			'type' => 'string', 'default' => ''), //YYYY-MM-DD or YYYY-MM-DD hh:mm
 
 		//公開対象
-		'plan_room_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+		'plan_room_id' => array(
+			'type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
 		//注）共有するユーザ群は、CalendarActionPlanモデルではなく、GroupsUserモデルの配列として以下形式で渡ってくる。
 		//<input type="hidden" value="2" name="data[GroupsUser][0][user_id]">
 		//<input type="hidden" value="3" name="data[GroupsUser][1][user_id]">
@@ -189,10 +211,12 @@ class CalendarActionPlan extends CalendarsAppModel {
 		'rrule_until' => array('type' => 'string', 'default' => ''),
 
 		//メールで通知(1/0)
-		'enable_email' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+		'enable_email' => array(
+			'type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
 
 		//メール通知タイミング
-		'email_send_timing' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+		'email_send_timing' => array(
+			'type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
 
 		//承認ステータス
 		//statusは $data['data_N']のNではいってくるので、ここからは外す。
@@ -316,7 +340,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'rule' => array('range', 0, 1000),	//0より大きく1000未満(＝1以上999以下)
 					'required' => false,
 					'allowEmpty' => true,
-					'message' => sprintf(__d('calendars', '繰返し回数は %d 以上 %d 以下の整数です'), 1, 999),
+					'message' => sprintf(
+						__d('calendars', '繰返し回数は %d 以上 %d 以下の整数です'), 1, 999),
 				),
 			),
 			'rrule_until' => array(
@@ -324,7 +349,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'rule' => array('date', 'ymd'),
 					'required' => false,
 					'allowEmpty' => true,
-					'message' => __d('calendars', '終了日による指定、または、繰返しの終了日が不正です'),
+					'message' => __d('calendars',
+						'終了日による指定、または、繰返しの終了日が不正です'),
 				),
 			),
 			*/
@@ -429,7 +455,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 				),
 				'rule2' => array(
 					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
-					'message' => sprintf(__d('calendars', '件名は最大 %d 文字です。'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
+					'message' => sprintf(__d('calendars',
+						'件名は最大 %d 文字です。'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 				),
 			),
 			'title_icon' => array(
@@ -437,7 +464,9 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_GENERAL_VCHAR_LEN),
 					'required' => false,
 					'allowEmpty' => true,
-					'message' => sprintf(__d('calendars', 'タイトルアイコンは最大 %d 文字です。'), CalendarsComponent::CALENDAR_VALIDATOR_GENERAL_VCHAR_LEN),
+					'message' => sprintf(__d('calendars',
+						'タイトルアイコンは最大 %d 文字です。'),
+						CalendarsComponent::CALENDAR_VALIDATOR_GENERAL_VCHAR_LEN),
 				),
 			),
 		));
@@ -454,7 +483,8 @@ class CalendarActionPlan extends CalendarsAppModel {
  */
 	public function beforeValidate($options = array()) {
 		//CakeLog::debug("request_data[" . print_r($this->data, true) . "]");
-		$isDetailEdit = (isset($this->data['CalendarActionPlan']['is_detail']) && $this->data['CalendarActionPlan']['is_detail']) ? true : false;
+		$isDetailEdit = (isset($this->data['CalendarActionPlan']['is_detail']) &&
+			$this->data['CalendarActionPlan']['is_detail']) ? true : false;
 		//$this->_doMergeDisplayParamValidate($isDetailEdit);	//画面パラメータ関連validation
 		$this->_doMergeTitleValidate($isDetailEdit);	//タイトル関連validation
 		$this->_doMergeDatetimeValidate($isDetailEdit);	//日付時刻関連validation
@@ -485,21 +515,24 @@ class CalendarActionPlan extends CalendarsAppModel {
 				'rule1' => array(
 					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 					'required' => false,
-					'message' => sprintf(__d('calendars', '場所は最大 %d 文字です。'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
+					'message' => sprintf(__d('calendars',
+						'場所は最大 %d 文字です。'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 				),
 			),
 			'contact' => array(
 				'rule1' => array(
 					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 					'required' => false,
-					'message' => sprintf(__d('calendars', '連絡先は最大 %d 文字です。'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
+					'message' => sprintf(__d('calendars', '連絡先は最大 %d 文字です。'),
+						CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 				),
 			),
 			'description' => array(
 				'rule1' => array(
 					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_TEXTAREA_LEN),
 					'required' => false,
-					'message' => sprintf(__d('calendars', '連絡先は最大 %d 文字です。'), CalendarsComponent::CALENDAR_VALIDATOR_TEXTAREA_LEN),
+					'message' => sprintf(__d('calendars', '連絡先は最大 %d 文字です。'),
+						CalendarsComponent::CALENDAR_VALIDATOR_TEXTAREA_LEN),
 				),
 			),
 			//statusの値は $data['data_N']のNではいってくるので、省略
@@ -559,7 +592,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 				$editRrule = $this->getEditRruleForUpdate($data);
 
-				$eventId = $this->updatePlan($planParam, $newPlan, $status, $isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule);
+				$eventId = $this->updatePlan($planParam, $newPlan, $status, $isOriginRepeat,
+					$isTimeMod, $isRepeatMod, $editRrule);
 			}
 			$this->_enqueueEmail($data);
 
@@ -598,7 +632,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 			$planParam['status'] = $this->_getStatus($data);
 			$planParam['language_id'] = Current::read('Language.id');
 			$planParam['room_id'] = $data[$this->alias]['plan_room_id'];
-			$planParam['timezone_offset'] = $this->_getTimeZoneOffsetNum($data[$this->alias]['timezone_offset']);
+			$planParam['timezone_offset'] = $this->_getTimeZoneOffsetNum(
+				$data[$this->alias]['timezone_offset']);
 			$planParam = $this->_setAndMergeDateTime($planParam, $data);
 			$planParam = $this->_setAndMergeRrule($planParam, $data);
 			$planParam['share_users'] = Hash::extract($data, 'GroupsUser.{n}.user_id');
@@ -650,7 +685,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 				return $matches[1];
 			}
 		}
-		throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));	//マッチするものが無い場合例外throw
+		//マッチするものが無い場合例外throw
+		throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 	}
 
 /**
@@ -670,7 +706,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 				return $tzData[1];
 			}
 		}
-		throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));	//マッチするものが無い場合例外throw
+		//マッチするものが無い場合例外throw
+		throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 	}
 
 /**
@@ -703,7 +740,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 			unset($model->validationErrors['repeat_freq']);
 			//CakeLog::debug("DBG: proofread count[" . count($model->calendarProofreadValidationErrors) . "]");
 			if (count($model->calendarProofreadValidationErrors) > 0) {
-				$model->validationErrors = Hash::merge($model->validationErrors, $model->calendarProofreadValidationErrors);
+				$model->validationErrors = Hash::merge($model->validationErrors,
+					$model->calendarProofreadValidationErrors);
 			}
 		}
 	}
@@ -842,12 +880,14 @@ class CalendarActionPlan extends CalendarsAppModel {
 			//FIXME:  YYYY-MM-DD hh:mm のはずだが、手入力の時も問題ないか要確認。
 			$nctm = new NetCommonsTime();
 
-			$serverStartDatetime = $nctm->toServerDatetime($cap['detail_start_datetime'] . ':00', $cap['timezone_offset']);
+			$serverStartDatetime = $nctm->toServerDatetime($cap['detail_start_datetime'] . ':00',
+				$cap['timezone_offset']);
 			$startDate = CalendarTime::stripDashColonAndSp(substr($serverStartDatetime, 0, 10));
 			$startTime = CalendarTime::stripDashColonAndSp(substr($serverStartDatetime, 11, 8));
 			$capDtstart = $startDate . $startTime;
 
-			$serverEndDatetime = $nctm->toServerDatetime($cap['detail_end_datetime'] . ':00', $cap['timezone_offset']);
+			$serverEndDatetime = $nctm->toServerDatetime(
+				$cap['detail_end_datetime'] . ':00', $cap['timezone_offset']);
 			$endDate = CalendarTime::stripDashColonAndSp(substr($serverEndDatetime, 0, 10));
 			$endTime = CalendarTime::stripDashColonAndSp(substr($serverEndDatetime, 11, 8));
 			$capDtend = $endDate . $endTime;
