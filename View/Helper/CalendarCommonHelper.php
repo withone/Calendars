@@ -114,13 +114,13 @@ class CalendarCommonHelper extends AppHelper {
 			case WorkflowComponent::STATUS_PUBLISHED:	//承認済
 				break;
 			case WorkflowComponent::STATUS_APPROVED;	//承認待ち
-				$html = "<span class='label label-warning'>" . __d('calendars', '承認待ち') . "</span>";
+				$html = "<span class='label label-warning'>" . __d('net_commons', 'Approving') . "</span>";
 				break;
 			case WorkflowComponent::STATUS_IN_DRAFT:	//一時保存
-				$html = "<span class='label label-info'>" . __d('calendars', '一時保存') . "</span>";
+				$html = "<span class='label label-info'>" . __d('net_commons', 'In draft') . "</span>";
 				break;
 			case WorkflowComponent::STATUS_DISAPPROVED:	//差し戻し
-				$html = "<span class='label label-danger'>" . __d('calendars', '差し戻し') . "</span>";
+				$html = "<span class='label label-danger'>" . __d('net_commons', 'Disapproving') . "</span>";
 				break;
 		}
 		return $html;

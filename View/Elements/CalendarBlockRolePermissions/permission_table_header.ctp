@@ -12,10 +12,10 @@
 <caption><?php echo __d('calendars', 'カレンダーに予定を追加できる権限を設定します。'); ?></caption>
 <thead>
 <tr>
-	<th class="text-center"><?php echo __d('calendars', 'ルーム名'); ?></th>
+	<th class="text-center"><?php echo __d('rooms', 'Room name'); ?></th>
 	<?php foreach ($defaultRoles as $role): ?>
 	<th class="text-center"><?php echo h($role['Role']['name']); ?></th>
 	<?php endforeach; ?>
-	<th class="text-center"><?php echo __d('calendars', '承認が必要'); ?></th>
+	<th class="text-center"><?php echo __d('blocks', 'Need approval'); ?></th>
 </tr>
 </thead>

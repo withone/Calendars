@@ -2,7 +2,7 @@
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 #
 #, fuzzy
-msgid ""
+msgid  ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
@@ -13,20 +13,995 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-msgid "Sun"
-msgstr ""
-msgid "Mon"
-msgstr ""
-msgid "Tue"
-msgstr ""
-msgid "Wed"
-msgstr ""
-msgid "Thu"
-msgstr ""
-msgid "Fri"
-msgstr ""
-msgid "Sat"
+#: Controller/CalendarFrameSettingsController.php:113
+msgid  "Monthly Calendar (small)"
 msgstr ""
 
-msgid "MailSetting.mail_fixed_phrase_body.popover"
+#: Controller/CalendarFrameSettingsController.php:115
+msgid  "Monthly Calendar (large)"
+msgstr ""
+
+#: Controller/CalendarFrameSettingsController.php:117
+msgid  "Weekly Calendar"
+msgstr ""
+
+#: Controller/CalendarFrameSettingsController.php:119
+msgid  "Day View"
+msgstr ""
+
+#: Controller/CalendarFrameSettingsController.php:121
+msgid  "Schedule (ordered-by-time)"
+msgstr ""
+
+#: Controller/CalendarFrameSettingsController.php:123
+msgid  "Schedule (ordered-by-user)"
+msgstr ""
+
+#: Controller/CalendarPlansController.php:101
+msgid  "There is no block ID. Display a blank page."
+msgstr ""
+
+#: Controller/CalendarPlansController.php:121
+msgid  "There is no event. Display a blank page. 1"
+msgstr ""
+
+#: Controller/CalendarPlansController.php:136;387
+msgid  "There is no event. Display a blank page. 2"
+msgstr ""
+
+#: Controller/CalendarPlansController.php:230
+msgid  "Delete failed."
+msgstr ""
+
+#: Controller/CalendarPlansController.php:672
+msgid  "There is no event. To continue the event in the blank."
+msgstr ""
+
+#: Model/CalendarActionPlan.php:313
+msgid  "Invalid input. (change of repetition)"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:320
+msgid  "Invalid input. (repetition)"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:390
+msgid  "Invalid input. (time)"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:398
+msgid  "Invalid input. (year/month/day)"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:406
+msgid  "Invalid input. (start time) 1"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:410
+msgid  "Invalid input. (start time and end time) 1"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:418
+msgid  "Invalid input. (end time)"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:424
+msgid  "Invalid input. (start time) 2"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:428
+msgid  "Invalid input. (start time and end time) 2"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:434
+msgid  "Invalid input. (end date)"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:454
+msgid  "Invalid input. (plan title)"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:458
+msgid  "%d character limited. (plan title)"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:467
+msgid  "%d character limited. (title icon)"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:497
+msgid  "Invalid input. (authority)"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:504
+msgid  "Invalid input. (timezone)"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:511
+msgid  "Invalid input. (detail)"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:518
+msgid  "%d character limited. (location)"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:526;534
+msgid  "%d character limited. (contact)"
+msgstr ""
+
+#: Model/CalendarDeleteActionPlan.php:134
+msgid  "Invalid input. (edit rrule)"
+msgstr ""
+
+#: Model/CalendarDeleteActionPlan.php:142
+msgid  "Invalid input. (first event id)"
+msgstr ""
+
+#: Model/CalendarDeleteActionPlan.php:150
+msgid  "Invalid input.  (first sib ebent id)"
+msgstr ""
+
+#: Model/CalendarDeleteActionPlan.php:158
+msgid  "Invalid input. (origin event id)"
+msgstr ""
+
+#: Model/CalendarDeleteActionPlan.php:166
+msgid  "Invalid input. (recurrence flag)"
+msgstr ""
+
+#: Model/CalendarEvent.php:179
+msgid  "Please input title text."
+msgstr ""
+
+#: Model/CalendarEvent.php:191;201;207;222;228
+msgid  "Invalid value."
+msgstr ""
+
+#: Model/CalendarEvent.php:195;211
+msgid  "Out of range value."
+msgstr ""
+
+#: Model/CalendarEventContent.php:90
+msgid  "Model Name"
+msgstr ""
+
+#: Model/CalendarEventContent.php:98
+msgid  "content key"
+msgstr ""
+
+#: Model/CalendarEventContent.php:107
+msgid  "calendar_event id"
+msgstr ""
+
+#: Model/CalendarMailSetting.php:82
+msgid  "Mail Key"
+msgstr ""
+
+#: Model/CalendarMailSetting.php:90
+msgid  "use mail"
+msgstr ""
+
+#: Model/Behavior/CalendarExposeRoomBehavior.php:91
+#: View/Elements/CalendarBlockRolePermissions/permission_all_members.ctp:17
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:18
+#: View/Helper/CalendarLegendHelper.php:115
+#: View/Helper/CalendarPermissionHelper.php:43
+#: View/Helper/CalendarRoomSelectHelper.php:57
+msgid  "All the members"
+msgstr ""
+
+#: Model/Behavior/CalendarExposeRoomBehavior.php:318
+msgid  "Unknown My Room"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanOptionBehavior.php:33
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:214;235
+msgid  "Before 0 minutes"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanOptionBehavior.php:34
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:215
+msgid  "Before 5 minutes"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanOptionBehavior.php:35
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:216
+msgid  "Before 10 minutes"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanOptionBehavior.php:36
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:217
+msgid  "Before 15 minutes"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanOptionBehavior.php:37
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:218
+msgid  "Before 20 minutes"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanOptionBehavior.php:38
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:219
+msgid  "Before 25 minutes"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanOptionBehavior.php:39
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:220
+msgid  "Before 30 minutes"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanOptionBehavior.php:40
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:221
+msgid  "Before 45 minutes"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanOptionBehavior.php:41
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:222
+msgid  "1 hour before"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanOptionBehavior.php:42
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:223
+msgid  "2 hours before"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanOptionBehavior.php:43
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:224
+msgid  "3 hours before"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanOptionBehavior.php:44
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:225
+msgid  "12 hours before"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanOptionBehavior.php:45
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:226
+msgid  "24 hours before"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanOptionBehavior.php:46
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:227
+msgid  "2 days before"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanOptionBehavior.php:47
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:228
+msgid  "1 week before"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanOptionBehavior.php:48
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:229
+msgid  "Right now"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanRruleValidateBehavior.php:44
+msgid  "Input required. (Times repeated)"
+msgstr ""
+
+#: Model/Behavior/CalendarPlanRruleValidateBehavior.php:51
+msgid  "Only numbers can be entered."
+msgstr ""
+
+#: Model/Behavior/CalendarPlanRruleValidateBehavior.php:60
+msgid  "The number of repetition is %d or more and %d or less."
+msgstr ""
+
+#: Model/Behavior/CalendarPlanRruleValidateBehavior.php:137
+msgid  "It is not in the YYYY-MM-DD format."
+msgstr ""
+
+#: Model/Behavior/CalendarPlanRruleValidateBehavior.php:141
+msgid  "Invalid input. Day that does not exist has been specified."
+msgstr ""
+
+#: Model/Behavior/CalendarPlanRruleValidateBehavior.php:171
+msgid  "Invalid input. Term end date is earlier than the start date."
+msgstr ""
+
+#: Model/Behavior/CalendarPlanRruleValidateBehavior.php:176
+msgid  "Year that can be specified is %d or more and %d or less."
+msgstr ""
+
+#: Model/Behavior/CalendarValidateAppBehavior.php:60
+msgid  "Invalid input. (repeat interval. Please specify day/week/month/year)"
+msgstr ""
+
+#: Model/Behavior/CalendarValidateAppBehavior.php:84
+msgid  "Invalid input. (repeat interval: every day)"
+msgstr ""
+
+#: Model/Behavior/CalendarValidateAppBehavior.php:108
+msgid  "Invalid input. (repeat interval: every week)"
+msgstr ""
+
+#: Model/Behavior/CalendarValidateAppBehavior.php:125
+msgid  "Invalid input. (repeat interval:week)"
+msgstr ""
+
+#: Model/Behavior/CalendarValidateAppBehavior.php:149
+msgid  "Invalid input. (repeat interbal:every month)"
+msgstr ""
+
+#: Model/Behavior/CalendarValidateAppBehavior.php:181
+msgid  "Invalid input. (rrule error. day of the month or date)"
+msgstr ""
+
+#: Model/Behavior/CalendarValidateAppBehavior.php:206
+msgid  "Invalid input. (rrule error. interval YEARLY)"
+msgstr ""
+
+#: Model/Behavior/CalendarValidateAppBehavior.php:216
+msgid  "Invalid input. (rrule error. Interval of year. there is no specification of the month.)"
+msgstr ""
+
+#: Model/Behavior/CalendarValidateAppBehavior.php:235
+msgid  "Invalid input. (rrule error. Interval of year, specified month.)"
+msgstr ""
+
+#: Model/Behavior/CalendarValidateAppBehavior.php:248
+msgid  "Invalid input. (rrule error.  Interval of year. Week of the year unit,week value is invalid.)"
+msgstr ""
+
+#: Utility/CalendarTime.php:454
+msgid  "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr ""
+
+#: View/CalendarMailSettings/edit.ctp:22
+msgid  "{X-SITE_NAME} : サイト名<br />{X-PLUGIN_NAME} : プラグイン名<br />{X-ROOM} : 公開対象<br />{X-SUBJECT} : 件名<br />{X-START_TIME} : 開始日時<br />{X-END_TIME} : 終了日時<br />{X-LOCATION} : 場所<br />{X-CONTACT} : 連絡先<br />{X-USER} : 記入者<br />{X-TO_DATE} : 記入日時<br />{X-RRULE} : 繰返し<br />{X-URL} : この予定へのURL"
+msgstr ""
+
+#: View/CalendarPlans/daylist.ctp:22
+msgid  "back to calendar"
+msgstr ""
+
+#: View/CalendarPlans/delete.ctp:10
+msgid  "delete"
+msgstr ""
+
+#: View/CalendarPlans/delete.ctp:63
+msgid  "This plan has been repeatedly set. Select the plan that you want to remove from the following items, please press the delete button."
+msgstr ""
+
+#: View/CalendarPlans/delete.ctp:66
+msgid  "Delete event"
+msgstr ""
+
+#: View/CalendarPlans/delete.ctp:73
+#: View/CalendarPlans/detail_edit.ctp:116
+msgid  "only this one"
+msgstr ""
+
+#: View/CalendarPlans/delete.ctp:75
+#: View/CalendarPlans/detail_edit.ctp:120
+msgid  "all after this one"
+msgstr ""
+
+#: View/CalendarPlans/delete.ctp:76
+#: View/CalendarPlans/detail_edit.ctp:122
+msgid  "all"
+msgstr ""
+
+#: View/CalendarPlans/delete.ctp:103
+#: View/CalendarPlans/show.ctp:221
+msgid  "Cancel"
+msgstr ""
+
+#: View/CalendarPlans/delete.ctp:115
+#: View/CalendarPlans/show.ctp:272
+msgid  "Delete"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:7
+msgid  "Form to edit schedule item"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:9
+msgid  "Form to add schedule item"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:94
+msgid  "This plan has been repeatedly set. Select the plan that you want to edit from the following items, Repetation of the plan [only this one] is not displayed. "
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:97
+msgid  "Because it was specified in the [only this one], repetation of the plan can not be specified."
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:99
+msgid  "When you select the [all] will be re-set to the contents is repeated first plan."
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:153
+msgid  "Setting the date."
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:159
+msgid  "Setting the time."
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:195
+msgid  "All day"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:201
+msgid  "From"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:315
+msgid  "-"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:335
+msgid  "To"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:421
+msgid  "Repeat the event"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:451
+msgid  "Units of repeated"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:494
+#: View/Calendars/lmonthly.ctp:21
+#: View/Calendars/smonthly.ctp:35
+#: View/Elements/CalendarFrameSettings/display_count.ctp:19
+#: View/Elements/Calendars/calendar_tabs.ctp:70
+#: View/Helper/CalendarCommonHelper.php:40
+#: View/Helper/CalendarPlanHelper.php:248
+msgid  "day"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:495
+#: View/Elements/Calendars/calendar_tabs.ctp:59
+#: View/Helper/CalendarMonthlyHelper.php:409
+msgid  "week"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:496
+#: View/Calendars/lmonthly.ctp:22
+#: View/Calendars/smonthly.ctp:23;36
+#: View/Elements/Calendars/calendar_tabs.ctp:48
+#: View/Helper/CalendarCommonHelper.php:40
+#: View/Helper/CalendarPlanHelper.php:247
+msgid  "month"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:497
+#: View/Calendars/smonthly.ctp:22
+#: View/Helper/CalendarPlanHelper.php:244
+msgid  "year"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:522;691
+#: View/Helper/CalendarTurnCalendarHelper.php:158
+msgid  "%dday(s)"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:531;563;628
+msgid  "Repeating pattern"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:570
+msgid  "%dweek(s)"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:635
+msgid  "%d month(s)"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:654
+msgid  "Please select either."
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:660
+msgid  "- select day of the week -"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:689
+msgid  "- select day of the month -"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:717
+msgid  "%d year(s)"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:737
+#: View/Elements/Calendars/turn_calendar.ctp:71
+#: View/Helper/CalendarTurnCalendarHelper.php:134;147;157
+msgid  "%d"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:758
+msgid  "Setting of repeat"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:763
+#: View/Helper/CalendarPlanRruleHelper.php:194
+msgid  "Start date"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:814
+msgid  "Times repeated"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:815
+msgid  "Day repetition ended"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:824
+msgid  "End date"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:858
+msgid  "times"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:899
+msgid  "until"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:990
+msgid  "Notify by e-mail"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1007
+msgid  "e-mail notification before event"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1021
+msgid  "Event 5 minutes ago"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1022
+msgid  "Event 10 minutes ago"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1023
+msgid  "Event 15 minutes ago"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1024
+msgid  "Event 20 minutes ago"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1025
+msgid  "Event 25 minutes ago"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1026
+msgid  "Event 30 minutes ago"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1027
+msgid  "Event 45 minutes ago"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1028
+msgid  "Event 1 hour ago"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1029
+msgid  "Event 2 hour ago"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1030
+msgid  "Event 3 hour ago"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1031
+msgid  "Event 12 hour ago"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1032
+msgid  "Event 24 hour ago"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1033
+msgid  "Event 2 days ago"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1034
+msgid  "Event 1 week ago"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1072
+#: View/CalendarPlans/show.ctp:164
+msgid  "Location"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1089
+#: View/CalendarPlans/show.ctp:175
+msgid  "Contact"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1105
+#: View/CalendarPlans/show.ctp:186
+msgid  "Details"
+msgstr ""
+
+#: View/CalendarPlans/detail_edit.ctp:1132
+#: View/Elements/CalendarPlans/edit_timezone.ctp:4
+msgid  "Time zone"
+msgstr ""
+
+#: View/CalendarPlans/easy_edit.ctp:10
+#: View/CalendarPlans/show.ctp:10
+msgid  "Calendar"
+msgstr ""
+
+#: View/CalendarPlans/easy_edit.ctp:54
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:68
+msgid  "Plans(date)"
+msgstr ""
+
+#: View/CalendarPlans/easy_edit.ctp:117
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:118
+msgid  "To specify the start time and end time"
+msgstr ""
+
+#: View/CalendarPlans/easy_edit.ctp:128
+msgid  "Plans(Start time - End time)"
+msgstr ""
+
+#: View/CalendarPlans/easy_edit.ctp:200
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:200
+msgid  "Notify by e-mail"
+msgstr ""
+
+#: View/CalendarPlans/easy_edit.ctp:212
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:232
+msgid  "E-mail notification timing"
+msgstr ""
+
+#: View/CalendarPlans/show.ctp:66;73
+msgid  "Date and time"
+msgstr ""
+
+#: View/CalendarPlans/show.ctp:86
+msgid  "End date and time"
+msgstr ""
+
+#: View/CalendarPlans/show.ctp:94
+msgid  "-"
+msgstr ""
+
+#: View/CalendarPlans/show.ctp:111
+msgid  "Repeat the event:"
+msgstr ""
+
+#: View/CalendarPlans/show.ctp:129
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:21
+#: View/Helper/CalendarExposeTargetHelper.php:61
+msgid  "Category"
+msgstr ""
+
+#: View/CalendarPlans/show.ctp:145
+msgid  "People to share the schedule"
+msgstr ""
+
+#: View/CalendarPlans/show.ctp:198
+msgid  "Author"
+msgstr ""
+
+#: View/CalendarPlans/show.ctp:207
+msgid  "Date"
+msgstr ""
+
+#: View/Calendars/lmonthly.ctp:21
+#: View/Calendars/smonthly.ctp:35
+#: View/Helper/CalendarCommonHelper.php:41
+msgid  "Sun"
+msgstr ""
+
+#: View/Calendars/lmonthly.ctp:22
+#: View/Calendars/smonthly.ctp:36
+#: View/Helper/CalendarCommonHelper.php:41
+msgid  "Mon"
+msgstr ""
+
+#: View/Calendars/lmonthly.ctp:23
+#: View/Calendars/smonthly.ctp:37
+#: View/Helper/CalendarCommonHelper.php:41
+msgid  "Tue"
+msgstr ""
+
+#: View/Calendars/lmonthly.ctp:24
+#: View/Calendars/smonthly.ctp:38
+#: View/Helper/CalendarCommonHelper.php:41
+msgid  "Wed"
+msgstr ""
+
+#: View/Calendars/lmonthly.ctp:25
+#: View/Calendars/smonthly.ctp:39
+#: View/Helper/CalendarCommonHelper.php:41
+msgid  "Thu"
+msgstr ""
+
+#: View/Calendars/lmonthly.ctp:26
+#: View/Calendars/smonthly.ctp:40
+#: View/Helper/CalendarCommonHelper.php:41
+msgid  "Fri"
+msgstr ""
+
+#: View/Calendars/lmonthly.ctp:27
+#: View/Calendars/smonthly.ctp:41
+#: View/Helper/CalendarCommonHelper.php:42
+msgid  "Sat"
+msgstr ""
+
+#: View/Elements/CalendarBlockRolePermissions/edit_form.ctp:22
+msgid  "Only you can create your private event."
+msgstr ""
+
+#: View/Elements/CalendarBlockRolePermissions/permission.ctp:31
+msgid  "It does not exist yet Room."
+msgstr ""
+
+#: View/Elements/CalendarBlockRolePermissions/permission_table_header.ctp:12
+msgid  "Set the permissions that you can add an appointment to the calendar."
+msgstr ""
+
+#: View/Elements/CalendarFrameSettings/display_count.ctp:14
+msgid  "Display days"
+msgstr ""
+
+#: View/Elements/CalendarFrameSettings/edit_form.ctp:32
+msgid  "Display type"
+msgstr ""
+
+#: View/Elements/CalendarFrameSettings/room_select.ctp:27
+msgid  "Display only designated room"
+msgstr ""
+
+#: View/Elements/CalendarFrameSettings/room_select.ctp:36
+msgid  "Select room for participation."
+msgstr ""
+
+#: View/Elements/CalendarFrameSettings/start_pos.ctp:14
+msgid  "Start point"
+msgstr ""
+
+#: View/Elements/CalendarFrameSettings/start_pos.ctp:20
+#: View/Helper/CalendarScheduleHelper.php:398
+msgid  "Today"
+msgstr ""
+
+#: View/Elements/CalendarFrameSettings/start_pos.ctp:21
+msgid  "Previous day"
+msgstr ""
+
+#: View/Elements/CalendarFrameSettings/timeline_start.ctp:13
+msgid  "Timeline start time"
+msgstr ""
+
+#: View/Elements/CalendarPlans/edit_plan_share.ctp:27
+msgid  "Please select a person to share the schedule."
+msgstr ""
+
+#: View/Elements/CalendarPlans/edit_title.ctp:3
+msgid  "Title"
+msgstr ""
+
+#: View/Elements/Calendars/change_sort.ctp:60
+msgid  "Times"
+msgstr ""
+
+#: View/Elements/Calendars/change_sort.ctp:71
+msgid  "User"
+msgstr ""
+
+#: View/Elements/Calendars/daily_tabs.ctp:54
+msgid  "Plan list"
+msgstr ""
+
+#: View/Elements/Calendars/daily_tabs.ctp:64
+msgid  "Timeline"
+msgstr ""
+
+#: View/Helper/CalendarTurnCalendarHelper.php:132;145;155
+msgid  "<small>%d/</small> %d"
+msgstr ""
+
+msgid  "<small>%d/</small>%d/%d<small>(%s)&nbsp;<br class="visible-xs" />%s</small>"
+msgstr ""
+
+#: View/Helper/CalendarTurnCalendarHelper.php:182
+msgid  "This month"
+msgstr ""
+
+#: View/Helper/CalendarCommonHelper.php:423
+#: View/Helper/CalendarLegendHelper.php:158
+#: View/Helper/CalendarWeeklyHelper.php:236
+msgid  "Schedule of fellow"
+msgstr ""
+
+#: View/Helper/CalendarDailyHelper.php:133
+#: View/Helper/CalendarScheduleHelper.php:138;227
+msgid  "Location details:"
+msgstr ""
+
+#: View/Helper/CalendarDailyHelper.php:137
+#: View/Helper/CalendarScheduleHelper.php:142;232
+msgid  "Contact:"
+msgstr ""
+
+#: View/Helper/CalendarLegendHelper.php:98
+msgid  "Room"
+msgstr ""
+
+#: View/Helper/CalendarLegendHelper.php:134
+msgid  "Shared plan"
+msgstr ""
+
+#: View/Helper/CalendarPlanHelper.php:54;83
+msgid  "%s/%s/%s"
+msgstr ""
+
+#: View/Helper/CalendarPlanHelper.php:59
+msgid  "%s:%s"
+msgstr ""
+
+#: View/Helper/CalendarPlanHelper.php:132
+msgid  "More details"
+msgstr ""
+
+#: View/Helper/CalendarPlanHelper.php:394
+msgid  "1st week"
+msgstr ""
+msgid  "2sn week"
+msgstr ""
+msgid  "3rd week"
+msgstr ""
+msgid  "4th week"
+msgstr ""
+
+#: View/Helper/CalendarPlanHelper.php:396
+#: View/Helper/CalendarPlanRruleHelper.php:322
+msgid  "last week"
+msgstr ""
+
+#: View/Helper/CalendarPlanHelper.php:415
+msgid  "Sunday"
+msgstr ""
+
+#: View/Helper/CalendarPlanHelper.php:418
+msgid  "Monday"
+msgstr ""
+
+#: View/Helper/CalendarPlanHelper.php:421
+msgid  "Tuesday"
+msgstr ""
+
+#: View/Helper/CalendarPlanHelper.php:424
+msgid  "Wednesday"
+msgstr ""
+
+#: View/Helper/CalendarPlanHelper.php:427
+msgid  "Thursday"
+msgstr ""
+
+#: View/Helper/CalendarPlanHelper.php:430
+msgid  "Friday"
+msgstr ""
+
+#: View/Helper/CalendarPlanHelper.php:433
+msgid  "Saturday"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:71
+msgid  "none"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:111
+msgid  "%s months"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:131
+msgid  "%s days"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:150
+msgid  "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:187
+msgid  "every year"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:189
+msgid  "every %s years"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:215
+msgid  "every month"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:217
+msgid  "every %s months"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:239
+msgid  "every week"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:241
+msgid  "every %s weeks"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:262
+msgid  "every day"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:264
+msgid  "every %s days"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:283
+msgid  "Until Y/m/d"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:286
+msgid  "%s times"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:310
+msgid  "First week"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:313
+msgid  "Second week"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:316
+msgid  "Third week"
+msgstr ""
+
+#: View/Helper/CalendarPlanRruleHelper.php:319
+msgid  "Forth week"
+msgstr ""
+
+#: View/Helper/CalendarScheduleHelper.php:253;297
+msgid  "No plan."
+msgstr ""
+
+#: View/Helper/CalendarScheduleHelper.php:396
+msgid  "yesterday"
+msgstr ""
+
+#: View/Helper/CalendarScheduleHelper.php:400
+msgid  "tomorrow"
+msgstr ""
+
+#: View/Helper/CalendarTurnCalendarHelper.php:160
+msgid  "(%s)"
+msgstr ""
+
+#: View/Helper/CalendarTurnCalendarHelper.php:185
+msgid  "This week"
+msgstr ""
+
+#: View/Helper/CalendarTurnCalendarHelper.php:188
+msgid  "Today"
+msgstr ""
+
+#: View/Helper/CalendarUrlHelper.php:135
+msgid  "Back to this month"
+msgstr ""
+
+#: View/Helper/CalendarUrlHelper.php:137
+msgid  "Back to this week"
+msgstr ""
+
+#: View/Helper/CalendarUrlHelper.php:139
+msgid  "Back to today"
+msgstr ""
+
+#: View/Helper/CalendarUrlHelper.php:141
+msgid  "Back to First view"
+msgstr ""
+
+#: View/CalendarPlans/show.ctp:255
+msgid  "Back"
 msgstr ""

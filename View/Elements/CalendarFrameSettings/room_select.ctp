@@ -11,7 +11,6 @@
 ?>
 
 <div class="form-group" name="dispTargetRooms">
-	<!-- <?php echo $this->NetCommonsForm->label('CalendarFrameSetting.is_select_room', __d('calendars', '表示対象ルーム'), array('class' => 'col-xs-12 col-sm-3')); ?> -->
 	<div class='col-xs-11 col-xs-offset-1'>
 		<div class="checkbox">
 			<label>
@@ -31,8 +30,6 @@
 		</div>
 		<div name="roomSelect" ng-show="data.calendarFrameSetting.isSelectRoom">
 			<div class="panel-body">
-				<!-- <uib-accordion close-others="true"> -->
-					<!-- <small><?php echo __d('calendars', '表示させるルームは、ルーム名の前にあるマークを <span class="glyphicon glyphicon-eye-open"></span>  にしてください。'); ?></small> -->
 					<?php echo __d('calendars', '表示させるルームを選択してください。'); ?>
 					<div class='calendar-list-wrapper'>
 					<?php echo $this->CalendarRoomSelect->spaceSelector($spaces); ?>

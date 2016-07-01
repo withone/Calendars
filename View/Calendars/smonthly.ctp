@@ -4,18 +4,6 @@
 
 <article ng-controller="CalendarsDetailEdit" class="block-setting-body">
 
-<!-- <div class="clearfix"></div> -->
-
-<!--<form>-->
-
-<?php //echo $this->element('NetCommons.datetimepicker'); ?>
- 
-<!-- <?php
-	echo $this->element('Calendars.Calendars/turn_calendar', array(
-		'frameId' => $frameId, 'languageId' => $languageId, 'vars' => $vars
-	));
-?> -->
-
 <div class="row">
 	<div class="col-xs-12 text-center calendar-smonthly-div calendar-small-title">
 		<a href='/calendars/calendars/index/style:largemonthly?frame_id=<?php echo h($frameId); ?>'>
@@ -26,9 +14,6 @@
 
 <div class="calendar-smonthly-div">
 
-	<!-- <div class="col-xs-6 col-xs-offset-3 text-center"> -->
-	<!-- <div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-1 text-center" style="padding:0"> -->
-	<!--<div class="col-xs-10 col-xs-offset-1">-->
 		<table style='border-collapse: collapse; margin:0 auto;'>
 		<tbody>
 		<tr>
@@ -46,9 +31,5 @@
 		</tbody>
 		</table>
   </div>
-
-<!--<?php echo $this->element('Calendars.Calendars/change_style', array('frameId' => $frameId, 'languageId' => $languageId, 'vars' => $vars)); ?>-->
-
-<!--</form>-->
 
 </article>

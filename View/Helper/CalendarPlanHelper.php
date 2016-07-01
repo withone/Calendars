@@ -391,15 +391,35 @@ class CalendarPlanHelper extends AppHelper {
 			foreach ($wdays as $idx => $wday) {
 				$key = $week . $wday;
 				if ($week > 0) {
-					$options[$key] = sprintf(__d('calendars', '第%d週'), $week) . $this->getWdayString($idx);
+					$weekOrd = $this->__getOrdSuffix($week);
+					$options[$key] = __d('calendars', $weekOrd . ' week') . ' ' . $this->getWdayString($idx);
 				} else {
-					$options[$key] = __d('calendars', '最終週') . $this->getWdayString($idx);
+					$options[$key] = __d('calendars', 'last week') . $this->getWdayString($idx);
 				}
 			}
 		}
 		return $options;
 	}
-
+/**
+ * __getOrdSuffix
+ *
+ * 第N週のための序数文字列を取得する
+ *
+ * @param int $num 週数
+ * @return string 序数文字列
+ */
+	private function __getOrdSuffix($num) {
+		switch($num) {
+			case 1:
+				return '1st';
+			case 2:
+				return '2nd';
+			case 3:
+				return '3rd';
+			default:
+				return $num . 'th';
+		}
+	}
 /**
  * getWdayString
  *

@@ -90,15 +90,13 @@
 				$firstSibEditLink = $matches[1];
 			}
 		}
-
 		echo __d('calendars', 'この予定は繰り返し設定されています。変更した予定を下記項目から選択し、予定編集してください。なお「この予定のみ」の時は予定の繰返しは表示されません。');
-
-		if ($isRecurrence) {
-			echo __d('calendars', '「この予定のみ」指定で変更された予定なので、予定の繰返しは指定できません。');
-		} else {
-			echo __d('calendars', '「設定した全ての予定」を選択すると内容が繰返しの初回予定に再設定されます。');
-		}
 	?>
+	<?php if($isRecurrence): ?>
+		<?php echo __d('calendars', '「この予定のみ」指定で変更された予定なので、予定の繰返しは指定できません。'); ?>
+	<?php else: ?>
+		<?php echo __d('calendars', '「設定した全ての予定」を選択すると内容が繰返しの初回予定に再設定されます。'); ?>
+	<?php endif; ?>
 	
 
 				</div>
@@ -106,7 +104,6 @@
 	<?php
 		if (isset($this->request->params['named']) && isset($this->request->params['named']['editrrule'])) {
 			$editRrule = intval($this->request->params['named']['editrrule']);
-			//CakeLog::debug("DBG: 名前付きeditrruleの値をeditRrule[" . $editRrule . "]にセットしました");
 		} else {
 			$editRrule = (empty($this->request->data['CalendarActionPlan']['edit_rrule'])) ? 0 :
 				$this->request->data['CalendarActionPlan']['edit_rrule'];

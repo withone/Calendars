@@ -128,39 +128,22 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		$html = '<label for="CalendarEventTargetYear"><h2 class="' . $textColor . ' calendar-space0">';
 		switch($type) {
 			case 'month':
-				$html .= '<small>';
-				$html .= sprintf(__d('calendars', '%d年'), $vars['mInfo']['year']);
-				$html .= '</small>';
-				$html .= sprintf(__d('calendars', '%d月'), $vars['mInfo']['month']);
-				break;
 			case 'week':
-				if ($vars['week'] == 0) {
-					//日付から第n週を求めて設定
-					$nWeek = ceil(($vars['mInfo']['wdayOf1stDay'] + $vars['day']) / 7);
-					//第n週の日曜日の日付に更新
-				} else {
-					$nWeek = $vars['week'];
-				}
-				$html .= '<small>';
-				$html .= sprintf(__d('calendars', '%d年'), $vars['year']);
-				$html .= '</small>';
-				$html .= sprintf(__d('calendars', '%d月'), $vars['month']);
-				//$html .= sprintf(__d('calendars', '第%d週'), $nWeek);
+				$html .= sprintf(__d('calendars', '<small>%d月</small>%d月'),
+					$vars['mInfo']['year'], $vars['mInfo']['month']);
 				break;
 			case 'day':
 				/* 祝日タイトル */
 				$holidayTitle = $this->CalendarCommon->getHolidayTitle(
 					$vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $vars['dayOfTheWeek']);
-				$html .= '<small>';
-				$html .= sprintf(__d('calendars', '%d年'), $vars['year']);
-				$html .= '</small>';
-				$html .= sprintf(__d('calendars', '%d月'), $vars['month']);
-				$html .= sprintf(__d('calendars', '%d日'), $vars['day']);
-				$html .= '<small>';
-				$html .= sprintf(__d('calendars', '(%s)'),
-					$this->CalendarCommon->getWeekName($vars['dayOfTheWeek']));
-				$html .= '&nbsp;<br class="visible-xs" />' . $holidayTitle;
-				$html .= '</small>';
+				$html .= sprintf(__d('calendars',
+						'<small>%d年</small>%d月%d日<small>(%s)&nbsp;<br class="visible-xs" />%s</small>'),
+					$vars['year'],
+					$vars['month'],
+					$vars['day'],
+					$this->CalendarCommon->getWeekName($vars['dayOfTheWeek']),
+					$holidayTitle
+				);
 				break;
 
 		}
