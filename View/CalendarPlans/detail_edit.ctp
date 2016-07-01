@@ -71,7 +71,6 @@
 
 	<?php
 		//全選択用に、繰返し先頭eventのeditボタのリンクを生成しておく
-		//
 
 		$firstSibEditLink = '';
 		if (!empty($firstSibEventId)) {
@@ -139,7 +138,7 @@
 
 		<div class='form-group' name='inputTitle'>
 			<div class='row'>
-				<div class='col-xs-12 col-sm-11 col-sm-offset-1'>
+				<div class='col-xs-12 col-sm-10 col-sm-offset-1'>
 					<?php echo $this->element('Calendars.CalendarPlans/edit_title'); ?>
 				</div><!-- col-sm-10おわり -->
 			</div>
@@ -251,7 +250,7 @@
 	if ($this->request->data['CalendarActionPlan']['enable_time']) {
 		$addNgInit = "changeDetailStartDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')";
 	}
-	
+
 	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_start_datetime',
 	array(
 		'div' => false,
