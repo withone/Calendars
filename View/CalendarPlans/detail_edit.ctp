@@ -137,18 +137,15 @@
 <?php endif; ?>
 
 		<div class='form-group' name='inputTitle'>
-			<div class='row'>
-				<div class='col-xs-12 col-sm-10 col-sm-offset-1'>
+				<div class='col-xs-12'>
 					<?php echo $this->element('Calendars.CalendarPlans/edit_title'); ?>
 				</div><!-- col-sm-10おわり -->
-			</div>
 		</div><!-- form-groupおわり-->
 
 <br />
 
 		<div class="form-group" name="checkTime">
-			<div class='row'>
-				<div class='form-inline col-xs-12 col-sm-10 col-sm-offset-1'>
+				<div class='form-inline col-xs-12'>
  					<label class='control-label' style='margin-right:1em;'>
 						<?php echo __d('calendars', '予定日の設定') . $this->element('NetCommons.required'); ?>
 					</label>
@@ -166,8 +163,7 @@
 			'ng-init' => (($this->request->data['CalendarActionPlan']['enable_time']) ? ($useTime . ' = true') : ($useTime . ' = false')),
 			));
 		?>
-				</div><!-- col-sm-10おわり -->
-			</div><!-- row おわり -->
+				</div><!-- col-xs-12おわり -->
  		</div><!-- form-groupおわり-->
 
 <?php 
@@ -188,8 +184,7 @@
 
 
 		<div class='form-group' name='inputStartEndDateTime'>
-			<div class='row'>
-				<div class='col-xs-12 col-sm-11 col-sm-offset-1'>
+				<div class='col-xs-12'>
 						<div ng-hide="<?php echo $useTime; ?>" class="col-xs-12">
 							<label>
 								<?php echo __d('calendars', '終日');	?>
@@ -386,11 +381,10 @@
 							</div><!-- ng-hide -->
 						</div>
 					</div>
-			</div><!--row おわり -->
 		</div><!-- form-group name="inputStartEndDateTime"おわり -->
 
 <div class="form-group" name="inputRruleInfo" style="display: <?php echo ($editRrule) ? 'block' : 'none'; ?>">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+<div class="col-xs-12">
 
 	<!-- <uib-accordion close-others="oneAtATime"> -->
 
@@ -619,7 +613,7 @@
 				</div><!-- row form-group終わり-->
 
 <?php
-	echo "<div class='row form-group calendar-monthly-info_" . $frameId . " " . $monthlyDisplayClass . "' name='monthlyInfo'>";
+	echo "<div class='form-group calendar-monthly-info_" . $frameId . " " . $monthlyDisplayClass . "' name='monthlyInfo'>";
 ?>
 				<div class="col-xs-12 col-sm-12">
 				<ul class="list-inline">
@@ -649,7 +643,7 @@
 				<!-- <div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div> -->
 </ul>
 				<div class="clearfix"></div>
-				<div class="col-xs-8 col-sm-5 calendar-plan-rrule-freq-select-one">
+				<div class="col-xs-12 col-sm-5 calendar-plan-rrule-freq-select-one">
 <?php
 				echo __d('calendars', 'どちらかを選択してください');
 ?>
@@ -679,7 +673,7 @@
 
 				</div><!--col-sm-5おわり-->
 
-				<div class="col-xs-12 col-sm-1 calendar-detailedit-addchar text-center" style="padding-left:0; padding-right:0;">または
+				<div class="col-xs-8 col-sm-1 calendar-detailedit-addchar text-center" style="padding-left:0; padding-right:0;">または
 				</div><!--col-sm-1おわり-->
 
 				<div class="col-xs-8 col-sm-5">
@@ -708,7 +702,7 @@
 				</div><!--col-sm-5おわり-->
 				</div><!-- row form-group終わり-->
 <?php
-	echo "<div class='row form-group calendar-yearly-info_" . $frameId . " " . $yearlyDisplayClass . "' name='yearlyInfo'>";
+	echo "<div class='form-group calendar-yearly-info_" . $frameId . " " . $yearlyDisplayClass . "' name='yearlyInfo'>";
 ?>
 				<div class="col-xs-8 col-sm-5">
 <?php
@@ -729,7 +723,7 @@
 				<!-- <div class="col-xs-4 col-sm-4 calendar-detailedit-addchar">ごと</div> -->
 				<div class="clearfix"></div>
 				<br />
-				<div class="col-xs-12 col-sm-12 form-inline form-group">
+				<div class="col-xs-12 col-sm-12 form-inline">
 
 <?php
 					$options = array();
@@ -784,10 +778,7 @@
 
 
 				<div class="form-group calendar-repeat-limit_<?php echo $frameId; ?>" name="calendarRepeatLimit">
-				<!-- <div class="col-xs-12 col-sm-5"><label>繰返しの終了</label> -->
-				<!-- </div> -->
-				<!-- <div class="col-xs-12 col-sm-12"> -->
-				<div class="col-xs-12 col-sm-12 form-inline form-group" style="margin-left:0px;">
+				<div class="col-xs-12 form-inline form-group" style="margin-left:0px;>
 				<?php
 					//input radio をon状態にする index文字列 (COUNT=回数指定,UNTIL=終了日指定)
 					if ($this->request->data['CalendarActionPlan']['rrule_term'] === 'COUNT') {
@@ -830,15 +821,13 @@
 					));
 
 				?>
-				<!-- </div> -->
 				</div><!--col-sm-12おわり-->
-
 <?php
-	echo "<div class='col-xs-12 col-sm-12 calendar-repeat-end-count-info_" . $frameId . " " . $countDisplayClass . "' name='countInfo'>";
+	echo "<div class='col-xs-12 calendar-repeat-end-count-info_" . $frameId . " " . $countDisplayClass . "' name='countInfo'>";
 ?>
 
-					<div class="row form-group">
-						<div class="col-xs-4 col-sm-3">
+					<div class="col-xs-12">
+						<div class="col-xs-6 col-sm-3">
 <?php
 						$countValue = $this->request->data['CalendarActionPlan']['rrule_count'];
 						echo $this->NetCommonsForm->input('CalendarActionPlan.rrule_count', array(
@@ -858,7 +847,7 @@
 						<?php echo __d('calendars', '回'); ?>
 						</div><!--col-sm-1おわり-->
 
-					</div><!--row form-groupおわり-->
+					</div><!--form-groupおわり-->
 
 
 
@@ -866,9 +855,9 @@
 <?php
 	echo "<div class='col-xs-12 col-sm-12 calendar-repeat-end-enddate-info_" . $frameId . " " . $endDateDisplayClass . "' name='endDateInfo'>";
 ?>
-					<div class="row form-group">
-						<div class="col-xs-12 col-sm-3">
-							<!-- <div class="input-group"> -->
+					<div class="form-group">
+						<div class="col-xs-12">
+							<div class="col-xs-12 col-sm-3">
 <?php
 									$date = '';
 									$pickerOpt = str_replace('"', "'", json_encode(array(
@@ -892,20 +881,17 @@
 									));
 
 ?>
-							<!-- <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div> -->
-							<!-- </div>--><!--input-groupおわり-->
-						</div><!--col-sm-4おわり-->
-						<div class="col-xs-8 col-sm-4 calendar-detailedit-addchar">
+							</div><!--col-sm-4おわり-->
+							<div class="col-xs-8 col-sm-4 calendar-detailedit-addchar">
 							<?php echo __d('calendars', 'まで繰り返す'); ?>
-						</div><!--col-sm-4おわり-->
-
-					</div><!--row form-groupおわり-->
-
-				</div><!--col-sm-12おわり-->
+							</div><!--form-groupおわり-->
+						</div>
+					</div>
+		</div><!--col-sm-12おわり-->
 				<div class="clearfix"></div>
 
 
-				</div><!-- row form-group name=calendarRepeatLimitおわり -->
+	</div><!-- form-group name=calendarRepeatLimitおわり -->
 
 
 			</div><!-- 繰返しの選択詳細 END -->
@@ -926,7 +912,7 @@
 
 
 <div class="form-group" name="selectRoomForOpen">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+<div class="col-xs-12">
 
 	<?php
 		//if (isset($event['CalendarEvent']['room_id'])) {
@@ -972,7 +958,7 @@
 
 
 
-<div><!-- kuma add -->
+<!--<div>--><!-- kuma add -->
 
 <?php
 	$checkMailStyle = '';
@@ -984,7 +970,7 @@
 
 <br />
 <div class="form-group" name="checkMail" <?php echo $checkMailStyle; ?>>
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+<div class="col-xs-12">
 
 	<label style='float: left'>
 	<?php echo __d('calendars', 'メール通知'); ?>
@@ -1056,7 +1042,7 @@
 <br />
 
 <div class="form-group">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+<div class="col-xs-12">
 	<uib-accordion close-others="oneAtATime">
 
 		<uib-accordion-group is-open="status.open">
@@ -1068,7 +1054,7 @@
 
 <!-- 場所 -->
 <div class="form-group" name="inputLocation">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+<div class="col-xs-12">
 	<label><?php echo __d('calendars', '場所'); ?></label>
 	<?php echo $this->NetCommonsForm->input('CalendarActionPlan.location', array(
 		'type' => 'text',
@@ -1085,7 +1071,7 @@
 
 <!-- 連絡先 -->
 <div class="form-group" name="inputContact">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+<div class="col-xs-12">
 	<label><?php echo __d('calendars', '連絡先'); ?></label>
 	<?php echo $this->NetCommonsForm->input('CalendarActionPlan.contact', array(
 		'type' => 'text',
@@ -1100,7 +1086,7 @@
 
 <!-- 詳細 -->
 <div class="form-group" name="inputDescription" ng-controller="CalendarDetailEditWysiwyg">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+<div class="col-xs-12">
 	<label>
 		<?php echo __d('calendars', '詳細'); ?>
 	</label>
@@ -1123,7 +1109,7 @@
 
 <!-- タイムゾーン -->
 <div class="form-group" name="selectTimeZone">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+<div class="col-xs-12">
 
 <?php
 		$tzTbl = CalendarsComponent::getTzTbl();
@@ -1149,12 +1135,12 @@
 </div>
 </div>
 
-	</div><!--どっかの開始divのおわり-->
+	<!--</div>--><!--どっかの開始divのおわり-->
 
 <!-- コメント入力 -->
 <hr />
-<div class="form-group" name="inputCommentArea">
-<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+<div name="inputCommentArea">
+<div class="col-xs-12">
 	<?php /* $this->NetCommonsForm->unlockField('CalendarEvnet.status'); */ ?>
 	<?php echo $this->Workflow->inputComment('CalendarEvent.status'); ?>
 </div><!-- col-xs-12おわり -->
