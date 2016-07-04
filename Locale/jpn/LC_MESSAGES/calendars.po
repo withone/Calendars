@@ -850,7 +850,7 @@ msgstr  "詳細な登録"
 #: View/Helper/CalendarPlanHelper.php:394
 msgid  "1st week"
 msgstr  "第1週"
-msgid  "2sn week"
+msgid  "2nd week"
 msgstr  "第2週"
 msgid  "3rd week"
 msgstr  "第3週"

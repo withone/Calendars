@@ -850,7 +850,7 @@ msgstr ""
 #: View/Helper/CalendarPlanHelper.php:394
 msgid  "1st week"
 msgstr ""
-msgid  "2sn week"
+msgid  "2nd week"
 msgstr ""
 msgid  "3rd week"
 msgstr ""
