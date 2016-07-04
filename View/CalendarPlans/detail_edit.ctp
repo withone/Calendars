@@ -981,7 +981,6 @@
 		'checked' => ($this->request->data['CalendarActionPlan']['enable_email']) ? true : false,
 		'label' => false,
 		'div' => false,
-		//'class' => 'text-left calendar-send-a-mail_' . $frameId,
 		'class' => 'text-left',
 		'style' => 'float: left',
 	));
@@ -1202,45 +1201,3 @@
 ?>
 
 </article>
-
-<script type='text/javascript'>
-var mock= {};
-
-mock.elms2 = document.getElementsByClassName('calendar-send-a-mail_<?php echo $frameId ?>');
-mock.fnc2 =  function(evt) {
-	var target = evt.target;
-
-	if ( target.tagName != 'INPUT' ) {
-		for( ; ; ) {
-			target = target.parentNode;
-			if (target.nodeType != Node.ELEMENT_NODE) {
-				continue;
-			}
-
-			if( target.tagName == 'INPUT') {
-				break;
-			}
-
-			if( target.tagName == 'BODY') {
-				return;
-			}
-		}
-	}
-
-	var elm = (document.getElementsByClassName('calendar-mail-notice_<?php echo $frameId; ?>'))[0];
-	if (target.checked) {
-		//開始時間と終了時間の指定あり
-		elm.style.display = 'block';
-
-	} else {
-		//開始時間と終了時間の指定なし
-		elm.style.display = 'none';
-	}
-
-};
-for(var i=0; i < mock.elms2.length; ++i) {
-	mock.elms2[i].addEventListener('change', mock.fnc2 );
-}
-
-</script>
-
