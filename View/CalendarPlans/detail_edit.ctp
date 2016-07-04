@@ -1,167 +1,107 @@
-<?php echo $this->element('Calendars.scripts'); ?>
+<?php
+/**
+ * 予定登録 template
+ *
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Allcreator <info@allcreator.net>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
+ */
+echo $this->element('Calendars.scripts');
+?>
 
 <div ng-controller='CalendarsDetailEdit' class='block-setting-body'
 	ng-init="initialize(<?php echo h(json_encode(array('frameId' => Current::read('Frame.id')))); ?>)">
 
-<?php if ($planViewMode === CalendarsComponent::PLAN_EDIT) : ?>
-	<div class='h3'><?php echo __d('calendars', '予定の編集'); ?></div>
-<?php else: ?>
-		<div class='h3'><?php echo __d('calendars', '予定の追加'); ?></div>
-<?php endif; ?>
+	<?php /* 画面見出し */ ?>
+	<?php echo $this->element('Calendars.CalendarPlans/detail_edit_heading'); ?>
 
-<div class='panel panel-default'>
-	<?php echo $this->element('Calendars.CalendarPlans/edit_form_create'); ?>
-
-	<?php echo $this->element('Calendars.CalendarPlans/required_hiddens'); ?>
-
-	<?php
-		echo $this->element('Calendars.CalendarPlans/detail_edit_hiddens', array(
-			'event' => $event, 'eventSiblings' => $eventSiblings, 'firstSib' => $firstSib,
-		));
-	?>
-
-	<div class='panel-body'>
-
-		<?php $this->NetCommonsForm->unlockField('CalendarActionPlan.edit_rrule'); ?>
-
-<?php
-	//変数の初期化を先頭に集める
-	$editRrule = true;
-
-	$firstSibYear = $firstSibMonth = $firstSibDay = $firstSibEventId = 0;
-	if (!empty($this->request->data['CalendarActionPlan']['first_sib_event_id'])) {
-		$firstSibEventId = $this->request->data['CalendarActionPlan']['first_sib_event_id'];
-		$firstSibYear = $this->request->data['CalendarActionPlan']['first_sib_year'];
-		$firstSibMonth = $this->request->data['CalendarActionPlan']['first_sib_month'];
-		$firstSibDay = $this->request->data['CalendarActionPlan']['first_sib_day'];
-	} else {
-		if (!empty($firstSib)) {
-			$firstSibEventId = $firstSib['CalendarActionPlan']['first_sib_event_id'];
-			$firstSibYear = $firstSib['CalendarActionPlan']['first_sib_year'];
-			$firstSibMonth = $firstSib['CalendarActionPlan']['first_sib_month'];
-			$firstSibDay = $firstSib['CalendarActionPlan']['first_sib_day'];
-		}
-	}
-
-	$originEventId = 0;
-	if (!empty($event)) {
-		$originEventId = $event['CalendarEvent']['id'];
-	} else {
-		if (!empty($this->request->data['CalendarActionPlan']['origin_event_id'])) {
-			$originEventId = $this->request->data['CalendarActionPlan']['origin_event_id'];
-		}
-	}
-
-	$isRecurrence = false;
-	if ((!empty($event) && !empty($event['CalendarEvent']['recurrence_event_id'])) ||
-		!empty($this->request->data['CalendarActionPlan']['origin_event_recurrence'])) {
-		$isRecurrence = true;
-	}
-?>
-
-<?php
-	if (count($eventSiblings) > 1 || (isset($this->request->data['CalendarActionPlan']['origin_num_of_event_siblings']) && $this->request->data['CalendarActionPlan']['origin_num_of_event_siblings'] > 1)) :
-	?>
-	<div class="form-group" name="RepeatSet">
-	<div class="col-xs-12 col-sm-10 col-sm-offset-1">
-	<h2 style='float: left'>
-	<?php echo $this->TitleIcon->titleIcon('/net_commons/img/title_icon/10_070_warning.svg'); ?>
-	</h2>
-	<div style='padding-top: 1.5em'>
-
-	<?php
-		//全選択用に、繰返し先頭eventのeditボタのリンクを生成しておく
-
-		$firstSibEditLink = '';
-		if (!empty($firstSibEventId)) {
-			$firstSibEditLink = $this->Button->editLink('', array(
-				'controller' => 'calendar_plans',
-				'action' => 'edit',
-				'style' => 'detail',
-				'year' => $firstSibYear,
-				'month' => $firstSibMonth,
-				'day' => $firstSibDay,
-				'event' => $firstSibEventId,
-				'editrrule' => 2,
-				'frame_id' => Current::read('Frame.id'),
+	<div class='panel panel-default'>
+		<?php echo $this->element('Calendars.CalendarPlans/edit_form_create'); ?>
+		<?php echo $this->element('Calendars.CalendarPlans/required_hiddens'); ?>
+		<?php
+			echo $this->element('Calendars.CalendarPlans/detail_edit_hiddens', array(
+				'event' => $event, 'eventSiblings' => $eventSiblings, 'firstSib' => $firstSib,
 			));
-			$firstSibEditLink = str_replace('&quot;', '"', $firstSibEditLink);
-			if (preg_match('/href="([^"]+)"/', $firstSibEditLink, $matches) === 1) {
-				$firstSibEditLink = $matches[1];
-			}
-		}
-		echo __d('calendars', 'この予定は繰り返し設定されています。変更した予定を下記項目から選択し、予定編集してください。なお「この予定のみ」の時は予定の繰返しは表示されません。');
-	?>
-	<?php if($isRecurrence): ?>
-		<?php echo __d('calendars', '「この予定のみ」指定で変更された予定なので、予定の繰返しは指定できません。'); ?>
-	<?php else: ?>
-		<?php echo __d('calendars', '「設定した全ての予定」を選択すると内容が繰返しの初回予定に再設定されます。'); ?>
-	<?php endif; ?>
-	
+		?>
+		<div class='panel-body'>
+			<?php $this->NetCommonsForm->unlockField('CalendarActionPlan.edit_rrule'); ?>
 
-				</div>
-				<div class='alert alert-warning'>
-	<?php
-		if (isset($this->request->params['named']) && isset($this->request->params['named']['editrrule'])) {
-			$editRrule = intval($this->request->params['named']['editrrule']);
-		} else {
-			$editRrule = (empty($this->request->data['CalendarActionPlan']['edit_rrule'])) ? 0 :
-				$this->request->data['CalendarActionPlan']['edit_rrule'];
-		}
+			<?php
+				//変数の初期化を先頭に集める
+				$editRrule = true;
 
-		$options = array();
-		$options['0'] = __d('calendars', 'この予定のみ');
-		if (!$isRecurrence) {
-			//「この予定のみ」指定で変更された予定ではないので、1,2も選択肢に加える。
-			//if ($dispAfterThisPlan) {
-				$options['1'] = __d('calendars', 'これ以降に指定した全ての予定');
-			//}
-			$options['2'] = __d('calendars', '設定した全ての予定');
-		}
-		echo $this->NetCommonsForm->radio('CalendarActionPlan.edit_rrule', $options,
-			array(
-				'div' => 'form-inline',
-				'value' => $editRrule,
-				'ng-model' => 'editRrule',
-				'ng-init' => "editRrule = '" . $editRrule . "'",
-				'ng-change' => "changeEditRrule(" . $frameId . ",'" . $firstSibEditLink . "')",
-			)
-		);
-	?>
-				</div>
-			</div><!-- col-sm-10おわり -->
-		</div><!-- form-groupおわり-->
-<?php endif; ?>
+				$firstSibYear = $firstSibMonth = $firstSibDay = $firstSibEventId = 0;
+				if (!empty($this->request->data['CalendarActionPlan']['first_sib_event_id'])) {
+					$firstSibEventId = $this->request->data['CalendarActionPlan']['first_sib_event_id'];
+					$firstSibYear = $this->request->data['CalendarActionPlan']['first_sib_year'];
+					$firstSibMonth = $this->request->data['CalendarActionPlan']['first_sib_month'];
+					$firstSibDay = $this->request->data['CalendarActionPlan']['first_sib_day'];
+				} else {
+					if (!empty($firstSib)) {
+						$firstSibEventId = $firstSib['CalendarActionPlan']['first_sib_event_id'];
+						$firstSibYear = $firstSib['CalendarActionPlan']['first_sib_year'];
+						$firstSibMonth = $firstSib['CalendarActionPlan']['first_sib_month'];
+						$firstSibDay = $firstSib['CalendarActionPlan']['first_sib_day'];
+					}
+				}
 
-		<div class='form-group' name='inputTitle'>
+				$originEventId = 0;
+				if (!empty($event)) {
+					$originEventId = $event['CalendarEvent']['id'];
+				} else {
+					if (!empty($this->request->data['CalendarActionPlan']['origin_event_id'])) {
+						$originEventId = $this->request->data['CalendarActionPlan']['origin_event_id'];
+					}
+				}
+
+				$isRecurrence = false;
+				if ((!empty($event) && !empty($event['CalendarEvent']['recurrence_event_id'])) ||
+					!empty($this->request->data['CalendarActionPlan']['origin_event_recurrence'])) {
+					$isRecurrence = true;
+				}
+			?>
+
+			<?php /* 繰り返しパターンの場合 */
+			echo $this->element('Calendars.CalendarPlans/detail_edit_repeat_option', array(
+			'firstSibEventId' => $firstSibEventId,
+			'firstSibYear' => $firstSibYear,
+			'firstSibMonth' => $firstSibMonth,
+			'firstSibMonth' => $firstSibMonth,
+			'firstSibDay' => $firstSibDay,
+			'originEventId' => $originEventId,
+			'isRecurrence' => $isRecurrence,
+			));
+			?>
+
+			<div class='form-group' name='inputTitle'>
 				<div class='col-xs-12'>
 					<?php echo $this->element('Calendars.CalendarPlans/edit_title'); ?>
 				</div><!-- col-sm-10おわり -->
-		</div><!-- form-groupおわり-->
+			</div><!-- form-groupおわり-->
 
-<br />
-
-		<div class="form-group" name="checkTime">
+			<div class="form-group" name="checkTime">
 				<div class='form-inline col-xs-12'>
  					<label class='control-label' style='margin-right:1em;'>
 						<?php echo __d('calendars', '予定日の設定') . $this->element('NetCommons.required'); ?>
 					</label>
-		<?php
-			$useTime = 'useTime[' . $frameId . ']';
-		?>
-		<?php echo $this->NetCommonsForm->checkbox('CalendarActionPlan.enable_time', array(
-			'label' => __d('calendars', '時間の指定'),
-			'class' => 'calendar-specify-a-time_' . $frameId,
-			'div' => false,
-			'ng-model' => $useTime,
-			'ng-change' => 'toggleEnableTime(' . $frameId . ')',
-			'ng-false-value' => 'false',
-			'ng-true-value' => 'true',
-			'ng-init' => (($this->request->data['CalendarActionPlan']['enable_time']) ? ($useTime . ' = true') : ($useTime . ' = false')),
-			));
-		?>
+					<?php
+						$useTime = 'useTime[' . $frameId . ']';
+					?>
+					<?php echo $this->NetCommonsForm->checkbox('CalendarActionPlan.enable_time', array(
+						'label' => __d('calendars', '時間の指定'),
+						'class' => 'calendar-specify-a-time_' . $frameId,
+						'div' => false,
+						'ng-model' => $useTime,
+						'ng-change' => 'toggleEnableTime(' . $frameId . ')',
+						'ng-false-value' => 'false',
+						'ng-true-value' => 'true',
+						'ng-init' => (($this->request->data['CalendarActionPlan']['enable_time']) ? ($useTime . ' = true') : ($useTime . ' = false')),
+						));
+					?>
 				</div><!-- col-xs-12おわり -->
- 		</div><!-- form-groupおわり-->
+ 			</div><!-- form-groupおわり-->
 
 <?php 
 	$startDatetimeValue = '';
@@ -383,13 +323,6 @@
 <div class="form-group" name="inputRruleInfo" style="display: <?php echo ($editRrule) ? 'block' : 'none'; ?>">
 <div class="col-xs-12">
 
-	<!-- <uib-accordion close-others="oneAtATime"> -->
-
-		<!-- <uib-accordion-group is-open="status.open"> -->
-			<!-- <uib-accordion-heading>
-				繰返しの予定<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-			</uib-accordion-heading> -->
-
 			<!-- ここからアコーディオンの中身START -->
 
 			<div class="form-group" name="checkRrule">
@@ -416,9 +349,6 @@
 	));
 	?>
 
-			<!-- <label style='float: left'>
-				<?php //echo __d('calendars', '予定を繰り返す'); ?>
-			</label> -->
 
 			<div class="clearfix"></div>
 
@@ -892,13 +822,6 @@
 
 
 			</div><!-- 繰返しの選択詳細 END -->
-
-
-			<!-- ここからアコーディオンの中身END -->
-
-		<!-- </uib-accordion-group> -->
-
-	<!-- </uib-accordion> -->
 
 </div><!-- col-sm-10おわり -->
 </div><!-- form-groupおわり-->

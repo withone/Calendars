@@ -454,13 +454,9 @@ class CalendarPlansController extends CalendarsAppController {
  */
 	public function edit() {
 		//表示用の設定
-		$ctpName = '';
 		$vars = $event = $eventSiblings = array(); //0件を意味する空配列を入れておく。
-		$style = 'detail';	//初期値
-		if (isset($this->request->params['named']) && isset($this->request->params['named']['style'])) {
-			$style = $this->request->params['named']['style'];
-		}
-		$ctpName = $this->getCtpAndVarsForEdit($style, $vars);
+		$this->setCalendarCommonVars($vars);
+		$ctpName = 'detail_edit';
 
 		//表示方法設定情報を取り出し、requestのdataに格納する。
 		$frameSetting = $this->CalendarFrameSetting->find('first', array(
@@ -610,26 +606,6 @@ class CalendarPlansController extends CalendarsAppController {
 	public function getCtpAndVarsForList(&$vars) {
 		$this->setCalendarCommonVars($vars);
 		$ctpName = 'daylist';
-		return $ctpName;
-	}
-
-/**
- * getCtpAndVarsForEdit
- *
- * 予定編集用のCtp名および予定情報の取得
- *
- * @param string $style 編集スタイル
- * @param array &$vars カレンダー情報
- * @return string ctpName文字列
- * @throws InternalErrorException
- */
-	public function getCtpAndVarsForEdit($style, &$vars) {
-		$this->setCalendarCommonVars($vars);
-		if ($style === 'easy') {
-			$ctpName = 'easy_edit';
-		} else {
-			$ctpName = 'detail_edit';
-		}
 		return $ctpName;
 	}
 

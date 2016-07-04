@@ -359,11 +359,11 @@ msgid  "delete"
 msgstr  "削除処理"
 
 #: View/CalendarPlans/delete.ctp:63
-msgid  "This plan has been repeatedly set. Select the plan that you want to remove from the following items, please press the delete button."
-msgstr  "この予定は繰り返し設定されています。削除する予定を下記項目から選択し、削除ボタンを押して\n\t\t\tください。<br />一度削除すると元に戻せません。"
+msgid  "This plan has been repeatedly set. Select the plan that you want to remove from the following items, please press the delete button.<br />It can not be undone once you delete."
+msgstr  "この予定は繰り返し設定されています。削除する予定を下記項目から選択し、削除ボタンを押してください。<br />一度削除すると元に戻せません。"
 
 #: View/CalendarPlans/delete.ctp:66
-msgid  "Delete event"
+msgid  "Delete event.<br />It can not be undone once you delete."
 msgstr  "この予定を削除します。<br />一度削除すると元に戻せません。"
 
 #: View/CalendarPlans/delete.ctp:73
@@ -381,16 +381,6 @@ msgstr  "これ以降に指定した全ての予定"
 msgid  "all"
 msgstr  "設定した全ての予定"
 
-#: View/CalendarPlans/delete.ctp:103
-#: View/CalendarPlans/show.ctp:221
-msgid  "Cancel"
-msgstr  "キャンセル"
-
-#: View/CalendarPlans/delete.ctp:115
-#: View/CalendarPlans/show.ctp:272
-msgid  "Delete"
-msgstr  "削除"
-
 #: View/CalendarPlans/detail_edit.ctp:7
 msgid  "Form to edit schedule item"
 msgstr  "予定の編集"
@@ -400,7 +390,7 @@ msgid  "Form to add schedule item"
 msgstr  "予定の追加"
 
 #: View/CalendarPlans/detail_edit.ctp:94
-msgid  "This plan has been repeatedly set. Select the plan that you want to edit from the following items, Repetation of the plan [only this one] is not displayed. "
+msgid  "This plan has been repeatedly set. Select the plan that you want to edit from the following items, Repetation of the plan [only this one] is not displayed."
 msgstr  "この予定は繰り返し設定されています。変更した予定を下記項目から選択し、予定編集してください。なお「この予定のみ」の時は予定の繰返しは表示されません。"
 
 #: View/CalendarPlans/detail_edit.ctp:97

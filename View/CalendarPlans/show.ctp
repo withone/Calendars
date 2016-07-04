@@ -210,22 +210,8 @@
 </div><!-- col-sm-10おわり -->
 </div><!-- おわり-->
 
-<!-- </div> --><!-- panel-bodyを閉じる -->
-
-<!-- <div class="panel-footer text-center"> -->
 <div class="text-center">
 
-<!--
-<button name="cancel" onclick="location.href = '/faqs/faq_blocks/index/5?frame_id=11'" ng-click="sending=true" ng-disabled="sending" class="btn btn-default btn-workflow " type="button">
-	<span class="glyphicon glyphicon-remove"></span>
-	<?php echo __d('calendars', 'キャンセル'); ?>
-</button>
-<?php
-	echo "<button type='button' ng-click=\"showRepeatConfirm('" . $frameId . "','" . $isRepeat . "','edit')\" class='btn btn-primary btn-workflow' title='" . __d('calendars', '編集') . "'>";
-?>
-    <span class="glyphicon glyphicon-edit"> </span>
-</button>
--->
 
 <div class="text-center">
 <!--- 戻るボタン -->
@@ -263,21 +249,5 @@
 	//echo $this->CalendarPlan->makeShowDetailEditBtnHtml($vars, $event['CalendarEvent']['id']);
 ?>
 </div>
-<!-- <hr style="margin-top:0.2em; margin-bottom:0.2em" /> -->
-<!-- 削除は、詳細登録へ移動
-<hr />
-
-<div class="col-xs-12 text-right">
-<?php
-	echo "<button type='button' ng-click=\"showRepeatConfirm('" . $frameId . "','" . $isRepeat . "','delete')\" class='btn btn-danger btn-workflow' name='delete' title='" . __d('calendars', '削除') . "'>";
-?>
-    <span class="glyphicon glyphicon-trash"> </span>
-</button>
-</div>
--->
-
-<!-- </form> --><!--formを閉じる-->
-
-<!-- </div> --><!--panelを閉じる-->
 
 </article>

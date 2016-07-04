@@ -24,6 +24,6 @@
 			),
 			NetCommonsUrl::backToIndexUrl('default_setting_action')
 		); ?>
-	</div><!--tab-contentを閉じる-->
+	</div><!--end tab-content-->
 </article>
 

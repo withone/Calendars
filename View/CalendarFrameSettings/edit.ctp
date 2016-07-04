@@ -35,7 +35,7 @@ if (isset($this->data['CalendarFrameSetting'])) {
 	<?php echo $this->BlockTabs->main(BlockTabsHelper::MAIN_TAB_FRAME_SETTING); ?>
 
 	<div class="tab-content">
-	<!-- カレンダーにはBLOCK_TAB_SETTINGは無し -->
+	<?php /* カレンダーにはBLOCK_TAB_SETTINGは無し */ ?>
 
 	<?php echo $this->element('Blocks.edit_form', array(
 			'model' => 'CalendarFrameSetting',
@@ -43,5 +43,5 @@ if (isset($this->data['CalendarFrameSetting'])) {
 			'cancelUrl' => NetCommonsUrl::backToIndexUrl('default_action'),
 		)); ?>
 
-	</div><!--tab-contentを閉じる-->
+	</div><!--end tab-content-->
 </article>
