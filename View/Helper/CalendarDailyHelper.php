@@ -114,14 +114,15 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 		if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !==
 			$plan['CalendarEvent']['toTime']) {
 			$html .= '<p class="calendar-daily-nontimeline-plan calendar-plan-time small">';
-			$html .= $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'] . '</p>';
+			$html .= h($plan['CalendarEvent']['fromTime']) . '-' .
+				h($plan['CalendarEvent']['toTime']) . '</p>';
 		}
 		$spaceName = $this->getSpaceName(
 			$vars, $plan['CalendarEvent']['room_id'], $plan['CalendarEvent']['language_id']);
 		$spaceName = $this->CalendarCommon->decideRoomName($spaceName, $calendarPlanMark);
 		$html .= '<p class="calendar-plan-spacename small">' . h($spaceName) . '</p>';
 
-		$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>';
+		$html .= '<h3 class="calendar-plan-tittle"><a href=' . h($url) . '>';
 
 		//タイトルアイコン
 		$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
@@ -131,11 +132,11 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 		$html .= '</p>';
 		if ($plan['CalendarEvent']['location'] != '') {
 			$html .= '<p class="calendar-plan-place small">' . __d('calendars', '場所の詳細:');
-			$html .= $plan['CalendarEvent']['location'] . '</p>';
+			$html .= h($plan['CalendarEvent']['location']) . '</p>';
 		}
 		if ($plan['CalendarEvent']['contact']) {
 			$html .= '<p class="calendar-plan-address small">' . __d('calendars', '連絡先:');
-			$html .= $plan['CalendarEvent']['contact'] . '</p>';
+			$html .= h($plan['CalendarEvent']['contact']) . '</p>';
 		}
 		return $html;
 	}

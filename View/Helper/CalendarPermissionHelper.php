@@ -44,7 +44,7 @@ class CalendarPermissionHelper extends AppHelper {
 		}
 		//$html = '<tab heading="' . $title . '">';
 		//$html = '<uib-tab-heading="' . $title . '">';
-		$html = '<uib-tab heading="' . $title . '">';
+		$html = '<uib-tab heading="' . h($title) . '">';
 		return $html;
 	}
 /**

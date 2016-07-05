@@ -121,7 +121,7 @@ class CalendarRoomSelectHelper extends AppHelper {
 		}
 		$html .= "<span class='calendar-plan-mark {$className}'>";
 
-		$html .= $title;
+		$html .= h($title);
 		$html .= '</span>';
 
 		$html .= '</td></tr>';

@@ -111,12 +111,12 @@ class CalendarDailyTimelineHelper extends CalendarMonthlyHelper {
 			$html .= "data-url='" . $url . "'>";
 
 			$html .= "<small style='float:left'>";
-			$html .= $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'];
+			$html .= h($plan['CalendarEvent']['fromTime']) . '-' . h($plan['CalendarEvent']['toTime']);
 			$html .= '</small>';
 
 			// ワークフロー（一時保存/承認待ち、など）のマーク
 			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarEvent']['status']);
-			$html .= '<small>' . $plan['CalendarEvent']['title'] . '</small>';
+			$html .= '<small>' . h($plan['CalendarEvent']['title']) . '</small>';
 			$html .= '</div></div>';
 			$html .= '</p></div>';
 
@@ -140,8 +140,6 @@ class CalendarDailyTimelineHelper extends CalendarMonthlyHelper {
 		$nctm = new NetCommonsTime();
 
 		$html .= $this->_makePlanSummariesHtml($vars, $nctm, $vars['year'], $vars['month'], $vars['day']);
-		//$this->log('HTML・・・', 'debug');
-		//$this->log($html, 'debug');
 		return $html;
 	}
 
