@@ -46,8 +46,6 @@ $this->request->data['CalendarActionPlan']['origin_num_of_event_siblings'] > 1))
 				?>
 				<?php if($isRecurrence): ?>
 					<?php echo __d('calendars', 'Because it was specified in the [only this one], repetation of the plan can not be specified.'); ?>
-				<?php else: ?>
-					<?php echo __d('calendars', 'When you select the [all] will be re-set to the contents is repeated first plan.'); ?>
 				<?php endif; ?>
 				</div><!-- end media body-->
 			</div><!-- end media -->
@@ -77,6 +75,9 @@ $this->request->data['CalendarActionPlan']['origin_num_of_event_siblings'] > 1))
 				)
 			);
 			?>
+			<?php if(! $isRecurrence): ?>
+				<p class="help-block text-right"><small><?php echo __d('calendars', 'When you select the [all] will be re-set to the contents is repeated first plan.'); ?></small></p>
+			<?php endif; ?>
 			</div>
 		</div><!-- col-sm-10おわり -->
 	</div><!-- form-groupおわり-->

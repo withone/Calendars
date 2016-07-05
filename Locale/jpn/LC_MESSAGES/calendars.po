@@ -399,15 +399,15 @@ msgstr  "「この予定のみ」指定で変更された予定なので、予�
 
 #: View/CalendarPlans/detail_edit.ctp:99
 msgid  "When you select the [all] will be re-set to the contents is repeated first plan."
-msgstr  "「設定した全ての予定」を選択すると内容が繰返しの初回予定に再設定されます。"
+msgstr  "「設定した全ての予定」を選択すると、現在の編集がキャンセルされ、繰返しの初回予定に再設定されます。"
 
 #: View/CalendarPlans/detail_edit.ctp:153
-msgid  "Setting the date."
+msgid  "Setting the date"
 msgstr  "予定日の設定"
 
 #: View/CalendarPlans/detail_edit.ctp:159
-msgid  "Setting the time."
-msgstr  "時間の指定"
+msgid  "Setting the time"
+msgstr  "期間・時間の指定"
 
 #: View/CalendarPlans/detail_edit.ctp:195
 msgid  "All day"
@@ -465,6 +465,8 @@ msgid  "year"
 msgstr  "年"
 
 #: View/CalendarPlans/detail_edit.ctp:522;691
+msgid  "every %dday(s)"
+msgstr  "%d日ごと"
 #: View/Helper/CalendarTurnCalendarHelper.php:158
 msgid  "%dday(s)"
 msgstr  "%d日"
@@ -478,23 +480,26 @@ msgid  "%dweek(s)"
 msgstr  "%d週"
 
 #: View/CalendarPlans/detail_edit.ctp:635
-msgid  "%d month(s)"
+msgid  "every %d month(s)"
 msgstr  "%dヶ月ごと"
 
 #: View/CalendarPlans/detail_edit.ctp:654
 msgid  "Please select either."
-msgstr  "どちらかを選択してください"
+msgstr  "どちらかを選択してください。"
 
 #: View/CalendarPlans/detail_edit.ctp:660
 msgid  "- select day of the week -"
 msgstr  "-曜日指定-"
+
+msgid "or"
+msgstr "または"
 
 #: View/CalendarPlans/detail_edit.ctp:689
 msgid  "- select day of the month -"
 msgstr  "-日付指定-"
 
 #: View/CalendarPlans/detail_edit.ctp:717
-msgid  "%d year(s)"
+msgid  "every %d year(s)"
 msgstr  "%d年ごと"
 
 #: View/CalendarPlans/detail_edit.ctp:737
@@ -573,19 +578,19 @@ msgid  "Event 1 hour ago"
 msgstr  "イベント1時間前"
 
 #: View/CalendarPlans/detail_edit.ctp:1029
-msgid  "Event 2 hour ago"
+msgid  "Event 2 hours ago"
 msgstr  "イベント2時間前"
 
 #: View/CalendarPlans/detail_edit.ctp:1030
-msgid  "Event 3 hour ago"
+msgid  "Event 3 hours ago"
 msgstr  "イベント3時間前"
 
 #: View/CalendarPlans/detail_edit.ctp:1031
-msgid  "Event 12 hour ago"
+msgid  "Event 12 hours ago"
 msgstr  "イベント12時間前"
 
 #: View/CalendarPlans/detail_edit.ctp:1032
-msgid  "Event 24 hour ago"
+msgid  "Event 24 hours ago"
 msgstr  "イベント24時間前"
 
 #: View/CalendarPlans/detail_edit.ctp:1033
@@ -595,6 +600,9 @@ msgstr  "イベント2日前"
 #: View/CalendarPlans/detail_edit.ctp:1034
 msgid  "Event 1 week ago"
 msgstr  "イベント1週間前"
+
+msgid "detail information"
+msgstr "詳細な情報の入力"
 
 #: View/CalendarPlans/detail_edit.ctp:1072
 #: View/CalendarPlans/show.ctp:164

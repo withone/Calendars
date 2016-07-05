@@ -546,11 +546,11 @@ NetCommonsApp.controller('CalendarsDetailEdit',
            var checked = $('#CalendarActionPlanEditRrule' + num).prop('checked');
            if (checked) {
              if (num === '0') { //0
-               console.log('num[' + num + ']が選択されたので、予定の繰り返しを非表示にします。');
-               $('div.form-group[name=inputRruleInfo]').css('display', 'none');
+               //console.log('num[' + num + ']が選択されたので、予定の繰り返しを非表示にします。');
+               //$('div.form-group[data-calendar-name=inputRruleInfo]').css('display', 'none');
              } else {  //1, 2
-               console.log('num[' + num + ']が選択されたので、予定の繰り返しを表示します。');
-               $('div.form-group[name=inputRruleInfo]').css('display', 'block');
+               //console.log('num[' + num + ']が選択されたので、予定の繰り返しを表示します。');
+               //$('div.form-group[data-calendar-name=inputRruleInfo]').css('display', 'block');
 
                if (num === '2') {
                  if (firstSibEditLink !== '') {
