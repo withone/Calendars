@@ -117,8 +117,8 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 			if ($fromTime !== $plan['CalendarEvent']['fromTime'] ||
 				$toTime !== $plan['CalendarEvent']['toTime']) {
 				$html .= "<span class='pull-left'><small class='calendar-daily-nontimeline-periodtime-deco'>";
-				$html .= $plan['CalendarEvent']['fromTime'] . '-';
-				$html .= $plan['CalendarEvent']['toTime'] . '</small></span>';
+				$html .= h($plan['CalendarEvent']['fromTime']) . '-';
+				$html .= h($plan['CalendarEvent']['toTime']) . '</small></span>';
 			}
 			//スペース名
 			$spaceName = $this->CalendarDaily->getSpaceName($vars,
@@ -127,7 +127,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 
 			$html .= '<p class="calendar-plan-spacename small">' . h($spaceName) . '</p>';
 
-			//$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>' . $plan['CalendarEvent']['title'] . '</a></h3>';
+			//$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>' . h($plan['CalendarEvent']['title']) . '</a></h3>';
 			$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>';
 			//タイトルアイコン
 			$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
@@ -205,15 +205,14 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 				$toTime !== $plan['CalendarEvent']['toTime']) {
 				$htmlPlan .= '<span class="pull-left">';
 				$htmlPlan .= '<small class="calendar-daily-nontimeline-periodtime-deco">';
-				$htmlPlan .= $plan['CalendarEvent']['fromTime'] . '-';
-				$htmlPlan .= $plan['CalendarEvent']['toTime'] . '</small></span>';
+				$htmlPlan .= h($plan['CalendarEvent']['fromTime']) . '-';
+				$htmlPlan .= h($plan['CalendarEvent']['toTime']) . '</small></span>';
 			}
 			//スペース名
 			$spaceName = $this->CalendarDaily->getSpaceName(
 				$vars, $plan['CalendarEvent']['room_id'], $plan['CalendarEvent']['language_id']);
 			$spaceName = $this->CalendarCommon->decideRoomName($spaceName, $calendarPlanMark);
 			$htmlPlan .= '<p class="calendar-plan-spacename small">' . h($spaceName) . '</p>';
-			//$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>' . $plan['CalendarEvent']['title'] . '</a></h3>';
 
 			$htmlPlan .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>';
 			//タイトルアイコン
@@ -242,13 +241,6 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		$html .= '<div class="col-xs-12">';
 
 		if ($cnt == 0) {
-			//$html .= '<div class="row">';//予定が１件もないときは、クラスcalendar-tablecontainerを外す pending
-			//$html .= '<div class="col-xs-12">';
-			//$html .= '<table class="table table-hover calendar-tablestyle"><tbody>';
-			//$html .= '</tbody></table>';
-
-			//$html .= $htmlPlan;
-			//$html .= '</div></div>';
 			$html .= '<p class="calendar-schedule-row-plan">' .
 				__d('calendars', '予定はありません。') . '</p>';
 
@@ -343,8 +335,6 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 			//タイトル+予定
 			$html .= $htmlTitle; //タイトル追加
 			$html .= $htmlPlan; //プラン追加
-			//$html .= $this->makeGlyphiconPlusWithUrl(
-			//	$yearAfterDay, $monthAfterDay, $afterDay, $vars);
 			$html .= "</div>"; //一日の終了
 		}
 		return $html;

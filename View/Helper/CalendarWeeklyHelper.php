@@ -130,7 +130,7 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		if ($fromTime !== $plan['CalendarEvent']['fromTime'] ||
 			$toTime !== $plan['CalendarEvent']['toTime']) {
 			$html .= '<p class="calendar-plan-time small">';
-			$html .= $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'];
+			$html .= h($plan['CalendarEvent']['fromTime']) . '-' . h($plan['CalendarEvent']['toTime']);
 			$html .= '</p>';
 		}
 		$html .= '<h3 class="calendar-plan-tittle">';
@@ -264,7 +264,7 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 			$html .= '<td class="calendar-weekly-col-room-name calendar-tbl-td-pos">';
 			$html .= '<div class="row"><div class="col-xs-12">';
 			$html .= '<div class="calendar-plan-mark ' . $calendarPlanMark . '">';
-			$html .= $room;
+			$html .= h($room);
 			$html .= '</div></div></div></td>';
 			$vars['currentRoomId'] = $roomID[0];//$cnt;
 			//予定（7日分繰り返し）

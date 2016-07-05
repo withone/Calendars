@@ -1003,3 +1003,123 @@ msgstr  "最初の画面に戻る"
 #: View/CalendarPlans/show.ctp:255
 msgid  "Back"
 msgstr  "戻る"
+
+#: Controller/Component/CalendarsComponent.php:241
+msgid  "(GMT-12:00) Eniwetok, Kwajalein"
+msgstr "(GMT-12:00) エニウェトク、クエジェリン"
+
+#: Controller/Component/CalendarsComponent.php:243
+msgid  "(GMT-11:00) Midway Island, Samoa"
+msgstr "(GMT-11:00) ミッドウェー島、サモア"
+
+#: Controller/Component/CalendarsComponent.php:245
+msgid  "(GMT-10:00) Hawaii"
+msgstr "(GMT-10:00) ハワイ"
+
+#: Controller/Component/CalendarsComponent.php:247
+msgid  "(GMT-9:00) Alaska"
+msgstr "(GMT-9:00) アラスカ"
+
+#: Controller/Component/CalendarsComponent.php:249
+msgid  "(GMT-8:00) Pacific Time (US & Canada)"
+msgstr "(GMT-8:00) 太平洋標準時（米国およびカナダ）、ティファナ"
+
+#: Controller/Component/CalendarsComponent.php:251
+msgid  "(GMT-7:00) Mountain Time (US & Canada)"
+msgstr "(GMT-7:00) 山地標準時（米国およびカナダ）"
+
+#: Controller/Component/CalendarsComponent.php:253
+msgid  "(GMT-6:00) Central Time (US & Canada), Mexico City"
+msgstr "(GMT-6:00) 中部標準時（米国およびカナダ）、メキシコシティ"
+
+#: Controller/Component/CalendarsComponent.php:255
+msgid  "(GMT-5:00) Eastern Time (US & Canada), Bogota, Lima, Quito"
+msgstr "(GMT-5:00) 東部標準時（米国およびカナダ）、ボゴタ、リマ、キト"
+
+#: Controller/Component/CalendarsComponent.php:257
+msgid  "(GMT-4:00) Atlantic Time (Canada), Caracas, La Paz"
+msgstr "(GMT-4:00) 大西洋標準時（カナダ）、カラカス、ラパス"
+
+#: Controller/Component/CalendarsComponent.php:259
+msgid  "(GMT-3:30) Newfoundland"
+msgstr "(GMT-3:30) ニューファンドランド"
+
+#: Controller/Component/CalendarsComponent.php:261
+msgid  "(GMT-3:00) Brasilia, Buenos Aires, Georgetown"
+msgstr "(GMT-3:00) ブラジリア、ブエノスアイレス、ジョージタウン"
+
+#: Controller/Component/CalendarsComponent.php:263
+msgid  "(GMT-2:00) Mid-Atlantic"
+msgstr "(GMT-2:00) 中央大西洋"
+
+#: Controller/Component/CalendarsComponent.php:265
+msgid  "(GMT-1:00) Azores, Cape Verde Islands"
+msgstr "(GMT-1:00) アゾレス諸島、カーボベルデ諸島"
+
+#: Controller/Component/CalendarsComponent.php:267
+msgid  "(GMT) Greenwich Mean Time, London, Dublin, Lisbon, Casablanca, Monrovia"
+msgstr "(GMT) グリニッジ標準時、ダブリン、ロンドン、リスボン、エジンバラ"
+
+#: Controller/Component/CalendarsComponent.php:269
+msgid  "(GMT+1:00) Amsterdam, Berlin, Rome, Copenhagen, Brussels, Madrid, Paris"
+msgstr "(GMT+1:00) ブリュッセル、コペンハーゲン、マドリッド、パリ、アムステルダム"
+
+#: Controller/Component/CalendarsComponent.php:271
+msgid  "(GMT+2:00) Athens, Istanbul, Minsk, Helsinki, Jerusalem, South Africa"
+msgstr "(GMT+2:00) アテネ、イスタンブール、エルサレム、カイロ、ヘルシンキ"
+
+#: Controller/Component/CalendarsComponent.php:273
+msgid  "(GMT+3:00) Baghdad, Kuwait, Riyadh, Moscow, St. Petersburg"
+msgstr "(GMT+3:00) バグダッド、ナイロビ、クウェート、リヤド、モスクワ"
+
+#: Controller/Component/CalendarsComponent.php:275
+msgid  "(GMT+3:30) Tehran"
+msgstr "(GMT+3:30) テヘラン"
+
+#: Controller/Component/CalendarsComponent.php:277
+msgid  "(GMT+4:00) Abu Dhabi, Muscat, Baku, Tbilisi"
+msgstr "(GMT+4:00) アブダビ、マスカット、バク、トビリシ"
+
+#: Controller/Component/CalendarsComponent.php:279
+msgid  "(GMT+4:30) Kabul"
+msgstr "(GMT+4:30) カブール"
+
+#: Controller/Component/CalendarsComponent.php:281
+msgid  "(GMT+5:00) Ekaterinburg, Islamabad, Karachi, Tashkent"
+msgstr "(GMT+5:00) イスラマバード、カラチ、タシケント、エカテリンバーグ"
+
+#: Controller/Component/CalendarsComponent.php:283
+msgid  "(GMT+5:30) Bombay, Calcutta, Madras, New Delhi"
+msgstr "(GMT+5:30) カルカッタ、チェンナイ、ムンバイ、ニューデリー"
+
+#: Controller/Component/CalendarsComponent.php:285
+msgid  "(GMT+6:00) Almaty, Dhaka, Colombo"
+msgstr "(GMT+6:00) ダッカ、アルマティ、スリ・ジャヤワルダナプラ"
+
+#: Controller/Component/CalendarsComponent.php:287
+msgid  "(GMT+7:00) Bangkok, Hanoi, Jakarta"
+msgstr "(GMT+7:00) バンコク、ハノイ、ジャカルタ"
+
+#: Controller/Component/CalendarsComponent.php:289
+msgid  "(GMT+8:00) Beijing, Perth, Singapore, Hong Kong, Urumqi, Taipei"
+msgstr "(GMT+8:00) シンガポール、パース、台北、北京、重慶、香港、ウルムチ"
+
+#: Controller/Component/CalendarsComponent.php:291
+msgid  "(GMT+9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk"
+msgstr "(GMT+9:00) 東京、大阪、札幌、ソウル、ヤクーツク"
+
+#: Controller/Component/CalendarsComponent.php:293
+msgid  "(GMT+9:30) Adelaide, Darwin"
+msgstr "(GMT+9:30) アデレード、ダーウィン"
+
+#: Controller/Component/CalendarsComponent.php:295
+msgid  "(GMT+10:00) Brisbane, Canberra, Melbourne, Sydney, Guam,Vlasdiostok"
+msgstr "(GMT+10:00) ウラジオストク、キャンベラ、メルボルン、シドニー、グアム"
+
+#: Controller/Component/CalendarsComponent.php:297
+msgid  "(GMT+11:00) Magadan, Solomon Islands, New Caledonia"
+msgstr "(GMT+11:00) マガダン、ソロモン諸島、ニューカレドニア"
+
+#: Controller/Component/CalendarsComponent.php:299
+msgid  "(GMT+12:00) Auckland, Wellington, Fiji, Kamchatka, Marshall Island"
+msgstr "(GMT+12:00) オークランド、ウェリントン、フィジー、カムチャッカ"

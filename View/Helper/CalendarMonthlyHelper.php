@@ -335,7 +335,7 @@ class CalendarMonthlyHelper extends AppHelper {
 			if ($fromTime !== $plan['CalendarEvent']['fromTime'] ||
 				$toTime !== $plan['CalendarEvent']['toTime']) {
 				$html .= '<p class="calendar-plan-time small">';
-				$html .= $plan['CalendarEvent']['fromTime'] . '-' . $plan['CalendarEvent']['toTime'];
+				$html .= h($plan['CalendarEvent']['fromTime']) . '-' . h($plan['CalendarEvent']['toTime']);
 				$html .= '</p>';
 			}
 			$html .= '<h3 class="calendar-plan-tittle">';
@@ -583,10 +583,10 @@ class CalendarMonthlyHelper extends AppHelper {
 		//<!-- 2row --> 祝日タイトル
 		$html .= "<div class='col-xs-12'>";
 		//$html .= "<span class='calendar-sunday'><small>";
-		//$html .= (($holidayTitle === '') ? '&nbsp;' : $holidayTitle) . '</small></span>';
+		//$html .= (($holidayTitle === '') ? '&nbsp;' : h($holidayTitle)) . '</small></span>';
 
 		$html .= "<small class='calendar-sunday'>";
-		$html .= (($holidayTitle === '') ? '&nbsp;' : $holidayTitle) . '</small>';
+		$html .= (($holidayTitle === '') ? '&nbsp;' : h($holidayTitle)) . '</small>';
 
 		$html .= '</div>';
 		$html .= '</div>';
@@ -673,7 +673,7 @@ class CalendarMonthlyHelper extends AppHelper {
 			//<!-- 2row --> 祝日タイトル
 			$html .= '<div class="col-xs-12">';
 			$html .= '<small class="calendar-sunday">';
-			$html .= (($holidayTitle === '') ? '&nbsp;' : $holidayTitle);
+			$html .= (($holidayTitle === '') ? '&nbsp;' : h($holidayTitle));
 			$html .= '</small>';
 			$html .= '</div>';
 			$html .= '</div>';
