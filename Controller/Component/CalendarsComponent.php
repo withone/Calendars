@@ -238,80 +238,78 @@ class CalendarsComponent extends Component {
 	public static function getTzTbl() {
 		$tzTbl = array(
 		'_TZ_GMTM12' => array(
-			"(GMT-12:00) エニウェトク、クエジェリン", -12.0, "Etc/GMT+12"),
+			__d('calendars', '(GMT-12:00) Eniwetok, Kwajalein'), -12.0, "Etc/GMT+12"),
 		'_TZ_GMTM11' => array(
-			"(GMT-11:00) ミッドウェー島、サモア", -11.0, "Pacific/Midway"),
+			__d('calendars', '(GMT-11:00) Midway Island, Samoa'), -11.0, "Pacific/Midway"),
 		'_TZ_GMTM10' => array(
-			"(GMT-10:00) ハワイ", -10.0, "US/Hawaii"),
+			__d('calendars', '(GMT-10:00) Hawaii'), -10.0, "US/Hawaii"),
 		'_TZ_GMTM9' => array(
-			"(GMT-9:00) アラスカ", -9.0, "US/Alaska"),
+			__d('calendars', '(GMT-9:00) Alaska'), -9.0, "US/Alaska"),
 		'_TZ_GMTM8' => array(
-			"(GMT-8:00) 太平洋標準時（米国およびカナダ）、ティファナ",
+			__d('calendars', '(GMT-8:00) Pacific Time (US & Canada)'),
 			-8.0, "US/Pacific"),
-		'_TZ_GMTM7' => array("(GMT-7:00) 山地標準時（米国およびカナダ）",
+		'_TZ_GMTM7' => array(__d('calendars', '(GMT-7:00) Mountain Time (US & Canada)'),
 			-7.0, "US/Mountain"),
 		'_TZ_GMTM6' => array(
-			"(GMT-6:00) 中部標準時（米国およびカナダ）、メキシコシティ",
+			__d('calendars', '(GMT-6:00) Central Time (US & Canada), Mexico City'),
 			-6.0, "US/Central"),
 		'_TZ_GMTM5' => array(
-			"(GMT-5:00) 東部標準時（米国およびカナダ）、ボゴタ、リマ、キト",
+			__d('calendars', '(GMT-5:00) Eastern Time (US & Canada), Bogota, Lima, Quito'),
 			-5.0, "US/Eastern"),
 		'_TZ_GMTM4' => array(
-			"(GMT-4:00) 大西洋標準時（カナダ）、カラカス、ラパス",
+			__d('calendars', '(GMT-4:00) Atlantic Time (Canada), Caracas, La Paz'),
 			-4.0, "Atlantic/Bermuda"),
 		'_TZ_GMTM35' => array(
-			"(GMT-3:30) ニューファンドランド", -3.5, "Canada/Newfoundland"),
+			__d('calendars', '(GMT-3:30) Newfoundland'), -3.5, "Canada/Newfoundland"),
 		'_TZ_GMTM3' => array(
-			"(GMT-3:00) ブラジリア、ブエノスアイレス、ジョージタウン",
+			__d('calendars', '(GMT-3:00) Brasilia, Buenos Aires, Georgetown'),
 			-3.0, "Brazil/East"),
 		'_TZ_GMTM2' => array(
-			"(GMT-2:00) 中央大西洋", -2.0, "Atlantic/South_Georgia"),
+			__d('calendars', '(GMT-2:00) Mid-Atlantic'), -2.0, "Atlantic/South_Georgia"),
 		'_TZ_GMTM1' => array(
-			"(GMT-1:00) アゾレス諸島、カーボベルデ諸島", -1.0, "Atlantic/Azores"),
+			__d('calendars', '(GMT-1:00) Azores, Cape Verde Islands'), -1.0, "Atlantic/Azores"),
 		'_TZ_GMT0' => array(
-			"(GMT) グリニッジ標準時、ダブリン、ロンドン、リスボン、エジンバラ",
+			__d('calendars', '(GMT) Greenwich Mean Time, London, Dublin, Lisbon, Casablanca, Monrovia'),
 			0.0, "Etc/Greenwich"),
 		'_TZ_GMTP1' => array(
-			"(GMT+1:00) ブリュッセル、コペンハーゲン、" .
-			"マドリッド、パリ、アムステルダム",
+			__d('calendars', '(GMT+1:00) Amsterdam, Berlin, Rome, Copenhagen, Brussels, Madrid, Paris'),
 			1.0, "Europe/Amsterdam"),
 		'_TZ_GMTP2' => array(
-			"(GMT+2:00) アテネ、イスタンブール、エルサレム、カイロ、ヘルシンキ",
+			__d('calendars', '(GMT+2:00) Athens, Istanbul, Minsk, Helsinki, Jerusalem, South Africa'),
 			2.0, "Europe/Athens"),
 		'_TZ_GMTP3' => array(
-			"(GMT+3:00) バグダッド、ナイロビ、クウェート、リヤド、モスクワ",
+			__d('calendars', '(GMT+3:00) Baghdad, Kuwait, Riyadh, Moscow, St. Petersburg'),
 			3.0, "Asia/Baghdad"),
-		'_TZ_GMTP35' => array("(GMT+3:30) テヘラン", 3.5, "Asia/Tehran"),
+		'_TZ_GMTP35' => array(__d('calendars', '(GMT+3:30) Tehran'), 3.5, "Asia/Tehran"),
 		'_TZ_GMTP4' => array(
-			"(GMT+4:00) アブダビ、マスカット、バク、トビリシ", 4.0, "Asia/Muscat"),
+			__d('calendars', '(GMT+4:00) Abu Dhabi, Muscat, Baku, Tbilisi'), 4.0, "Asia/Muscat"),
 		'_TZ_GMTP45' => array(
-			"(GMT+4:30) カブール", 4.5, "Asia/Kabul"),
+			__d('calendars', '(GMT+4:30) Kabul'), 4.5, "Asia/Kabul"),
 		'_TZ_GMTP5' => array(
-			"(GMT+5:00) イスラマバード、カラチ、タシケント、エカテリンバーグ",
+			__d('calendars', '(GMT+5:00) Ekaterinburg, Islamabad, Karachi, Tashkent'),
 			5.0, "Asia/Karachi"),
 		'_TZ_GMTP55' => array(
-			"(GMT+5:30) カルカッタ、チェンナイ、ムンバイ、ニューデリー",
+			__d('calendars', '(GMT+5:30) Bombay, Calcutta, Madras, New Delhi'),
 			5.5, "Asia/Calcutta"),
 		'_TZ_GMTP6' => array(
-			"(GMT+6:00) ダッカ、アルマティ、スリ・ジャヤワルダナプラ",
+			__d('calendars', '(GMT+6:00) Almaty, Dhaka, Colombo'),
 			6.0, "Asia/Almaty"),
 		'_TZ_GMTP7' => array(
-			"(GMT+7:00) バンコク、ハノイ、ジャカルタ", 7.0, "Asia/Bangkok"),
+			__d('calendars', '(GMT+7:00) Bangkok, Hanoi, Jakarta'), 7.0, "Asia/Bangkok"),
 		'_TZ_GMTP8' => array(
-			"(GMT+8:00) シンガポール、パース、台北、北京、重慶、香港、ウルムチ",
+			__d('calendars', '(GMT+8:00) Beijing, Perth, Singapore, Hong Kong, Urumqi, Taipei'),
 			8.0, "Asia/Singapore"),
 		'_TZ_GMTP9' => array(
-			"(GMT+9:00) 東京、大阪、札幌、ソウル、ヤクーツク", 9.0, "Asia/Tokyo"),
+			__d('calendars', '(GMT+9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk'), 9.0, "Asia/Tokyo"),
 		'_TZ_GMTP95' => array(
-			"(GMT+9:30) アデレード、ダーウィン", 9.5, "Australia/Adelaide"),
+			__d('calendars', '(GMT+9:30) Adelaide, Darwin'), 9.5, "Australia/Adelaide"),
 		'_TZ_GMTP10' => array(
-			"(GMT+10:00) ウラジオストク、キャンベラ、" .
-			"メルボルン、シドニー、グアム",
+			__d('calendars', '(GMT+10:00) Brisbane, Canberra, Melbourne, Sydney, Guam,Vlasdiostok'),
 			10.0, "Australia/Brisbane"),
 		'_TZ_GMTP11' => array(
-			"(GMT+11:00) マガダン、ソロモン諸島、ニューカレドニア", 11.0, "Etc/GMT-11"),
+			__d('calendars', '(GMT+11:00) Magadan, Solomon Islands, New Caledonia'), 11.0, "Etc/GMT-11"),
 		'_TZ_GMTP12' => array(
-			"(GMT+12:00) オークランド、ウェリントン、フィジー、カムチャッカ",
+			__d('calendars', '(GMT+12:00) Auckland, Wellington, Fiji, Kamchatka, Marshall Island'),
 			12.0, "Pacific/Auckland"),
 		);
 		return $tzTbl;
