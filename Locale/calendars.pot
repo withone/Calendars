@@ -680,6 +680,9 @@ msgstr ""
 #: View/CalendarPlans/show.ctp:145
 msgid  "People to share the schedule"
 msgstr ""
+msgid  "Person who made the schedule"
+msgstr  ""
+
 
 #: View/CalendarPlans/show.ctp:198
 msgid  "Author"

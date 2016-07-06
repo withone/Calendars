@@ -1,6 +1,6 @@
 <?php
 /**
- * Calendar Trun Calendar Helper
+ * Calendar Legend Calendar Helper
  *
  * @author Allcreator Co., Ltd. <info@allcreator.net>
  * @link http://www.netcommons.org NetCommons Project
@@ -9,7 +9,7 @@
  */
 App::uses('AppHelper', 'View/Helper');
 /**
- * Calendar Turn Calendar Helper
+ * Calendar Legend Calendar Helper
  *
  * @author Allcreator Co., Ltd. <info@allcreator.net>
  * @package NetCommons\Calendars\View\Helper

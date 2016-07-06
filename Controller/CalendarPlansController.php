@@ -83,6 +83,8 @@ class CalendarPlansController extends CalendarsAppController {
 		'Calendars.CalendarCommon',
 		'Calendars.CalendarMonthly',
 		'Calendars.CalendarPlan',
+		'Calendars.CalendarCategory',
+		'Calendars.CalendarShareUsers',
 		'Calendars.CalendarExposeTarget',
 		'Calendars.CalendarPlanRrule',
 		'Groups.GroupUserList',
@@ -288,7 +290,7 @@ class CalendarPlansController extends CalendarsAppController {
 			//校正用配列の準備
 			$this->CalendarActionPlan->calendarProofreadValidationErrors = array();
 			if (!$this->CalendarActionPlan->validates()) {
-				//失敗なら、エラーメッセージを保持したまま、edit()を実行し、easy_edit.ctpを表示
+				//失敗なら、エラーメッセージを保持したまま、edit()を実行
 
 				//validationエラーの内、いくつか（主にrrule関連)を校正する。
 				$this->CalendarActionPlan->proofreadValidationErrors($this->CalendarActionPlan);
@@ -425,7 +427,6 @@ class CalendarPlansController extends CalendarsAppController {
 		$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars');
 		//print_r('SHOW return');print_r($url);
 		$vars['returnUrl'] = $url;
-
 		$this->set(
 			compact('event', 'roomLang', 'shareUserInfos', 'createdUserInfo', 'frameId',
 			'languageId', 'isRepeat', 'vars'));

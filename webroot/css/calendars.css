@@ -700,8 +700,8 @@ td.calendar-col-day .calendar-out-of-range  .calendar-day {
 /*-- カレンダー 特定予定の情報（間隔）2016.3.3  --*/
 .calendar-eachplan-box {
 	padding-top:10px;
-	padding-bottom:10px;
-	margin-top:10px;
+/*	padding-bottom:10px;
+	margin-top:10px;*/
 }
 
 

@@ -678,6 +678,8 @@ msgstr  "公開対象"
 #: View/CalendarPlans/show.ctp:145
 msgid  "People to share the schedule"
 msgstr  "予定を共有する人"
+msgid  "Person who made the schedule"
+msgstr  "予定を入れた人"
 
 #: View/CalendarPlans/show.ctp:198
 msgid  "Author"
