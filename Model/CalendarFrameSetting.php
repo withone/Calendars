@@ -24,18 +24,6 @@ App::uses('CalendarsComponent', 'Calendars.Controller/Component');	//constを使
 class CalendarFrameSetting extends CalendarsAppModel {
 
 /**
- * Display type value
- *
- * @var string
- */
-	const DISPLAY_TYPE_SMALL_MONTHLY_VALUE	= '0',
-			DISPLAY_TYPE_LARGE_MONTHLY_VALUE	= '1',
-			DISPLAY_TYPE_WEEKLY_VALUE = '2',
-			DISPLAY_TYPE_DAILY_VALUE = '3',
-			DISPLAY_TYPE_SCHEDULE_TIME_VALUE = '4',
-			DISPLAY_TYPE_SCHEDULE_MEMBER_VALUE = '5';
-
-/**
  * use behaviors
  *
  * @var array
@@ -146,12 +134,12 @@ class CalendarFrameSetting extends CalendarsAppModel {
 				),
 				'rule2' => array(
 					'rule' => array('inList', array(
-						self::DISPLAY_TYPE_DAILY_VALUE,
-						self::DISPLAY_TYPE_LARGE_MONTHLY_VALUE,
-						self::DISPLAY_TYPE_SMALL_MONTHLY_VALUE,
-						self::DISPLAY_TYPE_SCHEDULE_TIME_VALUE,
-						self::DISPLAY_TYPE_SCHEDULE_MEMBER_VALUE,
-						self::DISPLAY_TYPE_WEEKLY_VALUE
+						CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY,
+						CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY,
+						CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY,
+						CalendarsComponent::CALENDAR_DISP_TYPE_DAILY,
+						CalendarsComponent::CALENDAR_DISP_TYPE_TSCHEDULE,
+						CalendarsComponent::CALENDAR_DISP_TYPE_MSCHEDULE,
 					)),
 					'message' => __d('net_commons', 'Invalid request.'),
 				),

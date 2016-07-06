@@ -27,26 +27,25 @@
 ?>
 
 <div class="form-group">
-<div class='row'>
-<?php echo $this->NetCommonsForm->label('CalendarFrameSetting.display_type',
-	__d('calendars', '表示方法'), array('class' => 'col-xs-12')); ?>
-<div class='col-xs-12'>
-<?php
-	echo $this->NetCommonsForm->input('CalendarFrameSetting.display_type', array(
-		'type' => 'select',
-		'label' => false,
-		'div' => false,
-		'options' => $displayTypeOptions,
-		'selected' => $this->request->data['CalendarFrameSetting']['display_type'],
-		'data-calendar-frame-id' => Current::read('Frame.id'),
-		'ng-model' => 'data.calendarFrameSetting.displayType',
-		'ng-change' => 'displayChange()',
-	));
-?>
-
-</div>
-<div class="clearfix"></div>
-</div>
+	<div class='row'>
+		<?php echo $this->NetCommonsForm->label('CalendarFrameSetting.display_type',
+		__d('calendars', 'Display type'), array('class' => 'col-xs-12')); ?>
+		<div class='col-xs-12'>
+		<?php
+			echo $this->NetCommonsForm->input('CalendarFrameSetting.display_type', array(
+				'type' => 'select',
+				'label' => false,
+				'div' => false,
+				'options' => $displayTypeOptions,
+				'selected' => $this->request->data['CalendarFrameSetting']['display_type'],
+				'data-calendar-frame-id' => Current::read('Frame.id'),
+				'ng-model' => 'data.calendarFrameSetting.displayType',
+				'ng-change' => 'displayChange()',
+			));
+		?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
 </div><!-- form-groupおわり-->
 
 <?php

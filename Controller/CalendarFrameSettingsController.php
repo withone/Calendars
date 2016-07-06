@@ -110,17 +110,17 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 		parent::__construct($id, $table, $ds);
 		$this->_displayTypeOptions = array(
 			CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY =>
-				__d('calendars', '月表示（縮小）'),
+				__d('calendars', 'Monthly Calendar (small)'),
 			CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY =>
-				__d('calendars', '月表示（拡大）'),
+				__d('calendars', 'Monthly Calendar (large)'),
 			CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY =>
-				__d('calendars', '週表示'),
+				__d('calendars', 'Weekly Calendar'),
 			CalendarsComponent::CALENDAR_DISP_TYPE_DAILY =>
-				__d('calendars', '日表示'),
+				__d('calendars', 'Day View'),
 			CalendarsComponent::CALENDAR_DISP_TYPE_TSCHEDULE =>
-				__d('calendars', 'スケジュール（時間順）'),
+				__d('calendars', 'Schedule (ordered-by-time)'),
 			CalendarsComponent::CALENDAR_DISP_TYPE_MSCHEDULE =>
-				__d('calendars', 'スケジュール（会員順）'),
+				__d('calendars', 'Schedule (ordered-by-user)'),
 		);
 	}
 
