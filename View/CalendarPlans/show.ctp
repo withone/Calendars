@@ -142,5 +142,4 @@ echo $this->element('Calendars.scripts');
 			echo $this->Button->cancel(__d('calendars', 'Back'), $cancelUrl);
 		?>
 	</div>
-
 </article>
