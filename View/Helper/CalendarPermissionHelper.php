@@ -67,7 +67,7 @@ class CalendarPermissionHelper extends AppHelper {
  */
 	public function getPermissionCells($spaceId, $roomBlock) {
 		if (! $this->__canEditBlockRolePermission($roomBlock)) {
-			return '<td colspan="' . $this->_View->viewVars['defaultRoleCount'] . '"></td>';
+			return '<td colspan="' . count($this->_View->viewVars['defaultRoles']) . '"></td>';
 		}
 		$permission = 'content_creatable';
 		$fieldName = $spaceId . '.' . $roomBlock['Room']['id'] . '.BlockRolePermission.content_creatable';
