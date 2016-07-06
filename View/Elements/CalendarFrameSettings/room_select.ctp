@@ -30,14 +30,12 @@
 		</div>
 		<div name="roomSelect" ng-show="data.calendarFrameSetting.isSelectRoom">
 			<div class="panel-body">
-					<?php echo __d('calendars', '表示させるルームを選択してください。'); ?>
-					<div class='calendar-list-wrapper'>
+				<?php echo __d('calendars', '表示させるルームを選択してください。'); ?>
+				<div class='calendar-list-wrapper'>
 					<?php echo $this->CalendarRoomSelect->spaceSelector($spaces); ?>
-				<!-- </uib-accordion> -->
-					</div>
-			</div><!--panel-bodyおわり-->
-		</div><!--panelおわり-->
-
-	</div><!-- col-xs-12 col-sm-10 -->
-	<div class="clearfix"></div><!-- 幅広画面整えるため追加 -->
-</div><!-- form-groupおわり -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="clearfix"></div><?php /* 幅広画面整えるため追加 */ ?>
+</div>

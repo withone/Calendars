@@ -10,7 +10,6 @@
 		<?php echo $this->CalendarTurnCalendar->getTurnCalendarOperationsWrap('week', $vars); ?>
 
 		<div class="row"><!--全体枠-->
-			<!-- <div class="col-sm-11 col-sm-offset-1 text-center"> -->
 			<div class="col-xs-12 col-sm-12 text-center table-responsive">
 
 				<table class='calendar-weekly-table'>
@@ -24,16 +23,11 @@
 						<?php $calendarLinePlans = $this->CalendarWeekly->getLineData() ?>
 						<div ng-controller="CalendarsMonthlyLinePlan" ng-style="initialize(<?php echo h(json_encode(array('calendarLinePlans' => $calendarLinePlans))) ?>)" resize>
 
-						<?php
-							//echo $this->CalendarWeekly->makeWeeklyBodyHtml($vars);
-						?>
-
 					</tbody>
 				</table>
 			</div>
-
 		</div><!--全体枠END-->
-</form>
+	</form>
 
 	<!-- 予定の内容 -->
 	<?php
@@ -42,7 +36,6 @@
 <div class="row text-center calendar-backto-btn">
 	<?php
 		echo $this->CalendarUrl->getBackFirstButton($vars);
-		//echo $this->BackTo->indexLinkButton(__d('calendars', '最初の画面に戻る'));
 	?>
 </div>
 </article>
