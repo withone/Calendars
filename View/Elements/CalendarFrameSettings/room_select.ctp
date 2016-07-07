@@ -23,14 +23,14 @@
 				'data-calendar-frame-id' => Current::read('Frame.id'),
 				'ng-model' => 'data.calendarFrameSetting.isSelectRoom',
 				));
-				echo __d('calendars', '指定したルームのみ表示する');
+				echo __d('calendars', 'Display only designated room');
 				?>
 			</label>
 
 		</div>
 		<div name="roomSelect" ng-show="data.calendarFrameSetting.isSelectRoom">
 			<div class="panel-body">
-				<?php echo __d('calendars', '表示させるルームを選択してください。'); ?>
+				<?php echo __d('calendars', 'Select room for participation.'); ?>
 				<div class='calendar-list-wrapper'>
 					<?php echo $this->CalendarRoomSelect->spaceSelector($spaces); ?>
 				</div>

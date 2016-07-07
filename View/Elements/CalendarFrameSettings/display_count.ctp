@@ -11,12 +11,12 @@
 ?>
 <div class="form-group" ng-show="isShowDisplayCount">
 	<?php echo $this->NetCommonsForm->label('CalendarFrameSetting.display_count',
-		__d('calendars', '表示日数'), array('class' => 'col-xs-12 col-sm-12')); ?>
+		__d('calendars', 'Display days'), array('class' => 'col-xs-12 col-sm-12')); ?>
 	<div class="col-xs-12 col-sm-9">
 		<?php
 		$options = array();
 		for ($idx = CalendarsComponent::CALENDAR_MIN_DISPLAY_DAY_COUNT; $idx <= CalendarsComponent::CALENDAR_MAX_DISPLAY_DAY_COUNT; ++$idx) {
-			$options[$idx] = $idx . __d('calendars', '日');
+			$options[$idx] = sprintf(__d('calendars', '%dday(s)'), $idx);
 		}
 
 		echo $this->NetCommonsForm->input('CalendarFrameSetting.display_count', array(

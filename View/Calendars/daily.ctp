@@ -17,9 +17,7 @@ echo $this->element('Calendars.scripts');
 	<div class="row">
 		<div class="col-xs-12 col-sm-2 col-sm-push-10">
 			<div class="text-right">
-				<?php
-				echo $this->CalendarButton->getAddButton($vars);
-				?>
+				<?php echo $this->CalendarButton->getAddButton($vars); ?>
 			</div>
 		</div>
 		<div class="col-xs-12  col-sm-10 col-sm-pull-2">
@@ -36,8 +34,6 @@ echo $this->element('Calendars.scripts');
 	echo $this->CalendarLegend->getCalendarLegend($vars);
 	?>
 	<div class="row text-center calendar-backto-btn">
-		<?php
-		echo $this->CalendarUrl->getBackFirstButton($vars);
-		?>
+		<?php echo $this->CalendarUrl->getBackFirstButton($vars); ?>
 	</div>
 </article>

@@ -28,5 +28,5 @@
 		</tbody>
 	</table>
 <?php else: ?>
-	<?php echo __d('calendars', 'まだルームが存在しません'); ?>
+	<?php echo __d('calendars', 'It does not exist yet Room.'); ?>
 <?php endif;

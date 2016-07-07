@@ -733,11 +733,11 @@ msgstr  "土"
 
 #: View/Elements/CalendarBlockRolePermissions/edit_form.ctp:22
 msgid  "Only you can create your private event."
-msgstr  "予定を追加できるのは本人だけです"
+msgstr  "予定を追加できるのは本人だけです。"
 
 #: View/Elements/CalendarBlockRolePermissions/permission.ctp:31
 msgid  "It does not exist yet Room."
-msgstr  "まだルームが存在しません"
+msgstr  "まだルームが存在しません。"
 
 #: View/Elements/CalendarBlockRolePermissions/permission_table_header.ctp:12
 msgid  "Set the permissions that you can add an appointment to the calendar."

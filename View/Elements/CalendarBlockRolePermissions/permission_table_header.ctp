@@ -9,7 +9,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 ?>
-<caption><?php echo __d('calendars', 'カレンダーに予定を追加できる権限を設定します。'); ?></caption>
+<caption><?php echo __d('calendars', 'Set the permissions that you can add an appointment to the calendar.'); ?></caption>
 <thead>
 <tr>
 	<th class="text-center"><?php echo __d('rooms', 'Room name'); ?></th>

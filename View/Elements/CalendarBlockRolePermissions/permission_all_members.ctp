@@ -14,7 +14,7 @@
 	<tbody>
 	<tr>
 		<td>
-			<?php echo __d('calendars', '全会員'); ?>
+			<?php echo __d('calendars', 'All the members'); ?>
 		</td>
 		<?php echo $this->CalendarPermission->getPermissionCells(Space::ROOM_SPACE_ID, $allMemberRoomBlocks[Space::ROOM_SPACE_ID][Room::ROOM_PARENT_ID]); ?>
 		<?php echo $this->CalendarPermission->getUseWorkflowCells(Space::ROOM_SPACE_ID, $allMemberRoomBlocks[Space::ROOM_SPACE_ID][Room::ROOM_PARENT_ID]); ?>

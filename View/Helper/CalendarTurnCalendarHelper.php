@@ -96,7 +96,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		switch($type) {
 			case 'month':
 			case 'week':
-				$html .= sprintf(__d('calendars', '<small>%d月</small>%d月'),
+				$html .= sprintf(__d('calendars', '<small>%d年</small>%d月'),
 					$vars['mInfo']['year'], $vars['mInfo']['month']);
 				break;
 			case 'day':

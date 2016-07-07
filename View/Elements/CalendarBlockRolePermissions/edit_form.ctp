@@ -18,7 +18,7 @@
 			)); ?>
 		<?php else: ?>
 			<p class="well">
-				<?php echo __d('calendars', '予定を追加できるのは本人だけです'); ?>
+				<?php echo __d('calendars', 'Only you can create your private event.'); ?>
 			</p>
 		<?php endif; ?>
 	<?php echo $this->CalendarPermission->getSpaceSelectTabEnd($space); ?>

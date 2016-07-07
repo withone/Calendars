@@ -17,8 +17,8 @@
 <div class='input-group'>
 	<?php
 	$options = array(
-		CalendarsComponent::CALENDAR_START_POS_WEEKLY_TODAY => __d('calendars', '今日'),
-		CalendarsComponent::CALENDAR_START_POS_WEEKLY_YESTERDAY => __d('calendars', '前日'),
+		CalendarsComponent::CALENDAR_START_POS_WEEKLY_TODAY => __d('calendars', 'Today'),
+		CalendarsComponent::CALENDAR_START_POS_WEEKLY_YESTERDAY => __d('calendars', 'Previous day'),
 	);
 
 	echo $this->NetCommonsForm->radio('CalendarFrameSetting.start_pos', $options, array(

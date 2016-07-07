@@ -177,14 +177,12 @@ class CalendarsFrameSettingsControllerEditTest extends NetCommonsControllerTestC
 			'assert' => null
 		);
 		// 存在しないフレームID
-		/*
 		$results[1] = array(
 			'urlOptions' => array('frame_id' => 15),
 			'assert' => null,
 			'exception' => 'BadRequestException',
 			'return' => array('json')
 		);
-*/
 		return $results;
 	}
 
