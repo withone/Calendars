@@ -301,11 +301,15 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 
 		foreach ($roomInfos as $roomId => &$roomInfo) {
 			////$roleKey = $roomInfo['role_key'];
-			$permissions = array('content_publishable');
+			$permissions = array('content_publishable', 'content_editable', 'content_creatable');
 			$perms = $model->Workflow->getRoomRolePermissions($permissions,
 				DefaultRolePermission::TYPE_ROOM_ROLE, $roomId);
 			$roomInfo['content_publishable_value'] = Hash::get($perms,
 				'RoomRolePermission.content_publishable.' . $roomInfo['role_key'] . '.value');
+			$roomInfo['content_editable_value'] = Hash::get($perms,
+				'RoomRolePermission.content_editable.' . $roomInfo['role_key'] . '.value');
+			$roomInfo['content_creatable_value'] = Hash::get($perms,
+				'RoomRolePermission.content_creatable.' . $roomInfo['role_key'] . '.value');
 		}
 		return $roomInfos;
 	}

@@ -28,6 +28,7 @@ class CalendarMonthlyHelper extends AppHelper {
 		'NetCommonsHtml',
 		'Form',
 		'Calendars.CalendarCommon',
+		'Calendars.CalendarButton',
 		'Calendars.CalendarUrl',
 		'Calendars.CalendarPlan',
 		'NetCommons.TitleIcon',
@@ -522,27 +523,6 @@ class CalendarMonthlyHelper extends AppHelper {
 	}
 
 /**
- * makeGlyphiconPlusWithUrl
- *
- * Url付き追加アイコン生成
- *
- * @param int $year 年
- * @param int $month 月
- * @param int $day 日
- * @param arrya &$vars カレンダー情報
- * @return string HTML
- */
-	public function makeGlyphiconPlusWithUrl($year, $month, $day, &$vars) {
-		$html = '';
-		if (Current::permission('content_creatable')) {
-			//$url = $this->CalendarUrl->makeEasyEditUrl($year, $month, $day, $vars);
-			$url = $this->CalendarUrl->makeEditUrl($year, $month, $day, $vars);
-			$html .= "<a class='pull-right calendar-edit-plus-icon' href='" . $url . "'>+</a>";
-		}
-		return $html;
-	}
-
-/**
  * _doPrevNextMonthPart
  *
  * 初週前月部または最終週次月部の生成
@@ -570,7 +550,6 @@ class CalendarMonthlyHelper extends AppHelper {
 		$url = $this->CalendarUrl->getCalendarDailyUrl($year, $month, $day);
 
 		//<!-- 1row --> 日付と予定追加glyph
-		//$html .= $this->makeGlyphiconPlusWithUrl($year, $month, $day, $vars);
 		$html .= "<div class='row'>";
 		$html .= "<div class='col-xs-3 col-sm-12'>";
 		$html .= "<div class='row calendar-day-num'>";
@@ -658,7 +637,7 @@ class CalendarMonthlyHelper extends AppHelper {
 			}
 			$html .= '<td class="calendar-col-day calendar-tbl-td-pos ' . $tdColor . '"><div>';
 			//<!-- 1row --> 日付と予定追加glyph
-			$html .= $this->makeGlyphiconPlusWithUrl(
+			$html .= $this->CalendarButton->makeGlyphiconPlusWithUrl(
 				$vars['mInfo']['year'], $vars['mInfo']['month'], $day, $vars);
 			$html .= '<div class="row">';
 			$html .= '<div class="col-xs-3 col-sm-12">';

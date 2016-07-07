@@ -27,6 +27,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 		'Form',
 		'Calendars.CalendarUrl',
 		'Calendars.CalendarCommon',
+		'Calendars.CalendarButton',
 		'Calendars.CalendarDaily',
 		'Html',
 		'Users.DisplayUser',
@@ -376,7 +377,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 
 		$html .= '<span class="glyphicon schedule-openclose" ng-class="{' . $ngClass . '}"></span>';
 		$html .= '<span class="h4">';
-		$html .= $this->makeGlyphiconPlusWithUrl($year, $month, $day, $vars);
+		$html .= $this->CalendarButton->makeGlyphiconPlusWithUrl($year, $month, $day, $vars);
 
 		if ($vars['start_pos'] == 1) {
 			$dayCount--; // 開始日（前日）

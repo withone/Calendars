@@ -14,25 +14,9 @@ echo $this->element('Calendars.scripts');
 <article ng-controller="CalendarsDetailEdit" class="block-setting-body">
 
 	<!--- 編集ボタン -->
-	<?php
-		$pseudoPlan = $this->CalendarCommon->makePseudoPlanFromEvent($vars, $event);
-		$planMarkClassName = $this->CalendarCommon->getPlanMarkClassName($vars, $pseudoPlan);
-	?>
-	<?php /* 「仲間の予定」は他人のプライベート予定なので編集してはいけない。 */ ?>
-	<?php if (!(strpos($planMarkClassName, 'private') === false && strpos($planMarkClassName, 'share') !== false)) : ?>
-		<div class="text-right">
-			<?php echo $this->Button->editLink('', array(
-			'controller' => 'calendar_plans',
-			'action' => 'edit',
-			'style' => 'detail',
-			'year' => $vars['year'],
-			'month' => $vars['month'],
-			'day' => $vars['day'],
-			'event' => $event['CalendarEvent']['id'],
-			'frame_id' => Current::read('Frame.id'),
-			)); ?>
-		</div>
-	<?php endif; ?>
+	<div class="text-right">
+		<?php echo $this->CalendarButton->getEditButton($vars, $event);?>
+	</div>
 
 	<div class="row">
 

@@ -41,7 +41,8 @@ class CalendarShareUserEntryBehavior extends CalendarAppBehavior {
  */
 	public function insertShareUsers(Model &$model, $shareUsers, $eventId) {
 		if (!(isset($model->CalendarEventShareUser))) {
-			$model->loadModels(['CalendarEventShareUser' => 'Calendar.CalendarEventShareUser']);
+			$model->CalendarEventShareUser = ClassRegistry::init('Calendars.CalendarEventShareUser', true);
+			//$model->loadModels(['CalendarEventShareUser' => 'Calendar.CalendarEventShareUser']);
 		}
 		if (empty($shareUsers)) {
 			//CakeLog::debug("DBG: shareUsersは空です");

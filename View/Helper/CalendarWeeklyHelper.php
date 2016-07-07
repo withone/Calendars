@@ -27,6 +27,7 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		'NetCommonsHtml',
 		'Form',
 		'Calendars.CalendarCommon',
+		'Calendars.CalendarButton',
 		'Calendars.CalendarUrl',
 		'Calendars.CalendarDaily',
 		'Calendars.CalendarMonthly',
@@ -212,7 +213,7 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		for ($i = 0; $i < 7; $i++) {
 			$tdBottomColor = str_replace('top', 'bottom', $tdColor[$i]);
 			$html .= '<td class="calendar-weekly-col-day-head-bottom ' . $tdBottomColor . '">';
-			$html .= $this->CalendarMonthly->makeGlyphiconPlusWithUrl(
+			$html .= $this->CalendarButton->makeGlyphiconPlusWithUrl(
 				$years[$i], $months[$i], $days[$i], $vars);
 			$html .= '</td>';
 		}

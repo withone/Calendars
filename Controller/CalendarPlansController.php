@@ -106,6 +106,9 @@ class CalendarPlansController extends CalendarsAppController {
 		}
 
 		$this->Auth->allow('daylist', 'show');
+
+		$this->roomPermRoles = $this->CalendarEvent->prepareCalRoleAndPerm();
+		$this->set('roomPermRoles', $this->roomPermRoles);
 	}
 
 /**

@@ -860,6 +860,9 @@ a.calendar-edit-plus-icon {
 	position:static;
 	right:0;
 }
+.calendar-schedule-row-title a.calendar-edit-plus-icon {
+	padding: 0.1em 1em;
+}
 a.calendar-edit-plus-icon:hover {
 	text-decoration:none;
 	background-color:#dff0d8;

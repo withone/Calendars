@@ -70,6 +70,7 @@ class CalendarsController extends CalendarsAppController {
 		'Calendars.CalendarMonthly',
 		'Calendars.CalendarTurnCalendar',
 		'Calendars.CalendarLegend',
+		'Calendars.CalendarButton',
 	);
 
 /**
@@ -123,9 +124,10 @@ class CalendarsController extends CalendarsAppController {
 		$this->_storeRedirectPath($vars);
 		$ctpName = $this->getCtpAndVars($style, $vars);
 
+		$roomPermRoles = $this->CalendarEvent->prepareCalRoleAndPerm();
 		$frameId = Current::read('Frame.id');
 		$languageId = Current::read('Language.id');
-		$this->set(compact('frameId', 'languageId', 'vars'));
+		$this->set(compact('frameId', 'languageId', 'vars', 'roomPermRoles'));
 		$this->render($ctpName);
 	}
 

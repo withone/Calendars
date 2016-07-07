@@ -148,11 +148,15 @@ class Calendar extends CalendarsAppModel {
 		if (!empty($data['Frame']['block_id'])) {
 			return $data;
 		}
-		$frame = $data['Frame'];	//FrameモデルですでにFrameモデルデータは登録済み
 
 		$this->begin();
 
 		try {
+			if (empty($data['Frame'])) {
+				throw new BadRequestException(__d('net_commons', 'Bad Request'));
+			}
+			$frame = $data['Frame'];	//FrameモデルですでにFrameモデルデータは登録済み
+
 			//Frameモデルに記録されているのと同じ「ルーム,言語,plugin_key=カレンダ」のレコードが
 			//Blockモデルに存在するか調べる
 			$block = $this->Block->find('first', array(

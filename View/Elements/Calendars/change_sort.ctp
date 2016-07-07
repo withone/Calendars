@@ -38,7 +38,7 @@
 			<?php endif; ?>
 			</div>
 			<div class="col-xs-3 col-sm-1 col-sm-offset-7 text-right">
-				<?php echo $this->CalendarMonthly->makeGlyphiconPlusWithUrl($vars['year'], $vars['month'], $vars['day'], $vars); ?>
+				<?php echo $this->CalendarButton->makeGlyphiconPlusWithUrl($vars['year'], $vars['month'], $vars['day'], $vars); ?>
 			</div>
 		</div>
 	</div>

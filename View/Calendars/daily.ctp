@@ -18,8 +18,7 @@ echo $this->element('Calendars.scripts');
 		<div class="col-xs-12 col-sm-2 col-sm-push-10">
 			<div class="text-right">
 				<?php
-				$url = $this->CalendarUrl->makeEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
-				echo $this->LinkButton->add('', $url);
+				echo $this->CalendarButton->getAddButton($vars);
 				?>
 			</div>
 		</div>

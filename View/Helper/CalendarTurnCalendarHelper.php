@@ -56,39 +56,6 @@ class CalendarTurnCalendarHelper extends AppHelper {
  * @return string html
  */
 	public function getTurnCalendarOperations($type, $vars) {
-		/* ng
-		$prevUrl = $this->_getUrl('prev', $type, $vars);
-		$nextUrl = $this->_getUrl('next', $type, $vars);
-		$thisDayUrl = $this->_getUrl('now', $type, $vars);
-
-		$html = '';
-		$html .= '<div class="row"><div class="col-xs-12 col-sm-2 col-sm-push-10">';
-		$html .= '<div class="pull-right">';
-
-		//$url = $this->CalendarUrl->makeEasyEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
-		$url = $this->CalendarUrl->makeEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
-
-		$html .= '<a class="btn btn-success" href="' . $url . '">';
-		$html .= '<span class="glyphicon glyphicon-plus" tooltip="';
-		$html .= __d('net_commons', 'Add') . '"></span>';
-		$html .= '</a></div></div>';
-
-		$html .= '<div class="col-xs-12 col-sm-10 col-sm-pull-2">';
-
-		$html .= '<div class="calendar-date-move-operations">';
-		$html .= '<a href="' . $prevUrl . '"><span class="glyphicon glyphicon-chevron-left"></span></a>';
-
-		$html .= $this->_getDateTitle($type, $vars);
-
-		$html .= '<a href="' . $nextUrl . '"><span class="glyphicon glyphicon-chevron-right"></span></a>';
-
-		$html .= '<div class="calendar-this-month">';
-		$html .= '<a href="' . $thisDayUrl . '" >';
-		$html .= $this->_getNowButtonTitle($type);
-		$html .= '</a></div>';
-		$html .= '</div></div></div>';
-		return $html;
-		*/
 		$prevUrl = $this->_getUrl('prev', $type, $vars);
 		$nextUrl = $this->_getUrl('next', $type, $vars);
 		$thisDayUrl = $this->_getUrl('now', $type, $vars);

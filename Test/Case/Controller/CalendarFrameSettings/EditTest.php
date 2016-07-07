@@ -124,7 +124,7 @@ class CalendarsFrameSettingsControllerEditTest extends NetCommonsControllerTestC
 			//'assert' => array('method' => 'assertNotEmpty', 'expected' => true)
 			'assert' => null,
 			'exception' => 'ForbiddenException',
-			'return' => array('json')
+			'return' => 'json'
 		);
 		return $results;
 	}
@@ -176,13 +176,15 @@ class CalendarsFrameSettingsControllerEditTest extends NetCommonsControllerTestC
 			'urlOptions' => array('frame_id' => $data0['Frame']['id']),
 			'assert' => null
 		);
+		// 存在しないフレームID
+		/*
 		$results[1] = array(
 			'urlOptions' => array('frame_id' => 15),
 			'assert' => null,
 			'exception' => 'BadRequestException',
 			'return' => array('json')
 		);
-
+*/
 		return $results;
 	}
 
