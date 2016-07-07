@@ -60,15 +60,6 @@
 		//YYYY-MM-DD hh:mmのhh:mmを暫定的に00:00で補う。
 		$toYmdHiOfLastHour = $this->request->data['CalendarActionPlan']['detail_end_datetime'] . ' 00:00';
 	}
-
-	$pickerOpt = str_replace('"', "'", json_encode(array(
-		'format' => 'YYYY-MM-DD HH:mm',	//hashi
-	)));
-	$ngModel = 'detailStartDatetime'; //[' . $frameId . ']';
-	$addNgInit = '';
-	if ($this->request->data['CalendarActionPlan']['enable_time']) {
-		$addNgInit = "changeDetailStartDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')";
-	}
 ?>
 <?php /* 期間・時間の指定のチェックボックスがOFFで終日指定の場合の部分 */ ?>
 <div ng-show="<?php echo '!' . $useTime; ?>" class="col-xs-12 col-sm-4"><!--表示条件２START-->
@@ -98,7 +89,16 @@
 
 <?php /* 期間・時間の指定のチェックボックスがONで期間指定の場合の「開始」部分 */ ?>
 <div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-4"><!--表示条件１START-->
-	<?php echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_start_datetime',
+	<?php
+	$pickerOpt = str_replace('"', "'", json_encode(array(
+		'format' => 'YYYY-MM-DD HH:mm',	//hashi
+	)));
+	$ngModel = 'detailStartDatetime'; //[' . $frameId . ']';
+	$addNgInit = '';
+	if ($this->request->data['CalendarActionPlan']['enable_time']) {
+		$addNgInit = "changeDetailStartDatetime('" . 'CalendarActionPlan' . Inflector::camelize('detail_start_datetime') . "')";
+	}
+	echo $this->NetCommonsForm->input('CalendarActionPlanForDisp.detail_start_datetime',
 	array(
 		'div' => false,
 		'label' => __d('calendars', 'From'),
