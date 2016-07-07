@@ -310,66 +310,23 @@ class CalendarActionPlan extends CalendarsAppModel {
 				'rule1' => array(
 					'rule' => array('inList', array(0, 1, 2)),
 					'required' => false,
-					'message' => __d('calendars', '繰返しの変更指定が不正です。'),
+					'message' => __d('calendars', 'Invalid input. (change of repetition)'),
 				),
 			),
 			'is_repeat' => array(
 				'rule1' => array(
 					'rule' => array('inList', array(0, 1)),
 					'required' => false,
-					'message' => __d('calendars', '予定の繰り返し指定が不正です。'),
+					'message' => __d('calendars', 'Invalid input. (repetition)'),
 				),
 			),
 			'repeat_freq' => array(
 				'rule1' => array(
 					'rule' => array('checkRrule'),
 					'required' => false,
-					//'message' => __d('calendars', '繰返し規則指定が不正です'),
 					'message' => CalendarsComponent::CALENDAR_RRULE_ERROR_HAPPEND,
 				),
 			),
-			/*
-			'rrule_count' => array(
-				'rule1' => array(
-					'rule' => array('naturalNumber', false),	//自然数（１以上の整数）
-					'required' => false,
-					'allowEmpty' => true,
-					'message' => __d('calendars', '繰返し回数が不正です'),
-				),
-				'rule2' => array(
-					'rule' => array('range', 0, 1000),	//0より大きく1000未満(＝1以上999以下)
-					'required' => false,
-					'allowEmpty' => true,
-					'message' => sprintf(
-						__d('calendars', '繰返し回数は %d 以上 %d 以下の整数です'), 1, 999),
-				),
-			),
-			'rrule_until' => array(
-				'rule1' => array(
-					'rule' => array('date', 'ymd'),
-					'required' => false,
-					'allowEmpty' => true,
-					'message' => __d('calendars',
-						'終了日による指定、または、繰返しの終了日が不正です'),
-				),
-			),
-			*/
-			/*
-			'enable_email' => array(
-				'rule1' => array(
-					'rule' => array('inList', array(0, 1)),
-					'required' => false,
-					'message' => __d('calendars', 'メール通知の指定が不正です'),
-				),
-			),
-			'email_send_timing' => array(
-				'rule1' => array(
-					'rule' => array('allowedEmailSendTiming'),
-					'required' => false,
-					'message' => __d('calendars', 'メールの通知タイミングが不正です'),
-				),
-			),
-			*/
 		));
 	}
 
@@ -387,7 +344,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 				'rule1' => array(
 					'rule' => array('inList', array(0, 1)),
 					'required' => false,
-					'message' => __d('calendars', '時間の指定が不正です'),
+					'message' => __d('calendars', 'Invalid input. (time)'),
 				),
 			),
 			'easy_start_date' => array(
@@ -395,7 +352,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'rule' => array('date', 'ymd'),	//YYYY-MM-DD
 					'required' => !$isDetailEdit,
 					'allowEmpty' => $isDetailEdit,
-					'message' => __d('calendars', '予定（年月日）の指定が不正です'),
+					'message' => __d('calendars', 'Invalid input. (year/month/day)'),
 				),
 			),
 			'easy_hour_minute_from' => array(
@@ -403,11 +360,11 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'rule' => array('datetime'), //YYYY-MM-DD hh:mm
 					'required' => false,
 					'allowEmpty' => true,
-					'message' => __d('calendars', '予定（開始時間）の指定が不正です'),
+					'message' => __d('calendars', 'Invalid input. (start time)(easy edit mode)'),
 				),
 				'rule2' => array(
 					'rule' => array('checkReverseStartEndTime', 'easy'), //YYYY-MM-DD hh:mm
-					'message' => __d('calendars', '開始時分と終了時分の並びが不正です'),
+					'message' => __d('calendars', 'Invalid input. (start time and end time)(easy edit mode)'),
 				),
 			),
 			'easy_hour_minute_to' => array(
@@ -421,17 +378,17 @@ class CalendarActionPlan extends CalendarsAppModel {
 			'detail_start_datetime' => array(
 				'rule1' => array(
 					'rule' => array('customDatetime', 'detail'), //YYYY-MM-DD or YYYY-MM-DD hh:mm
-					'message' => __d('calendars', '開始日（時）が不正です'),
+					'message' => __d('calendars', 'Invalid input. (start time)'),
 				),
 				'rule2' => array(
 					'rule' => array('checkReverseStartEndDateTime', 'detail'),
-					'message' => __d('calendars', '開始日(時)と終了日(時)の並びが不正です'),
+					'message' => __d('calendars', 'Invalid input. (start day (time) and end day (time))'),
 				),
 			),
 			'detail_end_datetime' => array(
 				'rule1' => array(
 					'rule' => array('customDatetime', 'detail'), //YYYY-MM-DD or YYYY-MM-DD hh:mm
-					'message' => __d('calendars', '終了日（時）が不正です'),
+					'message' => __d('calendars', 'Invalid input. (end date)'),
 				),
 			),
 		));
@@ -451,12 +408,12 @@ class CalendarActionPlan extends CalendarsAppModel {
 				'rule1' => array(
 					'rule' => array('notBlank'),
 					'required' => true,
-					'message' => __d('calendars', '件名が不正です。'),
+					'message' => __d('calendars', 'Invalid input. (plan title)'),
 				),
 				'rule2' => array(
 					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 					'message' => sprintf(__d('calendars',
-						'件名は最大 %d 文字です。'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
+						'%d character limited. (plan title)'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 				),
 			),
 			'title_icon' => array(
@@ -465,7 +422,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'required' => false,
 					'allowEmpty' => true,
 					'message' => sprintf(__d('calendars',
-						'タイトルアイコンは最大 %d 文字です。'),
+						'%d character limited. (title icon)'),
 						CalendarsComponent::CALENDAR_VALIDATOR_GENERAL_VCHAR_LEN),
 				),
 			),
@@ -494,21 +451,21 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'rule' => array('allowedRoomId'),
 					'required' => true,
 					'allowEmpty' => false,
-					'message' => __d('calendars', '権限が不正です。'),
+					'message' => __d('calendars', 'Invalid input. (authority)'),
 				),
 			),
 			'timezone_offset' => array(
 				'rule1' => array(
 					'rule' => array('allowedTimezoneOffset'),
 					'required' => false,
-					'message' => __d('calendars', 'タイムゾーンが不正です。'),
+					'message' => __d('calendars', 'Invalid input. (timezone)'),
 				),
 			),
 			'is_detail' => array(
 				'rule1' => array(
 					'rule' => array('inList', array(0, 1)),
 					'required' => false,
-					'message' => __d('calendars', '詳細表示の指定が不正です。'),
+					'message' => __d('calendars', 'Invalid input. (detail)'),
 				),
 			),
 			'location' => array(
@@ -516,14 +473,14 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 					'required' => false,
 					'message' => sprintf(__d('calendars',
-						'場所は最大 %d 文字です。'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
+						'%d character limited. (location)'), CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 				),
 			),
 			'contact' => array(
 				'rule1' => array(
 					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 					'required' => false,
-					'message' => sprintf(__d('calendars', '連絡先は最大 %d 文字です。'),
+					'message' => sprintf(__d('calendars', '%d character limited. (contact)'),
 						CalendarsComponent::CALENDAR_VALIDATOR_TITLE_LEN),
 				),
 			),
@@ -531,7 +488,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 				'rule1' => array(
 					'rule' => array('maxLength', CalendarsComponent::CALENDAR_VALIDATOR_TEXTAREA_LEN),
 					'required' => false,
-					'message' => sprintf(__d('calendars', '連絡先は最大 %d 文字です。'),
+					//'message' => sprintf(__d('calendars', '連絡先は最大 %d 文字です。'),
+					'message' => sprintf(__d('calendars', '%d character limited. (detail)'),
 						CalendarsComponent::CALENDAR_VALIDATOR_TEXTAREA_LEN),
 				),
 			),

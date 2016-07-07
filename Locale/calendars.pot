@@ -125,8 +125,12 @@ msgstr ""
 msgid  "%d character limited. (location)"
 msgstr ""
 
-#: Model/CalendarActionPlan.php:526;534
+#: Model/CalendarActionPlan.php:526
 msgid  "%d character limited. (contact)"
+msgstr ""
+
+#: Model/CalendarActionPlan.php:534
+msgid  "%d character limited. (detail)"
 msgstr ""
 
 #: Model/CalendarDeleteActionPlan.php:134

@@ -173,3 +173,6 @@
 		?>
 	</div><!-- ng-hide -->
 </div>
+<div class='col-xs-12'>
+	<?php echo $this->NetCommonsForm->error('CalendarActionPlan.detail_start_datetime'); ?>
+</div>
