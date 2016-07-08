@@ -24,6 +24,33 @@ App::uses('WorkflowComponent', 'Workflow.Controller/Component');
 class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 
 /**
+ * _calRoleAndPerm
+ *
+ * 空間と権限の管理マップ
+ * @var null
+ */
+	protected $_calRoleAndPerm = null;
+
+/**
+ * __workflowCompo
+ *
+ * ワークフローコンポーネント（こんなところでコンポーネントを見て本当にすみません）
+ * @var null
+ */
+	private $__workflowCompo = null;
+
+/**
+ * initSetting
+ *
+ * 権限情報を適切にマッピング処理してくれるコンポーネントを取得保持
+ * @param Model &$model モデル
+ * @param Component $workflow ワークフローコンポーネント
+ * @return void
+ */
+	public function initSetting(Model &$model, $workflow) {
+		$this->__workflowCompo = $workflow;
+	}
+/**
  * isContentPublishableWithCalRoleAndPerm
  *
  * カレンダー権限管理を考慮したCurrentユーザの指定oomで付与された役割での承認権限の有無
@@ -33,14 +60,11 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  * @return array $readableRoomIds(参照可能room一覧), $roleOfRooms(ルームごとでの役割一覧)、$roomInfos(ルームでのルーム管理＋カレンダー権限管理での承認権限有無一覧), $rooms(ルームでの役割別権限一覧)を格納した配列を返す。
  */
 	public function isContentPublishableWithCalRoleAndPerm(Model &$model, $roomId) {
-		//CakeLog::debug("DBG: IN isContentPublishableWithCalRoleAndPerm()。roomId[" . $roomId . "]");
-
 		//カレンダー役割・権限の準備
-		$calRoleAndPerm = $this->prepareCalRoleAndPerm($model);
-		//$readableRoomIds = &$calRoleAndPerm['readableRoomIds'];
-		//$rooms = &$calRoleAndPerm['rooms'];
-		//$roleOfRooms = &$calRoleAndPerm['roleOfRooms'];
-		$roomInfos = &$calRoleAndPerm['roomInfos'];
+		if ($this->_calRoleAndPerm === null) {
+			$this->_calRoleAndPerm = $this->prepareCalRoleAndPerm($model);
+		}
+		$roomInfos = &$this->_calRoleAndPerm['roomInfos'];
 
 		$isContentPublishable = false;
 		if ($roomInfos[$roomId]['use_workflow']) {
@@ -62,6 +86,9 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
 	public function prepareCalRoleAndPerm(Model &$model) {
+		if ($this->_calRoleAndPerm !== null) {
+			return $this->_calRoleAndPerm;
+		}
 		//表示対象（readable）なルームIDの一覧を取得
 		//
 		if (!isset($model->CalendarFrameSetting)) {
@@ -112,23 +139,83 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 			//ログインしている時だけ、全会員roomIdを強制的に追加する。
 			$roleOfRooms[Room::ROOM_PARENT_ID] = $this->__getAllMemberRoleKey();
 		}
-
 		//3. ルーム管理＋カレンダー権限管理での承認権限ありなしを取得
-		$roomInfos = $this->__getContentPulblishEnable($model, $roleOfRooms);
+		$roomInfos = $this->__getRolePerms($roleOfRooms);
 
-		//4. 各ルームでの役割に対するルーム管理＋カレンダー権限管理での承認権限の有無を付与
-		$roomInfos = $this->__getContentPulblishableInfo($model, $roomInfos);
-
-		//CakeLog::debug("DBG roomInfos[" . print_r($roomInfos, true) . "]");
-
-		return array(
+		$this->_calRoleAndPerm = array(
 			'readableRoomIds' => $readableRoomIds,
 			'rooms' => $rooms,
 			'roleOfRooms' => $roleOfRooms,
 			'roomInfos' => $roomInfos,
 		);
+		return $this->_calRoleAndPerm;
 	}
 
+/**
+ * __getRolePerms
+ *
+ * 権限情報の取得
+ *
+ * @param array $roleOfRooms ルームに置けるロール情報配列
+ * @return array
+ */
+	private function __getRolePerms($roleOfRooms) {
+		//　Roleが何もない＝未ログイン
+		if (empty($roleOfRooms)) {
+			return array();
+		}
+		$permModel = ClassRegistry::init('Calendars.CalendarPermission');
+
+		$permRooms = $permModel->getCalendarRoomBlocks($this->__workflowCompo);
+		$allMemberRoom = $permModel->getCalendarAllMemberRoomBlocks($this->__workflowCompo);
+		// 全会員ルーム情報もマージしてしまう
+		$permRooms = Hash::mergeDiff($permRooms, $allMemberRoom);
+
+		$retArr = array();
+		foreach ($roleOfRooms as $roomId => $roleName) {
+			$retArr[$roomId] = $this->__getPermSet($roomId, $roleName, $permRooms);
+		}
+		return $retArr;
+	}
+
+/**
+ * __getPermSet
+ *
+ * 権限情報要素判定取得
+ * @param int $roomId ルームID
+ * @param string $roleName そのルームにおけるロール名
+ * @param array $permRooms ルームに置ける権限マッピング状況
+ * @return array
+ */
+	private function __getPermSet($roomId, $roleName, $permRooms) {
+		$room = Hash::extract($permRooms, '{n}.' . $roomId);
+		// ルーム管理者でルーム内権限情報がないときは、それはプライベートです
+		if (! $room && $roleName == 'room_administrator') {
+			return array(
+				'role_key' => $roleName,
+				'use_workflow' => false,
+				'content_publishable_value' => true,
+				'content_editable_value' => true,
+				'content_creatable_value' => true
+			);
+		}
+		$room = $room[0];
+		$useWorkFlow = Hash::get(
+			$room, 'Calendar.use_workflow');
+		$publishable = Hash::get(
+			$room, 'BlockRolePermission.content_publishable.' . $roleName . '.value');
+		$editable = Hash::get(
+			$room, 'BlockRolePermission.content_editable.' . $roleName . '.value');
+		$creatable = Hash::get(
+			$room, 'BlockRolePermission.content_creatable.' . $roleName . '.value');
+		return array(
+			'role_key' => $roleName,
+			'use_workflow' => $useWorkFlow,
+			'content_publishable_value' => $publishable,
+			'content_editable_value' => $editable,
+			'content_creatable_value' => $creatable
+		);
+	}
 /**
  * __getRooms
  *
@@ -278,108 +365,6 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 			$value = 0;
 		}
 		return ($value) ? true : false;
-	}
-
-/**
- * __getContentPulblishableInfo
- *
- * ログインユーザのルームでの役割に対し、承認権限有無の情報取得
- *
- * @param Model &$model model
- * @param array $roomInfos roomInfos
- * @return array 情報を付加した$roomInfos
- */
-	private function __getContentPulblishableInfo(&$model, $roomInfos) {
-		if (!isset($model->Workflow)) {
-			if (!isset($model->Components)) {
-				$model->Components = new ComponentCollection();
-			}
-			//App::uses('WorkflowComponent', 'Workflow.Controller/Component');
-			$settings = array();
-			$model->Workflow = $model->Components->load('Workflow', $settings);
-		}
-
-		foreach ($roomInfos as $roomId => &$roomInfo) {
-			////$roleKey = $roomInfo['role_key'];
-			$permissions = array('content_publishable', 'content_editable', 'content_creatable');
-			$perms = $model->Workflow->getRoomRolePermissions($permissions,
-				DefaultRolePermission::TYPE_ROOM_ROLE, $roomId);
-			$roomInfo['content_publishable_value'] = Hash::get($perms,
-				'RoomRolePermission.content_publishable.' . $roomInfo['role_key'] . '.value');
-			$roomInfo['content_editable_value'] = Hash::get($perms,
-				'RoomRolePermission.content_editable.' . $roomInfo['role_key'] . '.value');
-			$roomInfo['content_creatable_value'] = Hash::get($perms,
-				'RoomRolePermission.content_creatable.' . $roomInfo['role_key'] . '.value');
-		}
-		return $roomInfos;
-	}
-
-/**
- * __getContentPulblishEnable
- *
- * ルームごとの承認機能有無の取得
- *
- * @param Model &$model model
- * @param array $roleOfRooms roleOfRooms
- * @return array 整形しなおし、ルーム毎承認機能有無を付加した$roomInfos配列
- */
-	private function __getContentPulblishEnable(&$model, $roleOfRooms) {
-		//ルーム管理のルーム毎承認有無ON/OFF取り出し
-		if (!isset($model->Room)) {
-			$model->loadModels(['Room' => 'Rooms.Room']);
-		}
-		$rooms = $model->Room->find('all', array(
-			'fields' => array(
-				'Room.*',
-				'Block.*',
-				'Calendar.*'
-			),
-			'recursive' => -1,
-			'joins' => array(
-				array('table' => 'blocks',
-					'alias' => 'Block',
-					'type' => 'LEFT',
-					'conditions' => array(
-						'Block.room_id = Room.id',
-						'Block.language_id' => 2, //Current::read('Language.id'),
-						'Block.plugin_key' => 'calendars',
-					),
-				),
-				array('table' => 'calendars',
-					'alias' => 'Calendar',
-					'type' => 'LEFT',
-					'conditions' => array(
-						'Calendar.block_key = Block.key',
-					),
-				),
-			),
-			'callbacks' => false,
-			'order' => array(
-				'Room.id asc',
-			),
-		));
-		$rooms = Hash::combine($rooms, '{n}.Room.id', '{n}');
-		//CakeLog::debug("DBG: rooms[" . print_r($rooms, true) . "]");
-
-		$roomInfos = array();
-		foreach ($roleOfRooms as $roomId => $roleKey) {
-			$roomInfos[$roomId]['role_key'] = $roleKey;	//roleKeyを移す
-			$useWorkflow = false;
-			if (isset($rooms[$roomId])) {
-				if (!empty($rooms[$roomId]['Calendars']['use_workflow'])) {
-					//カレンダー権限管理の承認ありがONなら、そちらを使う。
-					$useWorkflow = true;
-				} elseif (!empty($rooms[$roomId]['Room']['need_approval'])) {
-					//カレンダー権限管理の承認ありがOFFの時は、
-					//次に、ルーム管理の承認ありがONならそちらを使う。
-					$useWorkflow = true;
-				}
-			}
-
-			$roomInfos[$roomId]['use_workflow'] = $useWorkflow;
-		}
-
-		return $roomInfos;
 	}
 
 /**

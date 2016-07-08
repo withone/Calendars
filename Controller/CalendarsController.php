@@ -87,6 +87,7 @@ class CalendarsController extends CalendarsAppController {
 			$this->setAction('emptyRender');
 			return false;
 		}
+		$this->CalendarEvent->initSetting($this->Workflow);
 	}
 
 /**

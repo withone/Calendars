@@ -50,6 +50,7 @@ class CalendarPlansController extends CalendarsAppController {
  * @var array
  */
 	public $components = array(
+		/* ここはカレンダーでは無理。カレンダーは全空間を相手にするから
 		'NetCommons.Permission' => array(
 			//アクセスの権限
 			'allow' => array(
@@ -59,7 +60,7 @@ class CalendarPlansController extends CalendarsAppController {
 				'daylist,show' => 'content_readable',
 				////'select' => null,
 			),
-		),
+		),*/
 		'Paginator',
 		'Calendars.CalendarsDaily',
 		'Calendars.CalendarWorks',
@@ -107,6 +108,7 @@ class CalendarPlansController extends CalendarsAppController {
 
 		$this->Auth->allow('daylist', 'show');
 
+		$this->CalendarEvent->initSetting($this->Workflow);
 		$this->roomPermRoles = $this->CalendarEvent->prepareCalRoleAndPerm();
 		$this->set('roomPermRoles', $this->roomPermRoles);
 	}

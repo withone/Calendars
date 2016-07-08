@@ -8,6 +8,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 App::uses('AppHelper', 'View/Helper');
+App::uses('CalendarPermissiveRooms', 'Calendars.Utility');
 
 /**
  * Calendar ExposeTarget Helper
@@ -28,6 +29,17 @@ class CalendarExposeTargetHelper extends AppHelper {
 		'Form',
 		'Rooms.Rooms'
 	);
+
+/**
+ * Default Constructor
+ *
+ * @param View $View The View this helper is being attached to.
+ * @param array $settings Configuration settings for the helper.
+ */
+	public function __construct(View $View, $settings = array()) {
+		parent::__construct($View, $settings);
+		$this->CalendarPermissiveRooms = new CalendarPermissiveRooms();
+	}
 
 /**
  * makeSelectExposeTargetHtml
@@ -55,20 +67,22 @@ class CalendarExposeTargetHelper extends AppHelper {
 			'6' => __d('calendars', '全会員'),
 		);
 		*/
+		// 渡されたoptionから投稿権限のないものを外す
+		$roomPermRole = $this->_View->viewVars['roomPermRoles'];
+		$rooms = $this->CalendarPermissiveRooms->getCreatableRoomIdList($roomPermRole);
+		$targetRooms = array_intersect_key($options, $rooms);
 
 		$html = $this->NetCommonsForm->label(
 			'CalendarActionPlan.plan_room_id' . Inflector::camelize('room_id'),
-			__d('calendars', '公開対象') . $this->_View->element('NetCommons.required'));
+			__d('calendars', 'Category') . $this->_View->element('NetCommons.required'));
 
-		$html .= $this->NetCommonsForm->select('CalendarActionPlan.plan_room_id', $options, array(
+		$html .= $this->NetCommonsForm->select('CalendarActionPlan.plan_room_id', $targetRooms, array(
 			//select-expose-targetクラスをもつ要素のchangeをjqで捕まえています
 			'class' => 'form-control select-expose-target',
 			'empty' => false,
 			'required' => true,
 			//value値のoption要素がselectedになる。
 			'value' => $this->request->data['CalendarActionPlan']['plan_room_id'],
-			//'ng-model' => "exposeRoomArray[" . $frameId . "]",
-			//'ng-change' => "changeRoom(" . $myself . "," . $frameId . ")",
 			'data-frame-id' => $frameId,
 			'data-myself' => $myself,
 		));

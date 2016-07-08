@@ -201,7 +201,11 @@ class CalendarPermission extends CalendarsAppModel {
 				$blockKey = '';
 			}
 			$permissions = $workflow->getBlockRolePermissions(
-				array('content_creatable', 'block_permission_editable'),
+				array(
+					'content_creatable',
+					'content_editable',
+					'content_publishable',
+					'block_permission_editable'),
 				$roomBlock['Room']['id'],
 				$blockKey
 			);
