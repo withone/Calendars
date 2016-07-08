@@ -323,32 +323,55 @@ class CalendarMonthlyHelper extends AppHelper {
 				//print_r($plan['CalendarEvent']['title']);
 			}
 
-			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan);
-			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
-
 			// スペースごとの枠
-			$html .= '<div class="calendar-plan-mark ' . $calendarPlanMark . '">';
-			// ステータスラベル
-			$html .= '<div>';
-			$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarEvent']['status']);
-			$html .= '</div>';
-			// 時間
-			if ($fromTime !== $plan['CalendarEvent']['fromTime'] ||
-				$toTime !== $plan['CalendarEvent']['toTime']) {
-				$html .= '<p class="calendar-plan-time small">';
-				$html .= h($plan['CalendarEvent']['fromTime']) . '-' . h($plan['CalendarEvent']['toTime']);
-				$html .= '</p>';
-			}
-			$html .= '<h3 class="calendar-plan-tittle">';
-			$html .= '<a href=' . $url . '>';
-			$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
-			$html .= h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...'));
-			$html .= '</a>';
-			$html .= '</h3>';
-
-			$html .= '</div>';
+			$html .= $this->getPlanTitle(
+				$vars, $year, $month, $day, $fromTime, $toTime, $plan, array('short_title' => true));
 			$html .= '</div></div>';
 		}
+		return $html;
+	}
+
+/**
+ * getPlanTitle
+ *
+ * 予定タイトルhtml取得
+ *
+ * @param array $vars カレンダー情報
+ * @param int $year 年
+ * @param int $month 月
+ * @param int $day 日
+ * @param string $fromTime この日の１日のスタート時刻
+ * @param string $toTime この日の１日のエンド時刻
+ * @param array $plan この日の予定
+ * @param array $options オプション指定
+ * @return string
+ */
+	public function getPlanTitle(
+		$vars, $year, $month, $day, $fromTime, $toTime, $plan, $options = array()) {
+		$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan);
+		$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
+		$html = '<div class="calendar-plan-mark ' . $calendarPlanMark . '">';
+		$html .= '<div>';
+		$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarEvent']['status']);
+		$html .= '</div>';
+		// 時間
+		if ($fromTime !== $plan['CalendarEvent']['fromTime'] ||
+			$toTime !== $plan['CalendarEvent']['toTime']) {
+			$html .= '<p class="calendar-plan-time small">';
+			$html .= h($plan['CalendarEvent']['fromTime']) . '-' . h($plan['CalendarEvent']['toTime']);
+			$html .= '</p>';
+		}
+		$html .= '<h3 class="calendar-plan-tittle">';
+		if (isset($options['short_title'])) {
+			$title = h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...'));
+		} else {
+			$title = h($plan['CalendarEvent']['title']);
+		}
+		$html .= '<a href=' . $url . '>';
+		$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
+		$html .= $title;
+		$html .= '</a>';
+		$html .= '</h3></div>';
 		return $html;
 	}
 
@@ -366,7 +389,6 @@ class CalendarMonthlyHelper extends AppHelper {
  */
 	public function makePlansHtml(&$vars, &$nctm, $year, $month, $day) {
 		//list ($fromTimeOfDay, $toTimeOfDay, $plansOfDay) = $this->CalendarCommon->preparePlanSummaries($vars, $nctm, $year, $month, $day);
-		$plansOfDay = array();
 		$plansOfDay = $this->CalendarCommon->preparePlanSummaries($vars, $nctm, $year, $month, $day);
 		$planNum = count($plansOfDay[2]);
 		if ($planNum === 0) {

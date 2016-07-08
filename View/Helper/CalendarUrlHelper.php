@@ -71,7 +71,6 @@ class CalendarUrlHelper extends AppHelper {
 		$options = array(
 			'controller' => 'calendar_plans',
 			'action' => 'edit',
-			//'style' => 'easy',
 			'style' => 'detail',
 			'year' => $year,
 			'month' => $month,
@@ -80,12 +79,34 @@ class CalendarUrlHelper extends AppHelper {
 			'block_id' => Current::read('Block.id'),
 			'frame_id' => Current::read('Frame.id'),
 		);
-		//if (isset($vars['return_style'])) { 未使用
-		//	$options['return_style'] = $vars['return_style'];
-		//}
-		//if (isset($vars['return_sort'])) {
-		//	$options['return_sort'] = $vars['return_sort'];
-		//}
+		$url = NetCommonsUrl::actionUrl($options);
+		return $url;
+	}
+/**
+ * makeEditUrlWithTime
+ *
+ * 編集画面URL生成
+ *
+ * @param int $year 年
+ * @param int $month 月
+ * @param int $day 日
+ * @param int $hour 時
+ * @param array &$vars カレンダー情報
+ * @return string Url
+ */
+	public function makeEditUrlWithTime($year, $month, $day, $hour, &$vars) {
+		$options = array(
+			'controller' => 'calendar_plans',
+			'action' => 'edit',
+			'style' => 'detail',
+			'year' => $year,
+			'month' => $month,
+			'day' => $day,
+			'hour' => $hour,
+			//これがないと、遷移先でブロックIDがない、とでる。↓
+			'block_id' => Current::read('Block.id'),
+			'frame_id' => Current::read('Frame.id'),
+		);
 		$url = NetCommonsUrl::actionUrl($options);
 		return $url;
 	}
@@ -123,12 +144,7 @@ class CalendarUrlHelper extends AppHelper {
  * @return string URL
  */
 	public function getBackFirstButton($vars) {
-		//print_r($vars);
-		$html = '';
 		$displayType = $vars['CalendarFrameSetting']['display_type'];
-		//print_r($displayType);
-		//$displayType = Current::read('CalendarFrameSetting.display_type');
-		//print_r($displayType);
 
 		if ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY ||
 			$displayType == CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY) {

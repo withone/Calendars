@@ -114,34 +114,12 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
  * @return string HTML
  */
 	public function getPlanTitleHtml(&$vars, $year, $month, $day, $fromTime, $toTime, $plan) {
-		$url = '';
 		$html = '';
-		$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
-		$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan);
 		// 大枠
 		$html .= '<div class="row">';
 		$html .= '<div class="col-xs-12">';
 		// スペースごとの枠
-		$html .= '<div class="calendar-plan-mark ' . $calendarPlanMark . '">';
-		// ステータスラベル
-		$html .= '<div>';
-		$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarEvent']['status']);
-		$html .= '</div>';
-		// 時間
-		if ($fromTime !== $plan['CalendarEvent']['fromTime'] ||
-			$toTime !== $plan['CalendarEvent']['toTime']) {
-			$html .= '<p class="calendar-plan-time small">';
-			$html .= h($plan['CalendarEvent']['fromTime']) . '-' . h($plan['CalendarEvent']['toTime']);
-			$html .= '</p>';
-		}
-		$html .= '<h3 class="calendar-plan-tittle">';
-		$html .= '<a href=' . $url . '>';
-		$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
-		$html .= h($plan['CalendarEvent']['title']);
-		$html .= '</a>';
-		$html .= '</h3>';
-
-		$html .= '</div>';
+		$html .= $this->getPlanTitle($vars, $year, $month, $day, $fromTime, $toTime, $plan);
 		$html .= '</div></div>';
 
 		return $html;
