@@ -57,8 +57,8 @@ class CalendarPlanRruleValidateBehavior extends CalendarValidateAppBehavior {
 				if ($rruleCount < 1 || $rruleCount > 999) {
 					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'] = array();
 					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'][] =
-						sprintf(__d('calendares',
-							'The number of repetition is %d or more and %d or less.'), 1, 999);
+						sprintf(__d('calendars',
+						'The number of repetition is %d or more and %d or less.'), 1, 999);
 					return false;
 				}
 				break;
@@ -134,11 +134,11 @@ class CalendarPlanRruleValidateBehavior extends CalendarValidateAppBehavior {
  */
 	protected function _checkUntilDate(&$model, $rruleUntil) {
 		if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $rruleUntil, $matches) !== 1) {
-			return __d('calendars', '日付形式がYYYY-MM-DD形式ではありません。');
+			return __d('calendars', 'It is not in the YYYY-MM-DD format.');
 		}
 
 		if (!checkdate(intval($matches[2]), intval($matches[3]), intval($matches[1]))) {
-			return __d('calendars', '実在しない日が指定されています。');
+			return __d('calendars', 'Invalid input. Day that does not exist has been specified.');
 		}
 
 		//繰返し期限日が、開始日より前になっていないかどうかのチェック
@@ -168,12 +168,12 @@ class CalendarPlanRruleValidateBehavior extends CalendarValidateAppBehavior {
 		$svrNxtDayOfUntilDt = $nctm->toServerDatetime(
 			$nextDayOfUntilDate, $model->data[$model->alias]['timezone_offset']);
 		if ($svrNxtDayOfUntilDt <= $serverStartDate) {
-			return __d('calendars', '繰返し期限日が開始日より前になっています。');
+			return __d('calendars', 'Invalid input. Term end date is earlier than the start date.');
 		}
 
 		//範囲チェック
 		if (intval($matches[1]) < 1970 || 2033 < intval($matches[1])) {
-			return sprintf(__d('calendars', "指定できる年は%d以上%d以下です。", 1970, 2033));
+			return sprintf(__d('calendars', "Year that can be specified is %d or more and %d or less.", 1970, 2033));
 		}
 		return '';
 	}

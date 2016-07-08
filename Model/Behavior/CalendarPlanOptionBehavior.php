@@ -30,22 +30,22 @@ class CalendarPlanOptionBehavior extends CalendarAppBehavior {
  */
 	public function getNoticeEmailOption(Model &$model) {
 		$options = array(
-			'0' => __d('calendars', '0分前'),
-			'5' => __d('calendars', '5分前'),
-			'10' => __d('calendars', '10分前'),
-			'15' => __d('calendars', '15分前'),
-			'20' => __d('calendars', '20分前'),
-			'25' => __d('calendars', '25分前'),
-			'30' => __d('calendars', '30分前'),
-			'45' => __d('calendars', '45分前'),
-			'60' => __d('calendars', '1時間前'),
-			'120' => __d('calendars', '2時間前'),
-			'180' => __d('calendars', '3時間前'),
-			'720' => __d('calendars', '12時間前'),
-			'1440' => __d('calendars', '24時間前'),
-			'2880' => __d('calendars', '2日前'),
-			'8540' => __d('calendars', '1週間前'),
-			'-1' => __d('calendars', '今すぐ'),
+			'0' => __d('calendars', 'Before 0 minutes'),
+			'5' => __d('calendars', 'Before 5 minutes'),
+			'10' => __d('calendars', 'Before 10 minutes'),
+			'15' => __d('calendars', 'Before 15 minutes'),
+			'20' => __d('calendars', 'Before 20 minutes'),
+			'25' => __d('calendars', 'Before 25 minutes'),
+			'30' => __d('calendars', 'Before 30 minutes'),
+			'45' => __d('calendars', 'Before 45 minutes'),
+			'60' => __d('calendars', '1 hour before'),
+			'120' => __d('calendars', '2 hours before'),
+			'180' => __d('calendars', '3 hours before'),
+			'720' => __d('calendars', '12 hours before'),
+			'1440' => __d('calendars', '24 hours before'),
+			'2880' => __d('calendars', '2 days before'),
+			'8540' => __d('calendars', '1 week before'),
+			'-1' => __d('calendars', 'Right now'),
 		);
 		return $options;
 	}
