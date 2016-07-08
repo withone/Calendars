@@ -27,10 +27,10 @@ class CalendarActionPlan extends CalendarsAppModel {
 /**
  * use table
  *
+ * このモデルはvalidateと
+ * insert/update/deletePlan()呼び出しが主目的なのでテーブルを使用しない。
  * @var array
  */
-	//このモデルはvalidateと
-	//insert/update/deletePlan()呼び出しが主目的なのでテーブルを使用しない。
 	public $useTable = false;
 
 /**

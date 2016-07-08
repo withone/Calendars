@@ -31,6 +31,7 @@ class CalendarWorksComponent extends Component {
 		$userTz = (new NetCommonsTime())->getUserTimezone();
 		$date = new DateTime('now', (new DateTimeZone($userTz)));
 
+		$enableTime = false;
 		if (isset($params['named']['year'])) {
 			$year = $params['named']['year'];
 			$month = $params['named']['month'];
@@ -40,10 +41,17 @@ class CalendarWorksComponent extends Component {
 			$month = $date->format('m');
 			$day = $date->format('d');
 		}
-		$hour = $date->format('H');
-		$minitue = $date->format('i');
-		$second = $date->format('s');
-		return array($year, $month, $day, $hour, $minitue, $second);
+		if (isset($params['named']['hour'])) {
+			$hour = $params['named']['hour'];
+			$minute = '00';
+			$second = '00';
+			$enableTime = true;
+		} else {
+			$hour = $date->format('H');
+			$minute = $date->format('i');
+			$second = $date->format('s');
+		}
+		return array($year, $month, $day, $hour, $minute, $second, $enableTime);
 	}
 
 /**

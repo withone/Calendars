@@ -524,10 +524,10 @@ class CalendarPlansController extends CalendarsAppController {
 		} else {
 			//eventが空の場合、初期値でFILLした表示用配列を取得する。
 			//
-			list($year, $month, $day, $hour, $minitue, $second) =
+			list($year, $month, $day, $hour, $minute, $second, $enableTime) =
 				$this->CalendarWorks->getDateTimeParam($this->request->params);
 			$capForView = (new CalendarSupport())->getInitialCalendarActionPlanForView(
-				$year, $month, $day, $hour, $minitue, $second, $exposeRoomOptions);
+				$year, $month, $day, $hour, $minute, $second, $enableTime, $exposeRoomOptions);
 			$capForViewOf1stSib = $capForView;	//eventが空なので、1stSibも初期値でFILLしておく
 
 			$year1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 0, 4);
@@ -552,7 +552,6 @@ class CalendarPlansController extends CalendarsAppController {
 		$languageId = Current::read('Language.id');
 
 		$mailSettingInfo = $this->getMailSettingInfo();
-		//CakeLog::debug("DBG: mailSettingInfo[" . print_r($mailSettingInfo, true) . "]");
 
 		//reuqest->data['GroupUser']にある各共有ユーザの情報取得しセット
 		$shareUsers = array();
@@ -569,7 +568,6 @@ class CalendarPlansController extends CalendarsAppController {
 		//キャンセル時のURLセット
 		//testセッション方式
 		$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars');
-		//print_r('SHOW return');print_r($url);
 		$vars['returnUrl'] = $url;
 
 		$this->set(compact('frameId', 'languageId', 'vars', 'frameSetting', 'exposeRoomOptions',

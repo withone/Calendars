@@ -73,6 +73,27 @@ class CalendarButtonHelper extends AppHelper {
 		return $html;
 	}
 /**
+ * makeGlyphiconPlusWithTimeUrl
+ *
+ * Time指定Url付き追加アイコン生成
+ *
+ * @param int $year 年
+ * @param int $month 月
+ * @param int $day 日
+ * @param int $hour 時
+ * @param arrya &$vars カレンダー情報
+ * @return string HTML
+ */
+	public function makeGlyphiconPlusWithTimeUrl($year, $month, $day, $hour, &$vars) {
+		$url = $this->CalendarUrl->makeEditUrlWithTime($year, $month, $day, $hour, $vars);
+		$options = array(
+			'url' => $url,
+			'button' => 'plus-link'
+		);
+		$html = $this->getAddButton($vars, $options);
+		return $html;
+	}
+/**
  * getAddButton
  *
  * 予定登録のための「追加」ボタン表示

@@ -140,6 +140,32 @@ class CalendarTime {
 	public static function stripDashColonAndSp($data) {
 		return preg_replace('/( |:|-)/', '', $data);
 	}
+/**
+ * getTheTime
+ *
+ * "Y-m-d H:i:s"形式の指定日付時刻からの日付時刻(from,to)を取得
+ *
+ * @param string $ymdHis "Y-m-d H:i:s"形式の指定日付時刻
+ * @return array 直近１時間の日付、from日付時刻, to日付時刻の配列を返す。
+ */
+	public static function getTheTime($ymdHis) {
+		$baseHi = self::getHourColonMin($ymdHis);	// hh:mm
+		$hour = intval(substr($baseHi, 0, 2));
+		if ($hour <= 22) {
+			$ymd = substr($ymdHis, 0, 10);	//YYYY-MM-DD
+			$fromYmdHi = sprintf("%s %02d:00", $ymd, $hour);	//YYYY-MM-DD hh:mm
+			$toYmdHi = sprintf("%s %02d:00", $ymd, $hour + 1);	//YYYY-MM-DD hh:mm
+		} else {
+			//23時は特例1. toはその日の24:00を指定したい、、が
+			//datetimepickerには24:00という表記は存在しないので、翌日の00:00をセットする。
+			$ymd = substr($ymdHis, 0, 10);	//YYYY-MM-DD
+			$fromYmdHi = sprintf("%s 23:00", $ymd);
+			list($yearOfNextDay, $monthOfNextDay, $nextDay) = self::getNextDay(intval(
+				substr($ymdHis, 0, 4)), intval(substr($ymdHis, 5, 2)), intval(substr($ymdHis, 8, 2 )));
+			$toYmdHi = sprintf("%04d-%02d-%02d 00:00", $yearOfNextDay, $monthOfNextDay, $nextDay);
+		}
+		return array($ymd, $fromYmdHi, $toYmdHi);
+	}
 
 /**
  * getTheTimeInTheLastHour

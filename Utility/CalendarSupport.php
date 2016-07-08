@@ -32,11 +32,14 @@ class CalendarSupport {
 			return $data;
 		}
 		if (is_array($data)) {
-			if (count($data) === 0 || !isset($data[0])) {
-				return '';
-			} else {
-				return (string)$data[0];
-			}
+			return Hash::get($data, '0');
+			/*
+				if (count($data) === 0 || !isset($data[0])) {
+					return '';
+				} else {
+					return (string)$data[0];
+				}
+			*/
 		}
 		return false;
 	}
@@ -76,49 +79,6 @@ class CalendarSupport {
 		}
 		return true;
 	}
-
-/**
- * 日付をフォーマットする
- *
- * @param string $time 日付時刻文字列 (YmdHis形式)
- * @param float $timezoneOffset timezoneoffset (-12.0 ～ +12.0) 初期値はnull
- * @param int $insertFlag insertFlag  1:登録 0:非登録(＝更新)  初期値は0
- * @param string $calendarWeek calendar_week(Sun|Mon|....Sat、日|月|....|土 などの文字列。初期値は''
- * @param string $timeFormat 日付時刻書式文字列 初期値は'YmdHis'
- * @param int $toFlag 「まで」フラグ 1:「まで」有り 0:「まで」無し 初期値は0
- * @return string 書式化された日付時刻文字列
- */
-	/*
-	//public static function calendarDateFormat($time, $timezoneOffset = null, $insertFlag = 0, $calendarWeek = '', $timeFormat = 'YmdHis', $toFlag = 0) {
-		if (isset($timezoneOffset)) {
-
-			//タイムゾーンを考慮した日付時刻文字列にする
-			$time = self::setDateFormatWithTimezoneoffset($timezoneOffset, $insertFlag, $time);
-
-		} else {
-			$time = CalendarTime::timezoneDate($time, $insertFlag, 'YmdHis');
-		}
-		if ($toFlag && substr($time, 8) === '000000') {
-			$timeFormat = str_replace('H', '24', $timeFormat);
-			$timeFormat = str_replace('is', '0000', $timeFormat);
-			$timeFormat = str_replace('i', '00', $timeFormat);
-			$timestamp = mktime(0, 0, 0,
-						intval(substr($time, 4, 2)), intval(substr($time, 6, 2)), intval(substr($time, 0, 4)));
-			$timestamp = $timestamp - 1;
-		} else {
-			$timestamp = mktime(intval(substr($time, 8, 2)),
-				 intval(substr($time, 10, 2)), intval(substr($time, 12, 2)),
-						intval(substr($time, 4, 2)), intval(substr($time, 6, 2)), intval(substr($time, 0, 4)));
-		}
-		if ($calendarWeek === '') {
-			$weekNameArray = array('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
-		} else {
-			$weekNameArray = explode('|', $calendarWeek);
-		}
-		$week = date('w', $timestamp);
-		return date(sprintf($timeFormat, $weekNameArray[$week]), $timestamp);
-	}
-	*/
 
 /**
  * タイムゾーンつきの日付をフォーマットする
@@ -262,17 +222,26 @@ class CalendarSupport {
  * @param string $hour hour
  * @param string $minitue minitue
  * @param string $second second
+ * @param bool $enableTime 時間指定が有効か
  * @param array $exposeRoomOptions 公開対象ルーム配列
  * @return array 生成された表示用CalendarActionPlan配列
  */
 	public function getInitialCalendarActionPlanForView($year, $month, $day,
-		$hour, $minitue, $second, $exposeRoomOptions) {
+		$hour, $minitue, $second, $enableTime, $exposeRoomOptions) {
 		$userTz = (new NetCommonsTime())->getUserTimezone();
 
-		//"Y-m-d H:i:s"形式の指定日付時刻からの直近１時間の日付時刻(from,to)を取得
-		list($ymdOfLastHour, $fromYmdHiOfLastHour, $toYmdHiOfLastHour) =
-			CalendarTime::getTheTimeInTheLastHour(sprintf('%04d-%02d-%02d %02d:%02d:%02d',
-				$year, $month, $day, $hour, $minitue, $second));
+		// 時間指定のある場合かない場合かで
+		if ($enableTime) {
+			//"Y-m-d H:i:s"形式の指定日付時刻の日付時刻(from,to)を取得
+			list($ymdOfLastHour, $fromYmdHiOfLastHour, $toYmdHiOfLastHour) =
+				CalendarTime::getTheTime(sprintf('%04d-%02d-%02d %02d:%02d:%02d',
+					$year, $month, $day, $hour, $minitue, $second));
+		} else {
+			//"Y-m-d H:i:s"形式の指定日付時刻からの直近１時間の日付時刻(from,to)を取得
+			list($ymdOfLastHour, $fromYmdHiOfLastHour, $toYmdHiOfLastHour) =
+				CalendarTime::getTheTimeInTheLastHour(sprintf('%04d-%02d-%02d %02d:%02d:%02d',
+					$year, $month, $day, $hour, $minitue, $second));
+		}
 		$date = (new CalendarTime())->getDtObjWithTzDateTime($userTz,
 			$year, $month, $day, $hour, $minitue, $second);
 		$wdayIndex = intval($date->format('w'));	//0-6
@@ -295,14 +264,13 @@ class CalendarSupport {
 				'edit_rrule' => 0,
 				'title' => '',
 				'title_icon' => '',
-				'enable_time' => 0,
-				'easy_start_date' => $ymdOfLastHour, //YYYY-MM-DD
-				'easy_hour_minute_from' => substr($fromYmdHiOfLastHour, 11), //hh:mm
-				'easy_hour_minute_to' => substr($toYmdHiOfLastHour, 11), //hh:mm
+				'enable_time' => $enableTime,
 				//YYYY-MM-DD hh:mm
-				'detail_start_datetime' => $ymdOfLastHour . ' ' . substr($fromYmdHiOfLastHour, 11),
+				'detail_start_datetime' =>
+					$ymdOfLastHour . ' ' . substr($fromYmdHiOfLastHour, 11),
 				//YYYY-MM-DD hh:mm
-				'detail_end_datetime' => $ymdOfLastHour . ' ' . substr($toYmdHiOfLastHour, 11),
+				'detail_end_datetime' =>
+					substr($toYmdHiOfLastHour, 0, 10) . ' ' . substr($toYmdHiOfLastHour, 11),
 				'plan_room_id' => $planRoomId,
 				'timezone_offset' => (new NetCommonsTime())->getUserTimezone(),
 				'is_detail' => 0,

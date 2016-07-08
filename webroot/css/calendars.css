@@ -363,10 +363,6 @@
 	table-layout: fixed;
 }
 
-.calendar-daily-timeline-table {
-	width: 100%;
-}
-
 /*-- 週カレンダー のルーム名のヘッダ--*/
 .calendar-weekly-col-room-name-head {
 	min-width:6em;
@@ -856,7 +852,8 @@ a.calendar-edit-plus-icon {
 	right:0;
 	z-index:100;
 }
-.calendar-weekly-col-day-head-bottom a.calendar-edit-plus-icon {
+.calendar-weekly-col-day-head-bottom a.calendar-edit-plus-icon,
+.calendar-daily-timeline-col-periodtime a.calendar-edit-plus-icon {
 	position:static;
 	right:0;
 }
@@ -984,4 +981,14 @@ padding-right:3px;
 .calendar-list-wrapper {
 	max-height: 450px;
 	overflow-y:scroll;
+}
+.calendar-daily-timeline-coordinate-origin {
+	height: 568px;
+	overflow-y: scroll;
+	border-width: 1px 1px 1px 1px;
+	border-style: solid;
+	border-color: #ddd;
+}
+.calendar-daily-timeline-table {
+	width: 95%;
 }
