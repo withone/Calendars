@@ -56,9 +56,10 @@ class CalendarValidateAppBehavior extends ModelBehavior {
 				$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval'] = array();
 				$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['DAILY'] =
 					array();
-				$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['DAILY'][] =
+				//$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['DAILY'][] =
+				$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['DAILY'][] =
 					__d('calendars',
-						'繰返し指定ありの単位が日、週、月、年のいずれでもありません。');
+						'Invalid input. (repeat interval. Please specify day/week/month/year)');
 				return false;
 		}
 		return $ret;
