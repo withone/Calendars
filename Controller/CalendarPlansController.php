@@ -57,7 +57,7 @@ class CalendarPlansController extends CalendarsAppController {
 				//indexとviewは祖先基底クラスNetCommonsAppControllerで許可済
 				'edit,add,delete' => 'content_creatable',
 				//null, //content_readableは全員に与えられているので、チェック省略
-				'daylist,show' => 'content_readable',
+				'show' => 'content_readable',
 				////'select' => null,
 			),
 		),*/
@@ -106,7 +106,7 @@ class CalendarPlansController extends CalendarsAppController {
 			return false;
 		}
 
-		$this->Auth->allow('daylist', 'show');
+		$this->Auth->allow('show');
 
 		$this->CalendarEvent->initSetting($this->Workflow);
 		$this->roomPermRoles = $this->CalendarEvent->prepareCalRoleAndPerm();
@@ -439,20 +439,6 @@ class CalendarPlansController extends CalendarsAppController {
 	}
 
 /**
- * daylist
- *
- * @return void
- */
-	public function daylist() {
-		$vars = array();
-		$ctpName = $this->getCtpAndVarsForList($vars);
-		$frameId = Current::read('Frame.id');
-		$languageId = Current::read('Language.id');
-		$this->set(compact('frameId', 'languageId', 'vars'));
-		$this->render($ctpName);
-	}
-
-/**
  * edit
  *
  * @return void
@@ -595,21 +581,6 @@ class CalendarPlansController extends CalendarsAppController {
 		}
 
 		$ctpName = 'show';
-		return $ctpName;
-	}
-
-/**
- * getCtpAndVarsForList
- *
- * 予定一覧用のCtp名および予定情報の取得
- *
- * @param array &$vars カレンダー情報
- * @return string ctpName
- * @throws InternalErrorException
- */
-	public function getCtpAndVarsForList(&$vars) {
-		$this->setCalendarCommonVars($vars);
-		$ctpName = 'daylist';
 		return $ctpName;
 	}
 

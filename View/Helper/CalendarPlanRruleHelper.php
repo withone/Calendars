@@ -68,7 +68,7 @@ class CalendarPlanRruleHelper extends AppHelper {
 
 		switch ($freq) {
 			case 'NONE':
-				$resultStr .= __d('calendars', '繰返しなし');
+				$resultStr .= __d('calendars', 'none');
 				break;
 			case 'YEARLY':
 				$resultStr .= $this->__addStrWhenYearlyCase($freq, $rrule,

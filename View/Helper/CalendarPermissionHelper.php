@@ -40,7 +40,7 @@ class CalendarPermissionHelper extends AppHelper {
 		if ($space) {
 			$title = $this->Rooms->roomName($space);
 		} else {
-			$title = __d('calendars', '全会員');
+			$title = __d('calendars', 'All the members');
 		}
 		//$html = '<tab heading="' . $title . '">';
 		//$html = '<uib-tab-heading="' . $title . '">';

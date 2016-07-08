@@ -159,42 +159,4 @@ class CalendarUrlHelper extends AppHelper {
 
 		return $html;
 	}
-
-/**
- * getPlanListUrl
- *
- * 予定一覧表示Url取得
- *
- * @param string $place 場所(prevMonth|thisMonth|nextMonth)
- * @param int $year 年
- * @param int $month 月
- * @param int $day 日
- * @param array $vars カレンダー情報
- * @return string URL
- */
-	/* 未使用
-	public function getPlanListUrl($place, $year, $month, $day, $vars) {
-		if ($place === 'thisMonth') {
-			$backYear = $year;
-			$backMonth = $month;
-		} else {	//nextMont またはprevMonthの時は、中央年月をセット
-			$backYear = $vars['mInfo']['year'];
-			$backMonth = $vars['mInfo']['month'];
-		}
-		$options = array(
-			'controller' => 'calendar_plans',
-			'action' => 'daylist',
-			'year' => $year,
-			'month' => $month,
-			'day' => $day,
-			'back_year' => $backYear,
-			'back_month' => $backMonth,
-			'frame_id' => Current::read('Frame.id'),
-		);
-		//ここは固定的にカレンダー月（縮小）が戻り先となる。
-		$options['return_style'] = 'smallmonthly';
-		$url = NetCommonsUrl::actionUrl($options);
-		return $url;
-	}
-	*/
 }

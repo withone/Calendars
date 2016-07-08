@@ -37,9 +37,9 @@ class CalendarCommonHelper extends AppHelper {
  * @return array 曜日名の配列
  */
 	public function getWdayArray() {
-		return array(__d('calendars', '日'), __d('calendars', '月'), __d('calendars', '火'),
-			__d('calendars', '水'), __d('calendars', '木'), __d('calendars', '金'),
-			__d('calendars', '土'),
+		return array(__d('calendars', 'Sun'), __d('calendars', 'Mon'), __d('calendars', 'Tue'),
+			__d('calendars', 'Wed'), __d('calendars', 'Thu'), __d('calendars', 'Fri'),
+			__d('calendars', 'Sta'),
 		);
 	}
 
@@ -420,7 +420,7 @@ class CalendarCommonHelper extends AppHelper {
 		if (strpos($class, 'private') === false &&
 			(strpos($class, 'share') !== false)) {
 			//仲間の予定
-			$roomName = __d('calendars', '仲間の予定');
+			$roomName = __d('calendars', 'Schedule of fellow');
 		}
 		return $roomName;
 	}

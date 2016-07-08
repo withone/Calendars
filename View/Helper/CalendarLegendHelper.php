@@ -95,7 +95,7 @@ class CalendarLegendHelper extends AppHelper {
 		// 空間的にはグループスペースでルームIDは「全会員」ではないものがあるか
 		foreach ($vars['roomSpaceMaps'] as $roomId => $spaceId) {
 			if ($spaceId == Space::ROOM_SPACE_ID && $roomId != Room::ROOM_PARENT_ID) {
-				$html = $this->_getLegend($vars, $roomId, __d('calendars', 'ルーム'));
+				$html = $this->_getLegend($vars, $roomId, __d('calendars', 'Room'));
 				break;
 			}
 		}
@@ -112,7 +112,7 @@ class CalendarLegendHelper extends AppHelper {
 	protected function _getMemberLegend($vars) {
 		$html = '';
 		if (in_array(Space::ROOM_SPACE_ID, $vars['roomSpaceMaps'])) {
-			$html = $this->_getLegend($vars, Room::ROOM_PARENT_ID, __d('calendars', '全会員'));
+			$html = $this->_getLegend($vars, Room::ROOM_PARENT_ID, __d('calendars', 'All the members'));
 		}
 		return $html;
 	}
@@ -131,7 +131,7 @@ class CalendarLegendHelper extends AppHelper {
 			$html = $this->_getLegend(
 				$vars,
 				null,
-				__d('calendars', '共有した予定'),
+				__d('calendars', 'Shared plan'),
 				'calendar-plan-mark-private',
 				'share'
 			);
@@ -155,7 +155,7 @@ class CalendarLegendHelper extends AppHelper {
 		$html = $this->_getLegend(
 			$vars,
 			null,
-			__d('calendars', '仲間の予定'),
+			__d('calendars', 'Schedule of fellow'),
 			'calendar-plan-mark-share'
 		);
 		return $html;

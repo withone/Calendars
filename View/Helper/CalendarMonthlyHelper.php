@@ -429,7 +429,7 @@ class CalendarMonthlyHelper extends AppHelper {
 				));
 				//$html .= "<tr><th rowspan='2' class='calendar-col-week hidden-xs' data-url='" . $url . "'>";
 				$html .= "<tr><th class='calendar-col-week hidden-xs' data-url='" . $url . "'>";
-				$html .= $week . __d('calendars', '週') . '</th>';
+				$html .= $week . __d('calendars', 'week') . '</th>';
 
 				/**Line**/
 				$this->_week = $week - 1;

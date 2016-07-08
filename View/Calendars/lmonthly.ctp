@@ -25,7 +25,7 @@ echo $this->element('Calendars.scripts');
 						<td class='calendar-col-day-head calendar-monthly-line-2'><span class='h4'><?php echo __d('calendars', 'Mon'); ?></span></td>
 						<td class='calendar-col-day-head calendar-monthly-line-3'><span class='h4'><?php echo __d('calendars', 'Tue'); ?></span></td>
 						<td class='calendar-col-day-head calendar-monthly-line-4'><span class='h4'><?php echo __d('calendars', 'Wed'); ?></span></td>
-						<td class='calendar-col-day-head calendar-monthly-line-5'><span class='h4'><?php echo __d('calendars', 'Thr'); ?></span></td>
+						<td class='calendar-col-day-head calendar-monthly-line-5'><span class='h4'><?php echo __d('calendars', 'Thu'); ?></span></td>
 						<td class='calendar-col-day-head calendar-monthly-line-6'><span class='h4'><?php echo __d('calendars', 'Fri'); ?></span></td>
 						<td class='calendar-col-day-head calendar-monthly-line-7'><span class='calendar-saturday h4'><?php echo __d('calendars', 'Sat'); ?></span></td>
 					</tr>

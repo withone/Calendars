@@ -30,7 +30,7 @@ echo $this->element('Calendars.scripts');
 				<td class='calendar-col-small-day-head'><span class='h4'><?php echo __d('calendars', 'Mon'); ?></span></td>
 				<td class='calendar-col-small-day-head'><span class='h4'><?php echo __d('calendars', 'Tue'); ?></span></td>
 				<td class='calendar-col-small-day-head'><span class='h4'><?php echo __d('calendars', 'Wed'); ?></span></td>
-				<td class='calendar-col-small-day-head'><span class='h4'><?php echo __d('calendars', 'Thr'); ?></span></td>
+				<td class='calendar-col-small-day-head'><span class='h4'><?php echo __d('calendars', 'Thu'); ?></span></td>
 				<td class='calendar-col-small-day-head'><span class='h4'><?php echo __d('calendars', 'Fri'); ?></span></td>
 				<td class='calendar-col-small-day-head'><span class='calendar-saturday h4'><?php echo __d('calendars', 'Sta'); ?></span></td>
 			</tr>

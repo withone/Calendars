@@ -131,11 +131,11 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 
 		$html .= '</p>';
 		if ($plan['CalendarEvent']['location'] != '') {
-			$html .= '<p class="calendar-plan-place small">' . __d('calendars', '場所の詳細:');
+			$html .= '<p class="calendar-plan-place small">' . __d('calendars', 'Location details:');
 			$html .= h($plan['CalendarEvent']['location']) . '</p>';
 		}
 		if ($plan['CalendarEvent']['contact']) {
-			$html .= '<p class="calendar-plan-address small">' . __d('calendars', '連絡先:');
+			$html .= '<p class="calendar-plan-address small">' . __d('calendars', 'Contact');
 			$html .= h($plan['CalendarEvent']['contact']) . '</p>';
 		}
 		return $html;
