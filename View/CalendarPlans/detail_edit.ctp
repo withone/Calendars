@@ -126,6 +126,7 @@ echo $this->element('Calendars.scripts');
 					<?php
 						echo $this->CalendarExposeTarget->makeSelectExposeTargetHtml($frameId, $languageId, $vars, $frameSetting, $exposeRoomOptions, $myself);
 					?>
+					<?php echo $this->NetCommonsForm->error('CalendarActionPlan.plan_room_id'); ?>
 				</div>
 			</div><!-- end form-group-->
 

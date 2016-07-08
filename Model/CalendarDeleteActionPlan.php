@@ -131,7 +131,7 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 					)),
 					'required' => true,
 					'allowEmpty' => false,
-					'message' => __d('calendars', 'rrule編集指定が不正です'),
+					'message' => __d('calendars', 'Invalid input. (edit rrule)'),
 				),
 			),
 			'is_repeat' => array(
@@ -139,7 +139,9 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 					'rule' => array('numeric'),
 					'required' => true,
 					'allowEmpty' => false,
-					'message' => __d('calendars', '先頭のイベントIDが不正です'),
+					//'message' => __d('calendars', '先頭のイベントIDが不正です'),
+					//'message' => __d('calendars', 'イベントの繰り返しフラグが不正です'),
+					'message' => __d('calendars', 'Invalid input. (repeat flag)'),
 				),
 			),
 			'first_sib_event_id' => array(
@@ -147,7 +149,9 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 					'rule' => array('numeric'),
 					'required' => true,
 					'allowEmpty' => false,
-					'message' => __d('calendars', 'イベントの繰り返しフラグが不正です'),
+					//'message' => __d('calendars', 'イベントの繰り返しフラグが不正です'),
+					//'message' => __d('calendars', '先頭のイベントIDが不正です'),
+					'message' => __d('calendars', 'Invalid input.  (first sib ebent id)'),
 				),
 			),
 			'origin_event_id' => array(
@@ -155,7 +159,7 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 					'rule' => array('numeric'),
 					'required' => true,
 					'allowEmpty' => false,
-					'message' => __d('calendars', 'オリジナルのイベントIDが不正です'),
+					'message' => __d('calendars', 'Invalid input. (origin event id)'),
 				),
 			),
 			'is_recurrence' => array(
@@ -163,7 +167,7 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 					'rule' => array('numeric'),
 					'required' => true,
 					'allowEmpty' => false,
-					'message' => __d('calendars', 'イベントの置換フラグが不正です'),
+					'message' => __d('calendars', 'Invalid input. (recurrence flag)'),
 				),
 			),
 		));

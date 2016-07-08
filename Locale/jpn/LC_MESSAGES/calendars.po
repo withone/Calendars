@@ -74,11 +74,11 @@ msgid  "Invalid input. (year/month/day)"
 msgstr  "予定（年月日）の指定が不正です"
 
 #: Model/CalendarActionPlan.php:406
-msgid  "Invalid input. (start time) 1"
+msgid  "Invalid input. (start time)(easy edit mode)."
 msgstr  "予定（開始時間）の指定が不正です"
 
 #: Model/CalendarActionPlan.php:410
-msgid  "Invalid input. (start time and end time) 1"
+msgid  "Invalid input. (start time and end time)(easy edit mode)"
 msgstr  "開始時分と終了時分の並びが不正です"
 
 #: Model/CalendarActionPlan.php:418
@@ -86,11 +86,11 @@ msgid  "Invalid input. (end time)"
 msgstr  "予定（終了時間）の指定が不正です"
 
 #: Model/CalendarActionPlan.php:424
-msgid  "Invalid input. (start time) 2"
+msgid  "Invalid input. (start time)"
 msgstr  "開始日（時）が不正です"
 
 #: Model/CalendarActionPlan.php:428
-msgid  "Invalid input. (start time and end time) 2"
+msgid  "Invalid input. (start day (time) and end day (time))"
 msgstr  "開始日(時)と終了日(時)の並びが不正です"
 
 #: Model/CalendarActionPlan.php:434
@@ -125,21 +125,25 @@ msgstr  "詳細表示の指定が不正です。"
 msgid  "%d character limited. (location)"
 msgstr  "場所は最大 %d 文字です。"
 
-#: Model/CalendarActionPlan.php:526;534
+#: Model/CalendarActionPlan.php:526
 msgid  "%d character limited. (contact)"
 msgstr  "連絡先は最大 %d 文字です。"
+
+#: Model/CalendarActionPlan.php:534
+msgid  "%d character limited. (detail)"
+msgstr  "詳細は最大 %d 文字です。"
 
 #: Model/CalendarDeleteActionPlan.php:134
 msgid  "Invalid input. (edit rrule)"
 msgstr  "rrule編集指定が不正です"
 
 #: Model/CalendarDeleteActionPlan.php:142
-msgid  "Invalid input. (first event id)"
-msgstr  "先頭のイベントIDが不正です"
+msgid  "Invalid input. (repeat flag)"
+msgstr  "イベントの繰り返しフラグが不正です"
 
 #: Model/CalendarDeleteActionPlan.php:150
 msgid  "Invalid input.  (first sib ebent id)"
-msgstr  "イベントの繰り返しフラグが不正です"
+msgstr  "先頭のイベントIDが不正です"
 
 #: Model/CalendarDeleteActionPlan.php:158
 msgid  "Invalid input. (origin event id)"

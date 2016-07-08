@@ -41,14 +41,14 @@ class CalendarPlanRruleValidateBehavior extends CalendarValidateAppBehavior {
 				if (empty($model->data[$model->alias]['rrule_count'])) {
 					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'] = array();
 					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'][] =
-						__d('calendars', 'カレンダー繰返し回数は必須です。');
+						__d('calendars', 'Input required. (Times repeated)');
 					return false;
 				}
 
 				if (preg_match('/^\d+$/', $model->data[$model->alias]['rrule_count']) !== 1) {
 					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'] = array();
 					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'][] =
-						__d('calendars', 'カレンダー繰返し回数は数字のみ可能です。');
+						__d('calendars', 'Only numbers can be entered.');
 					//CakeLog::debug("DBG: error case. calendarProofreadValidationErros[" . print_r($model->CalendarActionPlan->calendarProofreadValidationErrors, true) . "]");
 
 					return false;
@@ -58,7 +58,7 @@ class CalendarPlanRruleValidateBehavior extends CalendarValidateAppBehavior {
 					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'] = array();
 					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'][] =
 						sprintf(__d('calendares',
-							'カレンダー繰返し回数は%d以上%d以下です。'), 1, 999);
+							'The number of repetition is %d or more and %d or less.'), 1, 999);
 					return false;
 				}
 				break;
