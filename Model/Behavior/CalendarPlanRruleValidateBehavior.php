@@ -173,7 +173,9 @@ class CalendarPlanRruleValidateBehavior extends CalendarValidateAppBehavior {
 
 		//範囲チェック
 		if (intval($matches[1]) < 1970 || 2033 < intval($matches[1])) {
-			return sprintf(__d('calendars', "Year that can be specified is %d or more and %d or less.", 1970, 2033));
+			return sprintf(
+				__d('calendars', 'Year that can be specified is %d or more and %d or less.'),
+				1970, 2033);
 		}
 		return '';
 	}

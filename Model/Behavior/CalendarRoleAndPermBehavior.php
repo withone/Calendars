@@ -43,6 +43,7 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  * initSetting
  *
  * 権限情報を適切にマッピング処理してくれるコンポーネントを取得保持
+ *
  * @param Model &$model モデル
  * @param Component $workflow ワークフローコンポーネント
  * @return void
@@ -182,6 +183,7 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  * __getPermSet
  *
  * 権限情報要素判定取得
+ * 
  * @param int $roomId ルームID
  * @param string $roleName そのルームにおけるロール名
  * @param array $permRooms ルームに置ける権限マッピング状況

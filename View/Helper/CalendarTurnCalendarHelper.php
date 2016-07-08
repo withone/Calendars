@@ -158,15 +158,16 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		} else {
 			$dateArr = $this->_getNowDate($type, $vars);
 		}
-		$url = NetCommonsUrl::actionUrl(Hash::merge(
-			array(
+		$urlArray = array(
 				'controller' => 'calendars',
 				'action' => 'index',
 				'style' => $vars['style'],
 				'frame_id' => Current::read('Frame.id'),
-			),
-			$dateArr
-		));
+		);
+		if (isset($vars['tab'])) {
+			$urlArray['tab'] = $vars['tab'];
+		}
+		$url = NetCommonsUrl::actionUrl(Hash::merge($urlArray, $dateArr));
 		return $url;
 	}
 /**
