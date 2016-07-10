@@ -66,6 +66,7 @@ echo $this->element('Calendars.scripts');
 			?>
 
 			<?php /* 繰り返しパターンの場合の繰り返し編集オプション */
+			/*
 			echo $this->element('Calendars.CalendarPlans/detail_edit_repeat_option', array(
 				'firstSibEventId' => $firstSibEventId,
 				'firstSibYear' => $firstSibYear,
@@ -74,7 +75,11 @@ echo $this->element('Calendars.scripts');
 				'firstSibDay' => $firstSibDay,
 				'originEventId' => $originEventId,
 				'isRecurrence' => $isRecurrence,
-			));	?>
+			));*/
+			echo $this->CalendarPlanEditRepeatOption->makeEditRepeatOption(
+				$eventSiblings,
+				$firstSibEventId, $firstSibYear, $firstSibMonth, $firstSibDay, $isRecurrence);
+			?>
 
 			<?php /* タイトル入力 */ ?>
 			<div class='form-group' data-calendar-name='inputTitle'>

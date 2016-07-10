@@ -88,6 +88,7 @@ class CalendarPlansController extends CalendarsAppController {
 		'Calendars.CalendarShareUsers',
 		'Calendars.CalendarExposeTarget',
 		'Calendars.CalendarPlanRrule',
+		'Calendars.CalendarPlanEditRepeatOption',
 		'Groups.GroupUserList',
 		'Users.UserSearch',
 	);

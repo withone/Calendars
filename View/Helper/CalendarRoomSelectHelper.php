@@ -41,7 +41,6 @@ class CalendarRoomSelectHelper extends AppHelper {
 		$rooms = $this->_View->viewVars['rooms'];
 		$html .= '<table class="table table-hover">';
 		foreach ($spaces as $space) {
-			$openStatusParam = 'status.open' . $space['Room']['id'];
 			$title = $this->Rooms->roomName($space);
 			if ($space['Space']['type'] == Space::PRIVATE_SPACE_TYPE) {
 				$html .= $this->_getSpaceListElm($title, $space);

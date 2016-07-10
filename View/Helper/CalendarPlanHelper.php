@@ -22,10 +22,10 @@ class CalendarPlanHelper extends AppHelper {
  * @var array
  */
 	public $helpers = array(
-		'NetCommonsForm',
-		'NetCommonsHtml',
 		'Html',
 		'Form',
+		'NetCommons.NetCommonsForm',
+		'NetCommons.NetCommonsHtml',
 		'NetCommons.Button',
 		'Calendars.CalendarMonthly',
 		'Calendars.CalendarCommon',
@@ -117,7 +117,6 @@ class CalendarPlanHelper extends AppHelper {
  */
 	public function makeEditButtonHtml($statusFieldName, $vars) {
 		//save,tempsaveのoptionsでpath指定するため、Workflowヘルパーのbuttons()を参考に実装した。
-		//print_r($vars);
 		$status = Hash::get($this->_View->data, $statusFieldName);
 		$options = array(
 			'controller' => 'calendars',
@@ -127,15 +126,6 @@ class CalendarPlanHelper extends AppHelper {
 			'block_id' => Current::read('Block.id'),	//追加しておく
 			'frame_id' => Current::read('Frame.id'),
 		);
-		//if (isset($vars['return_style'])) { 未使用
-		//	//cancel時の戻り先としてstyleを指定する。
-		//	$options['style'] = $vars['return_style'];
-		//}
-		//if (isset($vars['return_sort'])) {
-		//	//cancel時の戻り先としてsortオプションがあればそれもセットで指定する.
-		//	$options['sort'] = $vars['return_sort'];
-		//}
-		//$cancelUrl = NetCommonsUrl::actionUrl($options);
 		if (isset($vars['returnUrl'])) {
 			$cancelUrl = $vars['returnUrl'];
 		} else {
