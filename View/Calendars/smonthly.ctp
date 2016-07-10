@@ -32,7 +32,7 @@ echo $this->element('Calendars.scripts');
 				<td class='calendar-col-small-day-head'><span class='h4'><?php echo __d('calendars', 'Wed'); ?></span></td>
 				<td class='calendar-col-small-day-head'><span class='h4'><?php echo __d('calendars', 'Thu'); ?></span></td>
 				<td class='calendar-col-small-day-head'><span class='h4'><?php echo __d('calendars', 'Fri'); ?></span></td>
-				<td class='calendar-col-small-day-head'><span class='calendar-saturday h4'><?php echo __d('calendars', 'Sta'); ?></span></td>
+				<td class='calendar-col-small-day-head'><span class='calendar-saturday h4'><?php echo __d('calendars', 'Sat'); ?></span></td>
 			</tr>
 			<?php
 				echo $this->CalendarMonthly->makeSmallMonthyBodyHtml($vars);

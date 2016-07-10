@@ -1,3 +1,14 @@
+<?php
+/**
+ * calendar plan edit form ( delete parts ) template
+ *
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Allcreator <info@allcreator.net>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
+ */
+?>
 <?php App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior'); ?>
 
 <?php
@@ -9,7 +20,6 @@
 				(isset($this->request->data['CalendarActionPlan']['origin_num_of_event_siblings']) &&
 				$this->request->data['CalendarActionPlan']['origin_num_of_event_siblings'] > 1)) {
 			//繰返しあり、３選択時の削除
-			//CakeLog::debug("DBG: 繰返しあり用の削除");
 
 			$options = array(
 				'onclick' => false,
@@ -18,7 +28,6 @@
 			);
 		} else {
 			//繰返しなしの時の削除
-			//CakeLog::debug("DBG: 繰返しなし用の削除");
 
 			$options = array(
 				'onclick' => false,

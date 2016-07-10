@@ -1133,3 +1133,10 @@ msgstr ""
 msgid  "(GMT+12:00) Auckland, Wellington, Fiji, Kamchatka, Marshall Island"
 msgstr ""
 
+msgid "|January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr ""
+msgid "Day %s"
+msgstr ""
+
+msgid "%d/%d (%s)"
+msgstr "%d月%d日(%s)"

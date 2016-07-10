@@ -105,10 +105,13 @@ class CalendarPlanRruleHelper extends AppHelper {
  */
 	private function __getBymonthVals($freq, $rrule) {
 		$bymonthStr = '';
+		$monthNames = explode('|',
+			__d('calendars',
+				'|January|February|March|April|May|June|July|August|September|October|November|December'
+			));
 		if (isset($rrule[$freq]['BYMONTH'])) {
 			foreach ($rrule[$freq]['BYMONTH'] as $val) {
-				$bymonthStr .= CalendarsComponent::CALENDAR_RRULE_PAUSE .
-					sprintf(__d('calendars', '%s月'), $val);
+				$bymonthStr .= CalendarsComponent::CALENDAR_RRULE_PAUSE . $monthNames[$val];
 			}
 		}
 		return $bymonthStr;
@@ -128,7 +131,7 @@ class CalendarPlanRruleHelper extends AppHelper {
 		if (isset($rrule[$freq]['BYMONTHDAY'])) {
 			foreach ($rrule[$freq]['BYMONTHDAY'] as $val) {
 				$bymonthdayStr .= CalendarsComponent::CALENDAR_RRULE_PAUSE .
-					sprintf(__d('calendars', '%s日'), $val);
+					sprintf(__d('calendars', 'Day %s'), $val);
 			}
 		}
 		return $bymonthdayStr;
@@ -147,7 +150,7 @@ class CalendarPlanRruleHelper extends AppHelper {
 		$bydayStr = '';
 		$wdays = explode('|', CalendarsComponent::CALENDAR_REPEAT_WDAY);
 		$weekNameArray = explode('|',
-			__d('calendars', '日曜日|月曜日|火曜日|水曜日|木曜日|金曜日|土曜日'));
+			__d('calendars', 'Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday'));
 		if (isset($rrule[$freq]['BYDAY'])) {
 			foreach ($rrule[$freq]['BYDAY'] as $val) {
 				$wday = substr($val, -2);
@@ -184,14 +187,13 @@ class CalendarPlanRruleHelper extends AppHelper {
 	private function __addStrWhenYearlyCase($freq, $rrule, $bymonthStr, $bydayStr, $bymonthdayStr) {
 		$wkResultStr = '';
 		if ($rrule[$freq]['INTERVAL'] == 1) {
-			$wkResultStr .= __d('calendars', '毎年');
+			$wkResultStr .= __d('calendars', 'every year');
 		} else {
-			$wkResultStr .= sprintf(__d('calendars', '%s年ごとに'), $rrule[$freq]['INTERVAL']);
+			$wkResultStr .= sprintf(__d('calendars', 'every %s years'), $rrule[$freq]['INTERVAL']);
 		}
 		$wkResultStr .= $bymonthStr;
 		if ($bydayStr == '') {
-			//$bydayStr = '<br />' . __d('calendars', '開始日と同日');
-			$bydayStr = '&nbsp;/&nbsp;' . __d('calendars', '開始日と同日');
+			$bydayStr = '&nbsp;/&nbsp;' . __d('calendars', 'Start date');
 		}
 		$wkResultStr .= $bydayStr;
 		return $wkResultStr;
@@ -212,9 +214,9 @@ class CalendarPlanRruleHelper extends AppHelper {
 	private function __addStrWhenMonthlyCase($freq, $rrule, $bymonthStr, $bydayStr, $bymonthdayStr) {
 		$wkResultStr = '';
 		if ($rrule[$freq]['INTERVAL'] == 1) {
-			$wkResultStr .= __d('calendars', '毎月');
+			$wkResultStr .= __d('calendars', 'every month');
 		} else {
-			$wkResultStr .= sprintf(__d('calendars', '%sヶ月ごとに'), $rrule[$freq]['INTERVAL']);
+			$wkResultStr .= sprintf(__d('calendars', 'every %s months'), $rrule[$freq]['INTERVAL']);
 		}
 		$wkResultStr .= $bydayStr;
 		$wkResultStr .= $bymonthdayStr;
@@ -236,9 +238,9 @@ class CalendarPlanRruleHelper extends AppHelper {
 	private function __addStrWhenWeeklyCase($freq, $rrule, $bymonthStr, $bydayStr, $bymonthdayStr) {
 		$wkResultStr = '';
 		if ($rrule[$freq]['INTERVAL'] == 1) {
-			$wkResultStr .= __d('calendars', '毎週');
+			$wkResultStr .= __d('calendars', 'every week');
 		} else {
-			$wkResultStr .= sprintf(__d('calendars', '%s週ごとに'), $rrule[$freq]['INTERVAL']);
+			$wkResultStr .= sprintf(__d('calendars', 'every %s weeks'), $rrule[$freq]['INTERVAL']);
 		}
 		$wkResultStr .= $bydayStr;
 		return $wkResultStr;
@@ -259,9 +261,9 @@ class CalendarPlanRruleHelper extends AppHelper {
 	private function __addStrWhenDailyCase($freq, $rrule, $bymonthStr, $bydayStr, $bymonthdayStr) {
 		$wkResultStr = '';
 		if ($rrule[$freq]['INTERVAL'] == 1) {
-			$wkResultStr .= __d('calendars', '毎日');
+			$wkResultStr .= __d('calendars', 'every day');
 		} else {
-			$wkResultStr .= sprintf(__d('calendars', '%s日ごとに'), $rrule[$freq]['INTERVAL']);
+			$wkResultStr .= sprintf(__d('calendars', 'every %s days'), $rrule[$freq]['INTERVAL']);
 		}
 		return $wkResultStr;
 	}
@@ -280,10 +282,10 @@ class CalendarPlanRruleHelper extends AppHelper {
 			$wkResultStr .= '&nbsp;/&nbsp;'; //'<br />';
 			$wkResultStr .=
 				(new CalendarTime())->dateFormat(substr($rrule['UNTIL'], 0, 8) .
-				substr($rrule['UNTIL'], -6), null, 0, __d('calendars', 'Y年m月d日まで'), 1);
+				substr($rrule['UNTIL'], -6), null, 0, __d('calendars', 'Until Y/m/d'), 1);
 		} elseif (isset($rrule['COUNT'])) {
 			$wkResultStr .= '&nbsp;/&nbsp;';	//'<br />';
-			$wkResultStr .= sprintf(__d('calendars', '%s回'), $rrule['COUNT']);
+			$wkResultStr .= sprintf(__d('calendars', '%s times'), $rrule['COUNT']);
 		}
 		return $wkResultStr;
 	}
@@ -307,19 +309,19 @@ class CalendarPlanRruleHelper extends AppHelper {
 		switch ($num) {
 			// <br />セパレータではなく、"/"セパレータを使う。
 			case 1:
-				$wkBydayStr .= $sepa . __d('calendars', '第1週');
+				$wkBydayStr .= $sepa . __d('calendars', 'First week');
 				break;
 			case 2:
-				$wkBydayStr .= $sepa . __d('calendars', '第2週');
+				$wkBydayStr .= $sepa . __d('calendars', 'Second week');
 				break;
 			case 3:
-				$wkBydayStr .= $sepa . __d('calendars', '第3週');
+				$wkBydayStr .= $sepa . __d('calendars', 'Third week');
 				break;
 			case 4:
-				$wkBydayStr .= $sepa . __d('calendars', '第4週');
+				$wkBydayStr .= $sepa . __d('calendars', 'Forth week');
 				break;
 			default:
-				$wkBydayStr .= $sepa . __d('calendars', '最終週');
+				$wkBydayStr .= $sepa . __d('calendars', 'last week');
 		}
 		return $wkBydayStr;
 	}

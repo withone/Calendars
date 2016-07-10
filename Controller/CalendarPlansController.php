@@ -114,44 +114,6 @@ class CalendarPlansController extends CalendarsAppController {
 	}
 
 /**
- * select
- *
- * FIXME:制作中
- *
- * @return void
- * @throws NotFoundException
- */
-	public function select() {
-		$this->viewClass = 'View';
-
-		if (!isset($this->request->params['named']['event'])) {
-			CakeLog::error(__d('calendars',
-				'対象eventの指定がないのでブランクページを表示します'));
-			$this->setAction('emptyRender');
-			return;
-		}
-
-		//event関連取得
-		$event = $this->CalendarEvent->find('first', array(
-			'conditions' => array(
-				$this->CalendarEvent->alias . '.id' => $this->request->params['named']['event'],
-			),
-			'recursive' => 0, //belongsTo, hasOneまで取得
-		));
-
-		if (!$event) {
-			CakeLog::error(__d('calendars',
-				'対象eventがないのでブランクページを表示します'));
-			$this->setAction('emptyRender');
-			return;
-		}
-
-		$this->set('event', $event);
-		//$this->layout = 'Calendars.select_layout';
-		$this->layout = 'NetCommons.modal';
-	}
-
-/**
  * delete
  *
  * @return void

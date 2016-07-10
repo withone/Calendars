@@ -96,7 +96,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		switch($type) {
 			case 'month':
 			case 'week':
-				$html .= sprintf(__d('calendars', '<small>%d年</small>%d月'),
+				$html .= sprintf(__d('calendars', '<small>%d/</small> %d'),
 					$vars['mInfo']['year'], $vars['mInfo']['month']);
 				break;
 			case 'day':
@@ -104,7 +104,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 				$holidayTitle = $this->CalendarCommon->getHolidayTitle(
 					$vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $vars['dayOfTheWeek']);
 				$html .= sprintf(__d('calendars',
-						'<small>%d年</small>%d月%d日<small>(%s)&nbsp;<br class="visible-xs" />%s</small>'),
+						'<small>%d/</small>%d/%d<small>(%s)&nbsp;<br class="visible-xs" />%s</small>'),
 					$vars['year'],
 					$vars['month'],
 					$vars['day'],
@@ -129,13 +129,13 @@ class CalendarTurnCalendarHelper extends AppHelper {
 	protected function _getNowButtonTitle($type) {
 		switch ($type) {
 			case 'month':
-				$ret = __d('calendars', '今月へ');
+				$ret = __d('calendars', 'This month');
 				break;
 			case 'week':
-				$ret = __d('calendars', '今週へ');
+				$ret = __d('calendars', 'This week');
 				break;
 			case 'day':
-				$ret = __d('calendars', '今日へ');
+				$ret = __d('calendars', 'Today');
 		}
 		return $ret;
 	}

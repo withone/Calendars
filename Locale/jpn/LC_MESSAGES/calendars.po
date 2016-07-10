@@ -769,7 +769,7 @@ msgstr  "開始位置"
 
 #: View/Elements/CalendarFrameSettings/start_pos.ctp:20
 #: View/Helper/CalendarScheduleHelper.php:398
-msgid  "Today"
+msgid  "today"
 msgstr  "今日"
 
 #: View/Elements/CalendarFrameSettings/start_pos.ctp:21
@@ -1129,3 +1129,12 @@ msgstr "(GMT+11:00) マガダン、ソロモン諸島、ニューカレドニア
 #: Controller/Component/CalendarsComponent.php:299
 msgid  "(GMT+12:00) Auckland, Wellington, Fiji, Kamchatka, Marshall Island"
 msgstr "(GMT+12:00) オークランド、ウェリントン、フィジー、カムチャッカ"
+
+msgid "|January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "|1月|2月|3月|4月|5月|6月|7月|8月|9月|10月|11月|12月"
+
+msgid "Day %s"
+msgstr "%s日"
+
+msgid "%d/%d (%s)"
+msgstr "%d月%d日(%s)"

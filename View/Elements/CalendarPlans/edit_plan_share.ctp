@@ -1,30 +1,21 @@
 <?php
-	/*
-	$usersJson = array();
-	if (isset($this->data['GroupsUsersDetail']) && is_array($this->data['GroupsUsersDetail'])) {
-		foreach ($this->data['GroupsUsersDetail'] as $groupUser) {
-			$usersJson[] = $this->UserSearch->convertUserArrayByUserSelection($groupUser, 'User');
-		}
-	}
-	*/
-
+/**
+ * 予定編集（共有者選択） template
+ *
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Allcreator <info@allcreator.net>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
+ */
+?>
+<?php
 	$this->NetCommonsForm->unlockField('GroupsUser');
 
-	//グループ管理、ユーザ選択element(旧)
-	/*
-	echo $this->element('Groups.select', array(
-		'title' => __d('calendars', '予定を共有する人を選択してください'),
-		//'pluginModel'キーを省略すると、Groupプラグインの'GroupsUser'モデルがpluginModelとして内部指定されるようだ。
-		'selectUsers' => (isset($this->request->data['selectUsers'])) ? $this->request->data['selectUsers'] : null,
-		'roomId' => Room::ROOM_PARENT_ID, //全会員を表すID(roomId)を指定する。
-	));
-	*/
-
 	//グループ管理、ユーザ選択helper
-	//
 	//第1引数：項目名を指定（回覧先ユーザや共有先ユーザ等の指定を想定、
 	//デフォルト値：ユーザ選択）
-	$title = __d('calendars', '予定を共有する人を選択してください');
+	$title = __d('calendars', 'Please select a person to share the schedule.');
 
 	//第2引数：モデル名を指定（プラグインによってモデル名が異なるので
 	//指定できるように対応、デフォルト値：GroupsUser）
@@ -43,7 +34,6 @@
 	//第4引数：ユーザIDの配列を指定（編集画面等で、登録時に選択したユー
 	//ザを選択済みとして初期表示したい時に指定、デフォルト値：空配列）
 	//なお、$selectUsersは、User->getUser(user_id,lang_id)の結果を順次格納した配列イメージ
-	//$selectUsers = null;
 	$selectUsers = $shareUsers;
 
 	echo $this->GroupUserList->select($title, $pluginModel, $roomId, $selectUsers);

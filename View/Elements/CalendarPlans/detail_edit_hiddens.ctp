@@ -1,6 +1,15 @@
 <?php
-	//FIXME: 以下は、簡易画面ベースのhidden. これを詳細画面ベースのhiddenに直すこと。
-
+/**
+ * calendar plan edit form ( hidden field ) template
+ *
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Allcreator <info@allcreator.net>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
+ */
+?>
+<?php
 	$originEventId = $originRruleId = $originEventRecurrence = $originEventException = 0;
 	$originEventKey = $originRruleKey = '';
 	if (!empty($event)) {

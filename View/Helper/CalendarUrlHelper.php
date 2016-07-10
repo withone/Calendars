@@ -148,13 +148,13 @@ class CalendarUrlHelper extends AppHelper {
 
 		if ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY ||
 			$displayType == CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY) {
-			$html = $this->BackTo->indexLinkButton(__d('calendars', '今月に戻る'));
+			$html = $this->BackTo->indexLinkButton(__d('calendars', 'Back to this month'));
 		} elseif ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY) {
-			$html = $this->BackTo->indexLinkButton(__d('calendars', '今週に戻る'));
+			$html = $this->BackTo->indexLinkButton(__d('calendars', 'Back to this week'));
 		} elseif ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_DAILY) {
-			$html = $this->BackTo->indexLinkButton(__d('calendars', '今日に戻る'));
+			$html = $this->BackTo->indexLinkButton(__d('calendars', 'Back to today'));
 		} else {
-			$html = $this->BackTo->indexLinkButton(__d('calendars', '最初の画面に戻る'));
+			$html = $this->BackTo->indexLinkButton(__d('calendars', 'Back to First view'));
 		}
 
 		return $html;

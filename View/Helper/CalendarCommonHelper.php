@@ -39,7 +39,7 @@ class CalendarCommonHelper extends AppHelper {
 	public function getWdayArray() {
 		return array(__d('calendars', 'Sun'), __d('calendars', 'Mon'), __d('calendars', 'Tue'),
 			__d('calendars', 'Wed'), __d('calendars', 'Thu'), __d('calendars', 'Fri'),
-			__d('calendars', 'Sta'),
+			__d('calendars', 'Sat'),
 		);
 	}
 
@@ -390,22 +390,6 @@ class CalendarCommonHelper extends AppHelper {
 		);
 		return $weeks[$cnt % 7];
 	}
-
-	/*
-	 * getVirtualShareRoomInfo
-	 *
-	 * 「仲間の予定」仮想ルームのIDと名前の取得
-	 *
-	 * @return array 「仲間の予定」仮想ルームのIDと名前を配列で返す。
-	 */
-	/*
-	public function getVirtualShareRoomInfo() {
-		return array(
-			CalendarsComponent::FRIEND_PLAN_VIRTUAL_ROOM_ID,
-			__d('calendars', '仲間の予定')
-		);
-	}
-	*/
 
 /**
  * decideRoomName

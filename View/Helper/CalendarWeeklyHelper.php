@@ -36,13 +36,6 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 	);
 
 /**
- * line room data
- * 処理中のroom数(月拡大の週を使用する)
- * @var array
- */
-	//	protected $_week = 0;
-
-/**
  * getPlanSummariesHtml
  *
  * 予定概要群html取得
@@ -67,7 +60,6 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		}
 
 		$id = 'divline' . (string)$this->_week . '_' . (string)$this->_celCnt;
-		//$html .= "<div class='hidden-xs' style='z-index:1;' id='" . $id . "'></div>"; //縦位置調整用
 		$html .= "<div style='z-index:1;' id='" . $id . "'></div>"; //縦位置調整用
 
 		foreach ($plans as $plan) {
@@ -211,12 +203,9 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		$rooms = $vars['exposeRoomOptions'];
 
 		//「仲間の予定」仮想ルーム情報を追記
-		//list($shareRoomId, $shareRoomName) = $this->CalendarCommon->getVirtualShareRoomInfo();
-		$rooms[CalendarsComponent::FRIEND_PLAN_VIRTUAL_ROOM_ID] = __d('calendars', '仲間の予定');
-		//CakeLog::debug("DBG: rooms[" . print_r($rooms, true) . "]");
+		$rooms[CalendarsComponent::FRIEND_PLAN_VIRTUAL_ROOM_ID] = __d('calendars', 'Schedule of fellow');
 
 		//ルーム数分繰り返し
-		//for ($idx = 0; $idx < $roomNum; $idx++) {
 		$cnt = 0;
 		$year = $vars['year'];
 		$month = $vars['month'];
