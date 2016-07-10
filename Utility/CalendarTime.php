@@ -477,7 +477,7 @@ class CalendarTime {
 		$date->setTimestamp($timestamp);
 		$week = $date->format('w');	//曜日index (0-6)
 		//言語別のCALENDAR_WEEK
-		$weekNameArray = explode('|', __d('calendars', '日|月|火|水|木|金|土'));
+		$weekNameArray = explode('|', __d('calendars', 'Sun|Mon|Tue|Wed|Thu|Fri|Sat'));
 		return $date->format(sprintf($timeFormat, $weekNameArray[$week]));
 	}
 }
