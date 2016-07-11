@@ -82,7 +82,7 @@ class CalendarValidateAppBehavior extends ModelBehavior {
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['DAILY'] =
 				array();
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['DAILY'][] =
-				__d('calendars', '繰返し指定ありの日単位の日ごとの値が不正です');
+				__d('calendars', 'Invalid input. (repeat interval: every day)');
 			return false;
 		}
 		return true;
@@ -106,7 +106,7 @@ class CalendarValidateAppBehavior extends ModelBehavior {
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['WEEKLY'] =
 				array();
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['WEEKLY'][] =
-				__d('calendars', '繰返し指定ありの週単位の週ごとの値が不正です');
+				__d('calendars', 'Invalid input. (repeat interval: every week)');
 			return false;
 		}
 
@@ -123,7 +123,7 @@ class CalendarValidateAppBehavior extends ModelBehavior {
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['WEEKLY'] =
 				array();
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['WEEKLY'][] =
-				__d('calendars', '繰返し指定ありの週単位の曜日の指定が不正です');
+				__d('calendars', 'Invalid input. (repeat interval:week)');
 			return false;
 		}
 		return true;
@@ -147,7 +147,7 @@ class CalendarValidateAppBehavior extends ModelBehavior {
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['MONTHLY'] =
 				array();
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['MONTHLY'][] =
-				__d('calendars', '繰返し指定ありの月単位の月ごとの値が不正です');
+				__d('calendars', 'Invalid input. (repeat interbal:every month)');
 			return false;
 		}
 
@@ -180,7 +180,7 @@ class CalendarValidateAppBehavior extends ModelBehavior {
 				array();
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['MONTHLY'][] =
 				__d('calendars',
-					'繰返し指定ありの月単位の曜日または日付指定の値が不正です');
+					'Invalid input. (rrule error. day of the month or date)');
 			return false;
 		}
 		return true;
@@ -204,7 +204,7 @@ class CalendarValidateAppBehavior extends ModelBehavior {
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['YEARLY'] =
 				array();
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_interval']['YEARLY'][] =
-				__d('calendars', '繰返し指定ありの年単位の年ごとの値が不正です');
+				__d('calendars', 'Invalid input. (rrule error. interval YEARLY)');
 			return false;
 		}
 
@@ -215,7 +215,7 @@ class CalendarValidateAppBehavior extends ModelBehavior {
 				array();
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_bymonth']['YEARLY'][] =
 				__d('calendars',
-					'繰返し指定ありの年単位の月が１つも指定されていません');
+					'Invalid input. (rrule error. Interval of year. there is no specification of the month.)');
 			return false;
 		}
 
@@ -233,7 +233,7 @@ class CalendarValidateAppBehavior extends ModelBehavior {
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_bymonth']['YEARLY'] =
 				array();
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_bymonth']['YEARLY'][] =
-				__d('calendars', '繰返し指定ありの年単位の月の指定が不正です');
+				__d('calendars', 'Invalid input. (rrule error. Interval of year, specified month.)');
 			return false;
 		}
 
@@ -246,7 +246,7 @@ class CalendarValidateAppBehavior extends ModelBehavior {
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['YEARLY'] =
 				array();
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['YEARLY'][] =
-				__d('calendars', '繰返し指定ありの年単位の週と曜日の値が不正です');
+				__d('calendars', 'Invalid input. (rrule error.  Interval of year. Week of the year unit,week value is invalid.)');
 			return false;
 		}
 		return true;

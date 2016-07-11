@@ -372,7 +372,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'rule' => array('datetime'), //YYYY-MM-DD hh:mm
 					'required' => false,
 					'allowEmpty' => true,
-					'message' => __d('calendars', '予定（終了時間）の指定が不正です'),
+					'message' => __d('calendars', 'Invalid input. (end time)'),
 				),
 			),
 			'detail_start_datetime' => array(

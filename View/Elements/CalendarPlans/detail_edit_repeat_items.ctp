@@ -86,9 +86,10 @@
 					'empty' => false,
 					'required' => true,
 					'div' => 'col-sm-9 form-inline',
+					'error' => false,
 			));
-			echo $this->NetCommonsForm->error(
-				'CalendarActionPlan.rrule_interval.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_DAILY, null, array('div' => true));
+			//echo $this->NetCommonsForm->error( 重複になるためコメントアウト
+			//	'CalendarActionPlan.rrule_interval.' . CalendarsComponent::CALENDAR_REPEAT_FREQ_DAILY, null, array('div' => true));
 			?>
 		</div><!-- en daily repeat setting form-group-->
 
@@ -317,16 +318,18 @@
 					echo $this->NetCommonsForm->input('CalendarActionPlan.rrule_count', array(
 						'type' => 'text',
 						'label' => false,
+					//	'div' => 'input-group',
 						'div' => false,
 						//'div' => 'col-xs-6',
 						'value' => $countValue,
-						//'after' => '&nbsp;' . __d('calendars', 'times')
+					//	'after' => '<span class="input-group-addon">' . '&nbsp;' . __d('calendars', 'times') . '</span>',
+					//	'error' => false,
 					));
-
+					//echo $this->NetCommonsForm->error('CalendarActionPlan.rrule_count');
 				?>
 				</div>
-
-				<div class="col-sm-1 calendar-detailedit-addchar">
+				
+				<div class="col-xs-6 col-sm-1 calendar-detailedit-addchar">
 					<?php echo __d('calendars', 'times'); ?>
 				</div>
 

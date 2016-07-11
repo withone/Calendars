@@ -88,7 +88,7 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 			if (!empty($userId)) {
 				//ログインしている時、optionに積む
 				$roomId = Room::ROOM_PARENT_ID;	//全会員を表すIDはこれです。
-				$options[$roomId] = __d('calendars', '全会員');
+				$options[$roomId] = __d('calendars', 'All the members');
 				$spaceNameOfRooms[$roomId] = 'member';	//例外的に文字列を渡す
 			}
 		}
@@ -315,7 +315,7 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 		$roomsLang = $model->RoomsLanguage->findByRoomIdAndLanguageId(
 			$myself, Current::read('Language.id'));
 		if (empty($roomsLang['RoomsLanguage']['name'])) {
-			return __d('calendars', '不明なマイルーム');
+			return __d('calendars', 'Unknown My Room');
 		}
 		return $roomsLang['RoomsLanguage']['name'];
 	}

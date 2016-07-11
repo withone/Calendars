@@ -102,7 +102,7 @@ class CalendarPlansController extends CalendarsAppController {
 		parent::beforeFilter();
 		if (! Current::read('Block.id')) {
 			CakeLog::error(
-				__d('calendars', 'ブロックIDがないのでブランクページを表示します'));
+				__d('calendars', 'There is no block ID. Display a blank page.'));
 			$this->setAction('emptyRender');
 			return false;
 		}
@@ -197,7 +197,7 @@ class CalendarPlansController extends CalendarsAppController {
 						CakeLog::error("削除実行エラー");
 						//エラーメッセージのセット. 便宜的にis_repeatを利用
 						$this->CalendarDeleteActionPlan->validationErrors['is_repeat'] =
-							__d('calendars', '削除に失敗しました');
+							__d('calendars', 'Delete failed.');
 					}
 				}
 			}
@@ -355,7 +355,7 @@ class CalendarPlansController extends CalendarsAppController {
 		$event = $this->CalendarEvent->find('first', $options);
 		if (!$event) {
 			CakeLog::error(__d('calendars',
-				'対象eventがないのでブランクページを表示します'));
+				'There is no event. Display a blank page. 2'));
 			$this->setAction('emptyRender');
 			return;
 		}
@@ -583,7 +583,7 @@ class CalendarPlansController extends CalendarsAppController {
 		$event = $this->CalendarEvent->find('first', $options);
 		if (!$event) {
 			CakeLog::error(
-				__d('calendars', '対象eventがないのでeventを空にして下に流します。'));
+				__d('calendars', 'There is no event. To continue the event in the blank.'));
 			$event = array();
 		}
 		return $event;
