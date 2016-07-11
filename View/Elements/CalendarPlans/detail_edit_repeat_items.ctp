@@ -56,6 +56,7 @@
 					'ng-change' => 'changePeriodType(' . $frameId . ')',
 				));
 			?>
+			<?php echo $this->NetCommonsForm->error('CalendarActionPlan.rrule_interval.DAILY'); ?>
 		</div><!-- form-group終わり-->
 
 		<?php /* 繰り返しが「日」単位指定の場合の詳細設定 */ ?>
@@ -280,6 +281,8 @@
 
 		<?php /* 終了時指定 */ ?>
 		<div class="form-group calendar-repeat-limit_<?php echo $frameId; ?>" data-calendar-name="calendarRepeatLimit">
+
+
 			<?php
 				echo $this->NetCommonsForm->label('CalendarActionPlan.rrule_term',
 				__d('calendars', 'End date'), array('class' => 'col-sm-3 control-label'));
@@ -292,7 +295,8 @@
 				),
 				array(
 					'legend' => false,
-							'div' => 'col-sm-9 form-inline',
+							//'div' => 'col-sm-9 form-inline',
+							'div' => 'col-sm-9 form-group col-sm-offset-1',
 							'label' => false,
 							'class' => 'radio',
 							'ng-model' => 'selectRepeatEndType[' . $frameId . ']',
@@ -301,22 +305,33 @@
 				));
 			?>
 			<div class="clearfix"></div>
-			<div class="col-sm-9 col-sm-offset-3 form-inline calendar-repeat-end-count-info_<?php echo $frameId; ?>"
+
+			<div class="col-xs-12 col-sm-9 col-sm-offset-3 calendar-repeat-end-count-info_<?php echo $frameId; ?>"
 				 ng-show="selectRepeatEndType[<?php echo $frameId; ?>]
 				 	=='<?php echo CalendarsComponent::CALENDAR_RRULE_TERM_COUNT; ?>'"
 				 data-calendar-name="countInfo">
+
+				<div class="col-xs-6 col-sm-3">
 				<?php
 					$countValue = $this->request->data['CalendarActionPlan']['rrule_count'];
 					echo $this->NetCommonsForm->input('CalendarActionPlan.rrule_count', array(
 						'type' => 'text',
 						'label' => false,
 						'div' => false,
+						//'div' => 'col-xs-6',
 						'value' => $countValue,
-						'after' => '&nbsp;' . __d('calendars', 'times')
+						//'after' => '&nbsp;' . __d('calendars', 'times')
 					));
 
 				?>
+				</div>
+
+				<div class="col-sm-1 calendar-detailedit-addchar">
+					<?php echo __d('calendars', 'times'); ?>
+				</div>
+
 			</div>
+
 			<div class="col-sm-9 col-sm-offset-3 form-inline calendar-repeat-end-enddate-info_<?php echo $frameId; ?>"
 				 ng-show="selectRepeatEndType[<?php echo $frameId; ?>]
 				 	=='<?php echo CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL; ?>'"
