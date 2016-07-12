@@ -246,7 +246,8 @@ class CalendarValidateAppBehavior extends ModelBehavior {
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['YEARLY'] =
 				array();
 			$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_byday']['YEARLY'][] =
-				__d('calendars', 'Invalid input. (rrule error.  Interval of year. Week of the year unit,week value is invalid.)');
+				__d('calendars', 'Invalid input. ' .
+					'(rrule error.  Interval of year. Week of the year unit,week value is invalid.)');
 			return false;
 		}
 		return true;

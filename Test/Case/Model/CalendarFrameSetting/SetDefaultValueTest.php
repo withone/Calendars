@@ -10,7 +10,7 @@
  */
 
 App::uses('NetCommonsModelTestCase', 'NetCommons.TestSuite');
-App::uses('CalendarsComponent', 'Calendars.Controller/Component');    //constを使うため
+App::uses('CalendarsComponent', 'Calendars.Controller/Component'); //constを使うため
 
 /**
  * CalendarFrameSetting::setDefaultValue()のテスト
@@ -88,15 +88,15 @@ class CalendarFrameSettingSetDefaultValueTest extends NetCommonsModelTestCase {
  * @return void
  */
 	public function dataProviderSetDefaultValue() {
-	$data = array();
-	$expect = array();
+		$data = array();
+		$expect = array();
 
-	$expect = array(
-	'CalendarFrameSetting' => array(
-			'display_type' => CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY,
-			'display_count' => CalendarsComponent::CALENDAR_STANDARD_DISPLAY_DAY_COUNT,
-			'timeline_base_time' => CalendarsComponent::CALENDAR_TIMELINE_DEFAULT_BASE_TIME
-	));
+		$expect = array(
+		'CalendarFrameSetting' => array(
+				'display_type' => CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY,
+				'display_count' => CalendarsComponent::CALENDAR_STANDARD_DISPLAY_DAY_COUNT,
+				'timeline_base_time' => CalendarsComponent::CALENDAR_TIMELINE_DEFAULT_BASE_TIME
+		));
 		return array(
 			array($data, $expect),
 		);
