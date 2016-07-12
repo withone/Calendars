@@ -143,14 +143,14 @@ class CalendarRrule extends CalendarsAppModel {
 			'calendar_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
-					'message' => __d('net_commons', 'Invalid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 					'required' => true,
 				),
 			),
 			'room_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
-					'message' => __d('net_commons', 'Invalid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 					'required' => true,
 				),
 			),

@@ -125,20 +125,20 @@ class CalendarEvent extends CalendarsAppModel {
 			'status' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
-					'message' => __d('net_commons', 'Invalid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 					'required' => true,
 				),
 			),
 			'is_active' => array(
 				'rule1' => array(
 					'rule' => 'boolean',
-					'message' => __d('net_commons', 'Invalid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 				),
 			),
 			'is_latest' => array(
 				'rule1' => array(
 					'rule' => 'boolean',
-					'message' => __d('net_commons', 'Invalid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 				),
 			),
 		));

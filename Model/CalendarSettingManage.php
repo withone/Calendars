@@ -84,21 +84,21 @@ class CalendarSettingManage extends CalendarsAppModel {
 			'room_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
-					'message' => __d('net_commons', 'Invalid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 					'required' => true,
 				),
 			),
 			'calendar_setting_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
-					'message' => __d('net_commons', 'Invalid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 					'required' => true,
 				),
 			),
 			'add_authority_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
-					'message' => __d('net_commons', 'Invalid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 					'required' => true,
 				),
 			),
@@ -106,7 +106,7 @@ class CalendarSettingManage extends CalendarsAppModel {
 			'is_use' => array(
 				'rule1' => array(
 					'rule' => 'boolean',
-					'message' => __d('net_commons', 'Invalid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 				),
 			),
 		));

@@ -112,7 +112,7 @@ class Calendar extends CalendarsAppModel {
 			'block_key' => array(
 				'rule1' => array(
 					'rule' => array('notBlank'),
-					'message' => __d('net_commons', 'Invalid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 					'required' => true,
 					'on' => 'update', // 新規の時はブロックIDがなかったりすることがあるので
 				),

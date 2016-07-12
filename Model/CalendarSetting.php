@@ -76,14 +76,14 @@ class CalendarSetting extends CalendarsAppModel {
 			'block_key' => array(
 				'notBlank' => array(
 					'rule' => array('notBlank'),
-					'message' => __d('net_commons', 'Invalid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 					'required' => true,
 				),
 			),
 			'use_workflow' => array(
 				'boolean' => array(
 					'rule' => 'boolean',
-					'message' => __d('net_commons', 'Invalid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 					'required' => true,
 				),
 			),
