@@ -60,8 +60,7 @@ class CalendarFrameSettingSetDefaultValueTest extends NetCommonsModelTestCase {
 /**
  * setDefaultValue()のテスト
  *
- * @param int $settingId FrameSettingレコードのID
- * @param string $frameKey frame key
+ * @param mix $data FrameSettingデータ
  * @param mix $expect 期待値
  * @dataProvider dataProviderSetDefaultValue
  * @return void
