@@ -125,9 +125,11 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 		$rolesRoomsUsers = $model->RolesRoomsUser->getRolesRoomsUsers(array(
 			'RolesRoomsUser.user_id' => Current::read('User.id'),
 		));
+
 		//CakeLog::debug("DBG: rolesRoomsUsers[" . print_r($rolesRoomsUsers, true) . "]");
 		$roleOfRooms = Hash::combine($rolesRoomsUsers,
 			'{n}.RolesRoomsUser.room_id', '{n}.RolesRoom.role_key');
+
 		//注）
 		//$rolesRoomsUsersには、バプリックルーム（space_id ==2 && room_id == 1）の情報はあるが、
 		//$rolesRoomsUsersには、全会員ルーム（space_id ==4 && room_id == 3）の情報がない。
@@ -168,6 +170,7 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 		$permModel = ClassRegistry::init('Calendars.CalendarPermission');
 
 		$permRooms = $permModel->getCalendarRoomBlocks($this->__workflowCompo);
+
 		$allMemberRoom = $permModel->getCalendarAllMemberRoomBlocks($this->__workflowCompo);
 		// 全会員ルーム情報もマージしてしまう
 		$permRooms = Hash::mergeDiff($permRooms, $allMemberRoom);

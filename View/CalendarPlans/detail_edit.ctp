@@ -129,7 +129,7 @@ echo $this->element('Calendars.scripts');
 			<div class="form-group" data-calendar-name="selectRoomForOpen">
 				<div class="col-xs-12">
 					<?php
-						echo $this->CalendarExposeTarget->makeSelectExposeTargetHtml($frameId, $languageId, $vars, $frameSetting, $exposeRoomOptions, $myself);
+						echo $this->CalendarExposeTarget->makeSelectExposeTargetHtml($frameId, $languageId, $vars, $exposeRoomOptions, $myself);
 					?>
 					<?php echo $this->NetCommonsForm->error('CalendarActionPlan.plan_room_id'); ?>
 				</div>
