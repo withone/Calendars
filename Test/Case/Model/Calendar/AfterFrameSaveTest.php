@@ -64,6 +64,7 @@ class CalendarTest extends NetCommonsModelTestCase {
  *
  * @param mix $data FrameSettingデータ
  * @param mix $expect 期待値
+ * @param string $exception 例外
  * @dataProvider dataProviderAfterFrameSave
  * @return void
  */
@@ -75,28 +76,23 @@ class CalendarTest extends NetCommonsModelTestCase {
 			$this->setExpectedException($exception);
 		}
 
-		if (isset($data['Frame']['name']) && $data['Frame']['name'] == 'testdata4') {
-			$this->_mockForReturnFalse($model, 'Frames.Frame', 'save', 1);
-		}
-
-		if (isset($data['Frame']['name']) && $data['Frame']['name'] == 'testdata5') {
-			$this->_mockForReturnTrue($model, 'Calendars.Calendar', '_saveFrameChangeAppearance', 1);
-		}
-
-		if (isset($data['Frame']['name']) && $data['Frame']['name'] == 'testdata6') {
-			$this->_mockForReturnTrue($model, 'Calendars.Calendar', '_saveFrameChangeAppearance', 1);
-			//$this->_mockForReturnFalse($model, 'Calendars.Calendar', '_saveCalendar', 1);
-		}
-
-		if (isset($data['Frame']['name']) && $data['Frame']['name'] == 'testdata7') {
-			//$this->_mockForReturnTrue($model, 'Calendars.Calendar', '_saveFrameChangeAppearance', 1);
-			$this->_mockForReturnTrue($model, 'Calendars.CalendarFrameSetting', 'saveFrameSetting', 1);
-			//$this->_mockForReturnFalse($model, 'Calendars.Calendar', '_saveCalendar', 1);
-			$mock = $this->getMockForModel('Calendars.Calendar', array('save'));
-			$this->$model = $mock;
-			$mock->expects($this->once())
-			->method('save')
-			->will($this->returnValue(array()));
+		if (isset($data['Frame']['name'])) {
+			if ($data['Frame']['name'] == 'testdata4') {
+				$this->_mockForReturnFalse($model, 'Frames.Frame', 'save', 1);
+			} elseif ($data['Frame']['name'] == 'testdata5') {
+				$this->_mockForReturnTrue($model, 'Calendars.Calendar', '_saveFrameChangeAppearance', 1);
+			} elseif ($data['Frame']['name'] == 'testdata6') {
+				$this->_mockForReturnTrue($model, 'Calendars.Calendar', '_saveFrameChangeAppearance', 1);
+			} elseif ($data['Frame']['name'] == 'testdata7') {
+				//$this->_mockForReturnTrue($model, 'Calendars.Calendar', '_saveFrameChangeAppearance', 1);
+				$this->_mockForReturnTrue($model, 'Calendars.CalendarFrameSetting', 'saveFrameSetting', 1);
+				//$this->_mockForReturnFalse($model, 'Calendars.Calendar', '_saveCalendar', 1);
+				$mock = $this->getMockForModel('Calendars.Calendar', array('save'));
+				$this->$model = $mock;
+				$mock->expects($this->once())
+				->method('save')
+				->will($this->returnValue(array()));
+			}
 		}
 
 		//テスト実施

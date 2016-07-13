@@ -47,43 +47,8 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
  */
 	public function makeCurGenPlan(Model &$model, $data,
 		$originEventId, $originEventKey, $originRruleId) {
-		if (!isset($model->CalendarRrule)) {
-			$model->loadModels(['CalendarRrule' => 'Calendars.CalendarRrule']);
-		}
-		$options = array(
-			'conditions' => array(
-				$model->CalendarRrule->alias . '.id' => $originRruleId,
-			),
-			'recursive' => 1,
-			//'callbacks' => false,	//callbackは呼ばない
-		);
-		$plan = $model->CalendarRrule->find('first', $options);
-		if (empty($plan)) {
-			CakeLog::error("削除時に指定された元予定(calendar_rrule_id=[" .
-				$data['origin_rrule_id'] . "])が存在しない。");
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		//CalendarEventsの関係データをとってきて必要なもののみ加える。
-		//
-		if (!isset($model->CalendarEvent)) {
-			$model->loadModels(['CalendarEvent' => 'Calendars.CalendarEvent']);
-		}
-		foreach ($plan['CalendarEvent'] as &$event) {
-			$options2 = array(
-				'conditions' => array(
-					//copyはdeadcopyイメージなので、言語ID,除去フラグに関係なくとってくる。
-					$model->CalendarEvent->alias . '.id' => $event['id'],
-				),
-				'recursive' => 1,
-				'order' => array($model->CalendarEvent->alias . '.dtstart' => 'ASC'),
-			);
-			$eventData = $model->CalendarEvent->find('first', $options2);
-			//event配下の配下関連テーブルだけ追加しておく
-			//
-			$event['CalendarEventShareUser'] = $eventData['CalendarEventShareUser'];
-			$event['CalendarEventContent'] = $eventData['CalendarEventContent'];
-		}
+		$action = 'delete';
+		$plan = $this->__makeCommonGenPlan($model, $action, $data, $originRruleId);
 
 		//現世代予定のrruleDataのidとkeyをマーキングしておく.
 		$plan['cur_rrule_id'] = $plan['CalendarRrule']['id'];
@@ -106,43 +71,9 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  */
 	public function makeNewGenPlan(Model &$model, $data, $status) {
-		if (!isset($model->CalendarRrule)) {
-			$model->loadModels(['CalendarRrule' => 'Calendars.CalendarRrule']);
-		}
-		$options = array(
-			'conditions' => array(
-				$model->CalendarRrule->alias . '.id' => $data['CalendarActionPlan']['origin_rrule_id'],
-			),
-			'recursive' => 1,
-			//'callbacks' => false,	//callbackは呼ばない
-		);
-		$plan = $model->CalendarRrule->find('first', $options);
-		if (empty($plan)) {
-			CakeLog::error("変更時に指定された元予定(calendar_rrule_id=[" .
-				$data['origin_rrule_id'] . "])が存在しない。");
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		//CalendarEventsの関係データをとってきて必要なもののみ加える。
-		//
-		if (!isset($model->CalendarEvent)) {
-			$model->loadModels(['CalendarEvent' => 'Calendars.CalendarEvent']);
-		}
-		foreach ($plan['CalendarEvent'] as &$event) {
-			$options2 = array(
-				'conditions' => array(
-					//copyはdeadcopyイメージなので、言語ID,除去フラグに関係なくとってくる。
-					$model->CalendarEvent->alias . '.id' => $event['id'],
-				),
-				'recursive' => 1,
-				'order' => array($model->CalendarEvent->alias . '.dtstart' => 'ASC'),
-			);
-			$eventData = $model->CalendarEvent->find('first', $options2);
-			//event配下の配下関連テーブルだけ追加しておく
-			//
-			$event['CalendarEventShareUser'] = $eventData['CalendarEventShareUser'];
-			$event['CalendarEventContent'] = $eventData['CalendarEventContent'];
-		}
+		$action = 'update';
+		$plan = $this->__makeCommonGenPlan($model, $action, $data,
+			$data['CalendarActionPlan']['origin_rrule_id']);
 
 		//keyが同じrrule -> key同一のevents -> eventsの各子供をcopy保存する
 
@@ -402,5 +333,63 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 
 		$shareUser = $shareUserData['CalendarEventShareUser'];
 		return $shareUser;
+	}
+
+/**
+ * __makeCommonGenPlan
+ *
+ * 共通の世代生成処理
+ *
+ * @param Model &$model 実際のモデル名
+ * @param string $action action('update' or 'delete')
+ * @param array $data data
+ * @param int $rruleId rruleId
+ * @return array 生成した予定($plan)
+ * @throws InternalErrorException
+ */
+	private function __makeCommonGenPlan(Model &$model, $action, $data, $rruleId) {
+		if (!isset($model->CalendarRrule)) {
+			$model->loadModels(['CalendarRrule' => 'Calendars.CalendarRrule']);
+		}
+		$options = array(
+			'conditions' => array(
+				$model->CalendarRrule->alias . '.id' => $rruleId,
+			),
+			'recursive' => 1,
+			//'callbacks' => false,	//callbackは呼ばない
+		);
+		$plan = $model->CalendarRrule->find('first', $options);
+		if (empty($plan)) {
+			if ($action === 'update') {
+				CakeLog::error("変更時に指定された元予定(calendar_rrule_id=[" .
+					$data['origin_rrule_id'] . "])が存在しない。");
+			} else {	//delete
+				CakeLog::error("削除時に指定された元予定(calendar_rrule_id=[" .
+					$data['origin_rrule_id'] . "])が存在しない。");
+			}
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		}
+
+		//CalendarEventsの関係データをとってきて必要なもののみ加える。
+		//
+		if (!isset($model->CalendarEvent)) {
+			$model->loadModels(['CalendarEvent' => 'Calendars.CalendarEvent']);
+		}
+		foreach ($plan['CalendarEvent'] as &$event) {
+			$options2 = array(
+				'conditions' => array(
+					//copyはdeadcopyイメージなので、言語ID,除去フラグに関係なくとってくる。
+					$model->CalendarEvent->alias . '.id' => $event['id'],
+				),
+				'recursive' => 1,
+				'order' => array($model->CalendarEvent->alias . '.dtstart' => 'ASC'),
+			);
+			$eventData = $model->CalendarEvent->find('first', $options2);
+			//event配下の配下関連テーブルだけ追加しておく
+			//
+			$event['CalendarEventShareUser'] = $eventData['CalendarEventShareUser'];
+			$event['CalendarEventContent'] = $eventData['CalendarEventContent'];
+		}
+		return $plan;
 	}
 }

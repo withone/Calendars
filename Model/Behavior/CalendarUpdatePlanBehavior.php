@@ -63,7 +63,10 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule = self::CALENDAR_PLAN_EDIT_THIS) {
 		$eventId = $newPlan['new_event_id'];
 
-		$this->arrangeData($planParams);
+		if (!$model->Behaviors->hasMethod('doArrangeData')) {
+			$model->Behaviors->load('Calendars.CalendarCrudPlanCommon');
+		}
+		$planParams = $model->doArrangeData($planParams);
 
 		//CalendarEventの対象データ取得
 		$this->loadEventAndRruleModels($model);
@@ -166,39 +169,6 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 	}
 
 /**
- * $planParamsデータを整える
- *
- * @param array &$planParams planParamsデータ
- * @return void
- * @throws InternalErrorException
- */
-	public function arrangeData(&$planParams) {
-		//開始日付と開始時刻は必須
-		if (!isset($planParams['start_date']) && !isset($planParams['start_time'])) {
-			//throw new InternalErrorException(__d('Calendars', 'No start_date or start_time'));
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		//終了日付と終了時刻は必須
-		if (!isset($planParams['end_date']) && !isset($planParams['end_time'])) {
-			//throw new InternalErrorException(__d('Calendars', 'No end_date or end_time.'));
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		if (!isset($planParams['status'])) { //statusは必須
-			//throw new InternalErrorException(__d('Calendars', 'status is required.'));
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		if (!isset($planParams['language_id'])) { //language_idは必須
-			//throw new InternalErrorException(__d('Calendars', 'language_id is required.'));
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		$this->_arrangeShareUsers($planParams);
-	}
-
-/**
  * CalendarEventの対象データ取得
  *
  * @param Model &$model 実際のモデル名
@@ -284,39 +254,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			//eventデータが拾われてしますから。
 			////$eventIds = Hash::extract($newPlan, 'CalendarEvent.{n}.id');
 			$eventKeys = Hash::extract($newPlan, 'CalendarEvent.{n}.key');
-
-			if ($status == WorkflowComponent::STATUS_PUBLISHED) {
-				// (1)-1 statusが発行済の場合、実際に削除する。
-				$conditions = array(
-					array(
-						$model->CalendarEvent->alias . '.key' => $eventKeys,
-					)
-				);
-				//第２引数cascade==trueで、子のCalendarEventShareUsers, CalendarEventContentを消す。
-				//第３引数callbacks==trueで、メール関連のデキューをここでおこなう？ FIXME:要確認
-				//
-				if (!$model->CalendarEvent->deleteAll($conditions, true, true)) {
-					$model->validationErrors = Hash::merge(
-						$model->validationErrors, $model->CalendarEvent->validationErrors);
-					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-				}
-			} else {
-				// (1)-2 statusが一時保存、承認待ち、差し戻しの場合、現在のrrule配下の全eventDataの
-				// excepted（除去）を立てて、無効化しておく。
-				$fields = array(
-					$model->CalendarEvent->alias . '.exception_event_id' => 1,
-					$model->CalendarEvent->alias . '.modified_user' =>
-						$eventData['CalendarEvent']['modified_user'],
-					$model->CalendarEvent->alias . '.modified' =>
-						"'" . $eventData['CalendarEvent']['modified'] . "'",	//クオートに注意
-				);
-				$conditions = array($model->CalendarEvent->alias . '.key' => $eventKeys);
-				if (!$model->CalendarEvent->updateAll($fields, $conditions)) {
-					$model->validationErrors = Hash::merge(
-						$model->validationErrors, $model->CalendarEvent->validationErrors);
-					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-				}
-			}
+			$this->__deleteOrUpdateAllEvents($model, $status, $eventData, $eventKeys);
 
 			/////////////////
 			//(2)新たな時間・繰返し系情報をもとに、eventDataを生成し直す。(keyはすべて新規)
@@ -534,109 +472,23 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			//１つのidをけしても、同一keyの他のidのデータが拾われて表示されてしまうため。
 			////$eventIds = Hash::extract($newPlan['CalendarEvent'], '{n}[dtstart>=' . $baseDtstart . '].id');
 			$eventKeys = Hash::extract($newPlan['CalendarEvent'], '{n}[dtstart>=' . $baseDtstart . '].key');
-
-			//CakeLog::debug("DBG: baseDtstar[" . $baseDtstart . "] eventKeys[" . print_r($eventKeys, true) . "]");
-
-			if ($status == WorkflowComponent::STATUS_PUBLISHED) {
-				// (1)-1 statusが発行済の場合、実際に削除する。
-				$conditions = array(
-					array(
-						$model->CalendarEvent->alias . '.key' => $eventKeys,
-					)
-				);
-				//第２引数cascade==trueで、関連する子 CalendarEventShareUsers, CalendarEventContentを
-				//ここで消す。
-				//第３引数callbacks==trueで、メール関連のafterDeleteを動かす？ FIXME: 要確認
-				//
-				if (!$model->CalendarEvent->deleteAll($conditions, true, true)) {
-					$model->validationErrors = Hash::merge(
-						$model->validationErrors, $model->CalendarEvent->validationErrors);
-					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-				}
-			} else {
-				// (1)-2 statusが一時保存、承認待ち、差し戻しの場合、現在のrrule配下の全eventDataの
-				// excepted（除去）を立てて、無効化しておく。
-				$fields = array(
-					$model->CalendarEvent->alias . '.exception_event_id' => 1,
-					$model->CalendarEvent->alias . '.modified_user' =>
-						$eventData['CalendarEvent']['modified_user'],
-					$model->CalendarEvent->alias . '.modified' =>
-						"'" . $eventData['CalendarEvent']['modified'] . "'",	//クオートに注意
-				);
-				$conditions = array($model->CalendarEvent->alias . '.key' => $eventKeys);
-				if (!$model->CalendarEvent->updateAll($fields, $conditions)) {
-					$model->validationErrors = Hash::merge(
-						$model->validationErrors, $model->CalendarEvent->validationErrors);
-					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-				}
-			}
+			$this->__deleteOrUpdateAllEvents($model, $status, $eventData, $eventKeys);
 
 			//////////////////////////////
 			//(2) eventsを消した後、rruleIdを親にもつeventDataの件数を調べる。
-			// 0件なら、不要となった親(rrule)なので、浮きリソースとならないよう、消す。
+			//(2)-1. eventData件数==0、つまり、今の親rruleDataは、子を一切持たなくなった。
+			// 自分の新しい親rruleDataをこの後つくるので）現在の親rruleDataは浮きリソースになるので消す。
+			//(2)-2. eventData件数!=0、つまり、今の親rruleDataは自分(eventData)以外の子（時間軸では自分より前の時間）
+			// を持っている。
+			// なので、今の親rruleDataのrruleのUNTIL値を「自分の直前まで」に書き換える。
+			// 自分を今の親rruleDataの管理下から切り離す。(自分の新しい親rruleDataはこのあと作る）
 			//
-			//注）「dtstar >= 自分のdtstart」で消しているので、指定(自分)のeventデータも含めて
-			// 消している。が、rruleをこの後新規に作り直すので、それ自体は問題ない。
-			// 「時間・繰返し系が変更された場合」keyを振り直すと仕様をきめているので、
-			// 問題なし。('CalendarEvent.id <>' => $eventIdという条件はふくめなくて、よい）
+			// ＝＞これらの(2)の一連処理を実行する関数 auditEventOrRewriteUntil() をcallする。
 			//
-			$params = array(
-				'conditions' => array(
-					'CalendarEvent.calendar_rrule_id' => $eventData['CalendarEvent']['calendar_rrule_id'],
-				),
-			);
-			$count = $model->CalendarEvent->find('count', $params);
-			if (!is_int($count)) {	//整数以外が返ってきたらエラー
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			if (!$model->Behaviors->hasMethod('auditEventOrRewriteUntil')) {
+				$model->Behaviors->load('Calendars.CalendarCrudPlanCommon');
 			}
-			if ($count === 0) {
-				//(2)-1. 今の親rruleDataは、子を一切持たなくなった。
-				//（自分の新しい親rruleDataをこの後つくるので）現在の親rruleDataは浮きリソースになるので、
-				// 消しておく。
-				if (!$model->CalendarRrule->delete($eventData['CalendarEvent']['calendar_rrule_id'], false)) {
-					//delete失敗
-					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-				}
-			} else {
-				///////////////////////////////////////
-				//(2)-2 今の親rruleDataは、自分(eventData)以外の子（時間軸では自分より前の時間）を持っている。
-				//なので、今の親rruleDataのrruleのUNTIL値を「自分の直前まで」に書き換える。
-				//自分を今の親rruleDataの管理下から切り離す。(自分の新しい親rruleDataはこのあと作る）
-				//
-
-				//親のrruleDataはすでに取得しているので、rrule文字列はすぐに取得できる。
-				$rruleArr = (new CalendarRruleUtil())->parseRrule($rruleData['CalendarRrule']['rrule']);
-				//FFEQ以外を篩い落とす
-				$freq = $rruleArr['FREQ'];
-				$rruleArr['FREQ'] = $freq;
-
-				//$baseDtstart(=$eventData['CalendarEvent']['dtstart'])は、YYYYMMDDhhmmss(UTC)です。
-				//なので、UNTILは単純に、YYYYMMDDThhmmssにすればいいだけだとおもう。
-				//FIXME:
-				//厳密には、UNTILがカレンダーで時間を指定できない＝ユーザー系の00:00:00に
-				//なっているので、どうやって、時分秒をajustするか。要検討。
-
-				$rruleArr['UNTIL'] = substr($baseDtstart, 0, 8) . 'T' . substr($baseDtstart, 8);
-
-				//$timestamp = mktime(0, 0, 0,
-				//			substr($planParams['dtstart'], 4, 2),
-				//			substr($planParams['dtstart'], 6, 2),
-				//			substr($planParams['dtstart'], 0, 4));
-				//UNTILを自分の直前までにする。
-				//$rruleArr['UNTIL'] = date('Ymd', $timestamp) . 'T' . substr($planParams['dtstart'], 8);
-
-				$rruleBeforeStr = (new CalendarRruleUtil())->concatRrule($rruleArr);
-
-				//今のrruleDataデータのrrule文字列を書き換える。
-				$rruleDataBefore = $rruleData;
-				$rruleDataBefore['CalendarRrule']['rrule'] = $rruleBeforeStr;
-				$model->CalendarRrule->clear();
-				//rruleDataNowのidは、現rruleDataのidであるので、更新となる。
-				if (!$model->CalendarRrule->save($rruleDataBefore, false)) {
-					//save失敗
-					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-				}
-			}
+			$model->auditEventOrRewriteUntil($eventData, $rruleData, $baseDtstart);
 
 			/////////////////
 			//(3) 新たな時間・繰返し系情報をもとに、rruleDataと、eventData群を生成し直す。(keyはすべて新規)
@@ -772,22 +624,11 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		$this->setRruleData($model, $planParams, $rruleData, self::CALENDAR_UPDATE_MODE,
 			$rruleData['CalendarRrule']['key'], $rruleData['CalendarRrule']['id']);
 
-		$model->CalendarRrule->set($rruleData);
-
-		if (!$model->CalendarRrule->validates()) {	//rruleDataをチェック
-			$model->validationErrors = Hash::merge(
-				$model->validationErrors, $model->CalendarRrule->validationErrors);
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		if (!$model->Behaviors->hasMethod('saveRruleData')) {
+			$model->Behaviors->load('Calendars.CalendarCrudPlanCommon');
 		}
+		$rruleData = $model->saveRruleData($rruleData);
 
-		if (!$model->CalendarRrule->save($rruleData, false)) {	//保存のみ
-			$model->validationErrors = Hash::merge(
-				$model->validationErrors, $model->CalendarRrule->validationErrors);
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		//採番されたidをrruleDataにセットしておく
-		$rruleData['CalendarRrule']['id'] = $model->CalendarRrule->id;
 		return $rruleData;
 	}
 
@@ -866,5 +707,53 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		//	)
 
 		return $event;
+	}
+
+/**
+ * __deleteOrUpdateAllEvents
+ *
+ * 指定した全イベントデータの削除または更新処理
+ *
+ * @param Model &$model 実際のモデル名
+ * @param string $status status
+ * @param array $eventData 元となるeventData
+ * @param array $eventKeys 対象とするeventデータ群のkey集合
+ * @return void
+ * @throws InternalErrorException
+ */
+	private function __deleteOrUpdateAllEvents(Model &$model, $status, $eventData, $eventKeys) {
+		if ($status == WorkflowComponent::STATUS_PUBLISHED) {
+			// (1)-1 statusが発行済の場合、実際に削除する。
+			$conditions = array(
+				array(
+					$model->CalendarEvent->alias . '.key' => $eventKeys,
+				)
+			);
+			//第２引数cascade==trueで、関連する子 CalendarEventShareUsers, CalendarEventContentを
+			//ここで消す。
+			//第３引数callbacks==trueで、メール関連のafterDeleteを動かす？ FIXME: 要確認
+			//
+			if (!$model->CalendarEvent->deleteAll($conditions, true, true)) {
+				$model->validationErrors = Hash::merge(
+					$model->validationErrors, $model->CalendarEvent->validationErrors);
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+		} else {
+			// (1)-2 statusが一時保存、承認待ち、差し戻しの場合、現在のrrule配下の全eventDataの
+			// excepted（除去）を立てて、無効化しておく。
+			$fields = array(
+				$model->CalendarEvent->alias . '.exception_event_id' => 1,
+				$model->CalendarEvent->alias . '.modified_user' =>
+					$eventData['CalendarEvent']['modified_user'],
+				$model->CalendarEvent->alias . '.modified' =>
+					"'" . $eventData['CalendarEvent']['modified'] . "'",	//クオートに注意
+			);
+			$conditions = array($model->CalendarEvent->alias . '.key' => $eventKeys);
+			if (!$model->CalendarEvent->updateAll($fields, $conditions)) {
+				$model->validationErrors = Hash::merge(
+					$model->validationErrors, $model->CalendarEvent->validationErrors);
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+		}
 	}
 }
