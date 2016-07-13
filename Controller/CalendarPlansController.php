@@ -24,6 +24,34 @@ App::uses('CalendarTime', 'Calendars.Utility');
 class CalendarPlansController extends CalendarsAppController {
 
 /**
+ * event data
+ *
+ * @var array
+ */
+	public $eventData = array();
+
+/**
+ * event share users
+ *
+ * @var array
+ */
+	public $shareUsers = array();
+
+/**
+ * calendar event create permission settings
+ *
+ * @var array
+ */
+	public $roomPermRoles = array();
+
+/**
+ * calenar information
+ *
+ * @var array
+ */
+	protected $_vars = array();
+
+/**
  * use models
  *
  * @var array
@@ -61,6 +89,7 @@ class CalendarPlansController extends CalendarsAppController {
 				////'select' => null,
 			),
 		),*/
+		'Calendars.CalendarPermission',
 		'Paginator',
 		'Calendars.CalendarsDaily',
 		'Calendars.CalendarWorks',
@@ -107,11 +136,16 @@ class CalendarPlansController extends CalendarsAppController {
 			return false;
 		}
 
-		$this->Auth->allow('show');
+		$this->Auth->allow('add', 'delete', 'edit', 'show');
 
 		$this->CalendarEvent->initSetting($this->Workflow);
+
+		// カレンダー権限設定情報確保
 		$this->roomPermRoles = $this->CalendarEvent->prepareCalRoleAndPerm();
 		$this->set('roomPermRoles', $this->roomPermRoles);
+
+		// 表示のための各種共通パラメータ設定
+		$this->_vars = $this->getVarsForShow();
 	}
 
 /**
@@ -245,262 +279,132 @@ class CalendarPlansController extends CalendarsAppController {
  * @return void
  */
 	public function add() {
-		//add()でレンダリングするviewファイルの名前をadd.ctpからedit.ctpに変える。
-		//これをしないと、View/CalendarPlans/add.ctpがないとの警告がでる。
-		$this->view = 'edit';
 		if ($this->request->is('post')) {
-			//登録処理
-
-			//CakeLog::debug("DBG: add() POST直後. request_data[" . print_r($this->request->data, true) . "]");
-
-			$this->CalendarActionPlan->set($this->request->data);
-
-			//校正用配列の準備
-			$this->CalendarActionPlan->calendarProofreadValidationErrors = array();
-			if (!$this->CalendarActionPlan->validates()) {
-				//失敗なら、エラーメッセージを保持したまま、edit()を実行
-
-				//validationエラーの内、いくつか（主にrrule関連)を校正する。
-				$this->CalendarActionPlan->proofreadValidationErrors($this->CalendarActionPlan);
-
-				//DBGDBGDBG
-				//$this->CalendarActionPlan->validationErrors['rrule_interval'] = array();
-				//$this->CalendarActionPlan->validationErrors['rrule_interval']['DAILY'] = array();
-				//$this->CalendarActionPlan->validationErrors['rrule_interval']['DAILY'][] = 'aaabbbccc';
-				//CakeLog::debug(
-				//	"DBG: x1: CalendarActionPlan_vaidationErrors[" . print_r(
-				//	$this->CalendarActionPlan->validationErrors, true) . "]");
-				//これでエラーmsgが画面上部に数秒間flashされる。
-				$this->NetCommons->handleValidationError($this->CalendarActionPlan->validationErrors);
-
-				$this->request->params['named']['style'] =
-					(isset($this->request->data['CalendarActionPlan']['is_detail']) &&
-					$this->request->data['CalendarActionPlan']['is_detail']) ? 'detail' : 'easy';
-
-				$this->setAction('edit');
-				return;
-			}
-
-			$originEvent = array();
-			if (!empty($this->request->data['CalendarActionPlan']['origin_event_id'])) {
-				$originEvent = $this->__getEvent($this->request->data['CalendarActionPlan']['origin_event_id']);
-			}
-			//追加・変更、元データ繰返し有無、及び時間・繰返し系変更タイプの判断処理
-			list($procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod) =
-				$this->CalendarActionPlan->getProcModeOriginRepeatAndModType(
-					$this->request->data, $originEvent);
-
-			//成功なら元画面(カレンダーorスケジューラー)に戻る。
-			//FIXME: 遷移元がshow.ctpなら、戻り先をshow.ctpに変える必要あり。
-			//
-			$eventId = $this->CalendarActionPlan->saveCalendarPlan(
-				$this->request->data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod);
-			if (!$eventId) {
-				//保存失敗
-				CakeLog::error("保存失敗");	//FIXME: エラー処理を記述のこと。
-			}
-			//保存成功
-
-			//$options = $this->_getOptions();
-			/*
-			$options = $this->CalendarWorks->getOptions();
-			$url = NetCommonsUrl::actionUrl($options);
-			*/
-			//$url = $this->Session->read(CakeSession::read('Config.userAgent')); //testセッション方式
-
-			$url = NetCommonsUrl::actionUrl(array(
-				'controller' => 'calendar_plans',
-				'action' => 'show',
-				//'year' => $this->request->params['named']['year'],
-				//'month' => $this->request->params['named']['month'],
-				//'day' => $this->request->params['named']['day'],
-				'event' => $eventId,
-				'frame_id' => Current::read('Frame.id'),
-			));
-
-			$this->redirect($url);
-			//print_r($this->request->data);
-			//$this->redirect($this->referer()); //test ng 追加画面に戻ってしまう。
-			//$this->redirect($this->request->referer());test ng 追加画面に戻ってしまう。
-			/* test ng
-			//不要パラメータ除去
-			unset($this->request->data['save'], $this->request->data['active_lang_id']);
-			$redirectUrl = Hash::get($this->request->data, '_user.redirect');
-			$this->redirect($redirectUrl);
-			*/
-
-			//return; ここには到達しない.
-		} else {
-			//GETなので edit()を実行
-			$this->setAction('edit');
-			return;
+			$this->_calendarPost();
 		}
+		// 表示のための処理
+		$this->_calendarGet(CalendarsComponent::PLAN_ADD);
+		// 表示画面CTPはdetail_edit
+		$this->view = 'detail_edit';
 	}
-
-/**
- * show
- *
- * @return void
- */
-	public function show() {
-		$vars = array();
-		$ctpName = $this->getCtpAndVarsForShow($vars);
-		//event関連取得
-		$options = array(
-			'conditions' => array(
-				$this->CalendarEvent->alias . '.id' => $this->request->params['named']['event'],
-			),
-			'recursive' => 1, //belongsTo, hasOne, hasManyまで取得
-		);
-		$event = $this->CalendarEvent->find('first', $options);
-		if (!$event) {
-			CakeLog::error(__d('calendars',
-				'There is no event. Display a blank page. 2'));
-			$this->setAction('emptyRender');
-			return;
-		}
-		$roomLang = $this->RoomsLanguage->find('first', array(
-			'conditions' => array(
-				$this->RoomsLanguage->alias . '.room_id' => $event[$this->CalendarEvent->alias]['room_id'],
-				$this->RoomsLanguage->alias . '.language_id' =>
-					$event[$this->CalendarEvent->alias]['language_id'],
-			),
-			'recursive' => -1,
-		));
-		$shareUsers = $this->CalendarEventShareUser->find('all', array(
-			'conditions' => array(
-				$this->CalendarEventShareUser->alias . '.calendar_event_id' =>
-					$event[$this->CalendarEvent->alias]['id'],
-			),
-			'recursive' => -1,
-			'order' => array($this->CalendarEventShareUser->alias . '.share_user'),
-		));
-		$shareUserInfos = array();
-		foreach ($shareUsers as $shareUser) {
-			$shareUserInfos[] =
-				$this->User->getUser(
-					$shareUser[$this->CalendarEventShareUser->alias]['share_user'],
-					$event[$this->CalendarEvent->alias]['language_id']);
-		}
-
-		$createdUserInfo =
-			$this->User->getUser($event[$this->CalendarEvent->alias]['created_user'],
-			$event[$this->CalendarEvent->alias]['language_id']);
-
-		$frameId = Current::read('Frame.id');
-		$languageId = Current::read('Language.id');
-		$isRepeat = $event['CalendarRrule']['rrule'] !== '' ? true : false;
-
-		//testセッション方式
-		$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars');
-		//print_r('SHOW return');print_r($url);
-		$vars['returnUrl'] = $url;
-		$this->set(
-			compact('event', 'roomLang', 'shareUserInfos', 'createdUserInfo', 'frameId',
-			'languageId', 'isRepeat', 'vars'));
-		$this->render($ctpName);
-	}
-
 /**
  * edit
  *
  * @return void
- * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
 	public function edit() {
-		//表示用の設定
-		$vars = $event = $eventSiblings = array(); //0件を意味する空配列を入れておく。
-		$this->setCalendarCommonVars($vars);
-		$ctpName = 'detail_edit';
+		if ($this->request->is('post')) {
+			$this->_calendarPost();
+		}
+		// 表示のための処理
+		$this->_calendarGet(CalendarsComponent::PLAN_EDIT);
+		//コメントデータのセット(コメントデータは編集のときしかないので共通処理に持っていってない）
+		$comments =
+			$this->CalendarEvent->getCommentsByContentKey($this->eventData['CalendarEvent']['key']);
+		$this->set('comments', $comments);
+		// 表示画面CTPはdetail_edit
+		$this->view = 'detail_edit';
+	}
 
-		//表示方法設定情報を取り出し、requestのdataに格納する。
-		$frameSetting = $this->CalendarFrameSetting->find('first', array(
-			'recursive' => 1,	//hasManyでCalendarFrameSettingSelectRoomのデータも取り出す。
-			'conditions' => array('frame_key' => Current::read('Frame.key')),
+/**
+ * _calendarPost
+ *
+ * @return void
+ */
+	protected function _calendarPost() {
+		//登録処理
+		$this->CalendarActionPlan->set($this->request->data);
+
+		//校正用配列の準備
+		$this->CalendarActionPlan->calendarProofreadValidationErrors = array();
+		if (! $this->CalendarActionPlan->validates()) {
+
+			//validationエラーの内、いくつか（主にrrule関連)を校正する。
+			$this->CalendarActionPlan->proofreadValidationErrors($this->CalendarActionPlan);
+
+			//これでエラーmsgが画面上部に数秒間flashされる。
+			$this->NetCommons->handleValidationError($this->CalendarActionPlan->validationErrors);
+
+			return;
+		}
+
+		// validate OK
+		$originEvent = array();
+		if (!empty($this->request->data['CalendarActionPlan']['origin_event_id'])) {
+			$originEvent = $this->__getEvent($this->request->data['CalendarActionPlan']['origin_event_id']);
+		}
+		//追加・変更、元データ繰返し有無、及び時間・繰返し系変更タイプの判断処理
+		list($procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod) =
+			$this->CalendarActionPlan->getProcModeOriginRepeatAndModType($this->request->data, $originEvent);
+
+		//成功なら元画面(カレンダーorスケジューラー)に戻る。
+		//FIXME: 遷移元がshow.ctpなら、戻り先をshow.ctpに変える必要あり。
+		//
+		$eventId = $this->CalendarActionPlan->saveCalendarPlan(
+			$this->request->data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod);
+		if (!$eventId) {
+			//保存失敗
+			CakeLog::error("保存失敗");	//FIXME: エラー処理を記述のこと。
+		}
+		//保存成功
+		$url = NetCommonsUrl::actionUrl(array(
+			'controller' => 'calendar_plans',
+			'action' => 'show',
+			'event' => $eventId,
+			'frame_id' => Current::read('Frame.id'),
 		));
-		$frameSettingId = $frameSetting['CalendarFrameSetting']['id'];
+		$this->redirect($url);
+	}
 
-		$this->request->data['CalendarFrameSettingSelectRoom'] =
-			$this->CalendarFrameSetting->getSelectRooms($frameSettingId);
-
-		//公開対象一覧のoptions配列と自分自身のroom_idとルーム別空間名を取得
-		list($exposeRoomOptions, $myself, ) =
-			$this->CalendarActionPlan->getExposeRoomOptions($frameSetting);
-		//CakeLog::debug("DBG: exposeRoomOptions[" . print_r($exposeRoomOptions, true) . "]");
-		//CakeLog::debug("DBG: myself[" . $myself . "]");
-
-		//eメール通知の選択options配列を取得
-		$emailOptions = $this->CalendarActionPlan->getNoticeEmailOption();
-
-		if (isset($this->request->params['named']['event'])) {
-			$event = $this->__getEvent($this->request->params['named']['event']);
-		}
-
-		//まずは、追加or編集モードの判定
-		$planViewMode = CalendarsComponent::PLAN_ADD;
-		if (count($event) > 0) {
-			//namedのevent:(id値)のeventデータがすでにあるので、編集
-			$planViewMode = CalendarsComponent::PLAN_EDIT;
-		} elseif (!empty($this->request->data['CalendarActionPlan']['origin_event_id'])) {
-			//formのhiddenに(取り出したeventの)id値が埋め込まれているので、編集
-			//変更時の入力エラー後の表示がここに該当する。
-			$planViewMode = CalendarsComponent::PLAN_EDIT;
-		}
-
-		//次に、該当eventのデータを取り出しセットするか、初期データをセットする
+/**
+ * _calendarGet
+ *
+ * @param string $planViewMode アクション
+ * @return void
+ */
+	protected function _calendarGet($planViewMode) {
+		//eventのデータを取り出しセットするか、初期データをセットする
 		//かのいずれかを行う。
-		if (count($event) > 0) {
+		if ($planViewMode == CalendarsComponent::PLAN_EDIT) {
 			//eventが存在する場合、該当eventの表示用配列を取得する。
-			//
-			$capForView = (new CalendarSupport())->getCalendarActionPlanForView($event);
+			$capForView = (new CalendarSupport())->getCalendarActionPlanForView($this->eventData);
 
 			//eventの兄弟も探しておく。この時、dtstartでソートし繰返し先頭データが取得できるようにしておく。
 			$eventSiblings = $this->CalendarEvent->getSiblings(
-				$event['CalendarEvent']['calendar_rrule_id']);
+				$this->eventData['CalendarEvent']['calendar_rrule_id']);
 
 			//自分もふくむので1件以上あることはまちがいない。
 			$capForViewOf1stSib = (new CalendarSupport())->getCalendarActionPlanForView($eventSiblings[0]);
-			$year1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 0, 4);
-			$month1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 5, 2);
-			$day1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 8, 2);
 
-			$firstSib = array(
-				'CalendarActionPlan' => array(
-					'first_sib_event_id' => intval($eventSiblings[0]['CalendarEvent']['id']),
-					'first_sib_year' => intval($year1stSib),
-					'first_sib_month' => intval($month1stSib),
-					'first_sib_day' => intval($day1stSib),
-				),
-			);
+			$firstSibEventId = $eventSiblings[0]['CalendarEvent']['id'];
 		} else {
 			//eventが空の場合、初期値でFILLした表示用配列を取得する。
-			//
 			list($year, $month, $day, $hour, $minute, $second, $enableTime) =
 				$this->CalendarWorks->getDateTimeParam($this->request->params);
 			$capForView = (new CalendarSupport())->getInitialCalendarActionPlanForView(
-				$year, $month, $day, $hour, $minute, $second, $enableTime, $exposeRoomOptions);
+				$year, $month, $day, $hour, $minute, $second, $enableTime, $this->_exposeRoomOptions);
+
+			$eventSiblings = array(); //0件を意味する空配列を入れておく。
+
 			$capForViewOf1stSib = $capForView;	//eventが空なので、1stSibも初期値でFILLしておく
 
-			$year1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 0, 4);
-			$month1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 5, 2);
-			$day1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 8, 2);
-
-			$firstSib = array(
-				'CalendarActionPlan' => array(
-					'first_sib_event_id' => 0,	//新規だからidは未設定をあらわす0
-					'first_sib_year' => intval($year1stSib),
-					'first_sib_month' => intval($month1stSib),
-					'first_sib_day' => intval($day1stSib),
-				),
-			);
+			$firstSibEventId = 0;	//新規だからidは未設定をあらわす0
 		}
+		$year1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 0, 4);
+		$month1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 5, 2);
+		$day1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 8, 2);
 
+		$firstSib = array(
+			'CalendarActionPlan' => array(
+				'first_sib_event_id' => $firstSibEventId,
+				'first_sib_year' => intval($year1stSib),
+				'first_sib_month' => intval($month1stSib),
+				'first_sib_day' => intval($day1stSib),
+			),
+		);
 		//capForViewのrequest->data反映
 		$this->request->data = $this->CalendarWorks->setCapForView2RequestData(
 			$capForView, $this->request->data);
-
-		$frameId = Current::read('Frame.id');
-		$languageId = Current::read('Language.id');
 
 		$mailSettingInfo = $this->getMailSettingInfo();
 
@@ -510,41 +414,103 @@ class CalendarPlansController extends CalendarsAppController {
 			$shareUsers[] = $this->User->getUser($user['user_id'], Current::read('Language.id'));
 		}
 
-		//コメントデータのセット
-		if (!empty($event)) {
-			$comments = $this->CalendarEvent->getCommentsByContentKey($event['CalendarEvent']['key']);
-			$this->set('comments', $comments);
-		}
-
 		//キャンセル時のURLセット
 		//testセッション方式
 		$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars');
-		$vars['returnUrl'] = $url;
+		$this->_vars['returnUrl'] = $url;
 
-		$this->set(compact('frameId', 'languageId', 'vars', 'frameSetting', 'exposeRoomOptions',
-			'myself', 'emailOptions', 'event', 'capForView', 'mailSettingInfo', 'shareUsers',
+		$this->set(compact('capForView', 'mailSettingInfo', 'shareUsers',
 			'eventSiblings', 'planViewMode', 'firstSib'));
-		$this->render($ctpName);
+		$this->set('vars', $this->_vars);
+		$this->set('event', $this->eventData);
+		$this->set('frameSetting', $this->_frameSetting);
+		$this->set('exposeRoomOptions', $this->_exposeRoomOptions);
+		$this->set('myself', $this->_myself);
+		$this->set('emailOptions', $this->_emailOptions);
+		$this->set('frameId', Current::read('Frame.id'));
+		$this->set('languageId', Current::read('Language.id'));
+
+		$this->request->data['CalendarFrameSettingSelectRoom'] =
+			$this->CalendarFrameSetting->getSelectRooms($this->_frameSetting['CalendarFrameSetting']['id']);
 	}
 
 /**
- * getCtpAndVarsForShow
+ * show
+ *
+ * @return void
+ */
+	public function show() {
+		$event = $this->eventData;
+		$roomLang = $this->RoomsLanguage->find('first', array(
+			'conditions' => array(
+				$this->RoomsLanguage->alias . '.room_id' => $event[$this->CalendarEvent->alias]['room_id'],
+				$this->RoomsLanguage->alias . '.language_id' =>
+					$event[$this->CalendarEvent->alias]['language_id'],
+			),
+			'recursive' => -1,
+		));
+		$shareUserInfos = array();
+		foreach ($this->shareUsers as $shareUser) {
+			$shareUserInfos[] =
+				$this->User->getUser(
+					$shareUser[$this->CalendarEventShareUser->alias]['share_user'],
+					$event[$this->CalendarEvent->alias]['language_id']);
+		}
+
+		$createdUserInfo =
+			$this->User->getUser($event[$this->CalendarEvent->alias]['created_user'],
+				$event[$this->CalendarEvent->alias]['language_id']);
+
+		$isRepeat = $event['CalendarRrule']['rrule'] !== '' ? true : false;
+
+		//testセッション方式
+		$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars');
+		$this->_vars['returnUrl'] = $url;
+		$this->set(compact('roomLang', 'shareUserInfos', 'createdUserInfo', 'isRepeat'));
+		$this->set('vars', $this->_vars);
+		$this->set('event', $this->eventData);
+		$this->set('frameId', Current::read('Frame.id'));
+		$this->set('languageId', Current::read('Language.id'));
+	}
+
+/**
+ * getVarsForShow
  *
  * 個別予定表示用のCtp名および予定情報の取得
  *
- * @param array &$vars カレンダー情報
- * @return string ctpName
+ * @return void
  * @throws InternalErrorException
  */
-	public function getCtpAndVarsForShow(&$vars) {
+	public function getVarsForShow() {
+		$vars = array();
 		$this->setCalendarCommonVars($vars);
 
 		if (isset($this->request->params['named']['event'])) {
 			$vars['eventId'] = $this->request->params['named']['event'];
-		}
+			$this->eventData = $this->__getEvent($this->request->params['named']['event']);
+			$this->shareUsers = $this->CalendarEventShareUser->find('all', array(
+				'conditions' => array(
+					$this->CalendarEventShareUser->alias . '.calendar_event_id' =>
+						$this->eventData[$this->CalendarEvent->alias]['id'],
+				),
+				'recursive' => -1,
+				'order' => array($this->CalendarEventShareUser->alias . '.share_user'),
+			));
 
-		$ctpName = 'show';
-		return $ctpName;
+		}
+		//表示方法設定情報を取り出し、requestのdataに格納する。
+		$this->_frameSetting = $this->CalendarFrameSetting->find('first', array(
+			'recursive' => 1,	//hasManyでCalendarFrameSettingSelectRoomのデータも取り出す。
+			'conditions' => array('frame_key' => Current::read('Frame.key')),
+		));
+
+		//公開対象一覧のoptions配列と自分自身のroom_idとルーム別空間名を取得
+		list($this->_exposeRoomOptions, $this->_myself, ) =
+			$this->CalendarActionPlan->getExposeRoomOptions($this->_frameSetting);
+
+		//eメール通知の選択options配列を取得
+		$this->_emailOptions = $this->CalendarActionPlan->getNoticeEmailOption();
+		return $vars;
 	}
 
 /**

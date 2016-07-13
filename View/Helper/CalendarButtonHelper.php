@@ -64,7 +64,7 @@ class CalendarButtonHelper extends AppHelper {
  * @return string HTML
  */
 	public function makeGlyphiconPlusWithUrl($year, $month, $day, &$vars) {
-		$url = $this->CalendarUrl->makeEditUrl($year, $month, $day, $vars);
+		$url = $this->_makeAddUrl($vars, $year, $month, $day);
 		$options = array(
 			'url' => $url,
 			'button' => 'plus-link'
@@ -85,7 +85,7 @@ class CalendarButtonHelper extends AppHelper {
  * @return string HTML
  */
 	public function makeGlyphiconPlusWithTimeUrl($year, $month, $day, $hour, &$vars) {
-		$url = $this->CalendarUrl->makeEditUrlWithTime($year, $month, $day, $hour, $vars);
+		$url = $this->_makeAddUrl($vars, $year, $month, $day, $hour);
 		$options = array(
 			'url' => $url,
 			'button' => 'plus-link'
@@ -125,7 +125,7 @@ class CalendarButtonHelper extends AppHelper {
 		if (isset($options['url'])) {
 			$url = $options['url'];
 		} else {
-			$url = $this->CalendarUrl->makeEditUrl($vars['year'], $vars['month'], $vars['day'], $vars);
+			$url = $this->_makeAddUrl($vars, $vars['year'], $vars['month'], $vars['day']);
 		}
 		// ボタンで出すか、＋マークリンクで出すか
 		if (isset($options['button']) && $options['button'] == 'plus-link') {
@@ -134,6 +134,26 @@ class CalendarButtonHelper extends AppHelper {
 			$html = $this->LinkButton->add('', $url);
 		}
 		return $html;
+	}
+
+/**
+ * _makeAddUrl
+ *
+ * @param array $vars カレンダー情報
+ * @param int $year 年
+ * @param int $mon 月
+ * @param int $day 日
+ * @param int $hour 時間
+ * @return string url
+ */
+	protected function _makeAddUrl($vars, $year, $mon, $day, $hour = null) {
+		if ($hour !== null) {
+			$url = $this->CalendarUrl->makeEditUrlWithTime($year, $mon, $day, $hour, $vars);
+		} else {
+			$url = $this->CalendarUrl->makeEditUrl($year, $mon, $day, $vars);
+		}
+		$url = str_replace('/edit/', '/add/', $url);
+		return $url;
 	}
 
 /**

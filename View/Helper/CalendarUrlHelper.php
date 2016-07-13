@@ -144,19 +144,30 @@ class CalendarUrlHelper extends AppHelper {
  * @return string URL
  */
 	public function getBackFirstButton($vars) {
+		// urlパラメタにstyleがなくて、表示画面がデフォルトの画面と一緒ならこのボタンは不要
+		$styleParam = Hash::get($this->request->params, 'named.style');
 		$displayType = $vars['CalendarFrameSetting']['display_type'];
 
-		if ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY ||
-			$displayType == CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY) {
+		if ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY) {
+			$defaultStyle = CalendarsComponent::CALENDAR_STYLE_LARGE_MONTHLY;
+			$html = $this->BackTo->indexLinkButton(__d('calendars', 'Back to this month'));
+		} elseif ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY) {
+			$defaultStyle = CalendarsComponent::CALENDAR_STYLE_SMALL_MONTHLY;
 			$html = $this->BackTo->indexLinkButton(__d('calendars', 'Back to this month'));
 		} elseif ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY) {
+			$defaultStyle = CalendarsComponent::CALENDAR_STYLE_WEEKLY;
 			$html = $this->BackTo->indexLinkButton(__d('calendars', 'Back to this week'));
 		} elseif ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_DAILY) {
+			$defaultStyle = CalendarsComponent::CALENDAR_STYLE_DAILY;
 			$html = $this->BackTo->indexLinkButton(__d('calendars', 'Back to today'));
 		} else {
+			$defaultStyle = '';
 			$html = $this->BackTo->indexLinkButton(__d('calendars', 'Back to First view'));
 		}
 
+		if ($styleParam === null && $vars['style'] == $defaultStyle) {
+			return '';
+		}
 		return $html;
 	}
 }

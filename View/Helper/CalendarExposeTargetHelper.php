@@ -49,13 +49,11 @@ class CalendarExposeTargetHelper extends AppHelper {
  * @param int $frameId フレームID
  * @param int $languageId 言語ID
  * @param array $vars カレンダー情報
- * @param int $frameSetting フレーム設定情報
  * @param array $options 公開対象オプション情報
  * @param int $myself 自分自身のroom_id
  * @return string HTML
  */
-	public function makeSelectExposeTargetHtml($frameId, $languageId, $vars,
-		$frameSetting, $options, $myself) {
+	public function makeSelectExposeTargetHtml($frameId, $languageId, $vars, $options, $myself) {
 		//option配列イメージ
 		/*
 		$options = array(
