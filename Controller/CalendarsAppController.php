@@ -289,28 +289,23 @@ class CalendarsAppController extends AppController {
  * @return void
  */
 	protected function _storeRedirectPath(&$vars) {
-		//print_r($vars);
-		//if ( isset($this->request->params['named']['style']) && ($this->request->params['named']['style'] == 'weekly' ||
-		//	$this->request->params['named']['style'] == 'largemonthly' ||
-		//	$this->request->params['named']['style'] == 'daily' ||
-		//	$this->request->params['named']['style'] == 'schedule')) {
-			$currentPath = Router::url();
+		$currentPath = Router::url();
+		if (strpos($currentPath, '?')) {
+			$currentPath = substr($currentPath, 0, strpos($currentPath, '?'));
+		}
+		$currentPathElm = explode('/', $currentPath);
+		// block_idは設定されているか
+		// 全くの初期状態のときだけBlockIDが入っていないPathが取り出されてしまうので対応
+		if (! isset($currentPathElm[4])) {
+			$currentPathElm[4] = Current::read('Block.id');
+		}
+		$currentPath = implode('/', $currentPathElm);
+		$currentPath .= '?' . http_build_query($this->request->query);
 		//	print_r('WRITE');print_r($currentPath);
-			// リダイレクトURLを記録
-			$this->Session->write(CakeSession::read('Config.userAgent') . 'calendars',
-			$currentPath . '?frame_id=' . Current::read('Frame.id'));
-			$vars['returnUrl'] = $currentPath . '?frame_id=' . Current::read('Frame.id');
-			//print_r($vars['returnUrl']);
-			//print_r(CakeSession::read('Config.userAgent'));
-			//$this->log('currentlog!!!', 'debug');
-			//$this->log($currentPath, 'debug');
-		//} else {
-		//	$url = $this->Session->read(CakeSession::read('Config.userAgent'));
-		//	if ($url != '' ) {
-		//		$vars['returnUrl'] = $url . '?frame_id=' . Current::read('Frame.id');
-		//		print_r('READ');print_r($vars['returnUrl']);
-		//	}
-		//}
+
+		// リダイレクトURLを記録
+		$this->Session->write(CakeSession::read('Config.userAgent') . 'calendars', $currentPath);
+		$vars['returnUrl'] = $currentPath;
 	}
 
 }
