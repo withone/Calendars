@@ -281,112 +281,6 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 	}
 
 /**
- * EventDataのデータ更新
- *
- * @param Model &$model モデル 
- * @param array $planParams 予定パラメータ
- * @param array $rruleData rruleデータ
- * @param array $eventData eventデータ
- * @param bool $isOriginRepeat isOriginRepeat
- * @param bool $isTimeMod isTimeMod
- * @param bool $isRepeatMod isRepeatMod
- * @param string $editRrule editRrule
- * @return array $eventData 変更後の$eventDataを返す
- * @throws InternalErrorException
- */
-	public function updateDtstartData(Model &$model, $planParams, $rruleData, $eventData,
-			$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule) {
-		if (!(isset($model->CalendarEvent) && is_callable($model->CalendarEvent->create))) {
-			$model->loadModels([
-				'CalendarEvent' => 'Calendars.CalendarEvent',
-			]);
-		}
-
-		if ($editRrule === self::CALENDAR_PLAN_EDIT_ALL) {
-			//「この予定ふくめ全て更新」
-
-			//繰返し・時間系の変更がない場合のEDIT_ALLの場合、
-			//単一の更新と同じ処理にながせばよい。
-
-			//なお、「この予定のみ更新」ではないので、
-			//recurrenceにはなにもしない
-
-		} elseif ($editRrule === self::CALENDAR_PLAN_EDIT_AFTER) {
-			//「この予定以降を更新」
-
-			//繰返し・時間系の変更がない場合のEDIT_AFTERの場合、
-			//単一の更新と同じ処理にながせばよい。
-
-			//なお、「この予定のみ更新」ではないので、
-			//recurrenceにはなにもしない
-
-		} else {
-			//「この予定のみ更新」
-			if ($isOriginRepeat) {
-				//元予定が繰返しあり
-				//置換イベントidとして1を立てておく。
-				$eventData['CalendarEvent']['recurrence_event_id'] = 1;	//暫定１
-			}
-		}
-
-		//ＷＦ関連を追加
-		if ($eventData['CalendarEvent']['status'] == WorkflowComponent::STATUS_PUBLISHED) {
-			$eventData['CalendarEvent']['is_active'] = 1;
-		} else {
-			$eventData['CalendarEvent']['is_active'] = 0;
-		}
-		$eventData['CalendarEvent']['is_latest'] = 1;
-
-		$model->CalendarEvent->set($eventData);
-		$eventId = $eventData['CalendarEvent']['id'];	//update対象のststartendIdを退避
-
-		if (!$model->CalendarEvent->validates()) {		//eventDataをチェック
-			$model->validationErrors = Hash::merge(
-				$model->validationErrors, $model->CalendarEvent->validationErrors);
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		if (!$model->CalendarEvent->save($eventData,
-			array(
-				'validate' => false,
-				'callbacks' => true,
-			))) {	//保存のみ
-			$model->validationErrors = Hash::merge(
-				$model->validationErrors, $model->CalendarEvent->validationErrors);
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		if ($eventId !== $model->CalendarEvent->id) {
-			//insertではなくupdateでなくてはならないのに、insertになってしまった。(つまりid値が新しくなってしまった）
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-		//採番されたidをeventDataにセットしておく
-		$eventData['CalendarEvent']['id'] = $model->CalendarEvent->id;
-
-		//カレンダー共有ユーザ更新
-		if (!$model->Behaviors->hasMethod('updateShareUsers')) {
-			$model->Behaviors->load('Calendars.CalendarShareUserEntry');
-		}
-		$model->updateShareUsers($planParams['share_users'], $eventId,
-			$eventData['CalendarEvent']['CalendarEventShareUser']);
-
-		//関連コンテンツ(calendar_event_contents)の更新
-		//
-		if (!empty($eventData['CalendarEvent']['CalendarEventContent']['linked_model'])) {
-			if (!(isset($model->CalendarEventContent))) {
-				$model->loadModels(['CalendarEventContent' => 'Calendars.CalendarEventContent']);
-			}
-			//saveLinkedData()は、
-			//modelとcontent_key一致データなし=> insert
-			//modelとcontent_key一致データあり=> update
-			//と登録・変更を関数である。
-			$model->CalendarEventContent->saveLinkedData($eventData);
-		}
-
-		return $eventData;
-	}
-
-/**
  * 指定eventデータ以降の予定の削除
  *
  * @param Model &$model 実際のモデル名
@@ -441,61 +335,22 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 
 		//////////////////////////////
 		//(2) eventsを消した後、rruleIdを親にもつeventDataの件数を調べる。
-		// 0件なら、不要となった親(rrule)なので、浮きリソースとならないよう、消す。
-		//
-		//注）「dtstar >= 自分のdtstart」で消しているので、指定(自分)のeventデータも含めて
+		//(2)-1. eventData件数==0、つまり、今の親rruleDataは、子を一切持たなくなった。
+		// 現在の親rruleDataは浮きリソースになるので消す。
+		// 注）「dtstar >= 自分のdtstart」で消しているので、指定(自分)のeventデータも含めて
 		// 消している。
 		//
-		$params = array(
-			'conditions' => array(
-				'CalendarEvent.calendar_rrule_id' => $eventData['CalendarEvent']['calendar_rrule_id'],
-			),
-		);
-		$count = $model->CalendarEvent->find('count', $params);
-		if (!is_int($count)) {	//整数以外が返ってきたらエラー
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		//(2)-2. eventData件数!=0、つまり、今の親rruleDataは自分(eventData)以外の子（時間軸では自分より前の時間）
+		// を持っている。
+		// なので、今の親rruleDataのrruleのUNTIL値を「自分の直前まで」に書き換える。
+		// 自分を今の親rruleDataの管理下から切り離す。
+		//
+		// ＝＞これらの(2)の一連処理を実行する関数 auditEventOrRewriteUntil() をcallする。
+		//
+		if (!$model->Behaviors->hasMethod('auditEventOrRewriteUntil')) {
+			$model->Behaviors->load('Calendars.CalendarCrudPlanCommon');
 		}
-		if ($count === 0) {
-			//(2)-1. 今の親rruleDataは、子を一切持たなくなった。
-			//（自分の新しい親rruleDataをこの後つくるので）現在の親rruleDataは浮きリソースになるので、
-			// 消しておく。
-			if (!$model->CalendarRrule->delete($eventData['CalendarEvent']['calendar_rrule_id'], false)) {
-				//delete失敗
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-		} else {
-			///////////////////////////////////////
-			//(2)-2 今の親rruleDataは、自分(eventData)以外の子（時間軸では自分より前の時間）を持っている。
-			//なので、今の親rruleDataのrruleのUNTIL値を「自分の直前まで」に書き換える。
-			//自分を今の親rruleDataの管理下から切り離す。(自分の新しい親rruleDataはこのあと作る）
-			//
-
-			//親のrruleDataはすでに取得しているので、rrule文字列はすぐに取得できる。
-			$rruleArr = (new CalendarRruleUtil())->parseRrule($rruleData['CalendarRrule']['rrule']);
-			//FFEQ以外を篩い落とす
-			$freq = $rruleArr['FREQ'];
-			$rruleArr['FREQ'] = $freq;
-
-			//$baseDtstart(=$eventData['CalendarEvent']['dtstart'])は、YYYYMMDDhhmmss(UTC)です。
-			//なので、UNTILは単純に、YYYYMMDDThhmmssにすればいいだけだとおもう。
-			//FIXME:
-			//厳密には、UNTILがカレンダーで時間を指定できない＝ユーザー系の00:00:00に
-			//なっているので、どうやって、時分秒をajustするか。要検討。
-
-			$rruleArr['UNTIL'] = substr($baseDtstart, 0, 8) . 'T' . substr($baseDtstart, 8);
-
-			$rruleBeforeStr = (new CalendarRruleUtil())->concatRrule($rruleArr);
-
-			//今のrruleDataデータのrrule文字列を書き換える。
-			$rruleDataBefore = $rruleData;
-			$rruleDataBefore['CalendarRrule']['rrule'] = $rruleBeforeStr;
-			$model->CalendarRrule->clear();
-			//rruleDataNowのidは、現rruleDataのidであるので、更新となる。
-			if (!$model->CalendarRrule->save($rruleDataBefore, false)) {
-				//save失敗
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-		}
+		$model->auditEventOrRewriteUntil($eventData, $rruleData, $baseDtstart); //aaaaaa
 
 		return $eventId;
 	}
@@ -538,121 +393,5 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 		}
 		//ここに流れてくる時は、モードの値がおかしいので、例外throw
 		throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-	}
-
-/**
- * RruleDataのデータ更新
- *
- * @param Model &$model モデル
- * @param array $planParams 予定パラメータ
- * @param array $rruleData 更新対象となるrruleData
- * @return array $rruleDataを返す
- * @throws InternalErrorException
- */
-	public function updateRruleData(Model &$model, $planParams, $rruleData) {
-		if (!(isset($model->CalendarRrule) && is_callable($model->CalendarRrule->create))) {
-			$model->loadModels([
-				'CalendarRrule' => 'Calendars.CalendarRrule',
-			]);
-		}
-
-		//現rruleDataにplanParamデータを詰め、それをモデルにセット
-		$this->setRruleData($model, $planParams, $rruleData, self::CALENDAR_UPDATE_MODE,
-			$rruleData['CalendarRrule']['key'], $rruleData['CalendarRrule']['id']);
-
-		$model->CalendarRrule->set($rruleData);
-
-		if (!$model->CalendarRrule->validates()) {	//rruleDataをチェック
-			$model->validationErrors = Hash::merge(
-				$model->validationErrors, $model->CalendarRrule->validationErrors);
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		if (!$model->CalendarRrule->save($rruleData, false)) {	//保存のみ
-			$model->validationErrors = Hash::merge(
-				$model->validationErrors, $model->CalendarRrule->validationErrors);
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		//採番されたidをrruleDataにセットしておく
-		$rruleData['CalendarRrule']['id'] = $model->CalendarRrule->id;
-		return $rruleData;
-	}
-
-/**
- * __getEventDataForUpdateAllOrAfter
- *
- * 時間系・繰返し系に変更がない時の全変更・以後変更兼用イベントデータ生成
- *
- * @param array $event newPlanの各繰返しeventデータ。keyにCalendarEventを持つように整形してある。
- * @param array $eventData 編集画面のデータに基づいて作成されたeventData
- * @return array 全変更用に適宜編集された繰返しeventデータ
- */
-	private function __getEventDataForUpdateAllOrAfter($event, $eventData) {
-		//id,key,rrule_idはnewPlanのまま
-		//$event['CalendarEvent']['id'] = 108
-		//$event['CalendarEvent']['calendar_rrule_id'] = 83
-		//$event['CalendarEvent']['key'] = d5612115c24c86ea8987eddd021aff5b
-
-		//room_idは編集画面の値を使う
-		$event['CalendarEvent']['room_id'] = $eventData['CalendarEvent']['room_id'];
-
-		//langauge_id,target_userは編集画面にないのでnewPlanのまま
-		//$event['CalendarEvent']['language_id'] = 2
-		//$event['CalendarEvent']['target_user'] = 1
-
-		//タイトル、場所、連絡先、詳細は編集画面の値を使う
-		$event['CalendarEvent']['title'] = $eventData['CalendarEvent']['title'];
-		$event['CalendarEvent']['title_icon'] = $eventData['CalendarEvent']['title_icon'];
-		$event['CalendarEvent']['location'] = $eventData['CalendarEvent']['location'];
-		$event['CalendarEvent']['contact'] = $eventData['CalendarEvent']['contact'];
-		$event['CalendarEvent']['description'] = $eventData['CalendarEvent']['description'];
-
-		//終日指定、開始終了日時、TZは「全て変更」の場合、newPlanの値を使う
-		//$event['CalendarEvent']['is_allday'] =
-		//$event['CalendarEvent']['start_date'] = 20160616
-		//$event['CalendarEvent']['start_time'] = 080000
-		//$event['CalendarEvent']['dtstart'] = 20160616080000
-		//$event['CalendarEvent']['end_date'] = 20160616
-		//$event['CalendarEvent']['end_time'] = 090000
-		//$event['CalendarEvent']['dtend'] = 20160616090000
-		//$event['CalendarEvent']['timezone_offset'] = 9.0
-
-		//Workflow関連は、statusのみ編集画面のボタンに影響うける
-		$event['CalendarEvent']['status'] = $eventData['CalendarEvent']['status'];
-		//$event['CalendarEvent']['is_active'] = $eventData['CalendarEvent']['is_active'];
-		//$event['CalendarEvent']['is_latest'] = $eventData['CalendarEvent']['is_latest'];
-
-		//「この予定のみ」変更した記録（置換）は残しておく(newPlanの値のまま）
-		//$event['CalendarEvent']['recurrence_event_id'] = 0
-
-		//「除外」記録は残しておく(newPlanの値のまま）
-		//$event['CalendarEvent']['exception_event_id'] = 0
-
-		//メール通知関連は編集画面の値を使う
-		$event['CalendarEvent']['is_enable_mail'] = $eventData['CalendarEvent']['is_enable_mail'];
-		$event['CalendarEvent']['email_send_timing'] = $eventData['CalendarEvent']['email_send_timing'];
-
-		//作成日、作成者情報はnewPlanの値のまま
-		//$event['CalendarEvent']['created_user'] = 1
-		//$event['CalendarEvent']['created'] = 2016-06-17 07:38:27
-
-		//更新日、更新者情報は変更する
-		$event['CalendarEvent']['modified_user'] = $eventData['CalendarEvent']['modified_user'];
-		$event['CalendarEvent']['modified'] = $eventData['CalendarEvent']['modified'];
-
-		//CalendarEventShareUserは、あとで、planParamsのShareUserを
-		//つかって書き換えるので、元のままとしておく。
-		//$event['CalendarEvent']['CalendarEventShareUser'] = Array
-		//	(
-		//	)
-
-		//CalendarEventContentは、あとで、書き換えるので、
-		//元のままとしておく。
-		//$event['CalendarEvent']['CalendarEventContent'] = Array
-		//	(
-		//	)
-
-		return $event;
 	}
 }

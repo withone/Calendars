@@ -52,7 +52,10 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  */
 	public function insertPlan(Model &$model, $planParams) {
-		$this->arrangeData($planParams);
+		if (!$model->Behaviors->hasMethod('doArrangeData')) {
+			$model->Behaviors->load('Calendars.CalendarCrudPlanCommon');
+		}
+		$planParams = $model->doArrangeData($planParams);
 
 		$rruleData = $this->insertRruleData($model, $planParams); //rruleDataの１件登録
 
@@ -88,39 +91,6 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 	}
 
 /**
- * $planParamsデータを整える
- *
- * @param array &$planParams planParamsデータ
- * @return void
- * @throws InternalErrorException
- */
-	public function arrangeData(&$planParams) {
-		//開始日付と開始時刻は必須
-		if (!isset($planParams['start_date']) && !isset($planParams['start_time'])) {
-			//throw new InternalErrorException(__d('Calendars', 'No start_date or start_time'));
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		//終了日付と終了時刻は必須
-		if (!isset($planParams['end_date']) && !isset($planParams['end_time'])) {
-			//throw new InternalErrorException(__d('Calendars', 'No end_date or end_time.'));
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		if (!isset($planParams['status'])) { //statusは必須
-			//throw new InternalErrorException(__d('Calendars', 'status is required.'));
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		if (!isset($planParams['language_id'])) { //language_idは必須
-			//throw new InternalErrorException(__d('Calendars', 'language_id is required.'));
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		$this->_arrangeShareUsers($planParams);
-	}
-
-/**
  * RruleDataへのデータ登録
  *
  * @param Model &$model モデル 
@@ -149,22 +119,11 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 			$rruleData['CalendarRrule']['icalendar_uid'] = $icalUidPart;
 		}
 
-		$model->CalendarRrule->set($rruleData);
-
-		if (!$model->CalendarRrule->validates()) {		//rruleDataをチェック
-			$model->validationErrors = Hash::merge(
-				$model->validationErrors, $model->CalendarRrule->validationErrors);
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		if (!$model->Behaviors->hasMethod('saveRruleData')) {
+			$model->Behaviors->load('Calendars.CalendarCrudPlanCommon');
 		}
+		$rruleData = $model->saveRruleData($rruleData);
 
-		if (!$model->CalendarRrule->save($rruleData, false)) {	//保存のみ
-			$model->validationErrors = Hash::merge(
-				$model->validationErrors, $model->CalendarRrule->validationErrors);
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		//採番されたidをrruleDataにセットしておく
-		$rruleData['CalendarRrule']['id'] = $model->CalendarRrule->id;
 		return $rruleData;
 	}
 
