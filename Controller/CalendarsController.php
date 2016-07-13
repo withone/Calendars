@@ -208,10 +208,7 @@ class CalendarsController extends CalendarsAppController {
 		$vars['selectRooms'] = array();	//マージ前の暫定
 
 		//表示方法設定情報を取り出し
-		$frameSetting = $this->CalendarFrameSetting->find('first', array(
-			'recursive' => 1,	//hasManyでCalendarFrameSettingSelectRoomのデータも取り出す。
-			'conditions' => array('frame_key' => Current::read('Frame.key')),
-		));
+		$frameSetting = $this->CalendarFrameSetting->getFrameSetting();
 
 		//表示日数（n日分）
 		$vars['display_count'] = $frameSetting['CalendarFrameSetting']['display_count'];
@@ -246,10 +243,7 @@ class CalendarsController extends CalendarsAppController {
 		$vars['selectRooms'] = array();	//マージ前の暫定
 
 		//表示方法設定情報を取り出し
-		$frameSetting = $this->CalendarFrameSetting->find('first', array(
-			'recursive' => 1,	//hasManyでCalendarFrameSettingSelectRoomのデータも取り出す。
-			'conditions' => array('frame_key' => Current::read('Frame.key')),
-		));
+		$frameSetting = $this->CalendarFrameSetting->getFrameSetting();
 
 		//開始位置（今日/前日）
 		$vars['start_pos'] = $frameSetting['CalendarFrameSetting']['start_pos'];

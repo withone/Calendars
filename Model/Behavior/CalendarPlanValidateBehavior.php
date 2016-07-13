@@ -34,10 +34,7 @@ class CalendarPlanValidateBehavior extends ModelBehavior {
 		if (!(isset($model->CalendarFrameSetting))) {
 			$model->loadModels(['CalendarFrameSetting' => 'Calendars.CalendarFrameSetting']);
 		}
-		$frameSetting = $model->CalendarFrameSetting->find('first', array(
-			'recursive' => 1,
-			'conditions' => array('frame_key' => Current::read('Frame.key'))
-		));
+		$frameSetting = $model->CalendarFrameSetting->getFrameSetting();
 		//公開対象一覧のoptions配列と、自分自身のroom_idを取得
 		//なお、getExposeRoomOptions($frameSetting)が返す配列要素の０番目が$exposeRoomOptionsです。
 		$elms = $model->getExposeRoomOptions($frameSetting);

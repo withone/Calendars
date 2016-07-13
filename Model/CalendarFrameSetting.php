@@ -24,6 +24,13 @@ App::uses('CalendarsComponent', 'Calendars.Controller/Component');	//constを使
 class CalendarFrameSetting extends CalendarsAppModel {
 
 /**
+ * getFrameSetting関数が何度も繰り返し呼び出された時のための保持変数
+ *
+ * @var array
+ */
+	protected $_getFrameSettingData = null;
+
+/**
  * use behaviors
  *
  * @var array
@@ -301,13 +308,44 @@ class CalendarFrameSetting extends CalendarsAppModel {
  * @throws InternalErrorException
  */
 	public function setDefaultValue(&$data) {
-		$data[$this->alias]['display_type'] = CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY;
-		//start_pos、is_myroom、is_select_roomはtableの初期値をつかう。
-		$data[$this->alias]['display_count'] = CalendarsComponent::CALENDAR_STANDARD_DISPLAY_DAY_COUNT;
-
-		//frame_key,room_idは明示的に設定されることを想定し、setDefaultではなにもしない。
-		$data[$this->alias]['timeline_base_time'] =
-			CalendarsComponent::CALENDAR_TIMELINE_DEFAULT_BASE_TIME;
+		$data = $this->getDefaultFrameSetting();
 	}
 
+/**
+ * getFrameSetting
+ *
+ * @return array カレンダー表示形式情報
+ */
+	public function getFrameSetting() {
+		if ($this->_getFrameSettingData !== null) {
+			return $this->_getFrameSettingData;
+		}
+		$frameSetting = $this->find('first', array(
+			'recursive' => 1,	//hasManyでCalendarFrameSettingSelectRoomのデータも取り出す。
+			'conditions' => array('frame_key' => Current::read('Frame.key'))
+		));
+		if (! $frameSetting) {
+			$frameSetting = $this->getDefaultFrameSetting();
+		}
+		$this->_getFrameSettingData = $frameSetting;
+		return $frameSetting;
+	}
+
+/**
+ * getDefaultFrameSetting
+ *
+ * @return array カレンダー表示形式デフォルト情報
+ */
+	public function getDefaultFrameSetting() {
+		//start_pos、is_myroom、is_select_roomはtableの初期値をつかう。
+		//frame_key,room_idは明示的に設定されることを想定し、setDefaultではなにもしない。
+		return array(
+			$this->alias => array(
+				'display_type' => CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY,
+				'display_count' => CalendarsComponent::CALENDAR_STANDARD_DISPLAY_DAY_COUNT,
+				'timeline_base_time' => CalendarsComponent::CALENDAR_TIMELINE_DEFAULT_BASE_TIME,
+				'is_select_room' => false,
+			)
+		);
+	}
 }

@@ -54,13 +54,7 @@ class CalendarsAppController extends AppController {
  */
 	public function setCalendarCommonCurrent(&$vars) {
 		$vars['frame_key'] = Current::read('Frame.key');
-		$options = array(
-			'conditions' => array(
-				$this->CalendarFrameSetting->alias . '.frame_key' => $vars['frame_key'],
-			),
-			'recursive' => (-1),
-		);
-		$data = $this->CalendarFrameSetting->find('first', $options);
+		$data = $this->CalendarFrameSetting->getFrameSetting();
 		Current::$current['CalendarFrameSetting'] = $data['CalendarFrameSetting'];
 	}
 
@@ -277,10 +271,7 @@ class CalendarsAppController extends AppController {
 		//spaceNameOfRoomsは、ViewのCalendarCommon->getPlanMarkClassName()の中で
 		//どの画面でも利用するので、共通処理としておく。
 		//
-		$frameSetting = $this->CalendarFrameSetting->find('first', array(
-			'recursive' => 1,	//hasManyでCalendarFrameSettingSelectRoomのデータも取り出す。
-			'conditions' => array('frame_key' => Current::read('Frame.key')),
-		));
+		$frameSetting = $this->CalendarFrameSetting->getFrameSetting();
 		//公開対象一覧のoptions配列と自分自身のroom_idとルーム毎空間名配列を取得
 		list($exposeRoomOptions, $myself, $spaceNameOfRooms) =
 			$this->CalendarActionPlan->getExposeRoomOptions($frameSetting);

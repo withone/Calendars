@@ -159,10 +159,11 @@ class CalendarTurnCalendarHelper extends AppHelper {
 			$dateArr = $this->_getNowDate($type, $vars);
 		}
 		$urlArray = array(
-				'controller' => 'calendars',
-				'action' => 'index',
-				'style' => $vars['style'],
-				'frame_id' => Current::read('Frame.id'),
+			'controller' => 'calendars',
+			'action' => 'index',
+			'style' => $vars['style'],
+			'block_id' => Current::read('Block.id'),
+			'frame_id' => Current::read('Frame.id'),
 		);
 		if (isset($vars['tab'])) {
 			$urlArray['tab'] = $vars['tab'];
@@ -331,6 +332,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 				'controller' => 'calendars',
 				'action' => 'index',
 				'style' => $vars['style'],
+				'block_id' => Current::read('Block.id'),
 				'frame_id' => Current::read('Frame.id')
 			),
 			$prototypeUrlOpt

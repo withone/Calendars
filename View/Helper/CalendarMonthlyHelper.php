@@ -425,6 +425,7 @@ class CalendarMonthlyHelper extends AppHelper {
 					'year' => sprintf("%04d", $vars['mInfo']['year']),
 					'month' => sprintf("%02d", $vars['mInfo']['month']),
 					'week' => $week,
+					'block_id' => Current::read('Block.id'),
 					'frame_id' => Current::read('Frame.id'),
 				));
 				//$html .= "<tr><th rowspan='2' class='calendar-col-week hidden-xs' data-url='" . $url . "'>";

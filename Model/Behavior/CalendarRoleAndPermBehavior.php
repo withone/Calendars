@@ -95,10 +95,7 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 		if (!isset($model->CalendarFrameSetting)) {
 			$model->loadModels(['CalendarFrameSetting' => 'Calendars.CalendarFrameSetting']);
 		}
-		$frameSetting = $model->CalendarFrameSetting->find('first', array(
-			'recursive' => 1,	//hasManyでCalendarFrameSettingSelectRoomのデータも取り出す。
-			'conditions' => array('frame_key' => Current::read('Frame.key')),
-		));
+		$frameSetting = $model->CalendarFrameSetting->getFrameSetting();
 		if (!isset($model->CalendarActionPlan)) {
 			$model->loadModels(['CalendarActionPlan' => 'Calendars.CalendarActionPlan']);
 		}

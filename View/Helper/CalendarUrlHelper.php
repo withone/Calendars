@@ -51,6 +51,7 @@ class CalendarUrlHelper extends AppHelper {
 			'month' => $month,
 			'day' => $day,
 			'event' => $plan['CalendarEvent']['id'],
+			'block_id' => Current::read('Block.id'),
 			'frame_id' => Current::read('Frame.id'),
 		));
 		return $url;
@@ -130,6 +131,7 @@ class CalendarUrlHelper extends AppHelper {
 			'year' => $year,
 			'month' => $month,
 			'day' => $day,
+			'block_id' => Current::read('Block.id'),
 			'frame_id' => Current::read('Frame.id'),
 		));
 		return $url;

@@ -17,6 +17,7 @@
 		'year' => sprintf("%04d", $vars['year']),
 		'month' => sprintf("%02d", $vars['month']),
 		'day' => $vars['day'],
+		'block_id' => Current::read('Block.id'),
 		'frame_id' => Current::read('Frame.id'),
 	));
 
@@ -27,6 +28,7 @@
 		'year' => sprintf("%04d", $vars['year']),
 		'month' => sprintf("%02d", $vars['month']),
 		'day' => $vars['day'],
+		'block_id' => Current::read('Block.id'),
 		'frame_id' => Current::read('Frame.id'),
 	));
 
@@ -38,6 +40,7 @@
 		'year' => sprintf("%04d", $vars['year']),
 		'month' => sprintf("%02d", $vars['month']),
 		'day' => $vars['day'],
+		'block_id' => Current::read('Block.id'),
 		'frame_id' => Current::read('Frame.id'),
 	));
 ?>

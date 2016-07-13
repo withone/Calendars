@@ -129,12 +129,13 @@ class CalendarPlansController extends CalendarsAppController {
  */
 	public function beforeFilter() {
 		parent::beforeFilter();
+		/*
 		if (! Current::read('Block.id')) {
 			CakeLog::error(
 				__d('calendars', 'There is no block ID. Display a blank page.'));
 			$this->setAction('emptyRender');
 			return false;
-		}
+		}*/
 
 		$this->Auth->allow('add', 'delete', 'edit', 'show');
 
@@ -351,6 +352,7 @@ class CalendarPlansController extends CalendarsAppController {
 			'controller' => 'calendar_plans',
 			'action' => 'show',
 			'event' => $eventId,
+			'block_id' => Current::read('Block.id'),
 			'frame_id' => Current::read('Frame.id'),
 		));
 		$this->redirect($url);
@@ -419,8 +421,8 @@ class CalendarPlansController extends CalendarsAppController {
 		$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars');
 		$this->_vars['returnUrl'] = $url;
 
-		$this->set(compact('capForView', 'mailSettingInfo', 'shareUsers',
-			'eventSiblings', 'planViewMode', 'firstSib'));
+		$this->set(compact('capForView', 'mailSettingInfo', 'shareUsers', 'eventSiblings',
+			'planViewMode', 'firstSib'));
 		$this->set('vars', $this->_vars);
 		$this->set('event', $this->eventData);
 		$this->set('frameSetting', $this->_frameSetting);
@@ -496,13 +498,9 @@ class CalendarPlansController extends CalendarsAppController {
 				'recursive' => -1,
 				'order' => array($this->CalendarEventShareUser->alias . '.share_user'),
 			));
-
 		}
 		//表示方法設定情報を取り出し、requestのdataに格納する。
-		$this->_frameSetting = $this->CalendarFrameSetting->find('first', array(
-			'recursive' => 1,	//hasManyでCalendarFrameSettingSelectRoomのデータも取り出す。
-			'conditions' => array('frame_key' => Current::read('Frame.key')),
-		));
+		$this->_frameSetting = $this->CalendarFrameSetting->getFrameSetting();
 
 		//公開対象一覧のoptions配列と自分自身のroom_idとルーム別空間名を取得
 		list($this->_exposeRoomOptions, $this->_myself, ) =
