@@ -20,7 +20,7 @@ App::uses('CalendarFrameSetting', 'Calendars.Model');
  * @author AllCreator <info@allcreator.net>
  * @package NetCommons\Calendars\Test\Case\Model\Calendar
  */
-class CalendarTest extends NetCommonsModelTestCase {
+class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 
 /**
  * Fixtures
