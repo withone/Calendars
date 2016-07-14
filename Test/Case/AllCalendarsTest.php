@@ -8,6 +8,8 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
+App::uses('NetCommonsTestSuite', 'NetCommons.TestSuite');
+
 /**
  * Calendars All Test Suite
  *
@@ -15,7 +17,7 @@
  * @package NetCommons\Calendars\Test\Case
  * @codeCoverageIgnore
  */
-class AllCalendarsTest extends CakeTestSuite {
+class AllCalendarsTest extends NetCommonsTestSuite {
 
 /**
  * All test suite
