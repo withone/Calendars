@@ -187,7 +187,7 @@ class Calendar extends CalendarsAppModel {
 			//１セット用意します。
 
 			//このフレームの「表示方法変更」
-			if (! $this->_saveFrameChangeAppearance($frame)) {
+			if (! $this->_saveFrameChangeAppearance($data['Frame'])) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
@@ -288,6 +288,7 @@ class Calendar extends CalendarsAppModel {
 		$this->CalendarFrameSetting->setDefaultValue($frameSetting);	//Modelの初期値設定
 		$frameSetting['CalendarFrameSetting']['frame_key'] = $frame['key'];
 		$frameSetting['CalendarFrameSetting']['room_id'] = Current::read('Room.id');
+
 		return $this->CalendarFrameSetting->saveFrameSetting($frameSetting);
 	}
 

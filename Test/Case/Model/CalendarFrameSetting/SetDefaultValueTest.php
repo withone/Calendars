@@ -94,7 +94,8 @@ class CalendarFrameSettingSetDefaultValueTest extends NetCommonsModelTestCase {
 		'CalendarFrameSetting' => array(
 				'display_type' => CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY,
 				'display_count' => CalendarsComponent::CALENDAR_STANDARD_DISPLAY_DAY_COUNT,
-				'timeline_base_time' => CalendarsComponent::CALENDAR_TIMELINE_DEFAULT_BASE_TIME
+				'timeline_base_time' => CalendarsComponent::CALENDAR_TIMELINE_DEFAULT_BASE_TIME,
+				'is_select_room' => false
 		));
 		return array(
 			array($data, $expect),

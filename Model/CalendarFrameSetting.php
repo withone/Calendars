@@ -268,10 +268,10 @@ class CalendarFrameSetting extends CalendarsAppModel {
 				$this->rollback();
 				return false;
 			}
-
 			//フレームの登録
 			//バリデートは前で終わっているので第二引数=false
-			if (! ($data = $this->save($data, false))) {
+			$data = $this->save($data, false);
+			if (! $data) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
@@ -281,7 +281,6 @@ class CalendarFrameSetting extends CalendarsAppModel {
 					ClassRegistry::init('Calendars.CalendarFrameSettingSelectRoom');
 				if (! $this->CalendarFrameSettingSelectRoom->validateCalendarFrameSettingSelectRoom($data)) {
 					CakeLog::error(serialize($this->CalendarFrameSettingSelectRoom->validationErrors));
-
 					$this->rollback();
 					return false;
 				}
@@ -290,6 +289,7 @@ class CalendarFrameSetting extends CalendarsAppModel {
 				// ここでの判断は不要です
 				$this->CalendarFrameSettingSelectRoom->saveCalendarFrameSettingSelectRoom($data);
 			}
+
 			$this->commit();
 		} catch (Exception $ex) {
 			CakeLog::error($ex);
@@ -308,7 +308,8 @@ class CalendarFrameSetting extends CalendarsAppModel {
  * @throws InternalErrorException
  */
 	public function setDefaultValue(&$data) {
-		$data = $this->getDefaultFrameSetting();
+		$default = $this->getDefaultFrameSetting();
+		$data = Hash::merge($data, $default);
 	}
 
 /**
