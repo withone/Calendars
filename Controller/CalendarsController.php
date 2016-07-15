@@ -14,6 +14,7 @@
 App::uses('CalendarsAppController', 'Calendars.Controller');
 App::uses('NetCommonsTime', 'NetCommons.Utility');
 App::uses('CalendarTime', 'Calendars.Utility');
+App::uses('CalendarPermissiveRooms', 'Calendars.Utility');
 
 /**
  * CalendarsController
@@ -80,13 +81,12 @@ class CalendarsController extends CalendarsAppController {
  */
 	public function beforeFilter() {
 		parent::beforeFilter();
-		if (! Current::read('Block.id')) {
-			//Block.idが無い時は、基底クラスNetCommonsAppControllerのemptyRenderアクションを実行(=autoRenderを止める)
-			//した後、falseを返して、filterを失敗させる。結果として、エラー詳細が表示されない真っ白い画面表示となる。
-			//
-			$this->setAction('emptyRender');
-			return false;
-		}
+
+		// 以前はここでCurrentのブロックIDをチェックする処理があったが
+		// カレンダーはCurrentのブロックID（＝現在表示中ページのブロックID）は
+		// 表示データ上の意味がないのでチェックは行わない
+		// 表示ブロックIDがないときは、パブリックTOPページで仮表示されることに話が決まった
+
 		$this->CalendarEvent->initSetting($this->Workflow);
 	}
 
@@ -98,8 +98,8 @@ class CalendarsController extends CalendarsAppController {
 	public function index() {
 		$ctpName = '';
 		$vars = array();
-		if (isset($this->request->params['named']) && isset($this->request->params['named']['style'])) {
-			$style = $this->request->params['named']['style'];
+		if (isset($this->request->query['style'])) {
+			$style = $this->request->query['style'];
 		} else {
 			//style未指定の場合、CalendarFrameSettingモデルのdisplay_type情報から表示するctpを決める。
 			$this->setCalendarCommonCurrent($vars);
@@ -114,10 +114,10 @@ class CalendarsController extends CalendarsAppController {
 				$style = 'daily';
 			} elseif ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_TSCHEDULE) {
 				$style = 'schedule';
-				$this->request->params['named']['sort'] = 'time';	//見なしnamedパラメータセット
+				$this->request->query['sort'] = 'time';	//見なしsortパラメータセット
 			} elseif ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_MSCHEDULE) {
 				$style = 'schedule';
-				$this->request->params['named']['sort'] = 'member';	//みなしnamedパラメータセット
+				$this->request->query['sort'] = 'member';	//みなしsortパラメータセット
 			} else {	//月縮小とみなす
 				$style = 'smallmonthly';
 			}
@@ -126,9 +126,11 @@ class CalendarsController extends CalendarsAppController {
 		$ctpName = $this->getCtpAndVars($style, $vars);
 
 		$roomPermRoles = $this->CalendarEvent->prepareCalRoleAndPerm();
+		CalendarPermissiveRooms::$roomPermRoles = $roomPermRoles;
+
 		$frameId = Current::read('Frame.id');
 		$languageId = Current::read('Language.id');
-		$this->set(compact('frameId', 'languageId', 'vars', 'roomPermRoles'));
+		$this->set(compact('frameId', 'languageId', 'vars'));
 		$this->render($ctpName);
 	}
 
@@ -157,8 +159,8 @@ class CalendarsController extends CalendarsAppController {
 	public function getWeeklyVars($vars) {
 		$this->setCalendarCommonVars($vars);
 		$vars['selectRooms'] = array();	//マージ前の暫定
-		if (isset($this->request->params['named']['week'])) {
-			$vars['week'] = $this->request->params['named']['week'];
+		if (isset($this->request->query['week'])) {
+			$vars['week'] = $this->request->query['week'];
 		} else {
 			$vars['week'] = 0; // 省略時は0
 		}
@@ -272,8 +274,8 @@ class CalendarsController extends CalendarsAppController {
  * @return array $vars 日次カレンダー変数
  */
 	public function getDailyVars($vars) {
-		if (isset($this->request->params['named']['tab']) &&
-			$this->request->params['named']['tab'] === 'timeline') {
+		if (isset($this->request->query['tab']) &&
+			$this->request->query['tab'] === 'timeline') {
 			$vars = $this->getDailyTimelineVars($vars);
 		} else {
 			$vars = $this->getDailyListVars($vars);
@@ -293,8 +295,8 @@ class CalendarsController extends CalendarsAppController {
  * @return array $vars スケジュール変数
  */
 	public function getScheduleVars($vars) {
-		if (isset($this->request->params['named']['sort']) &&
-			$this->request->params['named']['sort'] === 'member') {
+		if (isset($this->request->query['sort']) &&
+			$this->request->query['sort'] === 'member') {
 			$vars = $this->getMemberScheduleVars($vars);
 		} else {
 			$vars = $this->getTimeScheduleVars($vars);

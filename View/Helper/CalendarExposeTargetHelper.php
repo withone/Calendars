@@ -38,7 +38,6 @@ class CalendarExposeTargetHelper extends AppHelper {
  */
 	public function __construct(View $View, $settings = array()) {
 		parent::__construct($View, $settings);
-		$this->CalendarPermissiveRooms = new CalendarPermissiveRooms();
 	}
 
 /**
@@ -66,8 +65,7 @@ class CalendarExposeTargetHelper extends AppHelper {
 		);
 		*/
 		// 渡されたoptionから投稿権限のないものを外す
-		$roomPermRole = $this->_View->viewVars['roomPermRoles'];
-		$rooms = $this->CalendarPermissiveRooms->getCreatableRoomIdList($roomPermRole);
+		$rooms = CalendarPermissiveRooms::getCreatableRoomIdList();
 		$targetRooms = array_intersect_key($options, $rooms);
 
 		$html = $this->NetCommonsForm->label(

@@ -563,8 +563,6 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 			return false;
 		}
-
-		//return true;
 		return $eventId;
 	}
 
@@ -899,7 +897,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		foreach ($aArray1 as $mKey => $mValue) {
 			if (array_key_exists($mKey, $aArray2)) {
 				if (is_array($mValue)) {
-					$aRecursiveDiffResult = arrayRecursiveDiff($mValue, $aArray2[$mKey]);
+					$aRecursiveDiffResult = $this->__arrayRecursiveDiff($mValue, $aArray2[$mKey]);
 					if (count($aRecursiveDiffResult)) {
 						$aReturn[$mKey] = $aRecursiveDiffResult;
 					}

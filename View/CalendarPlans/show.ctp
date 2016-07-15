@@ -114,10 +114,11 @@ echo $this->element('Calendars.scripts');
 			$urlOptions = array(
 				'controller' => 'calendars',
 				'action' => 'index',
-				'year' => $vars['year'],
-				'month' => $vars['month'],
-				'block_id' => Current::read('Block.id'),
 				'frame_id' => Current::read('Frame.id'),
+				'?' => array(
+					'year' => $vars['year'],
+					'month' => $vars['month'],
+				)
 			);
 			if (isset($vars['returnUrl'])) {
 				$cancelUrl = $vars['returnUrl'];

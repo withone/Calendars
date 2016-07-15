@@ -13,19 +13,21 @@
 	$timeLink = NetCommonsUrl::actionUrl(array(
 		'controller' => 'calendars',
 		'action' => 'index',
-		'style' => 'schedule',
-		'sort' => 'time',
-		'block_id' => Current::read('Block.id'),
 		'frame_id' => Current::read('Frame.id'),
+		'?' => array(
+			'style' => 'schedule',
+			'sort' => 'time',
+		)
 	));
 
 	$memberLink = NetCommonsUrl::actionUrl(array(
 		'controller' => 'calendars',
 		'action' => 'index',
-		'style' => 'schedule',
-		'sort' => 'member',
-		'block_id' => Current::read('Block.id'),
 		'frame_id' => Current::read('Frame.id'),
+		'?' => array(
+			'style' => 'schedule',
+			'sort' => 'member',
+		)
 	));
 ?>
 <div class="row">

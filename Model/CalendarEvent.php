@@ -283,4 +283,93 @@ class CalendarEvent extends CalendarsAppModel {
 		}
 		return $this->find('all', $options);
 	}
+/**
+ * getEventById
+ *
+ * イベント情報の取得
+ *
+ * @param int $eventId $eventId
+ * @return array 取得したイベント情報配列
+ */
+	public function getEventById($eventId) {
+		$conditions = array(
+			$this->alias . '.id' => $eventId,
+		);
+		$options = array(
+			'conditions' => $conditions,
+			'recursive' => 1, //belongsTo, hasOne, hasManyまで取得
+		);
+		$event = $this->find('first', $options);
+		if (!$event) {
+			CakeLog::error(
+				__d('calendars', 'There is no event. To continue the event in the blank.'));
+			$event = array();
+		}
+		if (! $this->_isGetableEvent($event)) {
+			return array();
+		}
+		return $event;
+	}
+/**
+ * getEventByKey
+ *
+ * イベント情報の取得
+ *
+ * @param string $eventKey $eventKey
+ * @return array 取得したイベント情報配列
+ */
+	public function getEventByKey($eventKey) {
+		$conditions = array(
+			$this->alias . '.key' => $eventKey,
+		);
+		$options = array(
+			'conditions' => $conditions,
+			'recursive' => 1, //belongsTo, hasOne, hasManyまで取得
+			'order' => array($this->alias . '.id DESC')
+		);
+		$events = $this->find('all', $options);
+		if (!$events) {
+			CakeLog::error(
+				__d('calendars', 'There is no event. To continue the event in the blank.'));
+			return array();
+		}
+		// 新しいもの順にチェック
+		foreach ($events as $event) {
+			if ($this->_isGetableEvent($event)) {
+				return $event;
+			}
+		}
+		// 該当のものが見つからなかったってこと
+		return array();
+	}
+
+/**
+ * _isGetableEvent
+ *
+ * 見てもよいイベント情報なのか判断する
+ *
+ * @param $event
+ * @return bool
+ */
+	protected function _isGetableEvent($event) {
+		// eventの空間取り出す
+		$roomId = $event['CalendarEvent']['room_id'];
+		// 作成者取り出す
+		$userId = $event['CalendarEvent']['created_user'];
+		// eventの空間でcreatableでかつ作成者または編集者以上
+		if ((CalendarPermissiveRooms::isCreatable($roomId) && $userId == Current::read('User.id')) ||
+			CalendarPermissiveRooms::isEditable($roomId)) {
+			// is_latestのものを返す
+			if ($event['CalendarEvent']['is_latest']) {
+				return true;
+			} else {
+				// 上記以外
+				// is_activeのものを返す
+				if ($event['CalendarEvent']['is_active']) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }

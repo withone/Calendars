@@ -121,10 +121,11 @@ class CalendarPlanHelper extends AppHelper {
 		$options = array(
 			'controller' => 'calendars',
 			'action' => 'index',
-			'year' => $vars['year'],
-			'month' => $vars['month'],
-			'block_id' => Current::read('Block.id'),	//追加しておく
 			'frame_id' => Current::read('Frame.id'),
+			'?' => array(
+				'year' => $vars['year'],
+				'month' => $vars['month'],
+			)
 		);
 		if (isset($vars['returnUrl'])) {
 			$cancelUrl = $vars['returnUrl'];

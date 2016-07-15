@@ -17,16 +17,17 @@
  */
 class CalendarPermissiveRooms {
 
+	public static $roomPermRoles = array();
+
 /**
  * getPublishableRoomIdList
  *
  * 発行権限を持つルームIDリストを返す
  *
- * @param array $roomPermRoles 権限状況
  * @return array
  */
-	public function getPublishableRoomIdList($roomPermRoles) {
-		$rooms = $this->_getAbleRoomIdList($roomPermRoles, array('content_publishable_value'));
+	public static function getPublishableRoomIdList() {
+		$rooms = self::getAbleRoomIdList(array('content_publishable_value'));
 		return $rooms;
 	}
 /**
@@ -34,11 +35,10 @@ class CalendarPermissiveRooms {
  *
  * 編集権限を持つルームIDリストを返す
  *
- * @param array $roomPermRoles 権限状況
  * @return array
  */
-	public function getEditableRoomIdList($roomPermRoles) {
-		$rooms = $this->_getAbleRoomIdList($roomPermRoles, array(
+	public static function getEditableRoomIdList() {
+		$rooms = self::getAbleRoomIdList(array(
 			'content_publishable_value',
 			'content_editable_value'
 		));
@@ -49,11 +49,10 @@ class CalendarPermissiveRooms {
  *
  * 登録権限を持つルームIDリストを返す
  *
- * @param array $roomPermRoles 権限状況
  * @return array
  */
-	public function getCreatableRoomIdList($roomPermRoles) {
-		$rooms = $this->_getAbleRoomIdList($roomPermRoles, array(
+	public static function getCreatableRoomIdList() {
+		$rooms = self::getAbleRoomIdList(array(
 			'content_publishable_value',
 			'content_editable_value',
 			'content_creatable_value'
@@ -61,17 +60,16 @@ class CalendarPermissiveRooms {
 		return $rooms;
 	}
 /**
- * _getAbleRoomIdList
+ * getAbleRoomIdList
  *
  * 指定された権限を持つルームのIDのリストを返す
  *
- * @param array $roomPermRoles 権限状況
  * @param array $perms 見てほしい権限名
  * @return array
  */
-	protected function _getAbleRoomIdList($roomPermRoles, $perms) {
+	public static function getAbleRoomIdList($perms) {
 		$rooms = array();
-		foreach ($roomPermRoles['roomInfos'] as $roomId => $roomPerm) {
+		foreach (self::$roomPermRoles['roomInfos'] as $roomId => $roomPerm) {
 			foreach ($perms as $perm) {
 				if (Hash::get($roomPerm, $perm)) {
 					$rooms[$roomId] = $roomId;
@@ -86,12 +84,11 @@ class CalendarPermissiveRooms {
  *
  * 指定されたルームは閲覧者にとって編集権限のあるところか
  *
- * @param array $roomPermRoles 権限状況情報
  * @param int $roomId ルームID
  * @return bool
  */
-	public function isEditable($roomPermRoles, $roomId) {
-		$rooms = $this->getEditableRoomIdList($roomPermRoles);
+	public static function isEditable($roomId) {
+		$rooms = self::getEditableRoomIdList();
 		return isset($rooms[$roomId]);
 	}
 /**
@@ -99,12 +96,11 @@ class CalendarPermissiveRooms {
  *
  * 指定されたルームは閲覧者にとって投稿権限のあるところか
  *
- * @param array $roomPermRoles 権限状況情報
  * @param int $roomId ルームID
  * @return bool
  */
-	public function isCreatable($roomPermRoles, $roomId) {
-		$rooms = $this->getCreatableRoomIdList($roomPermRoles);
+	public static function isCreatable($roomId) {
+		$rooms = self::getCreatableRoomIdList();
 		return isset($rooms[$roomId]);
 	}
 }

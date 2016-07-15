@@ -24,7 +24,7 @@ class CalendarWorksComponent extends Component {
  *
  * オプション取得
  *
- * @param array $params $this->request->params配列が渡される
+ * @param array $params $this->request->query配列が渡される
  * @return array 年月日時分秒配列
  */
 	public function getDateTimeParam($params) {
@@ -32,24 +32,27 @@ class CalendarWorksComponent extends Component {
 		$date = new DateTime('now', (new DateTimeZone($userTz)));
 
 		$enableTime = false;
-		if (isset($params['named']['year'])) {
-			$year = $params['named']['year'];
-			$month = $params['named']['month'];
-			$day = $params['named']['day'];
-		} else {
-			$year = $date->format('Y');
-			$month = $date->format('m');
-			$day = $date->format('d');
+		$year = $date->format('Y');
+		$month = $date->format('m');
+		$day = $date->format('d');
+		$hour = $date->format('H');
+		$minute = $date->format('i');
+		$second = $date->format('s');
+
+		if (isset($params['year'])) {
+			$year = $params['year'];
 		}
-		if (isset($params['named']['hour'])) {
-			$hour = $params['named']['hour'];
+		if (isset($params['month'])) {
+			$month = $params['month'];
+		}
+		if (isset($params['day'])) {
+			$day = $params['day'];
+		}
+		if (isset($params['hour'])) {
+			$hour = $params['hour'];
 			$minute = '00';
 			$second = '00';
 			$enableTime = true;
-		} else {
-			$hour = $date->format('H');
-			$minute = $date->format('i');
-			$second = $date->format('s');
 		}
 		return array($year, $month, $day, $hour, $minute, $second, $enableTime);
 	}

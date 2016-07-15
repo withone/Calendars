@@ -13,25 +13,29 @@
 	$timelineLink = NetCommonsUrl::actionUrl(array(
 		'controller' => 'calendars',
 		'action' => 'index',
-		'style' => 'daily',
-		'tab' => 'timeline',
-		'year' => sprintf("%04d", $vars['year']),
-		'month' => sprintf("%02d", $vars['month']),
-		'day' => $vars['day'],
-		'block_id' => Current::read('Block.id'),
+		'block_id' => '',
 		'frame_id' => Current::read('Frame.id'),
+		'?' => array(
+			'style' => 'daily',
+			'tab' => 'timeline',
+			'year' => sprintf("%04d", $vars['year']),
+			'month' => sprintf("%02d", $vars['month']),
+			'day' => $vars['day'],
+		)
 	));
 
 	$dailyLink = NetCommonsUrl::actionUrl(array(
 		'controller' => 'calendars',
 		'action' => 'index',
-		'style' => 'daily',
-		'tab' => 'list',
-		'year' => sprintf("%04d", $vars['year']),
-		'month' => sprintf("%02d", $vars['month']),
-		'day' => $vars['day'],
-		'block_id' => Current::read('Block.id'),
+		'block_id' => '',
 		'frame_id' => Current::read('Frame.id'),
+		'?' => array(
+			'style' => 'daily',
+			'tab' => 'list',
+			'year' => sprintf("%04d", $vars['year']),
+			'month' => sprintf("%02d", $vars['month']),
+			'day' => $vars['day'],
+		)
 	));
 ?>
 

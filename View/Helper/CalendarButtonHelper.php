@@ -49,7 +49,6 @@ class CalendarButtonHelper extends AppHelper {
  */
 	public function __construct(View $View, $settings = array()) {
 		parent::__construct($View, $settings);
-		$this->CalendarPermissiveRooms = new CalendarPermissiveRooms();
 	}
 
 /**
@@ -107,8 +106,7 @@ class CalendarButtonHelper extends AppHelper {
 		// まだ作成可能かどうかの判断フラグが設定されていない場合
 		// まず設定する
 		if ($this->_isCreatable === null) {
-			$roomPermRole = $this->_View->viewVars['roomPermRoles'];
-			$rooms = $this->CalendarPermissiveRooms->getCreatableRoomIdList($roomPermRole);
+			$rooms = CalendarPermissiveRooms::getCreatableRoomIdList();
 			if (empty($rooms)) {
 				$this->_isCreatable = false;
 			} else {
@@ -152,7 +150,7 @@ class CalendarButtonHelper extends AppHelper {
 		} else {
 			$url = $this->CalendarUrl->makeEditUrl($year, $mon, $day, $vars);
 		}
-		$url = str_replace('/edit/', '/add/', $url);
+		$url = str_replace('calendar_plans/edit', 'calendar_plans/add', $url);
 		return $url;
 	}
 
@@ -167,7 +165,6 @@ class CalendarButtonHelper extends AppHelper {
  * @return string 編集ボタンHTML
  */
 	public function getEditButton($vars, $event) {
-		$roomPermRole = $this->_View->viewVars['roomPermRoles'];
 		$roomId = $event['CalendarEvent']['room_id'];
 		// 共有のとき
 		if (empty($vars['spaceNameOfRooms'][$roomId])) {
@@ -176,8 +173,8 @@ class CalendarButtonHelper extends AppHelper {
 
 		} else {
 			// それ以外の時
-			$canEdit = $this->CalendarPermissiveRooms->isEditable($roomPermRole, $roomId);
-			$canCreate = $this->CalendarPermissiveRooms->isCreatable($roomPermRole, $roomId);
+			$canEdit = CalendarPermissiveRooms::isEditable($roomId);
+			$canCreate = CalendarPermissiveRooms::isCreatable($roomId);
 			// 表示ルームにおける自分の権限がeditable以上なら無条件に編集可能
 			// creatbleのとき=自分が作ったデータならOK
 			if (!$canCreate) {
@@ -192,12 +189,14 @@ class CalendarButtonHelper extends AppHelper {
 		$html = $this->Button->editLink('', array(
 			'controller' => 'calendar_plans',
 			'action' => 'edit',
-			'style' => 'detail',
-			'year' => $vars['year'],
-			'month' => $vars['month'],
-			'day' => $vars['day'],
-			'event' => $event['CalendarEvent']['id'],
+			'key' => $event['CalendarEvent']['key'],//FUJI
 			'frame_id' => Current::read('Frame.id'),
+			'block_id' => '',//FUJI
+			'?' => array(
+				'year' => $vars['year'],
+				'month' => $vars['month'],
+				'day' => $vars['day'],
+			)
 		));
 		return $html;
 	}

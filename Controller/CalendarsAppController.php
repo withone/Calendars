@@ -73,24 +73,24 @@ class CalendarsAppController extends AppController {
 		$userNowArray = CalendarTime::transFromYmdHisToArray($userNowYmdHis);
 		$vars['today'] = $userNowArray;
 		//print_r($vars['today']);
-		if (isset($this->request->params['named']['year'])) {
-			$vars['year'] = intval($this->request->params['named']['year']);
-		} else { //省略時は、現在の年を設置
-			$vars['year'] = intval($userNowArray['year']);
+		// デフォルト設定
+		// 現在年月日
+		$vars['year'] = intval($userNowArray['year']);
+		$vars['month'] = intval($userNowArray['month']);
+
+		if (isset($this->request->query['year'])) {
+			$vars['year'] = intval($this->request->query['year']);
+		}
+		if (isset($this->request->query['month'])) {
+			$vars['month'] = intval($this->request->query['month']);
 		}
 
-		if (isset($this->request->params['named']['month'])) {
-			$vars['month'] = intval($this->request->params['named']['month']);
-		} else { //省略時は、現在の月を設置
-			$vars['month'] = intval($userNowArray['month']);
-		}
-
-		if (isset($this->request->params['named']['day'])) {
-			$vars['day'] = intval($this->request->params['named']['day']);
+		if (isset($this->request->query['day'])) {
+			$vars['day'] = intval($this->request->query['day']);
 		} else { //省略時は、現在の日を設置
 			// 年月の指定がない場合は当日
-			if (isset($this->request->params['named']['year']) === false &&
-				isset($this->request->params['named']['month']) === false) {
+			if (isset($this->request->query['year']) === false &&
+				isset($this->request->query['month']) === false) {
 				$vars['day'] = intval($userNowArray['day']);
 			} else {
 				//月末日は月によって替わるので、すべての月でかならず存在する日(つまり一日）にする。
@@ -104,42 +104,6 @@ class CalendarsAppController extends AppController {
 		$date->setTime($userNowArray['hour'], $userNowArray['min'], $userNowArray['sec']);
 		$vars['dayOfTheWeek'] = $date->format('w');
 	}
-
-/**
- * setReturnVars
- *
- * 戻り先変数設定
- *
- * @param array &$vars カレンダー用共通変数
- * @return void
- */
-	/* 未使用のため削除
-	public function setReturnVars(&$vars) {
-		if (isset($this->request->params['named']['back_year'])) {
-			$vars['back_year'] = intval($this->request->params['named']['back_year']);
-		} else { //省略時は、$vars['year']と一致させておく。
-			$vars['back_year'] = $vars['year'];
-		}
-
-		//戻り月
-		if (isset($this->request->params['named']['back_month'])) {
-			$vars['back_month'] = intval($this->request->params['named']['back_month']);
-		} else { //省略時は、$vars['month']と一致させておく。
-			$vars['back_month'] = $vars['month'];
-		}
-
-		//戻りsytlと戻りsort
-		if (isset($this->request->params['named']) &&
-			isset($this->request->params['named']['return_style'])) {
-			$vars['return_style'] = $this->request->params['named']['return_style'];
-		}	//無いケースもある
-
-		if (isset($this->request->params['named']) &&
-			isset($this->request->params['named']['return_sort'])) {
-			$vars['return_sort'] = $this->request->params['named']['return_sort'];
-		}	//無いケースもある
-	}
-	*/
 
 /**
  * setCalendarCommonVars
@@ -293,16 +257,7 @@ class CalendarsAppController extends AppController {
 		if (strpos($currentPath, '?')) {
 			$currentPath = substr($currentPath, 0, strpos($currentPath, '?'));
 		}
-		$currentPathElm = explode('/', $currentPath);
-		// block_idは設定されているか
-		// 全くの初期状態のときだけBlockIDが入っていないPathが取り出されてしまうので対応
-		if (! isset($currentPathElm[4])) {
-			$currentPathElm[4] = Current::read('Block.id');
-		}
-		$currentPath = implode('/', $currentPathElm);
 		$currentPath .= '?' . http_build_query($this->request->query);
-		//	print_r('WRITE');print_r($currentPath);
-
 		// リダイレクトURLを記録
 		$this->Session->write(CakeSession::read('Config.userAgent') . 'calendars', $currentPath);
 		$vars['returnUrl'] = $currentPath;

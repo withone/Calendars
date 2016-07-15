@@ -34,7 +34,6 @@ class CalendarPermissionComponent extends Component {
  * @throws ForbiddenException
  */
 	public function startup(Controller $controller) {
-		$this->CalendarPermissiveRooms = new CalendarPermissiveRooms();
 		$this->controller = $controller;
 		// add -> どこか一つでもcreatableな空間を持っている人なら
 		// show -> 対象の空間に参加しているなら
@@ -70,7 +69,7 @@ class CalendarPermissionComponent extends Component {
  */
 	protected function _hasCreatableRoom() {
 		$roomPermRoles = $this->controller->roomPermRoles;
-		$rooms = $this->CalendarPermissiveRooms->getCreatableRoomIdList($roomPermRoles);
+		$rooms = CalendarPermissiveRooms::getCreatableRoomIdList();
 		if (empty($rooms)) {
 			return false;
 		}
@@ -124,10 +123,10 @@ class CalendarPermissionComponent extends Component {
 		}
 		$roomPermRoles = $this->controller->roomPermRoles;
 		$calendarEv = $this->controller->eventData['CalendarEvent'];
-		if ($this->CalendarPermissiveRooms->isEditable($roomPermRoles, $calendarEv['room_id'])) {
+		if (CalendarPermissiveRooms::isEditable($calendarEv['room_id'])) {
 			return true;
 		}
-		if ($this->CalendarPermissiveRooms->isCreatable($roomPermRoles, $calendarEv['room_id'])) {
+		if (CalendarPermissiveRooms::isCreatable($calendarEv['room_id'])) {
 			if ($calendarEv['created_user'] == Current::read('User.id')) {
 				return true;
 			}

@@ -45,13 +45,10 @@ class CalendarUrlHelper extends AppHelper {
  */
 	public function makePlanShowUrl($year, $month, $day, $plan) {
 		$url = NetCommonsUrl::actionUrl(array(
+			'plugin' => 'calendars',
 			'controller' => 'calendar_plans',
 			'action' => 'show',
-			'year' => $year,
-			'month' => $month,
-			'day' => $day,
-			'event' => $plan['CalendarEvent']['id'],
-			'block_id' => Current::read('Block.id'),
+			'key' => $plan['CalendarEvent']['key'],
 			'frame_id' => Current::read('Frame.id'),
 		));
 		return $url;
@@ -70,15 +67,15 @@ class CalendarUrlHelper extends AppHelper {
  */
 	public function makeEditUrl($year, $month, $day, &$vars) {
 		$options = array(
+			'plugin' => 'calendars',
 			'controller' => 'calendar_plans',
 			'action' => 'edit',
-			'style' => 'detail',
-			'year' => $year,
-			'month' => $month,
-			'day' => $day,
-			//これがないと、遷移先でブロックIDがない、とでる。↓
-			'block_id' => Current::read('Block.id'),
 			'frame_id' => Current::read('Frame.id'),
+			'?' => array(
+				'year' => $year,
+				'month' => $month,
+				'day' => $day,
+			)
 		);
 		$url = NetCommonsUrl::actionUrl($options);
 		return $url;
@@ -97,16 +94,16 @@ class CalendarUrlHelper extends AppHelper {
  */
 	public function makeEditUrlWithTime($year, $month, $day, $hour, &$vars) {
 		$options = array(
+			'plugin' => 'calendars',
 			'controller' => 'calendar_plans',
 			'action' => 'edit',
-			'style' => 'detail',
-			'year' => $year,
-			'month' => $month,
-			'day' => $day,
-			'hour' => $hour,
-			//これがないと、遷移先でブロックIDがない、とでる。↓
-			'block_id' => Current::read('Block.id'),
 			'frame_id' => Current::read('Frame.id'),
+			'?' => array(
+				'year' => $year,
+				'month' => $month,
+				'day' => $day,
+				'hour' => $hour,
+			)
 		);
 		$url = NetCommonsUrl::actionUrl($options);
 		return $url;
@@ -124,15 +121,18 @@ class CalendarUrlHelper extends AppHelper {
  */
 	public function getCalendarDailyUrl($year, $month, $day) {
 		$url = NetCommonsUrl::actionUrl(array(
+			'plugin' => 'calendars',
 			'controller' => 'calendars',
 			'action' => 'index',
-			'style' => 'daily',
-			'tab' => 'list',
-			'year' => $year,
-			'month' => $month,
-			'day' => $day,
-			'block_id' => Current::read('Block.id'),
+			'block_id' => '',
 			'frame_id' => Current::read('Frame.id'),
+			'?' => array(
+				'style' => 'daily',
+				'tab' => 'list',
+				'year' => $year,
+				'month' => $month,
+				'day' => $day,
+			)
 		));
 		return $url;
 	}
@@ -147,7 +147,7 @@ class CalendarUrlHelper extends AppHelper {
  */
 	public function getBackFirstButton($vars) {
 		// urlパラメタにstyleがなくて、表示画面がデフォルトの画面と一緒ならこのボタンは不要
-		$styleParam = Hash::get($this->request->params, 'named.style');
+		$styleParam = Hash::get($this->request->query, 'style');
 		$displayType = $vars['CalendarFrameSetting']['display_type'];
 
 		if ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY) {

@@ -159,16 +159,17 @@ class CalendarTurnCalendarHelper extends AppHelper {
 			$dateArr = $this->_getNowDate($type, $vars);
 		}
 		$urlArray = array(
+			'plugin' => 'calendars',
 			'controller' => 'calendars',
 			'action' => 'index',
-			'style' => $vars['style'],
-			'block_id' => Current::read('Block.id'),
+			'block_id' => '',
 			'frame_id' => Current::read('Frame.id'),
+			'?' => Hash::merge(array('style' => $vars['style']), $dateArr),
 		);
 		if (isset($vars['tab'])) {
-			$urlArray['tab'] = $vars['tab'];
+			$urlArray['?']['tab'] = $vars['tab'];
 		}
-		$url = NetCommonsUrl::actionUrl(Hash::merge($urlArray, $dateArr));
+		$url = NetCommonsUrl::actionUrl($urlArray);
 		return $url;
 	}
 /**
@@ -327,15 +328,12 @@ class CalendarTurnCalendarHelper extends AppHelper {
 			$ngChange = 'changeYearMonthDay';
 		}
 		//angularJSのdatetimepicker変化の時に使う雛形URL
-		$prototypeUrl = NetCommonsUrl::actionUrl(Hash::merge(
-			array(
-				'controller' => 'calendars',
-				'action' => 'index',
-				'style' => $vars['style'],
-				'block_id' => Current::read('Block.id'),
-				'frame_id' => Current::read('Frame.id')
-			),
-			$prototypeUrlOpt
+		$prototypeUrlOpt['style'] = $vars['style'];
+		$prototypeUrl = NetCommonsUrl::actionUrl(array(
+			'controller' => 'calendars',
+			'action' => 'index',
+			'frame_id' => Current::read('Frame.id'),
+			'?' => $prototypeUrlOpt
 		));
 
 		$dateTimePickerInput = $this->NetCommonsForm->input('CalendarEvent.target_year', array(

@@ -52,7 +52,7 @@ class CalendarPlanEditRepeatOptionHelper extends AppHelper {
 			return '';
 		}
 
-		$editRrule = Hash::get($this->request->params, 'named.editrrule');
+		$editRrule = Hash::get($this->request->query, 'editrrule');
 		if ($editRrule === null) {
 			$editRrule = Hash::get($this->request->data, 'CalendarActionPlan.edit_rrule');
 			if ($editRrule === null) {
@@ -67,19 +67,23 @@ class CalendarPlanEditRepeatOptionHelper extends AppHelper {
 		$html .= '</div><div class="media-body">';
 		//全選択用に、繰返し先頭eventのeditボタのリンクを生成しておく
 		$firstSibEditLink = '';
+		$key = Hash::get($this->_View->viewVars, 'event.CalendarEvent.key');
 		if (!empty($firstSibEventId)) {
 			$firstSibEditLink = $this->Button->editLink('', array(
 				'controller' => 'calendar_plans',
 				'action' => 'edit',
-				'style' => 'detail',
-				'year' => $firstSibYear,
-				'month' => $firstSibMonth,
-				'day' => $firstSibDay,
-				'event' => $firstSibEventId,
-				'editrrule' => 2,
+				'key' => $key,
+				'block_id' => '',
 				'frame_id' => Current::read('Frame.id'),
+				'?' => array(
+					'year' => $firstSibYear,
+					'month' => $firstSibMonth,
+					'day' => $firstSibDay,
+					'editrrule' => 2,
+				)
 			));
 			$firstSibEditLink = str_replace('&quot;', '"', $firstSibEditLink);
+			$firstSibEditLink = str_replace('&amp;', '&', $firstSibEditLink);
 			if (preg_match('/href="([^"]+)"/', $firstSibEditLink, $matches) === 1) {
 				$firstSibEditLink = $matches[1];
 			}

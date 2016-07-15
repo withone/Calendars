@@ -10,73 +10,56 @@
  */
 ?>
 <?php
-	$weeklyLink = NetCommonsUrl::actionUrl(array(
+	$baseLinkArr = array(
 		'controller' => 'calendars',
 		'action' => 'index',
-		'style' => 'weekly',
-		'year' => sprintf("%04d", $vars['year']),
-		'month' => sprintf("%02d", $vars['month']),
-		'day' => $vars['day'],
-		'block_id' => Current::read('Block.id'),
+		'block_id' => '',
 		'frame_id' => Current::read('Frame.id'),
+		'?' => array(
+			'year' => sprintf("%04d", $vars['year']),
+			'month' => sprintf("%02d", $vars['month']),
+			'day' => $vars['day'],
+		)
+	);
+	$weeklyLinkArr = Hash::merge($baseLinkArr, array(
+		'?' => array('style' => 'weekly')
 	));
 
-	$lmonthlyLink = NetCommonsUrl::actionUrl(array(
-		'controller' => 'calendars',
-		'action' => 'index',
-		'style' => 'largemonthly',
-		'year' => sprintf("%04d", $vars['year']),
-		'month' => sprintf("%02d", $vars['month']),
-		'day' => $vars['day'],
-		'block_id' => Current::read('Block.id'),
-		'frame_id' => Current::read('Frame.id'),
+	$lmonthlyLinkArr = Hash::merge($baseLinkArr, array(
+		'?' => array('style' => 'largemonthly')
 	));
 
-	$dailyLink = NetCommonsUrl::actionUrl(array(
-		'controller' => 'calendars',
-		'action' => 'index',
-		'style' => 'daily',
-		'tab' => 'list',
-		'year' => sprintf("%04d", $vars['year']),
-		'month' => sprintf("%02d", $vars['month']),
-		'day' => $vars['day'],
-		'block_id' => Current::read('Block.id'),
-		'frame_id' => Current::read('Frame.id'),
+	$dailyLinkArr = Hash::merge($baseLinkArr, array(
+		'?' => array('style' => 'daily', 'tab' => 'list')
 	));
 ?>
 
 <ul role='tablist' class='nav nav-tabs calendar-date-move-tablist'>
 <?php if ($active === 'lmonthly'): ?>
-		<li class='active'>
-			<a href='#' onclidk='return false;'>
+	<li class='active'>
+		<a href="#"><?php echo __d('calendars', 'month'); ?></a>
 <?php else: ?>
-		<li>
-			<a href="<?php echo $lmonthlyLink; ?>">
+	<li>
+		<?php echo $this->NetCommonsHtml->link(__d('calendars', 'month'), $lmonthlyLinkArr); ?>
 <?php endif; ?>
-				<?php echo __d('calendars', 'month'); ?>
-			</a>
-		</li>
+	</li>
 
 <?php if ($active === 'weekly'): ?>
-		<li class='active'>
-			<a href='#' onclidk='return false;'>
+	<li class='active'>
+		<a href="#"><?php echo __d('calendars', 'week'); ?></a>
 <?php else: ?>
-		<li>
-			<a href="<?php echo $weeklyLink; ?>">
+	<li>
+		<?php echo $this->NetCommonsHtml->link(__d('calendars', 'week'), $weeklyLinkArr); ?>
 <?php endif; ?>
-				<?php echo __d('calendars', 'week'); ?>
-			</a>
-		</li>
+	</li>
 
 <?php if ($active === 'daily'): ?> 
-		<li class='active'>
-			<a href='#' onclick='return false;'>
+	<li class='active'>
+		<a href="#"><?php echo __d('calendars', 'day'); ?></a>
 <?php else: ?>
-		<li>
-			<a href="<?php echo $dailyLink; ?>">
+	<li>
+		<?php echo $this->NetCommonsHtml->link(__d('calendars', 'day'), $dailyLinkArr); ?>
 <?php endif; ?>
-				<?php echo __d('calendars', 'day'); ?>
-			</a>
-		</li>
+	</li>
 </ul>
 <br>

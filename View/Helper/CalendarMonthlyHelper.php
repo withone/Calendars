@@ -419,14 +419,17 @@ class CalendarMonthlyHelper extends AppHelper {
 				$html .= '<tr>';
 			} else {	//largemonthly
 				$url = NetCommonsUrl::actionUrl(array(
+					'plugin' => 'calendars',
 					'controller' => 'calendars',
 					'action' => 'index',
-					'style' => 'weekly',
-					'year' => sprintf("%04d", $vars['mInfo']['year']),
-					'month' => sprintf("%02d", $vars['mInfo']['month']),
-					'week' => $week,
-					'block_id' => Current::read('Block.id'),
+					'block_id' => '',
 					'frame_id' => Current::read('Frame.id'),
+					'?' => array(
+						'style' => 'weekly',
+						'year' => sprintf("%04d", $vars['mInfo']['year']),
+						'month' => sprintf("%02d", $vars['mInfo']['month']),
+						'week' => $week,
+					)
 				));
 				//$html .= "<tr><th rowspan='2' class='calendar-col-week hidden-xs' data-url='" . $url . "'>";
 				$html .= "<tr><th class='calendar-col-week hidden-xs' data-url='" . $url . "'>";
@@ -571,7 +574,6 @@ class CalendarMonthlyHelper extends AppHelper {
 			$month = $vars['mInfo']['nextMonth'];
 		}
 		$url = $this->CalendarUrl->getCalendarDailyUrl($year, $month, $day);
-
 		//<!-- 1row --> 日付と予定追加glyph
 		$html .= "<div class='row'>";
 		$html .= "<div class='col-xs-3 col-sm-12'>";

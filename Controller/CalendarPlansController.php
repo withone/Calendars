@@ -14,6 +14,7 @@
 App::uses('CalendarsAppController', 'Calendars.Controller');
 App::uses('NetCommonsTime', 'NetCommons.Utility');
 App::uses('CalendarTime', 'Calendars.Utility');
+App::uses('CalendarPermissiveRooms', 'Calendars.Utility');
 
 /**
  * CalendarPlansController
@@ -129,13 +130,11 @@ class CalendarPlansController extends CalendarsAppController {
  */
 	public function beforeFilter() {
 		parent::beforeFilter();
-		/*
-		if (! Current::read('Block.id')) {
-			CakeLog::error(
-				__d('calendars', 'There is no block ID. Display a blank page.'));
-			$this->setAction('emptyRender');
-			return false;
-		}*/
+
+		// 以前はここでCurrentのブロックIDをチェックする処理があったが
+		// カレンダーはCurrentのブロックID（＝現在表示中ページのブロックID）は
+		// 表示データ上の意味がないのでチェックは行わない
+		// 表示ブロックIDがないときは、パブリックTOPページで仮表示されることに話が決まった
 
 		$this->Auth->allow('add', 'delete', 'edit', 'show');
 
@@ -143,7 +142,7 @@ class CalendarPlansController extends CalendarsAppController {
 
 		// カレンダー権限設定情報確保
 		$this->roomPermRoles = $this->CalendarEvent->prepareCalRoleAndPerm();
-		$this->set('roomPermRoles', $this->roomPermRoles);
+		CalendarPermissiveRooms::$roomPermRoles = $this->roomPermRoles;
 
 		// 表示のための各種共通パラメータ設定
 		$this->_vars = $this->getVarsForShow();
@@ -332,7 +331,7 @@ class CalendarPlansController extends CalendarsAppController {
 		// validate OK
 		$originEvent = array();
 		if (!empty($this->request->data['CalendarActionPlan']['origin_event_id'])) {
-			$originEvent = $this->__getEvent($this->request->data['CalendarActionPlan']['origin_event_id']);
+			$originEvent = $this->CalendarEvent->getEventById($this->request->data['CalendarActionPlan']['origin_event_id']);
 		}
 		//追加・変更、元データ繰返し有無、及び時間・繰返し系変更タイプの判断処理
 		list($procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod) =
@@ -348,11 +347,11 @@ class CalendarPlansController extends CalendarsAppController {
 			CakeLog::error("保存失敗");	//FIXME: エラー処理を記述のこと。
 		}
 		//保存成功
+		$event = $this->CalendarEvent->findById($eventId);
 		$url = NetCommonsUrl::actionUrl(array(
 			'controller' => 'calendar_plans',
 			'action' => 'show',
-			'event' => $eventId,
-			'block_id' => Current::read('Block.id'),
+			'key' => $event['CalendarEvent']['key'],
 			'frame_id' => Current::read('Frame.id'),
 		));
 		$this->redirect($url);
@@ -382,7 +381,7 @@ class CalendarPlansController extends CalendarsAppController {
 		} else {
 			//eventが空の場合、初期値でFILLした表示用配列を取得する。
 			list($year, $month, $day, $hour, $minute, $second, $enableTime) =
-				$this->CalendarWorks->getDateTimeParam($this->request->params);
+				$this->CalendarWorks->getDateTimeParam($this->request->query);
 			$capForView = (new CalendarSupport())->getInitialCalendarActionPlanForView(
 				$year, $month, $day, $hour, $minute, $second, $enableTime, $this->_exposeRoomOptions);
 
@@ -487,13 +486,14 @@ class CalendarPlansController extends CalendarsAppController {
 		$vars = array();
 		$this->setCalendarCommonVars($vars);
 
-		if (isset($this->request->params['named']['event'])) {
-			$vars['eventId'] = $this->request->params['named']['event'];
-			$this->eventData = $this->__getEvent($this->request->params['named']['event']);
+		$eventKey = Hash::get($this->request->params, 'pass.0');
+		if ($eventKey) {
+			$this->eventData = $this->CalendarEvent->getEventByKey($eventKey);
+			$vars['eventId'] = Hash::get($this->eventData, 'CalendarEvent.id');
 			$this->shareUsers = $this->CalendarEventShareUser->find('all', array(
 				'conditions' => array(
 					$this->CalendarEventShareUser->alias . '.calendar_event_id' =>
-						$this->eventData[$this->CalendarEvent->alias]['id'],
+						$vars['eventId'],
 				),
 				'recursive' => -1,
 				'order' => array($this->CalendarEventShareUser->alias . '.share_user'),
@@ -529,27 +529,4 @@ class CalendarPlansController extends CalendarsAppController {
 		return $mailSettingInfo;
 	}
 
-/**
- * __getEvent
- *
- * イベント情報の取得
- *
- * @param int $eventId $eventId
- * @return array 取得したイベント情報配列
- */
-	private function __getEvent($eventId) {
-		$options = array(
-			'conditions' => array(
-				$this->CalendarEvent->alias . '.id' => $eventId,
-			),
-			'recursive' => 1, //belongsTo, hasOne, hasManyまで取得
-		);
-		$event = $this->CalendarEvent->find('first', $options);
-		if (!$event) {
-			CakeLog::error(
-				__d('calendars', 'There is no event. To continue the event in the blank.'));
-			$event = array();
-		}
-		return $event;
-	}
 }

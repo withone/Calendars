@@ -35,6 +35,7 @@ echo $this->element('Calendars.scripts');
 				$firstSibYear = $firstSibMonth = $firstSibDay = $firstSibEventId = 0;
 				if (!empty($this->request->data['CalendarActionPlan']['first_sib_event_id'])) {
 					$firstSibEventId = $this->request->data['CalendarActionPlan']['first_sib_event_id'];
+					$firstSibEventKey = $this->request->data['CalendarActionPlan']['first_sib_event_id'];
 					$firstSibYear = $this->request->data['CalendarActionPlan']['first_sib_year'];
 					$firstSibMonth = $this->request->data['CalendarActionPlan']['first_sib_month'];
 					$firstSibDay = $this->request->data['CalendarActionPlan']['first_sib_day'];
