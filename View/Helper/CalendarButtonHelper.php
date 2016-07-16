@@ -189,9 +189,9 @@ class CalendarButtonHelper extends AppHelper {
 		$html = $this->Button->editLink('', array(
 			'controller' => 'calendar_plans',
 			'action' => 'edit',
-			'key' => $event['CalendarEvent']['key'],//FUJI
+			'key' => $event['CalendarEvent']['key'],
 			'frame_id' => Current::read('Frame.id'),
-			'block_id' => '',//FUJI
+			'block_id' => '',
 			'?' => array(
 				'year' => $vars['year'],
 				'month' => $vars['month'],

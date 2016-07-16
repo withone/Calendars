@@ -68,7 +68,6 @@ class CalendarPermissionComponent extends Component {
  * @return bool
  */
 	protected function _hasCreatableRoom() {
-		$roomPermRoles = $this->controller->roomPermRoles;
 		$rooms = CalendarPermissiveRooms::getCreatableRoomIdList();
 		if (empty($rooms)) {
 			return false;
@@ -121,7 +120,6 @@ class CalendarPermissionComponent extends Component {
 		if (! $this->_existEvent()) {
 			return false;
 		}
-		$roomPermRoles = $this->controller->roomPermRoles;
 		$calendarEv = $this->controller->eventData['CalendarEvent'];
 		if (CalendarPermissiveRooms::isEditable($calendarEv['room_id'])) {
 			return true;

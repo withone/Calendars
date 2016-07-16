@@ -17,6 +17,13 @@
  */
 class CalendarPermissiveRooms {
 
+/**
+ * $roomPermRoles
+ *
+ * 全空間におけるカレンダー権限情報
+ *
+ * @var array
+ */
 	public static $roomPermRoles = array();
 
 /**

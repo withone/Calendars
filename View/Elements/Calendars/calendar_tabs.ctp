@@ -36,30 +36,30 @@
 
 <ul role='tablist' class='nav nav-tabs calendar-date-move-tablist'>
 <?php if ($active === 'lmonthly'): ?>
-	<li class='active'>
+		<li class='active'>
 		<a href="#"><?php echo __d('calendars', 'month'); ?></a>
 <?php else: ?>
-	<li>
+		<li>
 		<?php echo $this->NetCommonsHtml->link(__d('calendars', 'month'), $lmonthlyLinkArr); ?>
 <?php endif; ?>
-	</li>
+		</li>
 
 <?php if ($active === 'weekly'): ?>
-	<li class='active'>
+		<li class='active'>
 		<a href="#"><?php echo __d('calendars', 'week'); ?></a>
 <?php else: ?>
-	<li>
+		<li>
 		<?php echo $this->NetCommonsHtml->link(__d('calendars', 'week'), $weeklyLinkArr); ?>
 <?php endif; ?>
-	</li>
+		</li>
 
 <?php if ($active === 'daily'): ?> 
-	<li class='active'>
+		<li class='active'>
 		<a href="#"><?php echo __d('calendars', 'day'); ?></a>
 <?php else: ?>
-	<li>
+		<li>
 		<?php echo $this->NetCommonsHtml->link(__d('calendars', 'day'), $dailyLinkArr); ?>
 <?php endif; ?>
-	</li>
+		</li>
 </ul>
 <br>

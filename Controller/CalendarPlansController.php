@@ -331,7 +331,8 @@ class CalendarPlansController extends CalendarsAppController {
 		// validate OK
 		$originEvent = array();
 		if (!empty($this->request->data['CalendarActionPlan']['origin_event_id'])) {
-			$originEvent = $this->CalendarEvent->getEventById($this->request->data['CalendarActionPlan']['origin_event_id']);
+			$originEvent = $this->CalendarEvent->getEventById(
+				$this->request->data['CalendarActionPlan']['origin_event_id']);
 		}
 		//追加・変更、元データ繰返し有無、及び時間・繰返し系変更タイプの判断処理
 		list($procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod) =

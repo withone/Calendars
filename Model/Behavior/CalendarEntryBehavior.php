@@ -108,14 +108,14 @@ class CalendarEntryBehavior extends CalendarAppBehavior {
 		$vars = get_object_vars($model);
 		$mdl = $vars[$model->alias];
 		$linkPluginKey = $mdl->data[$model->alias]['key'];
-/* FUJI 意味のない処理？後でカットする
+		/* FUJI 意味のない処理？後でカットする
 		$frameAndBlockInfo = array(
 			'Frame.id' => Current::read('Frame.id'),
 			'Block.id' => Current::read('Block.id'),
 		);
 		$linkPluginOhterInfos = serialize($frameAndBlockInfo);
 		$this->log('DBG: linkPluginOhterInfos[' . $linkPluginOhterInfos . ']', LOG_DEBUG);
-*/
+		*/
 		$this->loadEventAndRruleModels($model);
 		$params = array(
 			'conditions' => array(

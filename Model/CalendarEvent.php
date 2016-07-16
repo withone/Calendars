@@ -348,7 +348,7 @@ class CalendarEvent extends CalendarsAppModel {
  *
  * 見てもよいイベント情報なのか判断する
  *
- * @param $event
+ * @param array $event calendar event data
  * @return bool
  */
 	protected function _isGetableEvent($event) {
