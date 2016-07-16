@@ -138,7 +138,7 @@ class CalendarEventContent extends CalendarsAppModel {
 				//modelとcontent_key一致データなし。なので、insert
 				$data = $this->create();
 				$data[$this->alias]['model'] = $rEventData[$this->alias]['model'];
-				$data[$this->alias]['.content_key'] = $rEventData[$this->alias]['content_key'];
+				$data[$this->alias]['content_key'] = $rEventData[$this->alias]['content_key'];
 				//これだけは親モデル
 				$data[$this->alias]['calendar_event_id'] = $rEventData['CalendarEvent']['id'];
 			} else {

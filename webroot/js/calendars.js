@@ -881,12 +881,13 @@ NetCommonsApp.controller('CalendarsDetailEdit',
        };
 
        $scope.showRepeatConfirmEx = function(frameId,
-       action, $event, firstSibEventId, originEventId, isRecurrence) {
+       action, $event, eventKey, firstSibEventId, originEventId, isRecurrence) {
          console.log('frameId[' + frameId + '] action[' + action +
          '] $event firstSibEventId[' + firstSibEventId + '] originEventId[' +
          originEventId + '] isRecurrence[' + isRecurrence + ']');
 
          var url = $scope.baseUrl + '/calendars/calendar_plans/delete';
+         url = url + '/' + eventKey;
          if (action != '') {
            url = url + '/action:' + action;
          }

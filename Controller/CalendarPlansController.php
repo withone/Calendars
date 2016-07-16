@@ -269,6 +269,7 @@ class CalendarPlansController extends CalendarsAppController {
 		$isRecurrence = $this->request->data['CalendarDeleteActionPlan']['is_recurrence'];
 
 		$this->set(compact('isRepeat', 'firstSibEventId', 'originEventId', 'isRecurrence'));
+		$this->set('event', $this->eventData);
 
 		//renderを発行しないので、デフォルトのdelete.ctpがレンダリングされる。
 	}

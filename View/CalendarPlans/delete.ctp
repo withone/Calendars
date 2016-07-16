@@ -41,6 +41,8 @@ echo $this->element('Calendars.scripts');
 					'url' => $this->NetCommonsHtml->url(
 						array(
 							'action' => 'delete',
+							'block_id' => '',
+							'key' => $event['CalendarEvent']['key'],
 							'frame_id' => Current::read('Frame.id'),
 						)
 					),

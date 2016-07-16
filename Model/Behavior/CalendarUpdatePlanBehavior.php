@@ -363,8 +363,8 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		}
 		$eventData['CalendarEvent']['is_latest'] = 1;
 
-		$model->CalendarEvent->set($eventData);
 		$eventId = $eventData['CalendarEvent']['id'];	//update対象のststartendIdを退避
+		$model->CalendarEvent->set($eventData);
 
 		if (!$model->CalendarEvent->validates()) {		//eventDataをチェック
 			$model->validationErrors = Hash::merge(
