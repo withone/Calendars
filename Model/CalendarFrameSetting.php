@@ -47,7 +47,7 @@ class CalendarFrameSetting extends CalendarsAppModel {
 								// belongToで自動追加され、取得データにくっついてくる。
 								// なお、created_user, modified_userがなくても無害なビヘイビアである。
 
-		'Workflow.Workflow',	// TBLに 承認項目セット
+		//'Workflow.Workflow',	// TBLに 承認項目セット
 								// (status + is_active + is_latest + language_id + (origin_id|key) )があれば、
 								// 承認TBLとみなされる。
 								// 承認TBLのINSERTの時だけ働く。UPDATEの時は働かない。
@@ -58,7 +58,7 @@ class CalendarFrameSetting extends CalendarsAppModel {
 								//
 								// なお、承認項目セットがなくても無害なビヘイビアである。
 
-		'Workflow.WorkflowComment', // $model->data['WorkflowComment'] があれば働くし、
+		//'Workflow.WorkflowComment', // $model->data['WorkflowComment'] があれば働くし、
 								// なくても無害なビヘイビア。
 								// $model->data['WorkflowComment'] があれば、このTBLにstatusがあること
 								//（なければ、status=NULLで突っ込みます）

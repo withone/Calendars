@@ -26,6 +26,8 @@ class CalendarPermissiveRooms {
  */
 	public static $roomPermRoles = array();
 
+	public static $backupPermissions = array();
+
 /**
  * getPublishableRoomIdList
  *
@@ -87,6 +89,18 @@ class CalendarPermissiveRooms {
 	}
 
 /**
+ * isPublishable
+ *
+ * 指定されたルームは閲覧者にとって公開権限のあるところか
+ *
+ * @param int $roomId ルームID
+ * @return bool
+ */
+	public static function isPublishable($roomId) {
+		$rooms = self::getPublishableRoomIdList();
+		return isset($rooms[$roomId]);
+	}
+/**
  * isEditable
  *
  * 指定されたルームは閲覧者にとって編集権限のあるところか
@@ -109,5 +123,38 @@ class CalendarPermissiveRooms {
 	public static function isCreatable($roomId) {
 		$rooms = self::getCreatableRoomIdList();
 		return isset($rooms[$roomId]);
+	}
+
+/**
+ * setCurrentPermission
+ *
+ * カレントパーミッションすり変え
+ * ワークフロービヘイビアとかを一瞬だますためにカレントのパミッションを
+ * 指定されているルームのものにすり替え
+ *
+ * @param int $roomId ルームID
+ * @return void
+ */
+	public static function setCurrentPermission($roomId) {
+		self::$backupPermissions = Current::$current['Permission'];
+		Current::$current['Permission']['content_publishable']['value'] =
+			self::$roomPermRoles['roomInfos'][$roomId]['content_publishable_value'];
+		Current::$current['Permission']['content_editable']['value'] =
+			self::$roomPermRoles['roomInfos'][$roomId]['content_editable_value'];
+		Current::$current['Permission']['content_creatable']['value'] =
+			self::$roomPermRoles['roomInfos'][$roomId]['content_creatable_value'];
+	}
+/**
+ * recoverCurrentPermission
+ *
+ * カレントパーミッション元に戻す
+ * ワークフロービヘイビアとかを一瞬だますために設定したカレントのパミッションを
+ * 元に戻す
+ *
+ * @return void
+ */
+	public static function recoverCurrentPermission() {
+		Current::$current['Permission'] = self::$backupPermissions;
+		self::$backupPermissions = array();
 	}
 }

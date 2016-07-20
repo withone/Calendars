@@ -29,8 +29,8 @@ class Calendar extends CalendarsAppModel {
  */
 	public $actsAs = array(
 		'NetCommons.OriginalKey',
-		'Workflow.WorkflowComment',
-		'Workflow.Workflow',
+		//'Workflow.WorkflowComment',
+		//'Workflow.Workflow',
 	);
 
 /**

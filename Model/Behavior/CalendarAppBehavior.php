@@ -15,6 +15,7 @@ App::uses('CalendarTime', 'Calendars.Utility');
 App::uses('CalendarSupport', 'Calendars.Utility');
 App::uses('CalendarRruleUtil', 'Calendars.Utility');
 App::uses('WorkflowComponent', 'Workflow.Controller/Component');
+App::uses('CalendarPermissiveRooms', 'Calendars.Utility');
 
 /**
  * CalendarAppBehavior
@@ -62,6 +63,32 @@ class CalendarAppBehavior extends ModelBehavior {
 		self::CALENDAR_PLAN_EDIT_AFTER,
 		self::CALENDAR_PLAN_EDIT_ALL
 	);
+/**
+ * beforeValidate is called before a model is validated, you can use this callback to
+ * add behavior validation rules into a models validate array. Returning false
+ * will allow you to make the validation fail.
+ *
+ * @param Model $model Model using this behavior
+ * @param array $options Options passed from Model::save().
+ * @return mixed False or null will abort the operation. Any other result will continue.
+ * @see Model::save()
+ */
+	public function beforeValidate(Model $model, $options = array()) {
+		if ($model->alias == 'CalendarEvent') {
+			CalendarPermissiveRooms::setCurrentPermission($model->data['CalendarEvent']['room_id']);
+		}
+	}
+/**
+ * Called after data has been checked for errors
+ *
+ * @param Model $model Model using this behavior
+ * @return void
+ */
+	public function afterValidate(Model $model) {
+		if ($model->alias == 'CalendarEvent') {
+			CalendarPermissiveRooms::recoverCurrentPermission();
+		}
+	}
 
 /**
  * 繰返し専用event登録処理(*event初回登録に使ってはいけません）
@@ -411,7 +438,16 @@ class CalendarAppBehavior extends ModelBehavior {
 		$eventData['CalendarEvent']['end_time'] = $params['end_time'];
 		$eventData['CalendarEvent']['dtend'] = $params['dtend'];
 		$eventData['CalendarEvent']['timezone_offset'] = $params['timezone_offset'];
-		$eventData['CalendarEvent']['status'] = $params['status'];
+		$status = $params['status'];
+		if ($params['status'] == WorkflowComponent::STATUS_PUBLISHED ||
+			$params['status'] == WorkflowComponent::STATUS_APPROVED) {
+			if (CalendarPermissiveRooms::isPublishable($params['room_id'])) {
+				$status = WorkflowComponent::STATUS_PUBLISHED;
+			} else {
+				$status = WorkflowComponent::STATUS_APPROVED;
+			}
+		}
+		$eventData['CalendarEvent']['status'] = $status;
 
 		$eventData['CalendarEvent']['location'] = $params['location'];
 		$eventData['CalendarEvent']['contact'] = $params['contact'];

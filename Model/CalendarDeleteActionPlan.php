@@ -41,8 +41,8 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 	public $actsAs = array(
 		'NetCommons.OriginalKey',
 		'NetCommons.Trackable',
-		'Workflow.Workflow',
-		'Workflow.WorkflowComment',
+		//'Workflow.Workflow',
+		//'Workflow.WorkflowComment',
 		'Calendars.CalendarValidate',
 		'Calendars.CalendarApp',	//baseビヘイビア
 		'Calendars.CalendarInsertPlan', //Insert用

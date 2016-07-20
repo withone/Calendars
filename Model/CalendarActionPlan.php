@@ -41,8 +41,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 	public $actsAs = array(
 		'NetCommons.OriginalKey',
 		'NetCommons.Trackable',
-		'Workflow.Workflow',
-		'Workflow.WorkflowComment',
+		//FUJI'Workflow.Workflow',
+		//FUJI'Workflow.WorkflowComment',
 		'Calendars.CalendarValidate',
 		'Calendars.CalendarApp',	//baseビヘイビア
 		'Calendars.CalendarInsertPlan', //Insert用

@@ -31,8 +31,6 @@ class CalendarEvent extends CalendarsAppModel {
 	public $actsAs = array(
 		'NetCommons.OriginalKey',
 		'NetCommons.Trackable',
-		'Workflow.Workflow',
-		'Workflow.WorkflowComment',
 		'Calendars.CalendarValidate',
 		'Calendars.CalendarApp',	//baseビヘイビア
 		'Calendars.CalendarInsertPlan',	//Insert用
@@ -40,6 +38,8 @@ class CalendarEvent extends CalendarsAppModel {
 		'Calendars.CalendarDeletePlan',	//Delete用
 		'Calendars.CalendarSearchPlan',	//Search用
 		'Calendars.CalendarRoleAndPerm', //カレンダー役割・権限
+		'Workflow.Workflow',
+		'Workflow.WorkflowComment',
 	);
 
 /**
@@ -251,7 +251,6 @@ class CalendarEvent extends CalendarsAppModel {
 		$this->_doMergeWorkflowParamValidate(); //Workflowパラメータ関連validation
 		return parent::beforeValidate($options);
 	}
-
 /**
  * 自分もふくめた兄弟一覧を取得
  *
@@ -362,12 +361,12 @@ class CalendarEvent extends CalendarsAppModel {
 			// is_latestのものを返す
 			if ($event['CalendarEvent']['is_latest']) {
 				return true;
-			} else {
-				// 上記以外
-				// is_activeのものを返す
-				if ($event['CalendarEvent']['is_active']) {
-					return true;
-				}
+			}
+		} else {
+			// 上記以外
+			// is_activeのものを返す
+			if ($event['CalendarEvent']['is_active']) {
+				return true;
 			}
 		}
 		return false;

@@ -30,8 +30,8 @@ class CalendarSettingManage extends CalendarsAppModel {
 	public $actsAs = array(
 		'NetCommons.OriginalKey',
 		'NetCommons.Trackable',
-		'Workflow.WorkflowComment',
-		'Workflow.Workflow',
+		//'Workflow.WorkflowComment',
+		//'Workflow.Workflow',
 		'Calendars.CalendarValidate',
 		'Calendars.CalendarApp',	//baseビヘイビア
 		'Calendars.CalendarInsertPlan', //Insert用
