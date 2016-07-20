@@ -136,6 +136,9 @@ class CalendarPermissiveRooms {
  * @return void
  */
 	public static function setCurrentPermission($roomId) {
+		if (! empty(self::$backupPermissions)) {
+			return;
+		}
 		self::$backupPermissions = Current::$current['Permission'];
 		Current::$current['Permission']['content_publishable']['value'] =
 			self::$roomPermRoles['roomInfos'][$roomId]['content_publishable_value'];

@@ -202,9 +202,9 @@ class CalendarAppBehavior extends ModelBehavior {
 
 		//workflowcommentなどの追加拡張データはここで追加する。
 		//
-		if (isset($planParams[CalendarsComponent::ADDITIONAL]) &&
-			count($planParams[CalendarsComponent::ADDITIONAL]) > 0) {
-			foreach ($planParams[CalendarsComponent::ADDITIONAL] as $modelName => $vals) {
+		$addInfo = Hash::get($planParams, CalendarsComponent::ADDITIONAL);
+		if (! empty($addInfo)) {
+			foreach ($addInfo as $modelName => $vals) {
 				$rEventData[$modelName] = $vals;
 			}
 		}
@@ -439,12 +439,11 @@ class CalendarAppBehavior extends ModelBehavior {
 		$eventData['CalendarEvent']['dtend'] = $params['dtend'];
 		$eventData['CalendarEvent']['timezone_offset'] = $params['timezone_offset'];
 		$status = $params['status'];
-		if ($params['status'] == WorkflowComponent::STATUS_PUBLISHED ||
-			$params['status'] == WorkflowComponent::STATUS_APPROVED) {
+		$checkStatus = array(WorkflowComponent::STATUS_PUBLISHED, WorkflowComponent::STATUS_APPROVED);
+		if (in_array($params['status'], $checkStatus)) {
+			$status = WorkflowComponent::STATUS_APPROVED;
 			if (CalendarPermissiveRooms::isPublishable($params['room_id'])) {
 				$status = WorkflowComponent::STATUS_PUBLISHED;
-			} else {
-				$status = WorkflowComponent::STATUS_APPROVED;
 			}
 		}
 		$eventData['CalendarEvent']['status'] = $status;
@@ -462,9 +461,9 @@ class CalendarAppBehavior extends ModelBehavior {
 
 		//workflowcommentなどの追加拡張データはここで追加する。
 		//
-		if (isset($planParams[CalendarsComponent::ADDITIONAL]) &&
-			count($planParams[CalendarsComponent::ADDITIONAL]) > 0) {
-			foreach ($planParams[CalendarsComponent::ADDITIONAL] as $modelName => $vals) {
+		$addInfo = Hash::get($planParams, CalendarsComponent::ADDITIONAL);
+		if (! empty($addInfo)) {
+			foreach ($addInfo as $modelName => $vals) {
 				$eventData[$modelName] = $vals;
 			}
 		}
