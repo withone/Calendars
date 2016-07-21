@@ -63,6 +63,7 @@ class CalendarAppBehavior extends ModelBehavior {
 		self::CALENDAR_PLAN_EDIT_AFTER,
 		self::CALENDAR_PLAN_EDIT_ALL
 	);
+
 /**
  * beforeValidate is called before a model is validated, you can use this callback to
  * add behavior validation rules into a models validate array. Returning false

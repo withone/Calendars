@@ -137,7 +137,8 @@ class CalendarPlanHelper extends AppHelper {
 		}
 
 		//キャンセル、一時保存、決定ボタンのoption生成
-		list($cancelOptions, $saveTempOptions, $saveOptions) = $this->_generateBtnOptions($status, $event);
+		list($cancelOptions, $saveTempOptions, $saveOptions) =
+			$this->_generateBtnOptions($status, $event);
 
 		return $this->Button->cancelAndSaveAndSaveTemp($cancelUrl, $cancelOptions,
 			$saveTempOptions, $saveOptions);
