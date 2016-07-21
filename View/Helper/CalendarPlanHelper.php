@@ -8,6 +8,8 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 App::uses('AppHelper', 'View/Helper');
+App::uses('CalendarPermissiveRooms', 'Calendars.Utility');
+
 /**
  * Calendar plan Helper
  *
@@ -113,9 +115,10 @@ class CalendarPlanHelper extends AppHelper {
  *
  * @param string $statusFieldName 承認ステータス項目名
  * @param array $vars カレンダー情報
+ * @param array $event カレンダー予定
  * @return string HTML
  */
-	public function makeEditButtonHtml($statusFieldName, $vars) {
+	public function makeEditButtonHtml($statusFieldName, $vars, $event) {
 		//save,tempsaveのoptionsでpath指定するため、Workflowヘルパーのbuttons()を参考に実装した。
 		$status = Hash::get($this->_View->data, $statusFieldName);
 		$options = array(
@@ -134,7 +137,7 @@ class CalendarPlanHelper extends AppHelper {
 		}
 
 		//キャンセル、一時保存、決定ボタンのoption生成
-		list($cancelOptions, $saveTempOptions, $saveOptions) = $this->_generateBtnOptions($status);
+		list($cancelOptions, $saveTempOptions, $saveOptions) = $this->_generateBtnOptions($status, $event);
 
 		return $this->Button->cancelAndSaveAndSaveTemp($cancelUrl, $cancelOptions,
 			$saveTempOptions, $saveOptions);
@@ -146,41 +149,47 @@ class CalendarPlanHelper extends AppHelper {
  * ボタンのオプション生成
  *
  * @param int $status 承認ステータス
+ * @param array $event カレンダー予定
  * @return array ３ボタンのオプション
  */
-	protected function _generateBtnOptions($status) {
+	protected function _generateBtnOptions($status, $event) {
 		$cancelOptions = array(
 			'ng-click' => 'sending=true',
 			'ng-class' => '{disabled: sending}',
 		);
 
-		$saveTempOptions = array(
-			'label' => __d('net_commons', 'Save temporally'),
-			'class' => 'btn btn-info btn-workflow',
-			'name' => 'save_' . WorkflowComponent::STATUS_IN_DRAFT,
-			'ng-class' => '{disabled: sending}'
-		);
-		if (Current::permission('content_publishable') &&
-			($status === WorkflowComponent::STATUS_APPROVED)) {
-			$saveTempOptions = array(
-				'name' => 'save_' . WorkflowComponent::STATUS_DISAPPROVED,
-				'label' => __d('net_commons', 'Disapproval'),
-				'class' => 'btn btn-warning btn-workflow',
-				'ng-class' => '{disabled: sending}'
-			);
-		}
-
+		// カレンダーは登録先がどこになるかわからないので
+		// とりあえずボタンは全て「公開」のボタンにする
+		// それを「公開」扱いにするか「承認依頼」扱いにするかは
+		// POSTされたプログラムのほうでやる
 		$saveOptions = array(
 			'label' => __d('net_commons', 'OK'),
-			'class' => 'btn btn-primary btn-workflow',
-			'name' => 'save_' . WorkflowComponent::STATUS_APPROVED,
+			'class' => 'btn btn-primary' . $this->Button->getButtonSize() . ' btn-workflow',
+			'name' => 'save_' . WorkflowComponent::STATUS_PUBLISHED,
 			'ng-class' => '{disabled: sending}'
 		);
-		if (Current::permission('content_publishable')) {
-			$saveOptions = array(
-				'label' => __d('net_commons', 'OK'),
-				'class' => 'btn btn-primary btn-workflow',
-				'name' => 'save_' . WorkflowComponent::STATUS_PUBLISHED,
+		// 現在の予定のルームで公開権限があって、かつステータスが承認依頼なら、一時保存じゃなくて
+		// 差し戻しボタンになるかんじ
+		// 現在登録されている予定のルームの権限を調べる
+		$isPublishable = false;
+		$status = null;
+		$roomId = Hash::get($event, 'CalendarEvent.room_id');
+		$status = Hash::get($event, 'CalendarEvent.status');
+		if (! empty($roomId)) {
+			$isPublishable = CalendarPermissiveRooms::isPublishable($roomId);
+		}
+		if ($isPublishable && $status === WorkflowComponent::STATUS_APPROVED) {
+			$saveTempOptions = array(
+				'label' => __d('net_commons', 'Disapproval'),
+				'class' => 'btn btn-warning' . $this->Button->getButtonSize() . ' btn-workflow',
+				'name' => 'save_' . WorkflowComponent::STATUS_DISAPPROVED,
+				'ng-class' => '{disabled: sending}'
+			);
+		} else {
+			$saveTempOptions = array(
+				'label' => __d('net_commons', 'Save temporally'),
+				'class' => 'btn btn-info' . $this->Button->getButtonSize() . ' btn-workflow',
+				'name' => 'save_' . WorkflowComponent::STATUS_IN_DRAFT,
 				'ng-class' => '{disabled: sending}'
 			);
 		}

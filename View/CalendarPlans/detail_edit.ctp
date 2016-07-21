@@ -182,7 +182,7 @@ echo $this->element('Calendars.scripts');
 		</div><!-- panel-bodyを閉じる -->
 
 		<div class="panel-footer text-center">
-			<?php echo $this->CalendarPlan->makeEditButtonHtml('CalendarActionPlan.status', $vars); ?>
+			<?php echo $this->CalendarPlan->makeEditButtonHtml('CalendarActionPlan.status', $vars, $event); ?>
 		</div><!--panel-footerの閉じるタグ-->
 	<?php echo $this->NetCommonsForm->end(); ?>
 
