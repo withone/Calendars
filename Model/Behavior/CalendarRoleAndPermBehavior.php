@@ -135,7 +135,8 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 		//予備情報）
 		//バブリックルームを表すroom_idはRoom::PUBLIC_PARENT_IDです。
 		//全会員を表すroom_idはRoom::ROOM_PARENT_IDです。
-		if (!empty(Current::read('User.id'))) {
+		$userId = Current::read('User.id');
+		if (!empty($userId)) {
 			//ログインしている時だけ、全会員roomIdを強制的に追加する。
 			$roleOfRooms[Room::ROOM_PARENT_ID] = $this->__getAllMemberRoleKey();
 		}
