@@ -86,7 +86,7 @@ class CalendarEventFixture extends CakeTestFixture {
 			'is_active' => 1,
 			'is_latest' => 1,
 			'recurrence_event_id' => 0,
-			'exception_event_id' => 1,
+			'exception_event_id' => 0,
 			'is_enable_mail' => 0,
 			'email_send_timing' => 0,
 			'created_user' => 1,
