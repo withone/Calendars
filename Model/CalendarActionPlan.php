@@ -42,7 +42,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		'NetCommons.OriginalKey',
 		'NetCommons.Trackable',
 		//FUJI'Workflow.Workflow',
-		//FUJI'Workflow.WorkflowComment',
+		'Workflow.WorkflowComment',
 		'Calendars.CalendarValidate',
 		'Calendars.CalendarApp',	//baseビヘイビア
 		'Calendars.CalendarInsertPlan', //Insert用
@@ -496,6 +496,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 			//statusの値は $data['data_N']のNではいってくるので、省略
 		));
 		$this->_doMergeRruleValidate($isDetailEdit);	//繰返し関連validation
+
 		return parent::beforeValidate($options);
 	}
 
@@ -529,7 +530,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 			//CakeLog::debug("DBG: request_data[" . print_r($data, true) . "]");
 
 			//$data['save_N']のN(=status)を抜き出す。
-			$status = $this->_getStatus($data);
+			$status = $this->getStatus($data);
 			if ($status === false) {
 				CakeLog::error("save_Nより、statusが決定できませんでした。data[" .
 					serialize($data) . "]");
@@ -585,7 +586,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 			}
 			$planParam['calendar_id'] = $calendar[$model->alias]['id'];
 
-			$planParam['status'] = $this->_getStatus($data);
+			$planParam['status'] = $this->getStatus($data);
 			$planParam['language_id'] = Current::read('Language.id');
 			$planParam['room_id'] = $data[$this->alias]['plan_room_id'];
 			$planParam['timezone_offset'] = $this->_getTimeZoneOffsetNum(
@@ -626,7 +627,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 	}
 
 /**
- * _getStatus
+ * getStatus
  *
  * WorkflowStatus値の取り出し
  *
@@ -634,11 +635,21 @@ class CalendarActionPlan extends CalendarsAppModel {
  * @return string 成功時 $status, 失敗時 例外をthrowする。
  * @throws InternalErrorException
  */
-	protected function _getStatus($data) {
+	public function getStatus($data) {
 		$keys = array_keys($data);
 		foreach ($keys as $key) {
 			if (preg_match('/^save_(\d+)$/', $key, $matches) === 1) {
-				return $matches[1];
+				//return $matches[1];
+				$status = $matches[1];
+				$roomId = $data['CalendarActionPlan']['plan_room_id'];
+				$checkStatus = array(WorkflowComponent::STATUS_PUBLISHED, WorkflowComponent::STATUS_APPROVED);
+				if (in_array($status, $checkStatus)) {
+					$status = WorkflowComponent::STATUS_APPROVED;
+					if (CalendarPermissiveRooms::isPublishable($roomId)) {
+						$status = WorkflowComponent::STATUS_PUBLISHED;
+					}
+				}
+				return $status;
 			}
 		}
 		//マッチするものが無い場合例外throw

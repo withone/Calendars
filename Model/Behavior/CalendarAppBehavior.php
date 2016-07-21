@@ -439,15 +439,7 @@ class CalendarAppBehavior extends ModelBehavior {
 		$eventData['CalendarEvent']['end_time'] = $params['end_time'];
 		$eventData['CalendarEvent']['dtend'] = $params['dtend'];
 		$eventData['CalendarEvent']['timezone_offset'] = $params['timezone_offset'];
-		$status = $params['status'];
-		$checkStatus = array(WorkflowComponent::STATUS_PUBLISHED, WorkflowComponent::STATUS_APPROVED);
-		if (in_array($params['status'], $checkStatus)) {
-			$status = WorkflowComponent::STATUS_APPROVED;
-			if (CalendarPermissiveRooms::isPublishable($params['room_id'])) {
-				$status = WorkflowComponent::STATUS_PUBLISHED;
-			}
-		}
-		$eventData['CalendarEvent']['status'] = $status;
+		$eventData['CalendarEvent']['status'] = $params['status'];
 
 		$eventData['CalendarEvent']['location'] = $params['location'];
 		$eventData['CalendarEvent']['contact'] = $params['contact'];

@@ -26,6 +26,14 @@ class CalendarPermissiveRooms {
  */
 	public static $roomPermRoles = array();
 
+/**
+ * $backupPermissions
+ *
+ * 共通処理ワークフロー系のものを通すためのカレントパーミッション
+ * 一時すり替え時使用のバックアップ情報
+ *
+ * @var array
+ */
 	public static $backupPermissions = array();
 
 /**

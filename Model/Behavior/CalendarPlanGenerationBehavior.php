@@ -207,18 +207,27 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 		if (!isset($model->CalendarEvent)) {
 			$model->loadModels(['CalendarEvent' => 'Calendars.CalendarEvent']);
 		}
+		// 各種Behaviorはずす FUJI
+		$model->CalendarEvent->Behaviors->unload('Workflow.Workflow');
+		$model->CalendarEvent->Behaviors->unload('Workflow.WorkflowComment');
+
 		$model->CalendarEvent->set($eventData);
 		if (!$model->CalendarEvent->validates()) {	//CalendarEventのチェック
 			$model->validationErrors = Hash::merge(
 				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
+		// 各種Behavior終わったら戻す FUJI
+		$model->CalendarEvent->Behaviors->load('Workflow.Workflow');
+
 		$eventData = $model->CalendarEvent->save($eventData, false);	//子もsave()で返ってくる。
 		if (!$eventData) { //保存のみ
 			CakeLog::error("変更時に指定された元イベント(calendar_event_id=[" .
 				$originEventId . "])のCOPYに失敗");
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
+		// 各種Behavior終わったら戻す FUJI
+		$model->CalendarEvent->Behaviors->load('Workflow.WorkflowComment');
 
 		$newEventId = $newEventKey = null;
 		if ($setNewIdAndKey) {

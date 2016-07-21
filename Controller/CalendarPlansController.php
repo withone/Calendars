@@ -314,6 +314,8 @@ class CalendarPlansController extends CalendarsAppController {
  */
 	protected function _calendarPost() {
 		//登録処理
+		$status = $this->CalendarActionPlan->getStatus($this->request->data);
+		$this->request->data['CalendarActionPlan']['status'] = $status;
 		$this->CalendarActionPlan->set($this->request->data);
 
 		//校正用配列の準備
