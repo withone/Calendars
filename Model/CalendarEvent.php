@@ -303,6 +303,7 @@ class CalendarEvent extends CalendarsAppModel {
 			CakeLog::error(
 				__d('calendars', 'There is no event. To continue the event in the blank.'));
 			$event = array();
+			return array(); //add
 		}
 		if (! $this->_isGetableEvent($event)) {
 			return array();
