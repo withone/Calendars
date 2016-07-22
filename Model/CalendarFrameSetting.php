@@ -28,7 +28,7 @@ class CalendarFrameSetting extends CalendarsAppModel {
  *
  * @var array
  */
-	protected $_getFrameSettingData = null;
+	protected $_getFrameSettingData = array();
 
 /**
  * use behaviors
@@ -318,8 +318,9 @@ class CalendarFrameSetting extends CalendarsAppModel {
  * @return array カレンダー表示形式情報
  */
 	public function getFrameSetting() {
-		if ($this->_getFrameSettingData !== null) {
-			return $this->_getFrameSettingData;
+		$frameId = Current::read('Frame.id');
+		if (isset($this->_getFrameSettingData[$frameId])) {
+			return $this->_getFrameSettingData[$frameId];
 		}
 		$frameSetting = $this->find('first', array(
 			'recursive' => 1,	//hasManyでCalendarFrameSettingSelectRoomのデータも取り出す。
@@ -328,7 +329,7 @@ class CalendarFrameSetting extends CalendarsAppModel {
 		if (! $frameSetting) {
 			$frameSetting = $this->getDefaultFrameSetting();
 		}
-		$this->_getFrameSettingData = $frameSetting;
+		$this->_getFrameSettingData[$frameId] = $frameSetting;
 		return $frameSetting;
 	}
 
