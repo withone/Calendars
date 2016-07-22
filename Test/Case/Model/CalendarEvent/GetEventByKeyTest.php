@@ -1,6 +1,6 @@
 <?php
 /**
- * CalendarEvent::getEventByIdTest()のテスト
+ * CalendarEvent::getEventByKeyTest()のテスト
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author AllCreator <info@allcreator.net>
@@ -18,7 +18,7 @@ App::uses('CalendarEventFixture', 'Calendars.Test/Fixture');
  * @author AllCreator <info@allcreator.net>
  * @package NetCommons\Calendars\Test\Case\Model\CalendarEvent
  */
-class CalendarEventGetEventByIdTest extends WorkflowGetTest {
+class CalendarEventGetEventByKeyTest extends WorkflowGetTest {
 
 /**
  * Fixtures
@@ -56,18 +56,18 @@ class CalendarEventGetEventByIdTest extends WorkflowGetTest {
  *
  * @var string
  */
-	protected $_methodName = 'getEventById';
+	protected $_methodName = 'getEventByKey';
 
 /**
- * getEventById()のテスト
+ * getEventByKey()のテスト
  *
- * @param int $id CalendarEventレコードのID
+ * @param int $key CalendarEventレコードのkey
  * @param int $userId ユーザーID
  * @param mix $expect 期待値
  * @dataProvider dataProviderGet
  * @return void
  */
-	public function testGetEventById($id, $userId, $expect) {
+	public function testGetEventByKey($key, $userId, $expect) {
 		$model = $this->_modelName;
 		$methodName = $this->_methodName;
 		$testCurrentData = array(
@@ -106,7 +106,7 @@ class CalendarEventGetEventByIdTest extends WorkflowGetTest {
 		CalendarPermissiveRooms::$roomPermRoles = Hash::merge(CalendarPermissiveRooms::$roomPermRoles, $testRoomInfos);
 
 		//テスト実施
-		$result = $this->$model->$methodName($id);
+		$result = $this->$model->$methodName($key);
 		//チェック
 		if ($result == array()) {
 			$this->assertEqual($result, $expect);
@@ -128,11 +128,11 @@ class CalendarEventGetEventByIdTest extends WorkflowGetTest {
 		$expectExist = (new CalendarEventFixture())->records[0];
 
 		return array(
-			array(999, 1, $expectNotExist), //存在しない
-			array(0, 1, $expectNotExist), //存在しない
-			array(1, 1, $expectExist), //存在する(userId = 1)
-			array(1, 0, $expectExist), //存在する(userId = 0)
-			array(1, 2, $expectExist), //存在する(userId = 0)
+			array('non', 1, $expectNotExist), //存在しない
+			array('', 1, $expectNotExist), //存在しない
+			array('calendarplan1', 1, $expectExist), //存在する(userId = 1)
+			array('calendarplan1', 0, $expectExist), //存在する(userId = 0)
+			array('calendarplan1', 2, $expectExist), //存在する(userId = 0)
 
 		);
 	}
