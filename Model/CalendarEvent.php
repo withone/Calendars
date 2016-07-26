@@ -40,6 +40,9 @@ class CalendarEvent extends CalendarsAppModel {
 		'Calendars.CalendarRoleAndPerm', //カレンダー役割・権限
 		'Workflow.Workflow',
 		'Workflow.WorkflowComment',
+		'Wysiwyg.Wysiwyg' => array(
+			'fields' => array('description'),
+		),
 	);
 
 /**
