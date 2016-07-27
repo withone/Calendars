@@ -292,14 +292,15 @@ class CalendarAppBehavior extends ModelBehavior {
 		if (!(isset($model->Calendar))) {
 			$model->loadModels(['Calendar' => 'Calendars.Calendar']);
 		}
-		$blockKey = Current::read('Block.key');
-		$calendar = $model->Calendar->findByBlockKey($blockKey);	//find('first'形式で返る
-		$calendarId = 1;	//暫定初期値
-		if (!empty($calendar['Calendar']['id'])) {
-			$calendarId = $calendar['Calendar']['id'];
-		}
+		//$blockKey = Current::read('Block.key');
+		//$calendar = $model->Calendar->findByBlockKey($blockKey);	//find('first'形式で返る
+		//$calendarId = 1;	//暫定初期値
+		//if (!empty($calendar['Calendar']['id'])) {
+		//	$calendarId = $calendar['Calendar']['id'];
+		//}
 		//CakeLog::debug("DBG: blockKey[" . $blockKey . "] calendar[" . print_r($calendar, true) .
 		//	"] calendarId[" . $calendarId . "]");
+		$calendarId = 0;	//暫定初期値
 
 		$params = array(
 			'calendar_id' => $calendarId,

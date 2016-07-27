@@ -12,7 +12,9 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-App::uses('CalendarsAppModel', 'Calendars.Model');
+//App::uses('CalendarsAppModel', 'Calendars.Model');
+App::uses('BlockBaseModel', 'Blocks.Model');
+App::uses('BlockSettingBehavior', 'Blocks.Model/Behavior');
 
 /**
  * Calendar Model
@@ -20,14 +22,14 @@ App::uses('CalendarsAppModel', 'Calendars.Model');
  * @author AllCreator Co., Ltd. <info@allcreator.net>
  * @package NetCommons\Calendars\Model
  */
-class CalendarPermission extends CalendarsAppModel {
+class CalendarPermission extends BlockBaseModel {
 
 /**
  * Use table config
  *
  * @var bool
  */
-	public $useTable = 'calendars';
+	public $useTable = false;
 
 /**
  * alias
@@ -43,22 +45,26 @@ class CalendarPermission extends CalendarsAppModel {
  */
 	public $actsAs = array(
 		'Blocks.BlockRolePermission',
-	);
-
-/**
- * belongsTo associations
- *
- * @var array
- */
-	public $belongsTo = array(
-		'Block' => array(
-			'className' => 'Blocks.Block',
-			'foreignKey' => 'block_key',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
+		'Blocks.BlockSetting' => array(
+			BlockSettingBehavior::FIELD_USE_WORKFLOW,
+			BlockSettingBehavior::SETTING_PLUGIN_KEY => 'calendars',
 		),
 	);
+
+	///**
+	// * belongsTo associations
+	// *
+	// * @var array
+	// */
+	//	public $belongsTo = array(
+	//		'Block' => array(
+	//			'className' => 'Blocks.Block',
+	//			'foreignKey' => 'block_key',
+	//			'conditions' => '',
+	//			'fields' => '',
+	//			'order' => ''
+	//		),
+	//	);
 
 /**
  * hasMany associations
@@ -105,6 +111,8 @@ class CalendarPermission extends CalendarsAppModel {
 
 			// 取得したルーム＋ブロック情報にさらにパーミッション情報を追加でセット
 			$this->_setPermission($workflow, $roomsBlocks, $readableRoom);
+			// 取得したルーム＋ブロック情報にさらにブロック設定情報を追加でセット
+			$this->_setBlockSetting($roomsBlocks);
 			$rooms[$spaceId] = Hash::combine($roomsBlocks, '{n}.Room.id', '{n}');
 		}
 		return $rooms;
@@ -131,6 +139,8 @@ class CalendarPermission extends CalendarsAppModel {
 
 		// 取得したルーム＋ブロック情報にさらにパーミッション情報を追加でセット
 		$this->_setPermission($workflow, $roomsBlocks, $roomBase);
+		// 取得したルーム＋ブロック情報にさらにブロック設定情報を追加でセット
+		$this->_setBlockSetting($roomsBlocks);
 		return array(Space::ROOM_SPACE_ID => $roomsBlocks);
 	}
 /**
@@ -147,7 +157,7 @@ class CalendarPermission extends CalendarsAppModel {
 				'Room.*',
 				'RoomsLanguage.*',
 				'Block.*',
-				'Calendar.*'
+				//'Calendar.*'
 			),
 			'recursive' => -1,
 			'joins' => array(
@@ -168,13 +178,13 @@ class CalendarPermission extends CalendarsAppModel {
 						'Block.language_id' => Current::read('Language.id')
 					)
 				),
-				array('table' => 'calendars',
-					'alias' => 'Calendar',
-					'type' => 'LEFT',
-					'conditions' => array(
-						'Calendar.block_key = Block.key',
-					)
-				)
+				//				array('table' => 'calendars',
+				//					'alias' => 'Calendar',
+				//					'type' => 'LEFT',
+				//					'conditions' => array(
+				//						'Calendar.block_key = Block.key',
+				//					)
+				//				)
 			),
 			'conditions' => array(
 				'Room.id' => $readableRoomIds
@@ -216,6 +226,22 @@ class CalendarPermission extends CalendarsAppModel {
 			if (isset($readableRoom[$roomBlock['Room']['id']]['RolesRoom'])) {
 				$roomBlock['RolesRoom'] = $readableRoom[$roomBlock['Room']['id']]['RolesRoom'];
 			}
+		}
+	}
+/**
+ * _setBlockSetting
+ *
+ * 指定されたルーム、ブロックに相当するブロック設定情報を取り出す
+ *
+ * @param array &$roomBlocks ルーム、ブロック、情報
+ * @return void
+ */
+	protected function _setBlockSetting(&$roomBlocks) {
+		foreach ($roomBlocks as &$roomBlock) {
+			$blockKey = Hash::get($roomBlock, 'Block.key');
+			$roomId = Hash::get($roomBlock, 'Block.room_id');
+			$blockSetting = $this->getBlockSetting($blockKey, $roomId);
+			$roomBlock[$this->alias] = $blockSetting[$this->alias];
 		}
 	}
 /**
@@ -262,7 +288,7 @@ class CalendarPermission extends CalendarsAppModel {
  * 権限設定を登録
  *
  * @param array $data 保存データ
- * @return array
+ * @return bool
  * @throws InternalErrorException
  */
 	public function savePermission($data) {
@@ -288,15 +314,23 @@ class CalendarPermission extends CalendarsAppModel {
 						$room['Calendar']['block_key'] = $block['Block']['key'];
 					//}
 					// 保存する
-					$this->create();
+					//$this->create();
 					$this->set($room);
 					if (! $this->validates()) {
 						$this->rollback();
 						return false;
 					}
-					if (! $this->save($room, false)) {
-						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-					}
+
+					// BlockKeyを指定してBlockSettingを保存
+					$this->saveBlockSetting($block['Block']['key'], $block['Block']['room_id']);
+
+					//					if (! $this->save($room, false)) {
+					//						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+					//					}
+					$this->Behaviors->disable('Blocks.BlockSetting');
+					// useTable = falseでsaveすると必ずfalseになるので、throwしない
+					$this->save(null, false);
+					$this->Behaviors->enable('Blocks.BlockSetting');
 				}
 			}
 			//トランザクションCommit

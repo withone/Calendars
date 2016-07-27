@@ -28,7 +28,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
  * @var array
  */
 	public $fixtures = array(
-		'plugin.calendars.calendar',
+		'plugin.calendars.block_setting_for_calendar',
 		'plugin.calendars.calendar_event',
 		'plugin.calendars.calendar_event_content',
 		'plugin.calendars.calendar_event_share_user',
@@ -87,11 +87,12 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 				//$this->_mockForReturnTrue($model, 'Calendars.Calendar', '_saveFrameChangeAppearance', 1);
 				$this->_mockForReturnTrue($model, 'Calendars.CalendarFrameSetting', 'saveFrameSetting', 1);
 				//$this->_mockForReturnFalse($model, 'Calendars.Calendar', '_saveCalendar', 1);
-				$mock = $this->getMockForModel('Calendars.Calendar', array('save'));
-				$this->$model = $mock;
-				$mock->expects($this->once())
-				->method('save')
-				->will($this->returnValue(array()));
+				$this->_mockForReturnFalse($model, 'Blocks.BlockSetting', 'saveMany');
+				//				$mock = $this->getMockForModel('Calendars.Calendar', array('save'));
+				//				$this->$model = $mock;
+				//				$mock->expects($this->once())
+				//				->method('save')
+				//				->will($this->returnValue(array()));
 			}
 		}
 
@@ -99,7 +100,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 		$this->$model->$methodName($data);
 
 		//チェック
-		$this->assertEqual($data, $expect);
+		$this->assertEquals($data, $expect);
 	}
 
 /**
@@ -108,7 +109,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
  * ### 戻り値
  *  - data 登録データ
  *
- * @return void
+ * @return array
  */
 	public function dataProviderAfterFrameSave() {
 		//1.すでにブロックIDが存在
