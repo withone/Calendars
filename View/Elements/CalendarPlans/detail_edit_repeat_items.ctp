@@ -349,6 +349,7 @@
 					echo $this->NetCommonsForm->input('CalendarActionPlan.rrule_until', array(
 						'div' => false,
 						'label' => false,
+						'data-toggle' => 'dropdown',
 						'datetimepicker' => 'datetimepicker',
 						'datetimepicker-options' => $pickerOpt,
 						//日付だけの場合、User系の必要あるのでconvertをoffし、

@@ -339,6 +339,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		$dateTimePickerInput = $this->NetCommonsForm->input('CalendarEvent.target_year', array(
 			'div' => false,
 			'label' => false,
+			'data-toggle' => 'dropdown',
 			'datetimepicker' => 'datetimepicker',
 			'datetimepicker-options' => $pickerOpt,
 			'value' => (empty($year)) ? '' : intval($year),

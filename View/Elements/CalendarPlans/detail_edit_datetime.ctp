@@ -76,6 +76,7 @@
 	array(
 	'div' => false,
 	'label' => __d('calendars', 'All day'),
+	'data-toggle' => 'dropdown',
 	'datetimepicker' => 'datetimepicker',
 	'datetimepicker-options' => $pickerOpt,
 	'convert_timezone' => false,	//日付だけの場合、User系の必要あるのでoffし、カレンダー側でhandlingする。
@@ -102,6 +103,7 @@
 	array(
 		'div' => false,
 		'label' => __d('calendars', 'From'),
+		'data-toggle' => 'dropdown',
 		'datetimepicker' => 'datetimepicker',
 		'datetimepicker-options' => $pickerOpt,
 		'convert_timezone' => false,	//日付だけの場合、User系の必要あるのでoffし、カレンダー側でhandlingする。
@@ -139,6 +141,7 @@
 	array(
 		'div' => false,
 		'label' => __d('calendars', 'To'),
+		'data-toggle' => 'dropdown',
 		'datetimepicker' => 'datetimepicker',
 		'datetimepicker-options' => $pickerOpt,
 		'convert_timezone' => false,	//日付だけの場合、User系の必要あるのでoffし、カレンダー側でhandlingする。
@@ -163,6 +166,7 @@
 		array(
 			'div' => false,
 			'label' => false,
+			'data-toggle' => 'dropdown',
 			'datetimepicker' => 'datetimepicker',
 			'datetimepicker-options' => $pickerOpt,
 			'convert_timezone' => false,	//日付だけの場合、User系の必要あるのでoffし、カレンダー側でhandlingする。
