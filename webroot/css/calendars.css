@@ -322,6 +322,9 @@
 	text-decoration: none;
 	background-color: #e6eff6;
 }
+.calendar_event_target_year {
+	margin-bottom: 0px;
+}
 /* 年月移動DateTimePickerInputのCSS 隠れて見えないようにしている */
 .calendar-datetimepicker-hide-input {
 	margin: 0;
@@ -329,7 +332,6 @@
 	height : 0;
 	opacity: 0;
 	display: block;
-	float: left;
 }
 /*-- カレンダー　予定共有 人情報 --*/
 .calendar-share-person {

@@ -91,8 +91,10 @@ class CalendarTurnCalendarHelper extends AppHelper {
 			$textColor = $this->CalendarCommon->makeTextColor(
 				$vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $vars['dayOfTheWeek']);
 		}
+		$turnNavId = 'CalendarEventTargetYear_' . Current::read('Frame.id');
 
-		$html = '<label for="CalendarEventTargetYear"><h2 class="' . $textColor . ' calendar-space0">';
+		$html = '<div><label class="calendar_event_target_year" for="' . $turnNavId . '">';
+		$html .= '<h2 class="' . $textColor . ' calendar-space0">';
 		switch($type) {
 			case 'month':
 			case 'week':
@@ -115,7 +117,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 
 		}
 		$dateTimePickerInput = $this->_getDateTimePickerForMoveOperation($type, $vars);
-		$html .= '</h2>' . $dateTimePickerInput . '</label>';
+		$html .= '</h2></label>' . $dateTimePickerInput . '</div>';
 		return $html;
 	}
 /**
@@ -339,7 +341,9 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		$dateTimePickerInput = $this->NetCommonsForm->input('CalendarEvent.target_year', array(
 			'div' => false,
 			'label' => false,
+			'id' => 'CalendarEventTargetYear_' . Current::read('Frame.id'),
 			'data-toggle' => 'dropdown',
+			'aria-haspopup' => "true", 'aria-expanded' => "false",
 			'datetimepicker' => 'datetimepicker',
 			'datetimepicker-options' => $pickerOpt,
 			'value' => (empty($year)) ? '' : intval($year),
