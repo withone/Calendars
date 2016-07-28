@@ -9,16 +9,16 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 ?>
-<uib-accordion close-others="oneAtATime">
+<div uib-accordion close-others="oneAtATime">
 
-	<uib-accordion-group is-open="status.open">
-		<uib-accordion-heading>
+	<div uib-accordion-group class="panel-default" is-open="status.open">
+		<div uib-accordion-heading>
 			<?php echo __d('calendars', 'detail information'); ?>
 			<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-		</uib-accordion-heading>
+		</div>
 
 		<?php /* 場所 */ ?>
-		<div class="form-group" data-calendar-name="inputLocation">
+		<div class="form-group" data-calendar-name="inputLocation" ng-cloak>
 			<div class="col-xs-12">
 				<?php echo $this->NetCommonsForm->input('CalendarActionPlan.location', array(
 				'type' => 'text',
@@ -28,7 +28,7 @@
 			</div>
 		</div>
 		<?php /* 連絡先 */ ?>
-		<div class="form-group" data-calendar-name="inputContact">
+		<div class="form-group" data-calendar-name="inputContact" ng-cloak>
 			<div class="col-xs-12">
 				<?php echo $this->NetCommonsForm->input('CalendarActionPlan.contact', array(
 				'type' => 'text',
@@ -39,7 +39,7 @@
 		</div>
 		<?php /* 詳細 */ ?>
 		<div class="form-group" data-calendar-name="inputDescription" ng-controller="CalendarDetailEditWysiwyg">
-			<div class="col-xs-12 calendar-detailedit-detail">
+			<div class="col-xs-12 calendar-detailedit-detail" ng-cloak>
 				<?php
 				echo $this->NetCommonsForm->wysiwyg('CalendarActionPlan.description', array(
 					'label' => __d('calendars', 'Details'),
@@ -52,7 +52,7 @@
 		</div>
 
 		<?php /* タイムゾーン */ ?>
-		<div class="form-group" data-calendar-name="selectTimeZone">
+		<div class="form-group" data-calendar-name="selectTimeZone" ng-cloak>
 			<div class="col-xs-12">
 				<?php
 				$tzTbl = CalendarsComponent::getTzTbl();
@@ -68,6 +68,6 @@
 			?>
 			</div>
 		</div><!-- form-groupおわり-->
-	</uib-accordion-group>
+	</div>
 
-</uib-accordion>
+</div>

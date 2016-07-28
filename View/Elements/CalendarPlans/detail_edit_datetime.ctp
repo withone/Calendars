@@ -88,7 +88,7 @@
 
 
 <?php /* 期間・時間の指定のチェックボックスがONで期間指定の場合の「開始」部分 */ ?>
-<div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-4"><!--表示条件１START-->
+<div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-4" ng-cloak><!--表示条件１START-->
 	<?php
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD HH:mm',	//hashi
@@ -149,7 +149,7 @@
 	?>
 
 	<?php /* 期間・時間の指定のチェックボックスがOFFで終日指定の場合の「終了」部分 */ ?>
-	<div ng-hide="1">
+	<div ng-hide="1" ng-cloak>
 		<?php
 		$ngModel = 'detailEndDate'; //[' . $frameId . ']';
 		$pickerOpt = str_replace('"', "'", json_encode(array(

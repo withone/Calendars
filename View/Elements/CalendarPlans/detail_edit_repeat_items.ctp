@@ -27,7 +27,7 @@
 	</div>
 </div><!-- end form-group-->
 
-<div class="row">
+<div class="row" ng-cloak>
 	<div class="col-xs-11 col-xs-offset-1 form-horizontal calendar-repeat-a-plan-detail_<?php echo $frameId; ?>" 
 		ng-show="repeatArray[<?php echo $frameId; ?>]==1">
 		<?php /* 繰り返しのタイプ選択 */ ?>
