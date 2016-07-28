@@ -28,6 +28,7 @@ class CalendarFrameSettingSelectRoomSaveCalendarFrameSettingSelectRoomTest exten
  */
 	public $fixtures = array(
 		'plugin.calendars.block_setting_for_calendar',
+		'plugin.calendars.calendar',
 		'plugin.calendars.calendar_event',
 		'plugin.calendars.calendar_event_content',
 		'plugin.calendars.calendar_event_share_user',

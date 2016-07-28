@@ -580,13 +580,11 @@ class CalendarActionPlan extends CalendarsAppModel {
 		$planParam = array();
 
 		try {
-			//$model = ClassRegistry::init('Calendars.Calendar');
-			//if (!($calendar = $model->findByBlockKey($data['Block']['key']))) {
-			//	throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			//}
-			//$planParam['calendar_id'] = $calendar[$model->alias]['id'];
-			$calendarId = 0;	//暫定初期値
-			$planParam['calendar_id'] = $calendarId;
+			$model = ClassRegistry::init('Calendars.Calendar');
+			if (!($calendar = $model->findByBlockKey($data['Block']['key']))) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			$planParam['calendar_id'] = $calendar[$model->alias]['id'];
 
 			$planParam['status'] = $this->getStatus($data);
 			$planParam['language_id'] = Current::read('Language.id');

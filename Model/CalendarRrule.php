@@ -59,13 +59,13 @@ class CalendarRrule extends CalendarsAppModel {
  * @var array
  */
 	public $belongsTo = array(
-		//		'Calendar' => array(
-		//			'className' => 'Calendars.Calendar',
-		//			'foreignKey' => 'calendar_id',
-		//			'conditions' => '',
-		//			'fields' => '',
-		//			'order' => ''
-		//		),
+		'Calendar' => array(
+			'className' => 'Calendars.Calendar',
+			'foreignKey' => 'calendar_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
 		'Room' => array(
 			'className' => 'Rooms.Room',
 			'foreignKey' => 'room_id',

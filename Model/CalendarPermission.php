@@ -12,8 +12,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-//App::uses('CalendarsAppModel', 'Calendars.Model');
-App::uses('BlockBaseModel', 'Blocks.Model');
+App::uses('CalendarsAppModel', 'Calendars.Model');
 App::uses('BlockSettingBehavior', 'Blocks.Model/Behavior');
 
 /**
@@ -22,14 +21,14 @@ App::uses('BlockSettingBehavior', 'Blocks.Model/Behavior');
  * @author AllCreator Co., Ltd. <info@allcreator.net>
  * @package NetCommons\Calendars\Model
  */
-class CalendarPermission extends BlockBaseModel {
+class CalendarPermission extends CalendarsAppModel {
 
 /**
  * Use table config
  *
  * @var bool
  */
-	public $useTable = false;
+	public $useTable = 'calendars';
 
 /**
  * alias
@@ -51,20 +50,20 @@ class CalendarPermission extends BlockBaseModel {
 		),
 	);
 
-	///**
-	// * belongsTo associations
-	// *
-	// * @var array
-	// */
-	//	public $belongsTo = array(
-	//		'Block' => array(
-	//			'className' => 'Blocks.Block',
-	//			'foreignKey' => 'block_key',
-	//			'conditions' => '',
-	//			'fields' => '',
-	//			'order' => ''
-	//		),
-	//	);
+/**
+ * belongsTo associations
+ *
+ * @var array
+ */
+	public $belongsTo = array(
+		'Block' => array(
+			'className' => 'Blocks.Block',
+			'foreignKey' => 'block_key',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+	);
 
 /**
  * hasMany associations
@@ -314,23 +313,22 @@ class CalendarPermission extends BlockBaseModel {
 						$room['Calendar']['block_key'] = $block['Block']['key'];
 					//}
 					// 保存する
-					//$this->create();
+					$this->create();
 					$this->set($room);
 					if (! $this->validates()) {
 						$this->rollback();
 						return false;
 					}
 
-					// BlockKeyを指定してBlockSettingを保存
+					// rooom_idを指定してBlockSettingを保存
 					$this->saveBlockSetting($block['Block']['key'], $block['Block']['room_id']);
 
-					//					if (! $this->save($room, false)) {
-					//						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-					//					}
 					$this->Behaviors->disable('Blocks.BlockSetting');
-					// useTable = falseでsaveすると必ずfalseになるので、throwしない
-					$this->save(null, false);
+					if (! $this->save($room, false)) {
+						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+					}
 					$this->Behaviors->enable('Blocks.BlockSetting');
+
 				}
 			}
 			//トランザクションCommit

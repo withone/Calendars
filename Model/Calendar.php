@@ -12,8 +12,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-//App::uses('CalendarsAppModel', 'Calendars.Model');
-App::uses('BlockBaseModel', 'Blocks.Model');
+App::uses('CalendarsAppModel', 'Calendars.Model');
 App::uses('BlockSettingBehavior', 'Blocks.Model/Behavior');
 
 /**
@@ -22,14 +21,7 @@ App::uses('BlockSettingBehavior', 'Blocks.Model/Behavior');
  * @author AllCreator Co., Ltd. <info@allcreator.net>
  * @package NetCommons\Calendars\Model
  */
-class Calendar extends BlockBaseModel {
-
-/**
- * Custom database table name
- *
- * @var string
- */
-	public $useTable = false;
+class Calendar extends CalendarsAppModel {
 
 /**
  * use behaviors
@@ -46,41 +38,41 @@ class Calendar extends BlockBaseModel {
 		),
 	);
 
-	///**
-	// * belongsTo associations
-	// *
-	// * @var array
-	// */
-	//	public $belongsTo = array(
-	//		'Block' => array(
-	//			'className' => 'Blocks.Block',
-	//			'foreignKey' => 'block_key',
-	//			'conditions' => '',
-	//			'fields' => '',
-	//			'order' => ''
-	//		),
-	//	);
+/**
+ * belongsTo associations
+ *
+ * @var array
+ */
+	public $belongsTo = array(
+		'Block' => array(
+			'className' => 'Blocks.Block',
+			'foreignKey' => 'block_key',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+	);
 
-	///**
-	// * hasMany associations
-	// *
-	// * @var array
-	// */
-	//	public $hasMany = array(
-	//		'CalendarRrule' => array(
-	//			'className' => 'Calendars.CalendarRrule',
-	//			'foreignKey' => 'calendar_id',
-	//			'dependent' => true,
-	//			'conditions' => '',
-	//			'fields' => '',
-	//			'order' => array('id' => 'ASC'),
-	//			'limit' => '',
-	//			'offset' => '',
-	//			'exclusive' => '',
-	//			'finderQuery' => '',
-	//			'counterQuery' => ''
-	//		)
-	//	);
+/**
+ * hasMany associations
+ *
+ * @var array
+ */
+	public $hasMany = array(
+		'CalendarRrule' => array(
+			'className' => 'Calendars.CalendarRrule',
+			'foreignKey' => 'calendar_id',
+			'dependent' => true,
+			'conditions' => '',
+			'fields' => '',
+			'order' => array('id' => 'ASC'),
+			'limit' => '',
+			'offset' => '',
+			'exclusive' => '',
+			'finderQuery' => '',
+			'counterQuery' => ''
+		)
+	);
 
 /**
  * Validation rules
@@ -104,7 +96,6 @@ class Calendar extends BlockBaseModel {
 		parent::__construct($id, $table, $ds);
 
 		$this->loadModels([
-			'Block' => 'Blocks.Block',
 			'Frame' => 'Frames.Frame',
 			'CalendarFrameSetting' => 'Calendars.CalendarFrameSetting',
 			////'CalendarSetting' => 'Calendars.CalendarSetting',
@@ -112,41 +103,41 @@ class Calendar extends BlockBaseModel {
 		]);
 	}
 
-	///**
-	// * Called during validation operations, before validation. Please note that custom
-	// * validation rules can be defined in $validate.
-	// *
-	// * @param array $options Options passed from Model::save().
-	// * @return bool True if validate operation should continue, false to abort
-	// * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#beforevalidate
-	// * @see Model::save()
-	// */
-	//	public function beforeValidate($options = array()) {
-	//		$this->validate = Hash::merge($this->validate, array(
-	//			'block_key' => array(
-	//				'rule1' => array(
-	//					'rule' => array('notBlank'),
-	//					'message' => __d('net_commons', 'Invalid request.'),
-	//					'required' => true,
-	//					'on' => 'update', // 新規の時はブロックIDがなかったりすることがあるので
-	//				),
-	//			),
-	//			//'name' => array(
-	//			//	'notBlank' => array(
-	//			//		'rule' => array('notBlank'),
-	//			//		'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('calendars', 'CALENDAR Name')),	//カレンダー名は人間で入れない。プログラムが挿入すること。
-	//			//		'allowEmpty' => false,
-	//			//		'required' => true,
-	//			//	),
-	//			//),
-	//			//key,language_id は、NetCommonsプラグインがafterSaveで差し込むので、ノーチェック
-	//		));
-	//
-	//		//カレンダーの場合、配置直後の場合、配下にCalenarCompRruleが１件もないことがあり得るので、
-	//		//配下のレコード有無は調べない。
-	//
-	//		return parent::beforeValidate($options);
-	//	}
+/**
+ * Called during validation operations, before validation. Please note that custom
+ * validation rules can be defined in $validate.
+ *
+ * @param array $options Options passed from Model::save().
+ * @return bool True if validate operation should continue, false to abort
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#beforevalidate
+ * @see Model::save()
+ */
+	public function beforeValidate($options = array()) {
+		$this->validate = Hash::merge($this->validate, array(
+			'block_key' => array(
+				'rule1' => array(
+					'rule' => array('notBlank'),
+					'message' => __d('net_commons', 'Invalid request.'),
+					'required' => true,
+					'on' => 'update', // 新規の時はブロックIDがなかったりすることがあるので
+				),
+			),
+			//'name' => array(
+			//	'notBlank' => array(
+			//		'rule' => array('notBlank'),
+			//		'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('calendars', 'CALENDAR Name')),	//カレンダー名は人間で入れない。プログラムが挿入すること。
+			//		'allowEmpty' => false,
+			//		'required' => true,
+			//	),
+			//),
+			//key,language_id は、NetCommonsプラグインがafterSaveで差し込むので、ノーチェック
+		));
+
+		//カレンダーの場合、配置直後の場合、配下にCalenarCompRruleが１件もないことがあり得るので、
+		//配下のレコード有無は調べない。
+
+		return parent::beforeValidate($options);
+	}
 
 /**
  * After frame save hook
@@ -206,10 +197,9 @@ class Calendar extends BlockBaseModel {
 			}
 
 			//権限設定
-			//			if (! $this->_saveCalendar($block)) {
-			//				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			//			}
-			$this->_saveCalendar($block);
+			if (! $this->_saveCalendar($block)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
 
 			////コメント）メール設定は、上記とことなり「メール設定」タブ画面で、チェック＋決定した時はじめてレコード生成されるタイプと思われるので、以下の処理は抑止する。
 			////メール設定
@@ -313,34 +303,31 @@ class Calendar extends BlockBaseModel {
  * 権限設定のデータの登録
  *
  * @param array $block ブロック
- * @return void
+ * @return array 生成したデータ
  */
 	protected function _saveCalendar($block) {
-		//* @return array 生成したデータ
 		// 今現在ブロックに対応したカレンダーがあるか
-		//		$calendar = $this->find('first', array(
-		//			'conditions' => array(
-		//				'block_key' => $block['Block']['key']
-		//			)
-		//		));
+		$calendar = $this->find('first', array(
+			'conditions' => array(
+				'block_key' => $block['Block']['key']
+			)
+		));
 		// ない場合は作成する
-		//		if (! $calendar) {
-		//			$this->create();
-		//			$calendar = $this->save(array(
-		//				'block_key' => $block['Block']['key'],
-		//				'use_workflow' => true
-		//			));
-		//		}
-		//return $calendar;
-		$blockKey = Hash::get($block, 'Block.key');
-		$roomId = Hash::get($block, 'Block.room_id');
-		// 今現在ブロックに対応したカレンダーがあるか
-		if (! $this->isExsistBlockSetting($blockKey, $roomId)) {
-			// ない場合は作成する
-			$blockSetting = $this->createBlockSetting($roomId);
+		if (! $calendar) {
+			$this->create();
+			$this->Behaviors->disable('Blocks.BlockSetting');
+			$calendar = $this->save(array(
+				'block_key' => $block['Block']['key'],
+				//'use_workflow' => true
+			));
+			$this->Behaviors->enable('Blocks.BlockSetting');
+
+			// BlockSettingの use_workflow をroom_id指定で保存
+			$blockSetting = $this->createBlockSetting($block['Block']['room_id']);
 			$this->set($blockSetting);
-			$this->saveBlockSetting($blockKey, $roomId);
+			$this->saveBlockSetting($block['Block']['key'], $block['Block']['room_id']);
 		}
+		return $calendar;
 	}
 
 /**

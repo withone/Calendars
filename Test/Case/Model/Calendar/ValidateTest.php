@@ -27,6 +27,7 @@ class CalendarValidateTest extends NetCommonsValidateTest {
  */
 	public $fixtures = array(
 		'plugin.calendars.block_setting_for_calendar',
+		'plugin.calendars.calendar',
 		'plugin.calendars.calendar_event',
 		'plugin.calendars.calendar_event_content',
 		'plugin.calendars.calendar_event_share_user',
@@ -73,7 +74,7 @@ class CalendarValidateTest extends NetCommonsValidateTest {
 		$data['Calendar'] = (new CalendarFixture())->records[0];
 
 		return array(
-			array('data' => $data, 'field' => 'use_workflow', 'value' => '',
+			array('data' => $data, 'field' => 'block_key', 'value' => '',
 				'message' => __d('net_commons', 'Invalid request.')),
 		);
 	}
