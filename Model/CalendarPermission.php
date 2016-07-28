@@ -13,6 +13,7 @@
  */
 
 App::uses('CalendarsAppModel', 'Calendars.Model');
+App::uses('BlockSettingBehavior', 'Blocks.Model/Behavior');
 
 /**
  * Calendar Model
@@ -43,6 +44,10 @@ class CalendarPermission extends CalendarsAppModel {
  */
 	public $actsAs = array(
 		'Blocks.BlockRolePermission',
+		'Blocks.BlockSetting' => array(
+			BlockSettingBehavior::FIELD_USE_WORKFLOW,
+			BlockSettingBehavior::SETTING_PLUGIN_KEY => 'calendars',
+		),
 	);
 
 /**
@@ -105,6 +110,8 @@ class CalendarPermission extends CalendarsAppModel {
 
 			// 取得したルーム＋ブロック情報にさらにパーミッション情報を追加でセット
 			$this->_setPermission($workflow, $roomsBlocks, $readableRoom);
+			// 取得したルーム＋ブロック情報にさらにブロック設定情報を追加でセット
+			$this->_setBlockSetting($roomsBlocks);
 			$rooms[$spaceId] = Hash::combine($roomsBlocks, '{n}.Room.id', '{n}');
 		}
 		return $rooms;
@@ -131,6 +138,8 @@ class CalendarPermission extends CalendarsAppModel {
 
 		// 取得したルーム＋ブロック情報にさらにパーミッション情報を追加でセット
 		$this->_setPermission($workflow, $roomsBlocks, $roomBase);
+		// 取得したルーム＋ブロック情報にさらにブロック設定情報を追加でセット
+		$this->_setBlockSetting($roomsBlocks);
 		return array(Space::ROOM_SPACE_ID => $roomsBlocks);
 	}
 /**
@@ -147,7 +156,7 @@ class CalendarPermission extends CalendarsAppModel {
 				'Room.*',
 				'RoomsLanguage.*',
 				'Block.*',
-				'Calendar.*'
+				//'Calendar.*'
 			),
 			'recursive' => -1,
 			'joins' => array(
@@ -168,13 +177,13 @@ class CalendarPermission extends CalendarsAppModel {
 						'Block.language_id' => Current::read('Language.id')
 					)
 				),
-				array('table' => 'calendars',
-					'alias' => 'Calendar',
-					'type' => 'LEFT',
-					'conditions' => array(
-						'Calendar.block_key = Block.key',
-					)
-				)
+				//				array('table' => 'calendars',
+				//					'alias' => 'Calendar',
+				//					'type' => 'LEFT',
+				//					'conditions' => array(
+				//						'Calendar.block_key = Block.key',
+				//					)
+				//				)
 			),
 			'conditions' => array(
 				'Room.id' => $readableRoomIds
@@ -216,6 +225,22 @@ class CalendarPermission extends CalendarsAppModel {
 			if (isset($readableRoom[$roomBlock['Room']['id']]['RolesRoom'])) {
 				$roomBlock['RolesRoom'] = $readableRoom[$roomBlock['Room']['id']]['RolesRoom'];
 			}
+		}
+	}
+/**
+ * _setBlockSetting
+ *
+ * 指定されたルーム、ブロックに相当するブロック設定情報を取り出す
+ *
+ * @param array &$roomBlocks ルーム、ブロック、情報
+ * @return void
+ */
+	protected function _setBlockSetting(&$roomBlocks) {
+		foreach ($roomBlocks as &$roomBlock) {
+			$blockKey = Hash::get($roomBlock, 'Block.key');
+			$roomId = Hash::get($roomBlock, 'Block.room_id');
+			$blockSetting = $this->getBlockSetting($blockKey, $roomId);
+			$roomBlock[$this->alias] = $blockSetting[$this->alias];
 		}
 	}
 /**
@@ -262,7 +287,7 @@ class CalendarPermission extends CalendarsAppModel {
  * 権限設定を登録
  *
  * @param array $data 保存データ
- * @return array
+ * @return bool
  * @throws InternalErrorException
  */
 	public function savePermission($data) {
@@ -294,9 +319,16 @@ class CalendarPermission extends CalendarsAppModel {
 						$this->rollback();
 						return false;
 					}
+
+					// rooom_idを指定してBlockSettingを保存
+					$this->saveBlockSetting($block['Block']['key'], $block['Block']['room_id']);
+
+					$this->Behaviors->disable('Blocks.BlockSetting');
 					if (! $this->save($room, false)) {
 						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 					}
+					$this->Behaviors->enable('Blocks.BlockSetting');
+
 				}
 			}
 			//トランザクションCommit

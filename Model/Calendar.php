@@ -13,6 +13,7 @@
  */
 
 App::uses('CalendarsAppModel', 'Calendars.Model');
+App::uses('BlockSettingBehavior', 'Blocks.Model/Behavior');
 
 /**
  * Calendar Model
@@ -31,6 +32,10 @@ class Calendar extends CalendarsAppModel {
 		'NetCommons.OriginalKey',
 		//'Workflow.WorkflowComment',
 		//'Workflow.Workflow',
+		'Blocks.BlockSetting' => array(
+			BlockSettingBehavior::FIELD_USE_WORKFLOW,
+			BlockSettingBehavior::SETTING_PLUGIN_KEY => 'calendars',
+		),
 	);
 
 /**
@@ -310,10 +315,17 @@ class Calendar extends CalendarsAppModel {
 		// ない場合は作成する
 		if (! $calendar) {
 			$this->create();
+			$this->Behaviors->disable('Blocks.BlockSetting');
 			$calendar = $this->save(array(
 				'block_key' => $block['Block']['key'],
-				'use_workflow' => true
+				//'use_workflow' => true
 			));
+			$this->Behaviors->enable('Blocks.BlockSetting');
+
+			// BlockSettingの use_workflow をroom_id指定で保存
+			$blockSetting = $this->createBlockSetting($block['Block']['room_id']);
+			$this->set($blockSetting);
+			$this->saveBlockSetting($block['Block']['key'], $block['Block']['room_id']);
 		}
 		return $calendar;
 	}
