@@ -531,11 +531,11 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 			//$data['save_N']のN(=status)を抜き出す。
 			$status = $this->getStatus($data);
-			if ($status === false) {
-				CakeLog::error("save_Nより、statusが決定できませんでした。data[" .
-					serialize($data) . "]");
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
+			//if ($status === false) { getStatus内でInternalErrorExceptionしている
+			//	CakeLog::error("save_Nより、statusが決定できませんでした。data[" .
+			//		serialize($data) . "]");
+			//	throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			//}
 			if ($procMode === CalendarsComponent::PLAN_ADD) {
 				//新規追加処理
 				//CakeLog::debug("DBG: PLAN_ADD case.");
