@@ -34,7 +34,6 @@ class Calendar extends CalendarsAppModel {
 		//'Workflow.Workflow',
 		'Blocks.BlockSetting' => array(
 			BlockSettingBehavior::FIELD_USE_WORKFLOW,
-			BlockSettingBehavior::SETTING_PLUGIN_KEY => 'calendars',
 		),
 	);
 
