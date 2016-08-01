@@ -98,9 +98,9 @@ class CalendarsController extends CalendarsAppController {
 	public function index() {
 		$ctpName = '';
 		$vars = array();
-		if (isset($this->request->query['style'])) {
-			$style = $this->request->query['style'];
-		} else {
+		$style = Hash::get($this->request->query, 'style');
+		$frameId = Hash::get($this->request->query, 'frame_id');
+		if (!$style || $frameId != Current::read('Frame.id')) {
 			//style未指定の場合、CalendarFrameSettingモデルのdisplay_type情報から表示するctpを決める。
 			$this->setCalendarCommonCurrent($vars);
 			$displayType = Current::read('CalendarFrameSetting.display_type');
