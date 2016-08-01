@@ -275,13 +275,25 @@ class CalendarsAppController extends AppController {
  * @return void
  */
 	protected function _storeRedirectPath(&$vars) {
-		$currentPath = Router::url();
-		if (strpos($currentPath, '?')) {
-			$currentPath = substr($currentPath, 0, strpos($currentPath, '?'));
+		// 戻り先を保存する必要があるのは
+		// カレンダーコントローラーだけです
+		if ($this->name != 'Calendars') {
+			return;
 		}
-		$currentPath .= '?' . http_build_query($this->request->query);
+		$currentPath = Router::url();
+		// style指定がないときはデフォルト表示にしているときのはずです
+		// あるときは特殊画面から移動してます
+		$style = $this->getQueryParam('style');
+		if ($style) {
+			//$currentPath = substr($currentPath, 0, strpos($currentPath, '?'));
+			$currentPath .= '?' . http_build_query($this->request->query);
+		} else {
+			$currentPath = NetCommonsUrl::backToPageUrl();
+		}
 		// リダイレクトURLを記録
-		$this->Session->write(CakeSession::read('Config.userAgent') . 'calendars', $currentPath);
+		$frameId = Current::read('Frame.id');
+		$this->Session->write(CakeSession::read('Config.userAgent') . 'calendars.' . $frameId,
+			$currentPath);
 		$vars['returnUrl'] = $currentPath;
 	}
 

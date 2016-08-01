@@ -184,7 +184,7 @@ class CalendarPlansController extends CalendarsAppController {
 					"]はすでに存在しませんでした。");
 
 				//testセッション方式
-				$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars');
+				$url = $this->__getSessionStoredRedirectUrl();
 				$this->redirect($url);
 				return;	//redirect後なので、ここには到達しない
 			}
@@ -224,7 +224,7 @@ class CalendarPlansController extends CalendarsAppController {
 						$isOriginRepeat)) {
 						//削除成功
 						//testセッション方式
-						$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars');
+						$url = $this->__getSessionStoredRedirectUrl();
 						$this->redirect($url);
 						return;	//redirect後なので、ここには到達しない
 					} else {
@@ -421,7 +421,7 @@ class CalendarPlansController extends CalendarsAppController {
 
 		//キャンセル時のURLセット
 		//testセッション方式
-		$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars');
+		$url = $this->__getSessionStoredRedirectUrl();
 		$this->_vars['returnUrl'] = $url;
 
 		$this->set(compact('capForView', 'mailSettingInfo', 'shareUsers', 'eventSiblings',
@@ -469,7 +469,7 @@ class CalendarPlansController extends CalendarsAppController {
 		$isRepeat = $event['CalendarRrule']['rrule'] !== '' ? true : false;
 
 		//testセッション方式
-		$url = $this->Session->read(CakeSession::read('Config.userAgent') . 'calendars');
+		$url = $this->__getSessionStoredRedirectUrl();
 		$this->_vars['returnUrl'] = $url;
 		$this->set(compact('roomLang', 'shareUserInfos', 'createdUserInfo', 'isRepeat'));
 		$this->set('vars', $this->_vars);
@@ -533,4 +533,20 @@ class CalendarPlansController extends CalendarsAppController {
 		return $mailSettingInfo;
 	}
 
+/**
+ * __getSessionStoredRedirectUrl
+ *
+ * セッションに保存している戻りURLを取り出す
+ * 
+ * @return mixed
+ */
+	private function __getSessionStoredRedirectUrl() {
+		$frameId = Current::read('Frame.id');
+		$sessPath = CakeSession::read('Config.userAgent') . 'calendars.' . $frameId;
+		$url = $this->Session->read($sessPath);
+		if (! $url) {
+			$url = NetCommonsUrl::backToPageUrl();
+		}
+		return $url;
+	}
 }

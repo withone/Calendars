@@ -147,37 +147,10 @@ class CalendarUrlHelper extends AppHelper {
  */
 	public function getBackFirstButton($vars) {
 		// urlパラメタにstyleがなくて、表示画面がデフォルトの画面と一緒ならこのボタンは不要
-		$styleParam = Hash::get($this->request->query, 'style');
-		$displayType = $vars['CalendarFrameSetting']['display_type'];
+		$isNotMain = Hash::get($this->request->params, 'requested');
+		$frameId = Hash::get($this->request->query, 'frame_id');
 
-		$backButtonArr =  array(
-			CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY => array(
-				'defaultStyle' => CalendarsComponent::CALENDAR_STYLE_LARGE_MONTHLY,
-			),
-			CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY => array(
-				'defaultStyle' => CalendarsComponent::CALENDAR_STYLE_SMALL_MONTHLY,
-			),
-			CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY => array(
-				'defaultStyle' => CalendarsComponent::CALENDAR_STYLE_WEEKLY,
-			),
-			CalendarsComponent::CALENDAR_DISP_TYPE_DAILY => array(
-				'defaultStyle' => CalendarsComponent::CALENDAR_STYLE_DAILY,
-			),
-			CalendarsComponent::CALENDAR_DISP_TYPE_TSCHEDULE => array(
-				'defaultStyle' => CalendarsComponent::CALENDAR_STYLE_SCHEDULE,
-			),
-			CalendarsComponent::CALENDAR_DISP_TYPE_MSCHEDULE => array(
-				'defaultStyle' => CalendarsComponent::CALENDAR_STYLE_SCHEDULE,
-			),
-		);
-
-		$backButton = Hash::get($backButtonArr, $displayType);
-		if ($backButton) {
-			$defaultStyle = $backButton['defaultStyle'];
-		} else {
-			$defaultStyle = '';
-		}
-		if ($styleParam === null && $vars['style'] == $defaultStyle) {
+		if ($frameId === null || $frameId != Current::read('Frame.id') || $isNotMain) {
 			return '';
 		}
 		//return $this->BackTo->indexLinkButton(__d('calendars', 'Back to First view'));

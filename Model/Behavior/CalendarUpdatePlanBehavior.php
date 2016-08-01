@@ -124,7 +124,6 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 				}
 				//すでにnewPlanを作成する時rruleDataは生成されているので、
 				//rruleDataの上書き(updateRruleData()発行）は無駄なのでしない。
-
 			} else {
 				//「元予定に繰返しなし」=元予定は単一予定
 				//
@@ -278,6 +277,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 					$model->Behaviors->load('Calendars.CalendarRruleEntry');
 				}
 				$model->insertRrule($planParams, $rruleData, $eventData);
+				$this->updateRruleData($model, $planParams, $rruleData);//FUJI
 			}
 
 		} else {
