@@ -98,9 +98,8 @@ class CalendarsController extends CalendarsAppController {
 	public function index() {
 		$ctpName = '';
 		$vars = array();
-		$style = Hash::get($this->request->query, 'style');
-		$frameId = Hash::get($this->request->query, 'frame_id');
-		if (!$style || $frameId != Current::read('Frame.id')) {
+		$style = $this->getQueryParam('style');
+		if (! $style) {
 			//style未指定の場合、CalendarFrameSettingモデルのdisplay_type情報から表示するctpを決める。
 			$this->setCalendarCommonCurrent($vars);
 			$displayType = Current::read('CalendarFrameSetting.display_type');
@@ -159,11 +158,7 @@ class CalendarsController extends CalendarsAppController {
 	public function getWeeklyVars($vars) {
 		$this->setCalendarCommonVars($vars);
 		$vars['selectRooms'] = array();	//マージ前の暫定
-		if (isset($this->request->query['week'])) {
-			$vars['week'] = $this->request->query['week'];
-		} else {
-			$vars['week'] = 0; // 省略時は0
-		}
+		$vars['week'] = $this->getQueryParam('week');
 		return $vars;
 	}
 
@@ -274,8 +269,8 @@ class CalendarsController extends CalendarsAppController {
  * @return array $vars 日次カレンダー変数
  */
 	public function getDailyVars($vars) {
-		if (isset($this->request->query['tab']) &&
-			$this->request->query['tab'] === 'timeline') {
+		$tab = $this->getQueryParam('tab');
+		if ($tab === 'timeline') {
 			$vars = $this->getDailyTimelineVars($vars);
 		} else {
 			$vars = $this->getDailyListVars($vars);
@@ -295,8 +290,8 @@ class CalendarsController extends CalendarsAppController {
  * @return array $vars スケジュール変数
  */
 	public function getScheduleVars($vars) {
-		if (isset($this->request->query['sort']) &&
-			$this->request->query['sort'] === 'member') {
+		$sort = $this->getQueryParam('sort');
+		if ($sort === 'member') {
 			$vars = $this->getMemberScheduleVars($vars);
 		} else {
 			$vars = $this->getTimeScheduleVars($vars);

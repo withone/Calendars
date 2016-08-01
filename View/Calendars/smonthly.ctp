@@ -9,13 +9,22 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 echo $this->element('Calendars.scripts');
+$url = NetCommonsUrl::actionUrl(array(
+	'plugin' => 'calendars',
+	'controller' => 'calendars',
+	'action' => 'index',
+	'block_id' => '',
+	'frame_id' => Current::read('Frame.id'),
+	'?' => array(
+	'style' => 'largemonthly',
+)));
 ?>
 
 <article ng-controller="CalendarsDetailEdit" class="block-setting-body">
 
 	<div class="row">
 		<div class="col-xs-12 text-center calendar-smonthly-div calendar-small-title">
-			<a href='/calendars/calendars/index/style:largemonthly?frame_id=<?php echo h($frameId); ?>'>
+			<a href='<?php echo $url; ?>'>
 			<div class="h2">
 				<?php echo sprintf(__d('calendars', '<small>%d/</small> %d'), $vars['mInfo']['year'], $vars['mInfo']['month']); ?>
 			</div></a>

@@ -150,26 +150,37 @@ class CalendarUrlHelper extends AppHelper {
 		$styleParam = Hash::get($this->request->query, 'style');
 		$displayType = $vars['CalendarFrameSetting']['display_type'];
 
-		if ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY) {
-			$defaultStyle = CalendarsComponent::CALENDAR_STYLE_LARGE_MONTHLY;
-			$html = $this->BackTo->indexLinkButton(__d('calendars', 'Back to this month'));
-		} elseif ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY) {
-			$defaultStyle = CalendarsComponent::CALENDAR_STYLE_SMALL_MONTHLY;
-			$html = $this->BackTo->indexLinkButton(__d('calendars', 'Back to this month'));
-		} elseif ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY) {
-			$defaultStyle = CalendarsComponent::CALENDAR_STYLE_WEEKLY;
-			$html = $this->BackTo->indexLinkButton(__d('calendars', 'Back to this week'));
-		} elseif ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_DAILY) {
-			$defaultStyle = CalendarsComponent::CALENDAR_STYLE_DAILY;
-			$html = $this->BackTo->indexLinkButton(__d('calendars', 'Back to today'));
+		$backButtonArr =  array(
+			CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY => array(
+				'defaultStyle' => CalendarsComponent::CALENDAR_STYLE_LARGE_MONTHLY,
+			),
+			CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY => array(
+				'defaultStyle' => CalendarsComponent::CALENDAR_STYLE_SMALL_MONTHLY,
+			),
+			CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY => array(
+				'defaultStyle' => CalendarsComponent::CALENDAR_STYLE_WEEKLY,
+			),
+			CalendarsComponent::CALENDAR_DISP_TYPE_DAILY => array(
+				'defaultStyle' => CalendarsComponent::CALENDAR_STYLE_DAILY,
+			),
+			CalendarsComponent::CALENDAR_DISP_TYPE_TSCHEDULE => array(
+				'defaultStyle' => CalendarsComponent::CALENDAR_STYLE_SCHEDULE,
+			),
+			CalendarsComponent::CALENDAR_DISP_TYPE_MSCHEDULE => array(
+				'defaultStyle' => CalendarsComponent::CALENDAR_STYLE_SCHEDULE,
+			),
+		);
+
+		$backButton = Hash::get($backButtonArr, $displayType);
+		if ($backButton) {
+			$defaultStyle = $backButton['defaultStyle'];
 		} else {
 			$defaultStyle = '';
-			$html = $this->BackTo->indexLinkButton(__d('calendars', 'Back to First view'));
 		}
-
 		if ($styleParam === null && $vars['style'] == $defaultStyle) {
 			return '';
 		}
-		return $html;
+		//return $this->BackTo->indexLinkButton(__d('calendars', 'Back to First view'));
+		return $this->BackTo->pageLinkButton(__d('calendars', 'Back'));
 	}
 }

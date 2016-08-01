@@ -45,6 +45,26 @@ class CalendarsAppController extends AppController {
 	);
 
 /**
+ * getQueryParam
+ *
+ * カレンダーURLクエリーパラメータ取り出し
+ *
+ * @param string $paramName 取り出したいパラメータ名
+ * @return bool|mixed
+ */
+	public function getQueryParam($paramName) {
+		// ContainerがMainでないときは無視する
+		if (Hash::get($this->request->params, 'requested')) {
+			return false;
+		}
+
+		$queryFrameId = Hash::get($this->request->query, 'frame_id');
+		if (Current::read('Frame.id') == $queryFrameId) {
+			return Hash::get($this->request->query, $paramName);
+		}
+		return false;
+	}
+/**
  * setCalendarCommonCurrent
  *
  * カレンダー設定情報設定
@@ -78,19 +98,21 @@ class CalendarsAppController extends AppController {
 		$vars['year'] = intval($userNowArray['year']);
 		$vars['month'] = intval($userNowArray['month']);
 
-		if (isset($this->request->query['year'])) {
-			$vars['year'] = intval($this->request->query['year']);
-		}
-		if (isset($this->request->query['month'])) {
-			$vars['month'] = intval($this->request->query['month']);
-		}
+		$qYear = $this->getQueryParam('year');
+		$qMonth = $this->getQueryParam('month');
+		$qDay = $this->getQueryParam('day');
 
-		if (isset($this->request->query['day'])) {
-			$vars['day'] = intval($this->request->query['day']);
+		if ($qYear) {
+			$vars['year'] = intval($qYear);
+		}
+		if ($qMonth) {
+			$vars['month'] = intval($qMonth);
+		}
+		if ($qDay) {
+			$vars['day'] = intval($qDay);
 		} else { //省略時は、現在の日を設置
 			// 年月の指定がない場合は当日
-			if (isset($this->request->query['year']) === false &&
-				isset($this->request->query['month']) === false) {
+			if ($qYear === false && $qMonth === false) {
 				$vars['day'] = intval($userNowArray['day']);
 			} else {
 				//月末日は月によって替わるので、すべての月でかならず存在する日(つまり一日）にする。
