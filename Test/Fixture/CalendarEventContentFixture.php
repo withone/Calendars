@@ -42,8 +42,8 @@ class CalendarEventContentFixture extends CakeTestFixture {
 	public $records = array(
 		array(
 			'id' => 1,
-			'model' => 'Lorem ipsum dolor sit amet',
-			'content_key' => 'Lorem ipsum dolor sit amet',
+			'model' => 'calendarmodel',
+			'content_key' => 'calendarplan1',
 			'calendar_event_id' => 1,
 			'created_user' => 1,
 			'created' => '2016-03-24 07:09:51',

@@ -28,6 +28,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
  * @var array
  */
 	public $fixtures = array(
+		'plugin.calendars.block_setting_for_calendar',
 		'plugin.calendars.calendar',
 		'plugin.calendars.calendar_event',
 		'plugin.calendars.calendar_event_content',
@@ -99,7 +100,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 		$this->$model->$methodName($data);
 
 		//チェック
-		$this->assertEqual($data, $expect);
+		$this->assertEquals($data, $expect);
 	}
 
 /**
@@ -108,7 +109,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
  * ### 戻り値
  *  - data 登録データ
  *
- * @return void
+ * @return array
  */
 	public function dataProviderAfterFrameSave() {
 		//1.すでにブロックIDが存在

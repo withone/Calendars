@@ -1,6 +1,6 @@
 <?php
 /**
- * CalendarActionPlan::saveCalendarPlan()のテスト
+ * CalendarEventContent::saveLinkedData()のテスト
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author AllCreator <info@allcreator.net>
@@ -10,15 +10,15 @@
  */
 
 App::uses('NetCommonsModelTestCase', 'NetCommons.TestSuite');
-
+App::uses('CalendarPermissiveRooms', 'Calendars.Utility');
 
 /**
- * CalendarDeleteActionPlan::deleteCalendarPlan()のテスト
+ * CalendarEventContent::saveLinkedData()のテスト
  *
  * @author AllCreator <info@allcreator.net>
- * @package NetCommons\Calendars\Test\Case\Model\CalendarDeleteActionPlan
+ * @package NetCommons\Calendars\Test\Case\Model\CalendarEventContent
  */
-class CalendarDeleteActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
+class CalendarEventContentSaveLinkedDataTest extends NetCommonsModelTestCase {
 
 /**
  * Fixtures
@@ -26,7 +26,6 @@ class CalendarDeleteActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCa
  * @var array
  */
 	public $fixtures = array(
-		'plugin.calendars.block_setting_for_calendar',
 		'plugin.calendars.calendar',
 		'plugin.calendars.calendar_event',
 		'plugin.calendars.calendar_event_content',
@@ -50,32 +49,31 @@ class CalendarDeleteActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCa
  *
  * @var string
  */
-	protected $_modelName = 'CalendarDeleteActionPlan';
+	protected $_modelName = 'CalendarEventContent';
 
 /**
  * Method name
  *
  * @var string
  */
-	protected $_methodName = 'deleteCalendarPlan';
+	protected $_methodName = 'saveLinkedData';
 
 /**
  * テストDataの取得
  *
+ * @param string $key key
  * @return array
  */
-	private function __getData() {
+	private function __getData($key = 'key_1') {
 		$data = array(
-			'CalendarDeleteActionPlan' => array(
-				'is_repeat' => 0,
-				'first_sib_event_id' => 1,
-				'origin_event_id' => 1,
-				'is_recurrence' => 0,
-				'edit_rrule' => 0,
+			'CalendarEventContent' => array(
+				'id' => 1,
+				'model' => 'calendarmodel',
+				'content_key' => 'key_1',
+				'calendar_event_id' => 1,
 			),
-			'_NetCommonsTime' => array(
-				'user_timezone' => 'Asia/Tokyo',
-				'convert_fields' => '',
+			'CalendarEvent' => array(
+				'id' => 1,
 			),
 		);
 
@@ -83,31 +81,22 @@ class CalendarDeleteActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCa
 	}
 
 /**
- * Delete用DataProvider
+ * Save用DataProvider
  *
  * ### 戻り値
  *  - data 登録データ
  *
  * @return array テストデータ
  */
-	public function dataProviderDelete() {
+	public function dataProviderSave() {
 		$data1 = $this->__getData();
+		$data2 = $this->__getData();
 
-		$data2 = $data1;
-		$data2['CalendarDeleteActionPlan']['edit_rrule'] = 1; //この日以降の予定を変更(削除)
-
-		$data3 = $data1;
-		$data3['CalendarDeleteActionPlan']['edit_rrule'] = 2; //この日を含むすべての予定を変更(削除)
-
-		$data4 = $data1;
-		$data4['CalendarDeleteActionPlan']['edit_rrule'] = 3; //エラー
-
+		$data2['CalendarEventContent']['content_key'] = 'calendarplan1';
 		$results = array();
 		// * 編集の登録処理
-		$results[0] = array($data1, 1, 'calendarplan1', 1, 0, 1);
-		$results[1] = array($data2, 1, 'calendarplan1', 1, 0, 1);
-		$results[2] = array($data3, 1, 'calendarplan1', 1, 0, 1);
-		$results[3] = array($data4, 1, 'calendarplan1', 1, 0, 1, 'InternalErrorException');
+		$results[0] = array($data1); //データなし
+		$results[1] = array($data2); //データあり
 
 		return $results;
 	}
@@ -119,56 +108,26 @@ class CalendarDeleteActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCa
  *  - data 登録データ
  *  - mockModel Mockのモデル
  *  - mockMethod Mockのメソッド
- *  - originEventId
- *  - originEventKye
- *  - originRruleId
- *  - isOriginRepeat
- *  - expect 期待値
  *
  * @return array テストデータ
  */
-	public function dataProviderDeleteOnExceptionError() {
+	public function dataProviderSaveOnExceptionError() {
 		$data = $this->__getData();
-
-		$dataForAll = $data;
-		$dataForAll['CalendarDeleteActionPlan']['edit_rrule'] = 2; //この日を含むすべての予定を変更(削除)
-
-		$dataAfter = $data;
-		$dataAfter['CalendarDeleteActionPlan']['edit_rrule'] = 1; //この日以降の予定を変更(削除)
-
 		return array(
-			array($data, 'Calendars.CalendarEvent', 'deleteAll', 1, 'calendarplan1', 1, 0),
-			array($data, 'Calendars.CalendarRrule', 'delete', 1, 'calendarplan1', 1, 0),
-			array($dataForAll, 'Calendars.CalendarEvent', 'deleteAll', 1, 'calendarplan1', 1, 0),
-			array($dataForAll, 'Calendars.CalendarRrule', 'delete', 1, 'calendarplan1', 1, 0),
-			array($dataAfter, 'Calendars.CalendarEvent', 'deleteAll', 1, 'calendarplan1', 1, 0),
-
-			//array($dataForAll, 'Calendars.CalendarRrule', 'delete', 999, 'calendarplanx', 1,0, 1), //存在しない
-			//↑pending  存在しないデータを渡すと、CalendarDeletePlanBehavior.phpの関数setCurEventDataAndRruleDataの中で処理が中断されるようです。
-
+			array($data, 'Calendars.CalendarEventContent', 'save'),
 		);
 	}
 
 /**
- * Deleteのテスト
+ * Saveのテスト
  *
  * @param array $data 登録データ
- * @param int $originEventId
- * @param string $originEventKey
- * @param int $originRruleId
- * @param bool $isOriginRepeat
- * @param int $expect
- * @param string $exception
- * @dataProvider dataProviderDelete
+ * @dataProvider dataProviderSave
  * @return void
  */
-	public function testDelete($data, $originEventId, $originEventKey, $originRruleId, $isOriginRepeat, $expect, $exception = '') {
+	public function testSave($data) {
 		$model = $this->_modelName;
 		$method = $this->_methodName;
-
-		if ($exception != null) {
-			$this->setExpectedException($exception);
-		}
 
 		$testCurrentData = array(
 			'Frame' => array(
@@ -206,11 +165,9 @@ class CalendarDeleteActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCa
 		CalendarPermissiveRooms::$roomPermRoles = Hash::merge(CalendarPermissiveRooms::$roomPermRoles, $testRoomInfos);
 
 		//テスト実行
-		$result = $this->$model->$method($data, $originEventId, $originEventKey, $originRruleId, $isOriginRepeat);
-		//print_r($this->$model->validationErrors);
+		$result = $this->$model->$method($data);
 
-		//$this->assertNotEmpty($result);
-		$this->assertEquals($result, $expect);
+		$this->assertNotEmpty($result);
 	}
 
 /**
@@ -219,14 +176,10 @@ class CalendarDeleteActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCa
  * @param array $data 登録データ
  * @param string $mockModel Mockのモデル
  * @param string $mockMethod Mockのメソッド
- * @param int $originEventId
- * @param string $originEventKey
- * @param int $originRruleId
- * @param bool $isOriginRepeat
- * @dataProvider dataProviderDeleteOnExceptionError
+ * @dataProvider dataProviderSaveOnExceptionError
  * @return void
  */
-	public function testDeleteOnExceptionError($data, $mockModel, $mockMethod, $originEventId, $originEventKey, $originRruleId, $isOriginRepeat) {
+	public function testSaveOnExceptionError($data, $mockModel, $mockMethod) {
 		$model = $this->_modelName;
 		$method = $this->_methodName;
 
@@ -270,7 +223,7 @@ class CalendarDeleteActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCa
 		$this->setExpectedException('InternalErrorException');
 
 		//テスト実行
-		$result = $this->$model->$method($data, $originEventId, $originEventKey, $originRruleId, $isOriginRepeat);
+		$result = $this->$model->$method($data);
 		$this->assertFalse($result);
 	}
 

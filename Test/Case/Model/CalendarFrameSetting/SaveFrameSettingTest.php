@@ -27,6 +27,7 @@ class CalendarFrameSettingSaveFrameSettingTest extends NetCommonsSaveTest {
  * @var array
  */
 	public $fixtures = array(
+		'plugin.calendars.block_setting_for_calendar',
 		'plugin.calendars.calendar',
 		'plugin.calendars.calendar_event',
 		'plugin.calendars.calendar_event_content',

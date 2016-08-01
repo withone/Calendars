@@ -28,6 +28,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
  * @var array
  */
 	public $fixtures = array(
+		'plugin.calendars.block_setting_for_calendar',
 		'plugin.calendars.calendar',
 		'plugin.calendars.calendar_event',
 		'plugin.calendars.calendar_event_content',
@@ -63,13 +64,12 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 /**
  * テストDataの取得
  *
- * @param string $key key
+ * @param string $blockKey key
  * @return array
  */
-	private function __getData($key = 'key_1') {
+	private function __getData($blockKey = 'block_1') {
 		$frameId = '6';
 		$blockId = '2';
-		$blockKey = 'block_1';
 
 		$data = array(
 			'save_1' => '',
@@ -165,11 +165,41 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
  * @return array テストデータ
  */
 	public function dataProviderSave() {
-		$data = $this->__getData();
+		$data1 = $this->__getData();
+
+		$data2 = $this->__getData();
+		$data2['CalendarActionPlan']['is_repeat'] = 1;
+
+		$data3 = $this->__getData();
+		$data3['CalendarActionPlan']['is_repeat'] = 1;
+		$data3['CalendarActionPlan']['repeat_freq'] = 'WEEKLY';
+
+		$data4 = $this->__getData();
+		$data4['CalendarActionPlan']['is_repeat'] = 1;
+		$data4['CalendarActionPlan']['repeat_freq'] = 'MONTHLY';
+		$data4['CalendarActionPlan']['rrule_byday']['MONTHLY'] = '-1WE'; //
+
+		$data5 = $this->__getData();
+		$data5['CalendarActionPlan']['is_repeat'] = 1;
+		$data5['CalendarActionPlan']['repeat_freq'] = 'MONTHLY';
+		$data5['CalendarActionPlan']['rrule_bymonthday']['MONTHLY'] = 20; //
+
+		$data6 = $this->__getData();
+		$data6['CalendarActionPlan']['is_repeat'] = 1;
+		$data6['CalendarActionPlan']['repeat_freq'] = 'YEARLY';
 
 		$results = array();
 		// * 編集の登録処理
-		$results[0] = array($data, 'add');
+		$results[0] = array($data1, 'add'); //リピートなし
+		//$results[1] = array($data1, 'edit'); //リピートなし(edit)
+
+		$results[2] = array($data2, 'add'); //リピートあり DAILY
+		$results[3] = array($data3, 'add'); //リピートあり WEEKLY
+		$results[4] = array($data4, 'add'); //リピートあり MONTHLY(BYDAY)
+		$results[5] = array($data5, 'add'); //リピートあり MONTHLY(BYDAY)
+
+		$results[6] = array($data6, 'add'); //リピートあり YEARLY
+
 		return $results;
 	}
 
@@ -196,7 +226,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 
 		return array(
 			array($data, 'Calendars.CalendarEvent', 'save', 'add'),
-			array($editData, 'Calendars.CalendarEvent', 'save', 'edit'), //pending ステータスでエラーになる
+			array($editData, 'Calendars.CalendarEvent', 'save', 'edit'),
 			array($data, 'Calendars.CalendarRrule', 'save', 'edit'),
 
 		);
@@ -215,6 +245,18 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 	public function dataProviderSaveOnValidationError() {
 		$data = $this->__getData();
 
+		$data2 = $this->__getData();
+		$data2['CalendarActionPlan']['timezone_offset'] = 'aaa/bbb';
+
+		$data3 = $this->__getData();
+		unset($data3['save_1']);
+
+		$data4 = $this->__getData();
+		unset($data4['save_1']);
+		$data4['save_0'] = '';
+
+		$data5 = $this->__getData('xxx');
+
 		$editKey = array(
 			'CalendarActionPlan' => array(
 			'key' => 'calendarplan1',
@@ -227,6 +269,13 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 			array($editData, 'Calendars.CalendarEvent', 'validates', 'InternalErrorException', 'edit'),
 			array($data, 'Calendars.CalendarEvent', 'validates', 'InternalErrorException', 'add'),
 			array($data, 'Calendars.CalendarRrule', 'validates', 'InternalErrorException', 'edit'),
+			array($data2, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'edit'), //timezoneでエラー
+			array($data3, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'add'), //save_でエラー(add)
+			array($data3, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'edit'), //save_でエラー(edit)
+			array($data4, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'add'), //save_でエラー(add)
+
+			array($data5, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'edit'), //block_keyに対応するblockなしでエラー
+
 		);
 	}
 
@@ -344,7 +393,9 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 			$this->setExpectedException($exception);
 		}
 
-		$this->_mockForReturnFalse($model, $mockModel, $mockMethod);
+		if ($mockMethod != null) {
+			$this->_mockForReturnFalse($model, $mockModel, $mockMethod);
+		}
 
 		//$procMode = $procMode;
 		$isOriginRepeat = '';

@@ -1,6 +1,6 @@
 <?php
 /**
- * CalendarEventContent::validate()のテスト
+ * CalendarEventShareUser::validate()のテスト
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author AllCreator <info@allcreator.net>
@@ -10,15 +10,15 @@
  */
 
 App::uses('NetCommonsValidateTest', 'NetCommons.TestSuite');
-App::uses('CalendarEventContentFixture', 'Calendars.Test/Fixture');
+//App::uses('CalendarFixture', 'Calendars.Test/Fixture');
 
 /**
- * CalendarEvent::validate()のテスト
+ * CalendarEventShareUser::validate()のテスト
  *
  * @author AllCreator <info@allcreator.net>
- * @package NetCommons\Calendars\Test\Case\Model\CalendarEvent
+ * @package NetCommons\Calendars\Test\Case\Model\CalendarEventShareUser
  */
-class CalendarEventContentValidateTest extends NetCommonsValidateTest {
+class CalendarEventShareUserValidateTest extends NetCommonsValidateTest {
 
 /**
  * Fixtures
@@ -26,7 +26,6 @@ class CalendarEventContentValidateTest extends NetCommonsValidateTest {
  * @var array
  */
 	public $fixtures = array(
-		'plugin.calendars.block_setting_for_calendar',
 		'plugin.calendars.calendar',
 		'plugin.calendars.calendar_event',
 		'plugin.calendars.calendar_event_content',
@@ -35,7 +34,6 @@ class CalendarEventContentValidateTest extends NetCommonsValidateTest {
 		'plugin.calendars.calendar_frame_setting_select_room',
 		'plugin.calendars.calendar_rrule',
 		'plugin.workflow.workflow_comment',
-		'plugin.rooms.rooms_language4test',
 	);
 
 /**
@@ -50,7 +48,7 @@ class CalendarEventContentValidateTest extends NetCommonsValidateTest {
  *
  * @var string
  */
-	protected $_modelName = 'CalendarEventContent';
+	protected $_modelName = 'CalendarEventShareUser';
 
 /**
  * Method name
@@ -72,17 +70,13 @@ class CalendarEventContentValidateTest extends NetCommonsValidateTest {
  * @return array テストデータ
  */
 	public function dataProviderValidationError() {
-		$data['CalendarEventContent'] = (new CalendarEventContentFixture())->records[0];
-
+		//$data['CalendarMailSetting'] = (new CalendarMailSettingFixture())->records[0];
+		$data = array();
 		return array(
-			//beforeValidate
-			array('data' => $data, 'field' => 'model', 'value' => '',
-				'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('calendars', 'Model Name'))),
-			array('data' => $data, 'field' => 'content_key', 'value' => '',
-				'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('calendars', 'content key'))),
-			array('data' => $data, 'field' => 'calendar_event_id', 'value' => '',
-				'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('calendars', 'calendar_event id'))),
-
+			array('data' => $data, 'field' => 'calender_event_id', 'value' => '',
+				'message' => __d('net_commons', 'Invaid request')),
+			array('data' => $data, 'field' => 'share_user', 'value' => 'a',
+				'message' => __d('net_commons', 'Invaid request')),
 		);
 	}
 
