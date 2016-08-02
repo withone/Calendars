@@ -401,4 +401,5 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 		}
 		return $plan;
 	}
+
 }

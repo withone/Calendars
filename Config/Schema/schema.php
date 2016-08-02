@@ -24,10 +24,10 @@ class CalendarsSchema extends CakeSchema {
 	public $connection = 'master';
 
 /**
- * before
+ *	before
  *
  * @param array $event event
- * @return bool
+ * @return	bool
  */
 	public function before($event = array()) {
 		return true;
@@ -178,7 +178,7 @@ class CalendarsSchema extends CakeSchema {
 		'key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'calendar component(vevent etc) rrule key | カレンダーコンポーネント(イベント等)繰返し規則 キー | Hash値 | ', 'charset' => 'utf8'),
 		'name' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'Calendar component(vevent etc) rrule name | カレンダーコンポーネント(イベント等)繰返し規則名称 | | ', 'charset' => 'utf8'),
 		'rrule' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'rrule rule | 繰返し規則', 'charset' => 'utf8'),
-		'icalendar_uid' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'iCalendar specification UID. | iCalendar仕様のUID', 'charset' => 'utf8'),
+		'icalendar_uid' => array('type' => 'text', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'The source of iCalendarUID information. RRULE split and split destination-related Of the record. | iCalendarUIDの元となる情報。rrule分割元と分割先の関連性を記録する。', 'charset' => 'utf8'),
 		'icalendar_comp_name' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'component name of iCalendar (vevent,vtodo,vjournal etc) | iCalendar仕様のコンポーネント名 (vevent,vtodo,vjournal 等)', 'charset' => 'utf8'),
 		'room_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'comment' => 'room id | ルームID | rooms.id | '),
 		'created_user' => array('type' => 'integer', 'null' => true, 'default' => '0', 'unsigned' => false, 'comment' => 'created user | 作成者 | users.id | '),
