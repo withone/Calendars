@@ -220,22 +220,6 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 		// 各種Behavior終わったら戻す FUJI
 		$model->CalendarEvent->Behaviors->load('Workflow.Workflow');
 
-		//is_xxxのWF動作概説
-		//
-		//Workflow.WorkflowのbeforeSaveにて、idがnull.つまりここのケース(a)の時、
-		//is_activeについて：
-		// statusがWorkflowComponent::STATUS_PUBLISHEDの時は、
-		// 　is_activeはtrueになり、同一lang_id,同一key,is_activeがtrueのレコードはすべて、is_activeがfalseにupdateされる。
-		// それ以外（つまり(a)以外）の時は、is_activeは必ずfalseにセットされる。(updateAll()発動）
-		//
-		//is_latestについて：
-		// is_latestはstatusに関係なく
-		// 　is_latestはtrueになり、同一lang_id,同一key,is_latestがtrueのレコードはすべて、is_latestがfalseにupdateされる。(updateAll発動)
-		//
-		//なお、idがnullではないsave()。つまりupdate時は、WFのis_xxxx操作は発動しない。
-		//また、updateAll()でもこれに該当し、WFのis_xxxxx操作は発動しない。
-		//
-
 		$eventData = $model->CalendarEvent->save($eventData, false);	//子もsave()で返ってくる。
 		if (!$eventData) { //保存のみ
 			CakeLog::error("変更時に指定された元イベント(calendar_event_id=[" .
@@ -417,4 +401,5 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 		}
 		return $plan;
 	}
+
 }

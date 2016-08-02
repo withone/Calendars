@@ -230,7 +230,10 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		}
 		//繰返し情報が更新されている時は、rruleDataをplanParasを使って書き換える
 		if ($isRepeatMod) {
-			$this->setRruleData($model, $planParams, $rruleData, self::CALENDAR_UPDATE_MODE);
+			//setRruleDataはsave()を呼んでいないフィールドセットだけのmethodなので、
+			//setRruleData()+save()のupdateRruleData()の変更する。
+			////$this->setRruleData($model, $planParams, $rruleData, self::CALENDAR_UPDATE_MODE);
+			$this->updateRruleData($model, $planParams, $rruleData);
 		}
 
 		$eventId = null;
@@ -277,7 +280,9 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 					$model->Behaviors->load('Calendars.CalendarRruleEntry');
 				}
 				$model->insertRrule($planParams, $rruleData, $eventData);
-				$this->updateRruleData($model, $planParams, $rruleData);//FUJI
+				////uddateRruleData()は、$isRepeatModがtrueの時だけ発行する関数なので、
+				////ここではなく、前出の if（$isRepeatMod）｛...｝へ移動した。
+				////$this->updateRruleData($model, $planParams, $rruleData);//FUJI
 			}
 
 		} else {

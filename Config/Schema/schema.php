@@ -24,11 +24,11 @@ class CalendarsSchema extends CakeSchema {
 	public $connection = 'master';
 
 /**
-*	before
-*
-*	@param	array	$event	event
-*	@return	bool
-*/
+ *	before
+ *
+ * @param array $event event
+ * @return	bool
+ */
 	public function before($event = array()) {
 		return true;
 	}
