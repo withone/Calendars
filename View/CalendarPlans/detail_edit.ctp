@@ -32,16 +32,17 @@ echo $this->element('Calendars.scripts');
 				//変数の初期化を先頭に集める
 				$editRrule = true;
 
-				$firstSibYear = $firstSibMonth = $firstSibDay = $firstSibEventId = 0;
+				$firstSibYear = $firstSibMonth = $firstSibDay = $firstSibEventId = $firstSibEventKey = 0;
 				if (!empty($this->request->data['CalendarActionPlan']['first_sib_event_id'])) {
 					$firstSibEventId = $this->request->data['CalendarActionPlan']['first_sib_event_id'];
-					$firstSibEventKey = $this->request->data['CalendarActionPlan']['first_sib_event_id'];
+					$firstSibEventKey = $this->request->data['CalendarActionPlan']['first_sib_event_key'];
 					$firstSibYear = $this->request->data['CalendarActionPlan']['first_sib_year'];
 					$firstSibMonth = $this->request->data['CalendarActionPlan']['first_sib_month'];
 					$firstSibDay = $this->request->data['CalendarActionPlan']['first_sib_day'];
 				} else {
 					if (!empty($firstSib)) {
 						$firstSibEventId = $firstSib['CalendarActionPlan']['first_sib_event_id'];
+						$firstSibEventKey = $firstSib['CalendarActionPlan']['first_sib_event_key'];
 						$firstSibYear = $firstSib['CalendarActionPlan']['first_sib_year'];
 						$firstSibMonth = $firstSib['CalendarActionPlan']['first_sib_month'];
 						$firstSibDay = $firstSib['CalendarActionPlan']['first_sib_day'];
@@ -67,19 +68,9 @@ echo $this->element('Calendars.scripts');
 			?>
 
 			<?php /* 繰り返しパターンの場合の繰り返し編集オプション */
-			/*
-			echo $this->element('Calendars.CalendarPlans/detail_edit_repeat_option', array(
-				'firstSibEventId' => $firstSibEventId,
-				'firstSibYear' => $firstSibYear,
-				'firstSibMonth' => $firstSibMonth,
-				'firstSibMonth' => $firstSibMonth,
-				'firstSibDay' => $firstSibDay,
-				'originEventId' => $originEventId,
-				'isRecurrence' => $isRecurrence,
-			));*/
 			echo $this->CalendarPlanEditRepeatOption->makeEditRepeatOption(
 				$eventSiblings,
-				$firstSibEventId, $firstSibYear, $firstSibMonth, $firstSibDay, $isRecurrence);
+				$firstSibEventKey, $firstSibYear, $firstSibMonth, $firstSibDay, $isRecurrence);
 			?>
 
 			<?php /* タイトル入力 */ ?>

@@ -37,7 +37,7 @@ class CalendarPlanEditRepeatOptionHelper extends AppHelper {
  * makeEditRepeatOption
  *
  * @param array $eventSiblings イベント情報
- * @param int $firstSibEventId イベントID
+ * @param int $firstSibEventKey イベントKey
  * @param int $firstSibYear デフォルト登録年
  * @param int $firstSibMonth デフォルト登録月
  * @param int $firstSibDay デフォルト登録日
@@ -45,7 +45,7 @@ class CalendarPlanEditRepeatOptionHelper extends AppHelper {
  * @return string
  */
 	public function makeEditRepeatOption(
-		$eventSiblings, $firstSibEventId, $firstSibYear, $firstSibMonth, $firstSibDay, $isRecurrence) {
+		$eventSiblings, $firstSibEventKey, $firstSibYear, $firstSibMonth, $firstSibDay, $isRecurrence) {
 		$orgNumOfEvSiblings = Hash::get($this->request->data,
 			'CalendarActionPlan.origin_num_of_event_siblings');
 		if (count($eventSiblings) <= 1 && $orgNumOfEvSiblings <= 1) {
@@ -67,12 +67,12 @@ class CalendarPlanEditRepeatOptionHelper extends AppHelper {
 		$html .= '</div><div class="media-body">';
 		//全選択用に、繰返し先頭eventのeditボタのリンクを生成しておく
 		$firstSibEditLink = '';
-		$key = Hash::get($this->_View->viewVars, 'event.CalendarEvent.key');
-		if (!empty($firstSibEventId)) {
+		//$key = Hash::get($this->_View->viewVars, 'event.CalendarEvent.key');
+		if (!empty($firstSibEventKey)) {
 			$firstSibEditLink = $this->Button->editLink('', array(
 				'controller' => 'calendar_plans',
 				'action' => 'edit',
-				'key' => $key,
+				'key' => $firstSibEventKey,
 				'block_id' => '',
 				'frame_id' => Current::read('Frame.id'),
 				'?' => array(

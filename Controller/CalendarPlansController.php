@@ -382,6 +382,7 @@ class CalendarPlansController extends CalendarsAppController {
 			$capForViewOf1stSib = (new CalendarSupport())->getCalendarActionPlanForView($eventSiblings[0]);
 
 			$firstSibEventId = $eventSiblings[0]['CalendarEvent']['id'];
+			$firstSibEventKey = $eventSiblings[0]['CalendarEvent']['key'];
 		} else {
 			//eventが空の場合、初期値でFILLした表示用配列を取得する。
 			list($year, $month, $day, $hour, $minute, $second, $enableTime) =
@@ -394,6 +395,7 @@ class CalendarPlansController extends CalendarsAppController {
 			$capForViewOf1stSib = $capForView;	//eventが空なので、1stSibも初期値でFILLしておく
 
 			$firstSibEventId = 0;	//新規だからidは未設定をあらわす0
+			$firstSibEventKey = '';
 		}
 		$year1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 0, 4);
 		$month1stSib = substr($capForViewOf1stSib['CalendarActionPlan']['detail_start_datetime'], 5, 2);
@@ -402,6 +404,7 @@ class CalendarPlansController extends CalendarsAppController {
 		$firstSib = array(
 			'CalendarActionPlan' => array(
 				'first_sib_event_id' => $firstSibEventId,
+				'first_sib_event_key' => $firstSibEventKey,
 				'first_sib_year' => intval($year1stSib),
 				'first_sib_month' => intval($month1stSib),
 				'first_sib_day' => intval($day1stSib),

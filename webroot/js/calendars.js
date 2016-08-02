@@ -554,65 +554,13 @@ NetCommonsApp.controller('CalendarsDetailEdit',
 
                if (num === '2') {
                  if (firstSibEditLink !== '') {
+                   angular.element('#CalendarActionPlanEditForm input').prop('disabled', true);
+                   angular.element('#CalendarActionPlanEditForm select').prop('disabled', true);
                    window.location = firstSibEditLink;
                  } else {
                    console.log('全ての繰り返しを選択したのに、繰返しの先頭eventへのeditLinkがないのはおかしい');
                  }
-
-                 /*
-                 // -- 以下のcapForViewOf1stSibによるデータすり替え方式用は、--
-                 // -- 全変更選択時、繰返し先頭eventのeditボタンを擬似クリックする方式にかえたので、削除. --
-
-                 console.log('「設定した全ての予定」が選択されたので、予定の設定を' +
-                   '繰返しの先頭予定の値にセットします「含むTZも」');
-                   var enableTime = $('#CalendarActionPlanFirstSibCapEnableTime').prop('value');
-                   var detailStartDatetime = $('#CalendarActionPlanFirstSibCapDetailStartDatetime').
-                     prop('value');
-                   var detailEndDatetime = $('#CalendarActionPlanFirstSibCapDetailEndDatetime').
-                     prop('value');
-                   var timezoneOffset = $('#CalendarActionPlanFirstSibCapTimezoneOffset').
-                     prop('value');
-
-                  //easy系はhiddenなので値をかえるとblackhole行き。
-                  //将来hiddenでなくなったときに復活させる。
-                  //var easyStartDate = $('#CalendarActionPlanFirstSibCapEasyStartDate').
-                  //  prop('value');
-                  //var easyHourMinuteFrom = $('#CalendarActionPlanFirstSibCapEasyHourMinuteFrom').
-                  //  prop('value');
-                  //var easyHourMinuteTo = $('#CalendarActionPlanFirstSibCapEasyHourMinuteTo').
-                  // prop('value');
-
-                  //予定日の設定
-                  if (enableTime === '1') {
-                    //開始、終了
-                    console.log("開始・終了 enableTime[" + enableTime + "]");
-                    $scope.useTime[frameId] = true;
-
-                    $scope.detailStartDatetime = detailStartDatetime; //YYYY-MM-DD hh:mm
-                    $scope.changeDetailStartDatetime('CalendarActionPlanDetailStartDatetime');
-
-                    $scope.detailEndDatetime = detailEndDatetime; //YYYY-MM-DD hh:mm
-                    $scope.changeDetailEndDatetime('CalendarActionPlanDetailEndDatetime');
-
-                  } else {
-                    //終日
-                    console.log("終日 enableTime[" + enableTime + "]");
-                    $scope.useTime[frameId] = false;
-
-                    $scope.detailStartDate = detailStartDatetime.substr(0, 10); //YYYY-MM-DD
-                    $scope.changeDetailStartDate('CalendarActionPlanDetailStartDatetime');
-
-                    //capForViewのEndDatetimeは、終日の時は、StartDatetimeと同日になっているので、
-                    //そのままつかってよい。
-                    $scope.detailEndDate = detailEndDatetime.substr(0, 10); //YYYY-MM-DD
-                    $scope.changeDetailEndDate('CalendarActionPlanDetailEndDatetime');
-                  }
-                  //タイムゾーン設定
-                  $('#CalendarActionPlanTimezoneOffset').val(timezoneOffset);
-
-                  */
                }
-
              }
              break;
            }

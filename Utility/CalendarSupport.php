@@ -299,6 +299,7 @@ class CalendarSupport {
 	public function getCalendarActionPlanForView($event) {
 		$userStartYmdHis =
 			(new CalendarTime())->svr2UserYmdHis($event['CalendarEvent']['dtstart']);
+
 		//YYYY-MM-DD hh:mm:ss
 		$userStartDatetime = CalendarTime::addDashColonAndSp($userStartYmdHis);
 
