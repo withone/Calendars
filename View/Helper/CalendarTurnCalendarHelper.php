@@ -62,16 +62,25 @@ class CalendarTurnCalendarHelper extends AppHelper {
 
 		$html = '';
 		$html .= '<div class="calendar-date-move-operations">';
-		$html .= '<a href="' . $prevUrl . '"><span class="glyphicon glyphicon-chevron-left"></span></a>';
+
+		if ($prevUrl) {
+			$html .= '<a href="' . $prevUrl .
+				'"><span class="glyphicon glyphicon-chevron-left"></span></a>';
+		}
 
 		$html .= $this->_getDateTitle($type, $vars);
 
-		$html .= '<a href="' . $nextUrl . '"><span class="glyphicon glyphicon-chevron-right"></span></a>';
+		if ($nextUrl) {
+			$html .= '<a href="' . $nextUrl .
+				'"><span class="glyphicon glyphicon-chevron-right"></span></a>';
+		}
 
-		$html .= '<div class="calendar-this-month">';
-		$html .= '<a href="' . $thisDayUrl . '" >';
-		$html .= $this->_getNowButtonTitle($type);
-		$html .= '</a></div>';
+		if ($thisDayUrl) {
+			$html .= '<div class="calendar-this-month">';
+			$html .= '<a href="' . $thisDayUrl . '" >';
+			$html .= $this->_getNowButtonTitle($type);
+			$html .= '</a></div>';
+		}
 		$html .= '</div>';
 		return $html;
 	}
@@ -160,6 +169,17 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		} else {
 			$dateArr = $this->_getNowDate($type, $vars);
 		}
+		// 指定されたdateArrがカレンダー範囲を超えるものの場合はfalseを返す
+		$day = Hash::get($dateArr, 'day');
+		if (! $day) {
+			$day = 1;
+		}
+		$tmstamp = mktime(0, 0, 0, $dateArr['month'], $day, $dateArr['year']);
+		if ($tmstamp < CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_TM_MIN ||
+			$tmstamp > CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_TM_MAX) {
+			return false;
+		}
+
 		$urlArray = array(
 			'plugin' => 'calendars',
 			'controller' => 'calendars',
@@ -302,6 +322,8 @@ class CalendarTurnCalendarHelper extends AppHelper {
 			$pickerOpt = str_replace('"', "'", json_encode(array(
 				'format' => 'YYYY-MM',
 				'viewMode' => 'years',
+				'minDate' => CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MIN,
+				'maxDate' => CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MAX
 			)));
 			$year = sprintf("%04d",
 				$vars['mInfo']['year']);
@@ -318,6 +340,8 @@ class CalendarTurnCalendarHelper extends AppHelper {
 			$pickerOpt = str_replace('"', "'", json_encode(array(
 				'format' => 'YYYY-MM-DD',
 				'viewMode' => 'days',
+				'minDate' => CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MIN,
+				'maxDate' => CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MAX
 			)));
 			if (!isset($vars['mInfo']['day'])) {
 				$vars['mInfo']['day'] = $vars['day'];

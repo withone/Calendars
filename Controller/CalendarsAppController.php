@@ -103,6 +103,11 @@ class CalendarsAppController extends AppController {
 		$qDay = $this->getQueryParam('day');
 
 		if ($qYear) {
+			if ($qYear < CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_YEAR_MIN) {
+				$qYear = CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_YEAR_MIN;
+			} elseif ($qYear > CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_YEAR_MAX) {
+				$qYear = CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_YEAR_MAX;
+			}
 			$vars['year'] = intval($qYear);
 		}
 		if ($qMonth) {

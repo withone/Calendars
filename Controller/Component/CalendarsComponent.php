@@ -120,6 +120,20 @@ class CalendarsComponent extends Component {
 	const	CALENDAR_DEFAULT_MAIL_SEND_TIME = 60;
 
 /**
+ * 繰り返し上限
+ *
+ * @var string
+ */
+	const CALENDAR_RRULE_COUNT_MAX = '100';
+	const CALENDAR_RRULE_COUNT_MIN = '1';
+	const CALENDAR_RRULE_TERM_UNTIL_MAX = '2033-12-31 23:59:59';
+	const CALENDAR_RRULE_TERM_UNTIL_MIN = '2001-01-01 00:00:00';
+	const CALENDAR_RRULE_TERM_UNTIL_TM_MAX = 2019686399;
+	const CALENDAR_RRULE_TERM_UNTIL_TM_MIN = 978307200;
+	const CALENDAR_RRULE_TERM_UNTIL_YEAR_MAX = 2033;
+	const CALENDAR_RRULE_TERM_UNTIL_YEAR_MIN = 2001;
+
+/**
  * 繰返し周期
  *
  * @var string

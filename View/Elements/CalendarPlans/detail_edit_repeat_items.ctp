@@ -316,8 +316,10 @@
 				<?php
 					$countValue = $this->request->data['CalendarActionPlan']['rrule_count'];
 					echo $this->NetCommonsForm->input('CalendarActionPlan.rrule_count', array(
-						'type' => 'text',
+						'type' => 'number',
 						'label' => false,
+						'min' => CalendarsComponent::CALENDAR_RRULE_COUNT_MIN,
+						'max' => CalendarsComponent::CALENDAR_RRULE_COUNT_MAX,
 					//	'div' => 'input-group',
 						'div' => false,
 						//'div' => 'col-xs-6',
@@ -343,6 +345,8 @@
 					$date = '';
 					$pickerOpt = str_replace('"', "'", json_encode(array(
 						'format' => 'YYYY-MM-DD',
+						'minDate' => CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MIN,
+						'maxDate' => CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MAX
 					)));
 
 					$untilValue = $this->request->data['CalendarActionPlan']['rrule_until'];

@@ -303,8 +303,8 @@ msgid  "Invalid input. Term end date is earlier than the start date."
 msgstr  "繰返し期限日が開始日より前になっています。"
 
 #: Model/Behavior/CalendarPlanRruleValidateBehavior.php:176
-msgid  "Year that can be specified is %d or more and %d or less."
-msgstr  "指定できる年は%d以上%d以下です。"
+msgid  "date that can be specified is %s or more and %s or less."
+msgstr  "指定できる日は%sから%sの間です。"
 
 #: Model/Behavior/CalendarValidateAppBehavior.php:60
 msgid  "Invalid input. (repeat interval. Please specify day/week/month/year)"
@@ -808,8 +808,8 @@ msgstr  "タイムライン"
 msgid  "<small>%d/</small> %d"
 msgstr  "<small>%d年</small>%d月"
 
-msgid  "<small>%d/</small>%d/%d<small>(%s)&nbsp;<br class="visible-xs" />%s</small>"
-msgstr  "<small>%d年</small>%d月%d日<small>(%s)&nbsp;<br class="visible-xs" />%s</small>"
+msgid  "<small>%d/</small>%d/%d<small>(%s)&nbsp;<br class=\"visible-xs\" />%s</small>"
+msgstr  "<small>%d年</small>%d月%d日<small>(%s)&nbsp;<br class=\"visible-xs\" />%s</small>"
 
 #: View/Helper/CalendarTurnCalendarHelper.php:182
 msgid  "This month"

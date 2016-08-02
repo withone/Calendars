@@ -54,11 +54,14 @@ class CalendarPlanRruleValidateBehavior extends CalendarValidateAppBehavior {
 					return false;
 				}
 
-				if ($rruleCount < 1 || $rruleCount > 999) {
+				if ($rruleCount < CalendarsComponent::CALENDAR_RRULE_COUNT_MIN ||
+					$rruleCount > CalendarsComponent::CALENDAR_RRULE_COUNT_MAX) {
 					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'] = array();
 					$model->CalendarActionPlan->calendarProofreadValidationErrors['rrule_count'][] =
 						sprintf(__d('calendars',
-						'The number of repetition is %d or more and %d or less.'), 1, 999);
+						'The number of repetition is %d or more and %d or less.'),
+							CalendarsComponent::CALENDAR_RRULE_COUNT_MIN,
+							CalendarsComponent::CALENDAR_RRULE_COUNT_MAX);
 					return false;
 				}
 				break;
@@ -170,12 +173,13 @@ class CalendarPlanRruleValidateBehavior extends CalendarValidateAppBehavior {
 		if ($svrNxtDayOfUntilDt <= $serverStartDate) {
 			return __d('calendars', 'Invalid input. Term end date is earlier than the start date.');
 		}
-
 		//範囲チェック
-		if (intval($matches[1]) < 1970 || 2033 < intval($matches[1])) {
+		if ($serverStartDate < CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MIN ||
+			CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MAX < $svrNxtDayOfUntilDt) {
 			return sprintf(
-				__d('calendars', 'Year that can be specified is %d or more and %d or less.'),
-				1970, 2033);
+				__d('calendars', 'date that can be specified is %s or more and %s or less.'),
+				CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MIN,
+				CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MAX);
 		}
 		return '';
 	}

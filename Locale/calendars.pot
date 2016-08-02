@@ -303,7 +303,7 @@ msgid  "Invalid input. Term end date is earlier than the start date."
 msgstr ""
 
 #: Model/Behavior/CalendarPlanRruleValidateBehavior.php:176
-msgid  "Year that can be specified is %d or more and %d or less."
+msgid  "date that can be specified is %s or more and %s or less."
 msgstr ""
 
 #: Model/Behavior/CalendarValidateAppBehavior.php:60
@@ -811,7 +811,7 @@ msgstr ""
 msgid  "<small>%d/</small> %d"
 msgstr ""
 
-msgid  "<small>%d/</small>%d/%d<small>(%s)&nbsp;<br class="visible-xs" />%s</small>"
+msgid  "<small>%d/</small>%d/%d<small>(%s)&nbsp;<br class=\"visible-xs\" />%s</small>"
 msgstr ""
 
 #: View/Helper/CalendarTurnCalendarHelper.php:182

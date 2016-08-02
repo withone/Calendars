@@ -67,6 +67,8 @@
 	$ngModel = 'detailStartDate'; //[' . $frameId . ']';
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD',
+		'minDate' => CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MIN,
+		'maxDate' => CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MAX
 	)));
 	$addNgInit = '';
 	if (!$this->request->data['CalendarActionPlan']['enable_time']) {
@@ -93,6 +95,8 @@
 	<?php
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD HH:mm',	//hashi
+		'minDate' => CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MIN,
+		'maxDate' => CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MAX
 	)));
 	$ngModel = 'detailStartDatetime'; //[' . $frameId . ']';
 	$addNgInit = '';
@@ -132,6 +136,8 @@
 	$ngModel = 'detailEndDatetime'; //[' . $frameId . ']';
 	$pickerOpt = str_replace('"', "'", json_encode(array(
 		'format' => 'YYYY-MM-DD HH:mm',
+		'minDate' => CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MIN,
+		'maxDate' => CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MAX
 	)));
 	$addNgInit = '';
 	if ($this->request->data['CalendarActionPlan']['enable_time']) {
@@ -157,6 +163,8 @@
 		$ngModel = 'detailEndDate'; //[' . $frameId . ']';
 		$pickerOpt = str_replace('"', "'", json_encode(array(
 			'format' => 'YYYY-MM-DD',
+			'minDate' => CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MIN,
+			'maxDate' => CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MAX
 		)));
 		$addNgInit = '';
 		if (!$this->request->data['CalendarActionPlan']['enable_time']) {
