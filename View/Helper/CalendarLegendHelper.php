@@ -58,6 +58,9 @@ class CalendarLegendHelper extends AppHelper {
  * @return string 凡例HTML
  */
 	protected function _getPublicLegend($vars) {
+		if (! $this->_isDisplayLegend($vars, Room::PUBLIC_PARENT_ID)) {
+			return '';
+		}
 		$html = $this->_getLegend($vars, Room::PUBLIC_PARENT_ID);
 		return $html;
 	}
@@ -71,6 +74,9 @@ class CalendarLegendHelper extends AppHelper {
  */
 	protected function _getPrivateLegend($vars) {
 		$html = '';
+		if (! $this->_isDisplayLegend($vars, Space::PRIVATE_SPACE_ID)) {
+			return '';
+		}
 		if (in_array(Space::PRIVATE_SPACE_ID, $vars['roomSpaceMaps'])) {
 			////$html = $this->_getLegend($vars, Room::PRIVATE_PARENT_ID);
 
@@ -95,8 +101,10 @@ class CalendarLegendHelper extends AppHelper {
 		// 空間的にはグループスペースでルームIDは「全会員」ではないものがあるか
 		foreach ($vars['roomSpaceMaps'] as $roomId => $spaceId) {
 			if ($spaceId == Space::ROOM_SPACE_ID && $roomId != Room::ROOM_PARENT_ID) {
-				$html = $this->_getLegend($vars, $roomId, __d('calendars', 'Room'));
-				break;
+				if ($this->_isDisplayLegend($vars, $roomId)) {
+					$html = $this->_getLegend($vars, $roomId, __d('calendars', 'Room'));
+					break;
+				}
 			}
 		}
 		return $html;
@@ -111,6 +119,9 @@ class CalendarLegendHelper extends AppHelper {
  */
 	protected function _getMemberLegend($vars) {
 		$html = '';
+		if (! $this->_isDisplayLegend($vars, Room::ROOM_PARENT_ID)) {
+			return '';
+		}
 		if (in_array(Space::ROOM_SPACE_ID, $vars['roomSpaceMaps'])) {
 			$html = $this->_getLegend($vars, Room::ROOM_PARENT_ID, __d('calendars', 'All the members'));
 		}
@@ -126,6 +137,9 @@ class CalendarLegendHelper extends AppHelper {
  */
 	protected function _getDoShareLegend($vars) {
 		$html = '';
+		if (! $this->_isDisplayLegend($vars, Space::PRIVATE_SPACE_ID)) {
+			return '';
+		}
 		// 共有した予定を持てるかどうかはプライベートを持っているかです
 		if (in_array(Space::PRIVATE_SPACE_ID, $vars['roomSpaceMaps'])) {
 			$html = $this->_getLegend(
@@ -148,6 +162,9 @@ class CalendarLegendHelper extends AppHelper {
  */
 	protected function _getDoneShareLegend($vars) {
 		$html = '';
+		if (! $this->_isDisplayLegend($vars, Space::PRIVATE_SPACE_ID)) {
+			return '';
+		}
 		$userId = Current::read('User.id');
 		if (empty($userId)) {
 			return $html;
@@ -187,5 +204,24 @@ class CalendarLegendHelper extends AppHelper {
 		$html .= $spaceName;
 		$html .= '</div></li>';
 		return $html;
+	}
+
+/**
+ * _isDisplayLegend
+ *
+ * 凡例を出してよいか
+ * （表示形式設定で首絞めされていたら表示しなくてよい
+ *
+ * @param array $vars カレンダー情報
+ * @param int $id 表示対象ルームID
+ * @return bool
+ */
+	protected function _isDisplayLegend($vars, $id) {
+		if ($vars['CalendarFrameSetting']['is_select_room']) {
+			if (! Hash::get($vars, 'exposeRoomOptions.' . $id)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

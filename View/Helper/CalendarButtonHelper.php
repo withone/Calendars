@@ -23,7 +23,7 @@ class CalendarButtonHelper extends AppHelper {
  *
  * @var mixed
  */
-	protected $_isCreatable = null;
+	protected $_isCreatable = array();
 
 /**
  * Other helpers used by FormHelper
@@ -105,16 +105,22 @@ class CalendarButtonHelper extends AppHelper {
 	public function getAddButton($vars, $options = null) {
 		// まだ作成可能かどうかの判断フラグが設定されていない場合
 		// まず設定する
-		if ($this->_isCreatable === null) {
+		$frameId = Current::read('Frame.id');
+		if (Hash::get($this->_isCreatable, $frameId) === null) {
 			$rooms = CalendarPermissiveRooms::getCreatableRoomIdList();
 			if (empty($rooms)) {
-				$this->_isCreatable = false;
+				$this->_isCreatable[$frameId] = false;
 			} else {
-				$this->_isCreatable = true;
+				$intersectRoom = array_intersect_key($rooms, $vars['exposeRoomOptions']);
+				if (empty($intersectRoom)) {
+					$this->_isCreatable[$frameId] = false;
+				} else {
+					$this->_isCreatable[$frameId] = true;
+				}
 			}
 		}
 		// 判断フラグがOFFの場合から文字列を返す
-		if ($this->_isCreatable === false) {
+		if ($this->_isCreatable[$frameId] === false) {
 			return '';
 		}
 		// どこかに書きこみ可能なルームが一つでもあれば追加ボタンを出す
