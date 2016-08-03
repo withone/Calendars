@@ -116,9 +116,10 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 		$rooms = $this->__getRooms($model);
 
 		//2. ログインユーザが所属する各ルームでの役割（role_key）を取得する。
-		if (!isset($model->RolesRoomsUser)) {
-			$model->loadModels(['RolesRoomsUser' => 'Rooms.RolesRoomsUser']);
-		}
+		$model->loadModels([
+			'RolesRoomsUser' => 'Rooms.RolesRoomsUser',
+			'RolesRoom' => 'Rooms.RolesRoom']);
+
 		$rolesRoomsUsers = $model->RolesRoomsUser->getRolesRoomsUsers(array(
 			'RolesRoomsUser.user_id' => Current::read('User.id'),
 		));
@@ -130,15 +131,14 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 		//注）
 		//$rolesRoomsUsersには、バプリックルーム（space_id ==2 && room_id == 1）の情報はあるが、
 		//$rolesRoomsUsersには、全会員ルーム（space_id ==4 && room_id == 3）の情報がない。
-		//そして、会員管理画面で会員登録する時、パブリックでの役割指定はあるが、
-		//全会員での役割指定は「ない」。仕方がないので、暫定で役割を決める。
+		// 別途取り出す
 		//予備情報）
 		//バブリックルームを表すroom_idはRoom::PUBLIC_PARENT_IDです。
 		//全会員を表すroom_idはRoom::ROOM_PARENT_IDです。
 		$userId = Current::read('User.id');
 		if (!empty($userId)) {
 			//ログインしている時だけ、全会員roomIdを強制的に追加する。
-			$roleOfRooms[Room::ROOM_PARENT_ID] = $this->__getAllMemberRoleKey();
+			$roleOfRooms[Room::ROOM_PARENT_ID] = $this->__getAllMemberRoleKey($model, $userId);
 		}
 		//3. ルーム管理＋カレンダー権限管理での承認権限ありなしを取得
 		$roomInfos = $this->__getRolePerms($roleOfRooms);
@@ -375,25 +375,27 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  *
  * 全会員（ルーム）での自分の役割を取得する
  *
+ * @param Model $model 実際のモデル
+ * @param int $userId ユーザーID
  * @return string 役割
  */
-	private function __getAllMemberRoleKey() {
+	private function __getAllMemberRoleKey(Model $model, $userId) {
 		//全会員
-		//この時は、ルームの役割ではなく、このユーザのデフォルト権限で判断する。
-		//FIXME: デフォルト権限とロール(役割）1:1にならないので、仕様を確認しておくこと。
-		//以下は、暫定.
-
-		$defaultPermission = Current::read('User.role_key');
-		if ($defaultPermission == UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
-			//システム管理者
-			$roleKey = Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR;
-		} elseif ($defaultPermission == UserRole::USER_ROLE_KEY_ADMINISTRATOR) {
-			//サイト管理者 .. chief_editor ?
-			$roleKey = Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR;
-		} else { //一般 UserRole::USER_ROLE_KEY_COMMON_USER .. editor以下?
-			$roleKey = Role::ROOM_ROLE_KEY_VISITOR;
-			//$roleKey = Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR;
+		$rolesRoomsUser = $model->RolesRoomsUser->find('first', array(
+			'conditions' => array(
+				'user_id' => $userId
+			),
+			'recursive' => -1,
+		));
+		if (! $rolesRoomsUser) {
+			return Role::ROOM_ROLE_KEY_VISITOR;
 		}
+		$rolesRoomsUserId = $rolesRoomsUser['RolesRoomsUser']['roles_room_id'];
+		$rolesRooms = $model->RolesRoom->findById($rolesRoomsUserId);
+		if (! $rolesRooms) {
+			return Role::ROOM_ROLE_KEY_VISITOR;
+		}
+		$roleKey = $rolesRooms['RolesRoom']['role_key'];
 		return $roleKey;
 	}
 }
