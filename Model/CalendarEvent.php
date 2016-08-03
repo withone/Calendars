@@ -313,6 +313,7 @@ class CalendarEvent extends CalendarsAppModel {
 		}
 		return $event;
 	}
+
 /**
  * getEventByKey
  *
@@ -347,6 +348,24 @@ class CalendarEvent extends CalendarsAppModel {
 	}
 
 /**
+ * screenPlansUsingGetable($plans);
+ *
+ * 見てもよいイベント情報のみフィルターで通す
+ *
+ * @param array $plans plans
+ * @return array フィルター済のplans配列
+ */
+	public function screenPlansUsingGetable($plans) {
+		$screendPlans = array();
+		foreach ($plans as $event) {
+			if ($this->_isGetableEvent($event)) {
+				$screendPlans[] = $event;
+			}
+		}
+		return $screendPlans;
+	}
+
+/**
  * _isGetableEvent
  *
  * 見てもよいイベント情報なのか判断する
@@ -374,5 +393,99 @@ class CalendarEvent extends CalendarsAppModel {
 			}
 		}
 		return false;
+	}
+
+/**
+ * prepareActiveForUpd
+ *
+ * eventデータの内、UPDATE時、is_active情報のみ整える。
+ *
+ * @param array &$event event
+ * @return void
+ */
+	public function prepareActiveForUpd(&$event) {
+		if (! (isset($event['CalendarEvent']['id']) && $event['CalendarEvent']['id'] > 0)) {
+			//idがない。つまりINSERT用evnetデータの時は、なにもしない。
+			return;
+		}
+		//以後、eventがUPDATE用であることが担保される。
+
+		/////////////////////////////////////////////////////////
+		//ここで行うべきことは、is_activeの再調整処理のみ。	//
+		//作成者、作成日およびis_latestの調整は INSERTsave前の //
+		//prepareLatestCreatedForIns発行で処置済なので、UPDATE //
+		//ではなにもしなくてよい。							 //
+		/////////////////////////////////////////////////////////
+
+		//is_activeのセット
+		$event['CalendarEvent']['is_active'] = false;
+		if ($event['CalendarEvent']['status'] === WorkflowComponent::STATUS_PUBLISHED) {
+			//statusが公開ならis_activeを付け替える
+			$event['CalendarEvent']['is_active'] = true;
+
+			//現状のis_activeを外す
+			$this->updateAll(
+				array('CalendarEvent' . '.is_active' => false),
+				array(
+					'CalendarEvent' . '.' . 'key' => $event['CalendarEvent']['key'],
+					'CalendarEvent' . '.language_id' => (int)$event['CalendarEvent']['language_id'],
+					'CalendarEvent' . '.is_active' => true,
+					'CalendarEvent' . '.' . 'id !=' =>
+						$event['CalendarEvent']['id'],	//WFとの違い。update対象eventは除外。
+				)
+			);
+		}
+	}
+
+/**
+ * prepareLatestCreatedForIns
+ *
+ * eventデータの内、INSERT時、is_latestとcreated,created_user情報のみ整える。
+ *
+ * @param array &$event event
+ * @return void
+ */
+	public function prepareLatestCreatedForIns(&$event) {
+		if (isset($event['CalendarEvent']['id']) && $event['CalendarEvent']['id'] > 0) {
+			//idがある。つまりUPDATE用evnetデータの時は、なにもしない。
+			return;
+		}
+		//以後、eventがINSERT用であることが担保される。
+
+		////////////////////////////////////////////////////////
+		//is_latestの真の調整は、UPDATEsave発行直前までdelay  //
+		//させるため、ここでは暫定でfalse固定でいれておく。   //
+		////////////////////////////////////////////////////////
+		$event['CalendarEvent']['is_active'] = false; //is_activeの暫定offセット
+
+		///////////////////////////////////////////////////////
+		//ここで行うべきことは、作成者、作成日およびis_latest//
+		//の調整のみ。									   //
+		///////////////////////////////////////////////////////
+		//作成者のコピー
+		$created = $this->find('first', array(
+			'recursive' => -1,
+			'fields' => array('created', 'created_user'),
+			'conditions' => array(
+				'key' => $event['CalendarEvent']['key']
+			),
+		));
+		if ($created) {
+			$event['CalendarEvent']['created'] = $created['CalendarEvent']['created'];
+			$event['CalendarEvent']['created_user'] = $created['CalendarEvent']['created_user'];
+		}
+
+		//is_latestのセット
+		$event['CalendarEvent']['is_latest'] = true;
+
+		//現状のis_latestを外す
+		$this->updateAll(
+			array('CalendarEvent' . '.is_latest' => false),
+			array(
+				'CalendarEvent' . '.' . 'key' => $event['CalendarEvent']['key'],
+				'CalendarEvent' . '.language_id' => (int)$event['CalendarEvent']['language_id'],
+				'CalendarEvent' . '.is_latest' => true,
+			)
+		);
 	}
 }

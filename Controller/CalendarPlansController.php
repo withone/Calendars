@@ -314,6 +314,10 @@ class CalendarPlansController extends CalendarsAppController {
  */
 	protected function _calendarPost() {
 		//登録処理
+		//注) getStatus()はsave_Nからの単純取得ではなくカレンダー独自status取得をしている.
+		//なのでControllerにきた直後のここで、request->dataをすり替えておくのが望ましい.
+		//HASHI
+		//
 		$status = $this->CalendarActionPlan->getStatus($this->request->data);
 		$this->request->data['CalendarActionPlan']['status'] = $status;
 		$this->CalendarActionPlan->set($this->request->data);

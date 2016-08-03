@@ -35,9 +35,10 @@ class CalendarRruleUtil {
 		}
 		if (preg_match('/^([^-]+)-([^@]+)@(.*)$/', $icalUid, $matches) === 1) {
 			$elms = explode('#', $matches[2]);
-			if (count($elms) >= 4) {
+			if (count($elms) >= 100) {
 				//入れ物(255バイト)におさめるため
-				//FIXME: ４連続分割追跡が限界。限界をのばすならicalendar_uidのサイズを増やす必要あり。
+				//icalendar_uidの型をvarchar(255)からtext型(mysqlだと最長65,535バイト）
+				//に変えたので、連続分割追跡回数を4から100に変更。
 				//
 				array_shift($elms);
 				$uniqid = implode('#', $elms) . '#' . $key;

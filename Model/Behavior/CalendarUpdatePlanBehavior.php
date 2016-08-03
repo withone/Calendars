@@ -137,7 +137,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 
 			//選択したeventデータを更新 (a). keyは踏襲されている。
 			//
-			$this->setEventData($planParams, $rruleData, $eventData);
+			$this->setEventData($planParams, $rruleData, $eventData);	//eventDataに値セット
 			$eventData = $this->updateDtstartData($model, $planParams, $rruleData, $eventData,
 				$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule);
 
@@ -295,8 +295,9 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			$this->setEventData($planParams, $rruleData, $eventData);
 			foreach ($newPlan['CalendarEvent'] as $fields) {
 				$event = array();
-				$event['CalendarEvent'] = $fields;
-				$eventDataForAllUpd = $this->__getEventDataForUpdateAllOrAfter($event, $eventData);
+				$event['CalendarEvent'] = $fields;	//$eventは元のeventを指す。
+				$eventDataForAllUpd = $this->__getEventDataForUpdateAllOrAfter($event,
+					$eventData, $status);
 				if ($eventId === null) {
 					//繰返しの最初のeventIdを記録しておく。
 					$eventId = $eventDataForAllUpd['CalendarEvent']['id'];
@@ -360,14 +361,6 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			}
 		}
 
-		//ＷＦ関連を追加
-		if ($eventData['CalendarEvent']['status'] == WorkflowComponent::STATUS_PUBLISHED) {
-			$eventData['CalendarEvent']['is_active'] = 1;
-		} else {
-			$eventData['CalendarEvent']['is_active'] = 0;
-		}
-		$eventData['CalendarEvent']['is_latest'] = 1;
-
 		$eventId = $eventData['CalendarEvent']['id'];	//update対象のststartendIdを退避
 		$model->CalendarEvent->set($eventData);
 
@@ -376,6 +369,14 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
+
+		//copyEventData()のINSERTsaveでは、WFのbeforeSaveのis_active調整処理を抑止し、
+		//代わりに、prepareLatestCreatedForInsを発行し、is_latest,created調整処理および
+		//is_activeのoff暫定セットをした。
+		//（WFのbeforeSaveはUPDATEsaveでは発動されないことが分かっているので）
+		//よって、「ここ」UPDATEsaveで、prepareActiveForUpdを事前実行し、INSERTsaveでdelayさせた
+		//is_active調整処理を行う。（eventDataの値が一部変更されます）
+		$model->CalendarEvent->prepareActiveForUpd($eventData);
 
 		if (!$model->CalendarEvent->save($eventData,
 			array(
@@ -553,8 +554,9 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 
 			foreach ($eventsAfterBase as $fields) {
 				$event = array();
-				$event['CalendarEvent'] = $fields;
-				$eventDataForAfterUpd = $this->__getEventDataForUpdateAllOrAfter($event, $eventData);
+				$event['CalendarEvent'] = $fields;	//$eventは元のeventを指す。
+				$eventDataForAfterUpd = $this->__getEventDataForUpdateAllOrAfter($event,
+					$eventData, $status);
 				if ($eventId === null) {
 					//繰返しの最初のeventIdを記録しておく。
 					$eventId = $eventDataForAfterUpd['CalendarEvent']['id'];
@@ -562,7 +564,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 
 				$eventDataForAfterUpd = $this->updateDtstartData(
 					$model, $planParams, $rruleData, $eventDataForAfterUpd,
-					$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule, $status);
+					$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule);
 			}
 		}
 
@@ -644,9 +646,10 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  *
  * @param array $event newPlanの各繰返しeventデータ。keyにCalendarEventを持つように整形してある。
  * @param array $eventData 編集画面のデータに基づいて作成されたeventData
+ * @param string $status status
  * @return array 全変更用に適宜編集された繰返しeventデータ
  */
-	private function __getEventDataForUpdateAllOrAfter($event, $eventData) {
+	private function __getEventDataForUpdateAllOrAfter($event, $eventData, $status) {
 		//id,key,rrule_idはnewPlanのまま
 		//$event['CalendarEvent']['id'] = 108
 		//$event['CalendarEvent']['calendar_rrule_id'] = 83
@@ -676,8 +679,11 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		//$event['CalendarEvent']['dtend'] = 20160616090000
 		//$event['CalendarEvent']['timezone_offset'] = 9.0
 
-		//Workflow関連は、statusのみ編集画面のボタンに影響うける
-		$event['CalendarEvent']['status'] = $eventData['CalendarEvent']['status'];
+		//statusは、編集画面のsave_Nを元にカレンダー拡張新statusになっているので、
+		//それを代入する。
+		$event['CalendarEvent']['status'] = $status;
+
+		//is_active, is_latestは、statusの値変化の有無で、処理が変わるのでここではスルーする。
 		//$event['CalendarEvent']['is_active'] = $eventData['CalendarEvent']['is_active'];
 		//$event['CalendarEvent']['is_latest'] = $eventData['CalendarEvent']['is_latest'];
 
@@ -746,12 +752,18 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		} else {
 			// (1)-2 statusが一時保存、承認待ち、差し戻しの場合、現在のrrule配下の全eventDataの
 			// excepted（除去）を立てて、無効化しておく。
+			// なお、表示に引っかからないよう、is_xxxxもoffしておくこと。
+
 			$fields = array(
 				$model->CalendarEvent->alias . '.exception_event_id' => 1,
 				$model->CalendarEvent->alias . '.modified_user' =>
 					$eventData['CalendarEvent']['modified_user'],
 				$model->CalendarEvent->alias . '.modified' =>
 					"'" . $eventData['CalendarEvent']['modified'] . "'",	//クオートに注意
+				//update,updateAllの時はWFのbeforeSaveによるis_xxxx変更処理は動かない.
+				//よってCAL自体でis_xxxxを変更(off)しておく。
+				$model->CalendarEvent->alias . '.is_active' => false,	//aaaaaaaaa
+				$model->CalendarEvent->alias . '.is_latest' => false,	//aaaaaaaaa
 			);
 			$conditions = array($model->CalendarEvent->alias . '.key' => $eventKeys);
 			if (!$model->CalendarEvent->updateAll($fields, $conditions)) {
@@ -761,4 +773,5 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			}
 		}
 	}
+
 }

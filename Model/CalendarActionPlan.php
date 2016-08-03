@@ -219,7 +219,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 			'type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
 
 		//承認ステータス
-		//statusは $data['data_N']のNではいってくるので、ここからは外す。
+		//statusは カレンダー独自stauts取得関数getStatusで取ってくるので、ここからは外す。
 		//'status' => array('type' => 'integer', 'null' => false, 'unsigned' => false),
 
 	);
@@ -493,7 +493,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 						CalendarsComponent::CALENDAR_VALIDATOR_TEXTAREA_LEN),
 				),
 			),
-			//statusの値は $data['data_N']のNではいってくるので、省略
+			//statusの値は カレンダー独自status取得関数getStatusで取ってくるので省略
 		));
 		$this->_doMergeRruleValidate($isDetailEdit);	//繰返し関連validation
 
@@ -529,8 +529,12 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 			//CakeLog::debug("DBG: request_data[" . print_r($data, true) . "]");
 
-			//$data['save_N']のN(=status)を抜き出す。
-			$status = $this->getStatus($data);
+			//call元の_calendarPost()の最初でgetStatus($data)の結果が
+			//$data['CalendarActionPlan']['status']に代入されているので
+			//ここは、その値を引っ張ってくるだけに直す。
+			////$status = $this->getStatus($data);
+			$status = $data['CalendarActionPlan']['status'];
+
 			//if ($status === false) { getStatus内でInternalErrorExceptionしている
 			//	CakeLog::error("save_Nより、statusが決定できませんでした。data[" .
 			//		serialize($data) . "]");
@@ -538,7 +542,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 			//}
 			if ($procMode === CalendarsComponent::PLAN_ADD) {
 				//新規追加処理
-				//CakeLog::debug("DBG: PLAN_ADD case.");
+				CakeLog::debug("DBG: PLAN_ADD case.");
 
 				//$this->insertPlan($planParam);
 				$eventId = $this->insertPlan($planParam);
@@ -546,8 +550,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 				//変更処理
 
 				//現予定を元に、新世代予定を作成する
-				$newPlan = $this->makeNewGenPlan($data, $status);
-				//CakeLog::debug("DBG: newPlan[" . print_r($newPlan, true) . "]");
+				$newPlan = $this->makeNewGenPlan($data, $status);	//aaaaaaaaaaa cal用新status
+				//CakeLog::debug("DBG: 現予定をもとに作り出した、新世代 newPlan[" . print_r($newPlan, true) . "]");
 
 				$editRrule = $this->getEditRruleForUpdate($data);
 
@@ -586,7 +590,10 @@ class CalendarActionPlan extends CalendarsAppModel {
 			}
 			$planParam['calendar_id'] = $calendar[$model->alias]['id'];
 
-			$planParam['status'] = $this->getStatus($data);
+			////statusは、上流の_calendarPost()直後でカレンダー独自status取得・代入
+			////が実行され、$data['CalendarAtionPlan']['status']にセットされているので
+			////単純なcopyの方に移動させた。
+			////$planParam['status'] = $this->getStatus($data);
 			$planParam['language_id'] = Current::read('Language.id');
 			$planParam['room_id'] = $data[$this->alias]['plan_room_id'];
 			$planParam['timezone_offset'] = $this->_getTimeZoneOffsetNum(
@@ -599,7 +606,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 			$fields = array(
 				'title', 'title_icon',		//FIXME: insert/update側に追加実装しないといけない項目
 				'location', 'contact', 'description',
-				'enable_email', 'email_send_timing',
+				'enable_email', 'email_send_timing', 'status',
 			);
 			foreach ($fields as $field) {
 				$planParam[$field] = $data[$this->alias][$field];
@@ -640,6 +647,16 @@ class CalendarActionPlan extends CalendarsAppModel {
 		foreach ($keys as $key) {
 			if (preg_match('/^save_(\d+)$/', $key, $matches) === 1) {
 				//return $matches[1];
+
+				////////////////////////////////////////
+				//カレンダーでのstatus取得の考え方)
+				//save_NのNをまず取り出し、下記ルールを適用。空間によってはstatusを切り替える。
+				//
+				//status が、STATUS_PUBLISHED（1）承認済＝発行済 又は STATUS_APPROVED （2）承認待ち の時
+				//＝＞status値は、現ユーザが指定空間でcontent publish権限あるならPUBLISHED、権限ないならAPPROVED
+				//status が、STATUS_IN_DRAFT（3） 一時保存 又は STATUS_DISAPPROVED（4）差し戻し の時
+				//＝＞status値は、そのまま使う。
+
 				$status = $matches[1];
 				$roomId = $data['CalendarActionPlan']['plan_room_id'];
 				$checkStatus = array(WorkflowComponent::STATUS_PUBLISHED, WorkflowComponent::STATUS_APPROVED);

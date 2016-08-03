@@ -66,7 +66,7 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
  *
  * @param Model &$model 実際のモデル名
  * @param array $data POSTされたrequest->data配列
- * @param string $status status
+ * @param string $status status 変更時のカレンダー独自の新status
  * @return int 生成成功時 新しく生成した次世代予定($plan)を返す。失敗時 InternalErrorExceptionを投げる。
  * @throws InternalErrorException
  */
@@ -158,7 +158,7 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
  * @param Model &$model 実際のモデル名
  * @param array $event event
  * @param int $calendarRruleId calendarRruleId
- * @param string $status status
+ * @param string $status status 変更時のカレンダー独自新status
  * @param sring $originEventId 選択されたeventのid(origin_event_id)
  * @param sring $originEventKey 選択されたeventのkey(origin_event_key)
  * @return int 生成成功時 新しい$event、newEventId, newEventKeyを返す。失敗時 InternalErrorExceptionを投げる。
@@ -167,6 +167,10 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 	private function __copyEventData(Model &$model, $event, $calendarRruleId, $status,
 		$originEventId, $originEventKey) {
 		//CalendarEventには、status, is_latest, is_activeがある。
+		//
+		//注：is_latest,is_activeは、WFのbeforeSaveで、insertの時だけ
+		//statusに従い自動調整セットされる。update(updateAll含む)の時は、
+		//is_latest,is_activeは自動調整セットされないので、要注意。
 
 		$eventData = array();
 		$eventData['CalendarEvent'] = $event;
@@ -184,25 +188,14 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 		$eventData['CalendarEvent']['id'] = null;
 		$eventData['CalendarEvent']['calendar_rrule_id'] = $calendarRruleId;
 
-		//Workflow情報は再設定（ただし、language_idは継承)
-		//
-		////Workflowステータスは、継承すること。
-		////	$eventData['CalendarEvent']['status'] = $status;
-		/*
-		$eventData['CalendarEvent']['is_active'] = 0;
-		////if ($status == WorkflowComponent::STATUS_PUBLISHED) {
-		////	$eventData['CalendarEvent']['is_active'] = 1;
-		////}
-		if ($eventData['CalendarEvent']['status'] == WorkflowComponent::STATUS_PUBLISHED) {
-			$eventData['CalendarEvent']['is_active'] = 1;
-		}
-		$eventData['CalendarEvent']['is_latest'] = 1;
-		*/
+		//「status, is_active, is_latest, created, created_user について」
+		//statusは、元世代のstatus値を引き継ぐ。
+		//is_active, is_latestは、WorkflowのbeforeSaveのINSERT処理にまかせて
+		//値を自動設定させる。
+		//created, created_userも、WorkflowのbeforeSaveのINSERT処理にまわせて
+		//値を同一key、同一lange_idのcreated, created_userよりcopyさせる。
 
-		$eventData['CalendarEvent']['created_user'] = null;
-		$eventData['CalendarEvent']['created'] = null;
-		$eventData['CalendarEvent']['modified_user'] = null;
-		$eventData['CalendarEvent']['modified'] = null;
+		$eventData['CalendarEvent']['modified_user'] = $eventData['CalendarEvent']['modified'] = null;
 
 		if (!isset($model->CalendarEvent)) {
 			$model->loadModels(['CalendarEvent' => 'Calendars.CalendarEvent']);
@@ -217,15 +210,23 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
-		// 各種Behavior終わったら戻す FUJI
-		$model->CalendarEvent->Behaviors->load('Workflow.Workflow');
+		// 各種Behavior終わったら戻す FUJI ＝＞ WFのbeforeSaveのis_active調整処理は
+		// INSERTではなく、UPDATEまで処理delayさせる必要があるが、is_latestとcreatedは
+		// ここで行なうべき。ゆえに、(a) load(WF.WF)をsave()の後に移動し、(b)カレンダ
+		// のLatestおよびCreated準備処理をここに差し込む。
+		// (eventDataの値、一部更新等しています)
+		$model->CalendarEvent->prepareLatestCreatedForIns($eventData);
 
-		$eventData = $model->CalendarEvent->save($eventData, false);	//子もsave()で返ってくる。
+		//子もsave（）で返ってくる。
+		$eventData = $model->CalendarEvent->save($eventData, false); //aaaaaaaaaaaaa
 		if (!$eventData) { //保存のみ
 			CakeLog::error("変更時に指定された元イベント(calendar_event_id=[" .
 				$originEventId . "])のCOPYに失敗");
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
+		// 各種Behavior終わったら戻す FUJI ＝＞ 再load(WF.WF)の発行位置をsave後に変更 HASHI
+		$model->CalendarEvent->Behaviors->load('Workflow.Workflow');
+
 		// 各種Behavior終わったら戻す FUJI
 		$model->CalendarEvent->Behaviors->load('Workflow.WorkflowComment');
 

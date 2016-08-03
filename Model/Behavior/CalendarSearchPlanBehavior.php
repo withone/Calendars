@@ -13,6 +13,7 @@
 App::uses('CalendarAppBehavior', 'Calendars.Model/Behavior');
 App::uses('Space', 'Rooms.Model');
 App::uses('WorkflowComponent', 'Workflow.Controller/Component');
+App::uses('CalendarPermissiveRooms', 'Calendars.Utility');
 /**
  * CalendarSearchPlanBehavior
  *
@@ -82,6 +83,7 @@ class CalendarSearchPlanBehavior extends CalendarAppBehavior {
 		////$plans = $model->getWorkflowContents('all', $options);
 		$plans = $model->find('all', $options);
 		/*
+		CakeLog::debug("DBG: options[" . print_r($options, true) . "]\n");
 		foreach ($plans as $plan) {
 			CakeLog::debug("DBG: event id[" . $plan['CalendarEvent']['id'] .
 				"] key[" . $plan['CalendarEvent']['key'] .
@@ -93,11 +95,16 @@ class CalendarSearchPlanBehavior extends CalendarAppBehavior {
 				"] is_latest[" . $plan['CalendarEvent']['is_latest'] .
 				"] created_user[" . $plan['CalendarEvent']['created_user'] .
 				"] modified_user[" . $plan['CalendarEvent']['modified_user'] .
-				"]");
+				"]\n\n");
 		}
 		*/
-		//plansを$calRoleAndPerm中の各配列を使いスクリーニングする
-		$plans = $this->__screenPlans($model, $plans, $calRoleAndPerm);
+		////plansを$calRoleAndPerm中の各配列を使いスクリーニングする
+		////＝＞screenPlansUsingGetable方式に変えたので以下はやめた HASHI
+		////$plans = $this->__screenPlans($model, $plans, $calRoleAndPerm);
+		//スクリーニング方法をCalendarEventのGetableEvnet()を使う方法に変えた HASHI
+		$roomPermRoles = $model->prepareCalRoleAndPerm();
+		CalendarPermissiveRooms::$roomPermRoles = $roomPermRoles;
+		$plans = $model->screenPlansUsingGetable($plans);
 
 		///////////////////////////////////////////////////////////////////////
 		//自ユーザーを共有指定している他人のプライベート予定をとってくる。

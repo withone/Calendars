@@ -33,7 +33,11 @@ echo $this->element('Calendars.scripts');
 				$editRrule = true;
 
 				$firstSibYear = $firstSibMonth = $firstSibDay = $firstSibEventId = $firstSibEventKey = 0;
-				if (!empty($this->request->data['CalendarActionPlan']['first_sib_event_id'])) {
+				if (!empty($this->request->data['CalendarActionPlan']['first_sib_event_id']) &&
+					!empty($this->request->data['CalendarActionPlan']['first_sib_event_key']) &&
+					!empty($this->request->data['CalendarActionPlan']['first_sib_year']) &&
+					!empty($this->request->data['CalendarActionPlan']['first_sib_month']) &&
+					!empty($this->request->data['CalendarActionPlan']['first_sib_day'])) {
 					$firstSibEventId = $this->request->data['CalendarActionPlan']['first_sib_event_id'];
 					$firstSibEventKey = $this->request->data['CalendarActionPlan']['first_sib_event_key'];
 					$firstSibYear = $this->request->data['CalendarActionPlan']['first_sib_year'];
