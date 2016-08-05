@@ -202,8 +202,10 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 		$html = '';
 		$rooms = $vars['exposeRoomOptions'];
 
-		//「仲間の予定」仮想ルーム情報を追記
-		$rooms[CalendarsComponent::FRIEND_PLAN_VIRTUAL_ROOM_ID] = __d('calendars', 'Schedule of fellow');
+		//プライベートを表示することになって入るなら「仲間の予定」仮想ルーム情報を追記
+		if (in_array('private', $vars['spaceNameOfRooms'])) {
+			$rooms[CalendarsComponent::FRIEND_PLAN_VIRTUAL_ROOM_ID] = __d('calendars', 'Schedule of fellow');
+		}
 
 		//ルーム数分繰り返し
 		$cnt = 0;
