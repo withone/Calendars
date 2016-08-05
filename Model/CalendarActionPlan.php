@@ -244,6 +244,10 @@ class CalendarActionPlan extends CalendarsAppModel {
  */
 	public function __construct($id = false, $table = null, $ds = null) {
 		parent::__construct($id, $table, $ds);
+		$this->loadModels([
+			'Frame' => 'Frames.Frame',
+			'Calendar' => 'Calendars.Calendar',
+		]);
 	}
 
 /**
@@ -514,6 +518,9 @@ class CalendarActionPlan extends CalendarsAppModel {
  * @throws InternalErrorException
  */
 	public function saveCalendarPlan($data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod) {
+		// 設定画面を表示する前にこのルームのアンケートブロックがあるか確認
+		// 万が一、まだ存在しない場合には作成しておく
+		$this->Calendar->afterFrameSave(Current::read());
 		$this->begin();
 		$eventId = 0;
 		$this->aditionalData = $data['WorkflowComment'];

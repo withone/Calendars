@@ -288,6 +288,16 @@ class Calendar extends CalendarsAppModel {
  * @return array 生成したデータ
  */
 	protected function _saveFrameChangeAppearance($frame) {
+		$frameKey = $frame['key'];
+		$frameSetting = $this->CalendarFrameSetting->find('first', array(
+			'conditions' => array(
+				'frame_key' => $frameKey
+			),
+			'recursive' => -1
+		));
+		if ($frameSetting) {
+			return $frameSetting;
+		}
 		$frameSetting = $this->CalendarFrameSetting->create();
 		$this->CalendarFrameSetting->setDefaultValue($frameSetting);	//Modelの初期値設定
 		$frameSetting['CalendarFrameSetting']['frame_key'] = $frame['key'];
