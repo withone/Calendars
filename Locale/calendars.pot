@@ -811,7 +811,7 @@ msgstr ""
 msgid  "<small>%d/</small> %d"
 msgstr ""
 
-msgid  "<small>%d/</small>%d/%d<small>(%s)&nbsp;<br class=\"visible-xs\" />%s</small>"
+msgid  "<small>%d/</small>%d/%d<small class=\"%s\">(%s)&nbsp;<br class=\"visible-xs\" />%s</small>"
 msgstr ""
 
 #: View/Helper/CalendarTurnCalendarHelper.php:182

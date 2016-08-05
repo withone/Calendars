@@ -124,6 +124,8 @@ class CalendarsAppController extends AppController {
 				$vars['day'] = 1;
 			}
 		}
+		$specDate = new DateTime(sprintf('%d-%d-%d', $vars['year'], $vars['month'], $vars['day']));
+		$vars['week'] = $specDate->format('w');
 		////$vars['dayOfTheWeek'] = date('w', strtotime($userNowYmdHis));	//date()は使わない
 		$userTz = (new NetCommonsTime())->getUserTimezone();
 		$date = new DateTime('now', (new DateTimeZone($userTz)));	//ユーザー系

@@ -98,7 +98,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		if ($type == 'day') {
 			// 文字色
 			$textColor = $this->CalendarCommon->makeTextColor(
-				$vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $vars['dayOfTheWeek']);
+				$vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $vars['week']);
 		}
 		$turnNavId = 'CalendarEventTargetYear_' . Current::read('Frame.id');
 
@@ -113,13 +113,14 @@ class CalendarTurnCalendarHelper extends AppHelper {
 			case 'day':
 				/* 祝日タイトル */
 				$holidayTitle = $this->CalendarCommon->getHolidayTitle(
-					$vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $vars['dayOfTheWeek']);
+					$vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $vars['week']);
 				$html .= sprintf(__d('calendars',
-						'<small>%d/</small>%d/%d<small>(%s)&nbsp;<br class="visible-xs" />%s</small>'),
+						'<small>%d/</small>%d/%d<small class="%s">(%s)&nbsp;<br class="visible-xs" />%s</small>'),
 					$vars['year'],
 					$vars['month'],
 					$vars['day'],
-					$this->CalendarCommon->getWeekName($vars['dayOfTheWeek']),
+					$textColor,
+					$this->CalendarCommon->getWeekName($vars['week']),
 					$holidayTitle
 				);
 				break;
