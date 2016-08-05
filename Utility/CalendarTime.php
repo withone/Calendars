@@ -68,7 +68,6 @@ class CalendarTime {
  */
 	public function convUserFromTo2SvrFromTo($userYmdFrom, $userYmdTo, $userTimezoneOffset, $isAllDay = false) {
 		$nctm = new NetCommonsTime();
-
 		$dttmFrom = new DateTime($userYmdFrom);
 		$dttmTo = new DateTime($userYmdTo);
 		$diffDate = date_diff($dttmTo, $dttmFrom);
@@ -77,7 +76,7 @@ class CalendarTime {
 		$serverStartDate = $nctm->toServerDatetime($startDateZero, $userTimezoneOffset);
 
 		//To日付の翌日00:00:00をEndにセット
-		if ($isAllDay && $diffDate->d > 1) {
+		if ($isAllDay && $diffDate->d >= 1) {
 			$yearOfEndNextDay = $dttmTo->format('Y');
 			$monthOfEndNextDay = $dttmTo->format('m');
 			$endNextDay = $dttmTo->format('d');
