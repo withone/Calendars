@@ -62,19 +62,30 @@ class CalendarTime {
  * @param string $userYmdFrom "YYYY-MM-DD"形式(ユーザ系)
  * @param string $userYmdTo "YYYY-MM-DD"形式(ユーザ系)
  * @param string $userTimezoneOffset タイムゾーン文字列（ex.Asia/Tokyo）
+ * @param bool $isAllDay 終日予定なのかどうか（これによってgetNextDayの取得を制御する
  * @return array 開始日の00:00から終了日翌日の00:00をサーバ系時刻になおして返す。
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function convUserFromTo2SvrFromTo($userYmdFrom, $userYmdTo, $userTimezoneOffset) {
+	public function convUserFromTo2SvrFromTo($userYmdFrom, $userYmdTo, $userTimezoneOffset, $isAllDay = false) {
 		$nctm = new NetCommonsTime();
 
+		$dttmFrom = new DateTime($userYmdFrom);
+		$dttmTo = new DateTime($userYmdTo);
+		$diffDate = date_diff($dttmTo, $dttmFrom);
 		//From日付の00:00:00
 		$startDateZero = $userYmdFrom . ' 00:00:00';
 		$serverStartDate = $nctm->toServerDatetime($startDateZero, $userTimezoneOffset);
 
 		//To日付の翌日00:00:00をEndにセット
-		list($yearOfEndNextDay, $monthOfEndNextDay, $endNextDay) = CalendarTime::
+		if ($isAllDay && $diffDate->d > 1) {
+			$yearOfEndNextDay = $dttmTo->format('Y');
+			$monthOfEndNextDay = $dttmTo->format('m');
+			$endNextDay = $dttmTo->format('d');
+		} else {
+			list($yearOfEndNextDay, $monthOfEndNextDay, $endNextDay) = CalendarTime::
 			getNextDay(intval(substr($userYmdTo, 0, 4)), intval(substr($userYmdTo, 5, 2)),
-			intval(substr($userYmdTo, 8, 2)));
+				intval(substr($userYmdTo, 8, 2)));
+		}
 		$serverEndNextDate = $nctm->toServerDatetime(sprintf("%04d-%02d-%02d 00:00:00",
 			$yearOfEndNextDay, $monthOfEndNextDay, $endNextDay), $userTimezoneOffset);
 
@@ -402,6 +413,9 @@ class CalendarTime {
  */
 	public function dateFormat($time, $timezoneOffset = null, $insertFlag = 0,
 		$timeFormat = 'YmdHis', $toFlag = 0) {
+
+		$userTz = (new NetCommonsTime())->getUserTimezone();
+
 		if (isset($timezoneOffset)) {
 			//ユーザー系、サーバー系ではなく、具体的は時差情報がわたされたので、それで計算するケース
 			$timezoneMinuteOffset = 0;
@@ -427,9 +441,6 @@ class CalendarTime {
 		} else {
 			//オフセット時間の指定がないので、insertFlag=1(登録=ユーザ系toサーバー系)か
 			//insertFlag=0(表示=サーバー系toユーザー系)で判断する。
-
-			$userTz = (new NetCommonsTime())->getUserTimezone();
-
 			//少し冗長だが、変化の流れが分かるように書いた。
 			if ($insertFlag) {
 				//登録.ユーザー系toサーバー系YmdHis

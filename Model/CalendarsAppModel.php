@@ -107,11 +107,13 @@ class CalendarsAppModel extends AppModel {
 		} else {
 			$planParam['is_allday'] = 1;
 			//ユーザー系の開始日と終了日とタイムゾーンを、サーバ系の開始日の00:00:00から終了翌日の00:00:00に変換する
+			// FUJI start, end が翌日に設定されているときはNextDateにするなとわたす
 			list($serverStartDate, $serverEndNextDate) =
 				(new CalendarTime())->convUserFromTo2SvrFromTo(
 					$data[$this->alias]['detail_start_datetime'],
 					$data[$this->alias]['detail_end_datetime'],
-					$data[$this->alias]['timezone_offset']);
+					$data[$this->alias]['timezone_offset'],
+					$planParam['is_allday']);
 
 			$planParam['start_date'] = CalendarTime::stripDashColonAndSp(substr($serverStartDate, 0, 10));
 			$planParam['start_time'] = CalendarTime::stripDashColonAndSp(substr($serverStartDate, 11, 8));
