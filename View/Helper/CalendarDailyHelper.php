@@ -41,6 +41,10 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
  * @return string
  */
 	public function getSpaceName(&$vars, $roomId, $languageId) {
+		if ($roomId == Room::ROOM_PARENT_ID) {
+			return __d('calendars', 'All the members');
+		}
+
 		$roomsLanguages = $vars['roomsLanguages'];
 		$roomName = '';
 		foreach ($roomsLanguages as $room) {
