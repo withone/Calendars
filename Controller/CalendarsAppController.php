@@ -239,14 +239,20 @@ class CalendarsAppController extends AppController {
 		$rooms = $this->Room->find('all', array(
 			'recursive' => -1,
 			'conditions' => array(
-				'Room.id' => $this->CalendarFrameSetting->getReadableRoomIds()
+				'Room.id' => $this->CalendarEvent->getReadableRoomIds()
 			),
 			'order' => array(
 				$this->Room->alias . '.id'
 			)
 		));
 		$vars['roomSpaceMaps'] = Hash::combine($rooms, '{n}.Room.id', '{n}.Room.space_id');
-		$roomsLanguages = $this->RoomsLanguages->find('all', array('recursive' => -1)); //pending
+		$roomsLanguages = $this->RoomsLanguages->find(
+			'all',
+			array(
+				'room_id' => $this->CalendarEvent->getReadableRoomIds(),
+				'recursive' => -1
+			)
+		);
 		$vars['roomsLanguages'] = $roomsLanguages;
 	}
 

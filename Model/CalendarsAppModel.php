@@ -21,6 +21,13 @@ App::uses('CalendarRruleUtil', 'Calendars.Utility');
 class CalendarsAppModel extends AppModel {
 
 /**
+ * getReadableRoomIds関数が何度も繰り返し呼び出された時のための保持変数
+ *
+ * @var array
+ */
+	protected $_readableRoomIds = null;
+
+/**
  * getReadableRoomIds
  *
  * 読み取り可能なルームのID配列を返す
@@ -29,6 +36,11 @@ class CalendarsAppModel extends AppModel {
  */
 	public function getReadableRoomIds() {
 		// 読み取り可能なルームを取得
+		// 読み取り可能なルームはフレームが異なろうとも、１アクセス中で変わることはないので
+		// 保存して使いまわす
+		if (! is_null($this->_readableRoomIds)) {
+			return $this->_readableRoomIds;
+		}
 		$this->Room = ClassRegistry::init('Rooms.Room', true);
 		$condition = $this->Room->getReadableRoomsConditions();
 		$roomBase = $this->Room->find('all', $condition);
@@ -41,6 +53,7 @@ class CalendarsAppModel extends AppModel {
 			}
 			$roomIds[Room::ROOM_PARENT_ID] = Room::ROOM_PARENT_ID;
 		}
+		$this->_readableRoomIds = $roomIds;
 		return $roomIds;
 	}
 
@@ -55,27 +68,6 @@ class CalendarsAppModel extends AppModel {
  * @throws InternalErrorException
  */
 	protected function _setAndMergeDateTime($planParam, $data) {
-		if ($data[$this->alias]['is_detail']) {
-			//詳細画面からのデータ
-			$planParam = $this->_setAndMergeDateTimeDetail($planParam, $data);
-		} else {
-			//簡易画面からのデータ
-			$planParam = $this->_setAndMergeDateTimeEasy($planParam, $data);
-		}
-		return $planParam;
-	}
-
-/**
- * _setAndMergeDateTimeDetail
- *
- * 詳細画面系の日付時刻系のパラメータを整形し、予定パラメータにマージして返す
- *
- * @param array $planParam merge前の予定パラメータ
- * @param array $data POSTされたデータ
- * @return array 成功時 整形,merged後の予定パラメータ. 失敗時 例外をthrowする.
- * @throws InternalErrorException
- */
-	protected function _setAndMergeDateTimeDetail($planParam, $data) {
 		//詳細画面からのデータ
 		//時間指定なしの場合
 		//  [detail_start_datetime] => 2016-03-06 　ユーザ系日付（から）
@@ -121,67 +113,6 @@ class CalendarsAppModel extends AppModel {
 
 			$planParam['end_date'] = CalendarTime::stripDashColonAndSp(substr($serverEndNextDate, 0, 10));
 			$planParam['end_time'] = CalendarTime::stripDashColonAndSp(substr($serverEndNextDate, 11, 8));
-			$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
-		}
-		return $planParam;
-	}
-
-/**
- * _setAndMergeDateTimeEasy
- *
- * 簡易画面系の日付時刻系のパラメータを整形し、予定パラメータにマージして返す
- *
- * @param array $planParam merge前の予定パラメータ
- * @param array $data POSTされたデータ
- * @return array 成功時 整形,merged後の予定パラメータ. 失敗時 例外をthrowする.
- * @throws InternalErrorException
- */
-	protected function _setAndMergeDateTimeEasy($planParam, $data) {
-		//簡易画面からのデータ
-		//[easy_start_date] => 2016-03-01  <= 日付だけなので、User系
-		//[easy_hour_minute_from] => 2016-02-29 16:00:00 <= サーバ系
-		//[easy_hour_minute_to] => 2016-02-29 17:00:00 <= サーバ系
-
-		if ($data[$this->alias]['enable_time']) {
-			$planParam['is_allday'] = 0;
-			//その日の時間指定あり
-			$planParam['start_date'] =
-				CalendarTime::stripDashColonAndSp(
-					substr($data[$this->alias]['easy_hour_minute_from'], 0, 10));
-			$planParam['start_time'] =
-				CalendarTime::stripDashColonAndSp(
-				substr($data[$this->alias]['easy_hour_minute_from'], 11, 8));
-			$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
-
-			$planParam['end_date'] =
-				CalendarTime::stripDashColonAndSp(
-					substr($data[$this->alias]['easy_hour_minute_to'], 0, 10));
-			$planParam['end_time'] =
-				CalendarTime::stripDashColonAndSp(
-					substr($data[$this->alias]['easy_hour_minute_to'], 11, 8));
-			$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
-
-		} else {
-			$planParam['is_allday'] = 1;
-			//その日の終日
-			list($serverStartDateZero, $serverNextDateZero) =
-				(new CalendarTime())->convUserDate2SvrFromToDateTime(
-					$data[$this->alias]['easy_start_date'], $data[$this->alias]['timezone_offset']);
-
-			$planParam['start_date'] =
-				CalendarTime::stripDashColonAndSp(
-					substr($serverStartDateZero, 0, 10));
-			$planParam['start_time'] =
-				CalendarTime::stripDashColonAndSp(
-					substr($serverStartDateZero, 11, 8));
-			$planParam['dtstart'] = $planParam['start_date'] . $planParam['start_time'];
-
-			$planParam['end_date'] =
-				CalendarTime::stripDashColonAndSp(
-					substr($serverNextDateZero, 0, 10));
-			$planParam['end_time'] =
-				CalendarTime::stripDashColonAndSp(
-					substr($serverNextDateZero, 11, 8));
 			$planParam['dtend'] = $planParam['end_date'] . $planParam['end_time'];
 		}
 		return $planParam;
