@@ -340,6 +340,15 @@ class CalendarEvent extends CalendarsAppModel {
 		// 新しいもの順にチェック
 		foreach ($events as $event) {
 			if ($this->_isGetableEvent($event)) {
+				// 発行済みデータかどうかチェックし、値を追加する
+				$conditions[$this->alias . '.is_active'] = true;
+				$options = array(
+					'fields' => array('is_active'),
+					'conditions' => $conditions,
+					'recursive' => -1,
+				);
+				$isPublished = $this->find('first', $options);
+				$event[$this->alias]['is_published'] = Hash::get($isPublished, $this->alias . '.is_active');
 				return $event;
 			}
 		}

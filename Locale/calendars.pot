@@ -1140,3 +1140,6 @@ msgstr ""
 
 msgid "%d/%d (%s)"
 msgstr "%d月%d日(%s)"
+
+msgid "You can not change the target space  after published."
+msgstr ""

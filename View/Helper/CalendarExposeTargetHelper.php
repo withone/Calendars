@@ -24,10 +24,12 @@ class CalendarExposeTargetHelper extends AppHelper {
  * @var array
  */
 	public $helpers = array(
+		'Workflow.Workflow',
 		'NetCommons.NetCommonsForm',
 		'NetCommons.NetCommonsHtml',
 		'Form',
-		'Rooms.Rooms'
+		'Rooms.Rooms',
+		'Calendars.CalendarCategory'
 	);
 
 /**
@@ -45,15 +47,16 @@ class CalendarExposeTargetHelper extends AppHelper {
  *
  * 公開対象html生成
  *
+ * @param array $event 対象予定データ
  * @param int $frameId フレームID
- * @param int $languageId 言語ID
  * @param array $vars カレンダー情報
  * @param array $options 公開対象オプション情報
  * @param int $myself 自分自身のroom_id
  * @return string HTML
  */
-	public function makeSelectExposeTargetHtml($frameId, $languageId, $vars, $options, $myself) {
+	public function makeSelectExposeTargetHtml($event, $frameId, $vars, $options, $myself) {
 		//option配列イメージ
+
 		/*
 		$options = array(
 			'1' => __d('calendars', 'パブリックスペース'),
@@ -72,16 +75,29 @@ class CalendarExposeTargetHelper extends AppHelper {
 			'CalendarActionPlan.plan_room_id' . Inflector::camelize('room_id'),
 			__d('calendars', 'Category') . $this->_View->element('NetCommons.required'));
 
-		$html .= $this->NetCommonsForm->select('CalendarActionPlan.plan_room_id', $targetRooms, array(
-			//select-expose-targetクラスをもつ要素のchangeをjqで捕まえています
-			'class' => 'form-control select-expose-target',
-			'empty' => false,
-			'required' => true,
-			//value値のoption要素がselectedになる。
-			'value' => $this->request->data['CalendarActionPlan']['plan_room_id'],
-			'data-frame-id' => $frameId,
-			'data-myself' => $myself,
-		));
+		// 発行権限がなくて、かつ、すでに発行済みデータの場合は空間変更を認めない
+		// 固定的な文字列と、hiddenを設定して返す
+		if (! $this->Workflow->canDelete('Calendars.CalendarEvent', $event) &&
+			Hash::get($event, 'CalendarEvent.is_published') == true) {
+			$html .= '<div>';
+			$html .= $this->CalendarCategory->getCategoryName($vars, $event);
+			$html .= '<span class="help-block">';
+			$html .= __d('calendars', 'You can not change the target space  after published.');
+			$html .= '</span>';
+			$html .= $this->NetCommonsForm->hidden('CalendarActionPlan.plan_room_id');
+			$html .= '</div>';
+		} else {
+			$html .= $this->NetCommonsForm->select('CalendarActionPlan.plan_room_id', $targetRooms, array(
+				//select-expose-targetクラスをもつ要素のchangeをjqで捕まえています
+				'class' => 'form-control select-expose-target',
+				'empty' => false,
+				'required' => true,
+				//value値のoption要素がselectedになる。
+				'value' => $this->request->data['CalendarActionPlan']['plan_room_id'],
+				'data-frame-id' => $frameId,
+				'data-myself' => $myself,
+			));
+		}
 
 		return $html;
 	}

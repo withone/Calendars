@@ -453,14 +453,6 @@ class CalendarPlansController extends CalendarsAppController {
  */
 	public function show() {
 		$event = $this->eventData;
-		$roomLang = $this->RoomsLanguage->find('first', array(
-			'conditions' => array(
-				$this->RoomsLanguage->alias . '.room_id' => $event[$this->CalendarEvent->alias]['room_id'],
-				$this->RoomsLanguage->alias . '.language_id' =>
-					$event[$this->CalendarEvent->alias]['language_id'],
-			),
-			'recursive' => -1,
-		));
 		$shareUserInfos = array();
 		foreach ($this->shareUsers as $shareUser) {
 			$shareUserInfos[] =
@@ -478,7 +470,7 @@ class CalendarPlansController extends CalendarsAppController {
 		//testセッション方式
 		$url = $this->__getSessionStoredRedirectUrl();
 		$this->_vars['returnUrl'] = $url;
-		$this->set(compact('roomLang', 'shareUserInfos', 'createdUserInfo', 'isRepeat'));
+		$this->set(compact('shareUserInfos', 'createdUserInfo', 'isRepeat'));
 		$this->set('vars', $this->_vars);
 		$this->set('event', $this->eventData);
 		$this->set('frameId', Current::read('Frame.id'));

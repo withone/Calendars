@@ -1138,3 +1138,6 @@ msgstr "%s日"
 
 msgid "%d/%d (%s)"
 msgstr "%d月%d日(%s)"
+
+msgid "You can not change the target space  after published."
+msgstr "あなたは公開された後の予定の対象空間を変更する権限がありません。"
