@@ -66,7 +66,8 @@ class CalendarTime {
  * @return array 開始日の00:00から終了日翌日の00:00をサーバ系時刻になおして返す。
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function convUserFromTo2SvrFromTo($userYmdFrom, $userYmdTo, $userTimezoneOffset, $isAllDay = false) {
+	public function convUserFromTo2SvrFromTo(
+		$userYmdFrom, $userYmdTo, $userTimezoneOffset, $isAllDay = false) {
 		$nctm = new NetCommonsTime();
 		$dttmFrom = new DateTime($userYmdFrom);
 		$dttmTo = new DateTime($userYmdTo);
@@ -412,7 +413,6 @@ class CalendarTime {
  */
 	public function dateFormat($time, $timezoneOffset = null, $insertFlag = 0,
 		$timeFormat = 'YmdHis', $toFlag = 0) {
-
 		$userTz = (new NetCommonsTime())->getUserTimezone();
 
 		if (isset($timezoneOffset)) {
