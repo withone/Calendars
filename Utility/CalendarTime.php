@@ -19,6 +19,25 @@ App::uses('NetCommonsTime', 'NetCommons.Utility');
 class CalendarTime {
 
 /**
+ * getDtObjWithTzDateTimeString
+ *
+ * TZ、日付および時刻を指定したDataTimeオブジェクト取得
+ *
+ * @param string $tzId タイムゾーンID (UTC, Asia/Tokyoなど)
+ * @param string $datetime Y-m-d H-i
+ * @return DateTime DateTimeオブジェクト
+ */
+	public function getDtObjWithTzDateTimeString($tzId, $datetime) {
+		$ncTime = new NetCommonsTime();
+		$userTz = $ncTime->getUserTimezone();
+		$date = new DateTime($datetime, (new DateTimeZone($userTz)));
+		if ($tzId != $userTz) {
+			$date->setTimezone(new DateTimeZone($tzId));
+		}
+		return $date;
+	}
+
+/**
  * getDtObjWithTzDateTime
  *
  * TZ、日付および時刻を指定したDataTimeオブジェクト取得
