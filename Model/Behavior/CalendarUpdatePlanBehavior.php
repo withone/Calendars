@@ -52,16 +52,21 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @param array $planParams  予定パラメータ
  * @param array $newPlan 新世代予定（この新世代予定に対して変更をかけていく）
  * @param string $status status（Workflowステータス)
- * @param bool $isOriginRepeat 元予定が繰返しありかなしか
- * @param bool $isTimeMod 元予定に対して時間の変更があったかどうか
- * @param bool $isRepeatMod 元予定に対して繰返しの変更があったかどうか
+ * @param array $isInfoArray （isOriginRepeat、isTimeMod、isRepeatMod、isMyPrivateRoom）を格納した配列
  * @param string $editRrule 編集ルール (この予定のみ、この予定以降、全ての予定)
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return 変更成功時 int calendarEventId
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
 	public function updatePlan(Model &$model, $planParams, $newPlan, $status,
-		$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule = self::CALENDAR_PLAN_EDIT_THIS) {
+		$isInfoArray, $editRrule = self::CALENDAR_PLAN_EDIT_THIS, $createdUserWhenUpd = null) {
 		$eventId = $newPlan['new_event_id'];
+
+		//bool $isOriginRepeat 元予定が繰返しありかなしか
+		//bool $isTimeMod 元予定に対して時間の変更があったかどうか
+		//bool $isRepeatMod 元予定に対して繰返しの変更があったかどうか
+		//bool $isMyPrivateRoom 新しい予定の公開対象のルームがログイン者のプライベートルームかどうか
+		list($isOriginRepeat, $isTimeMod, $isRepeatMod, $isMyPrivateRoom) = $isInfoArray;
 
 		if (!$model->Behaviors->hasMethod('doArrangeData')) {
 			$model->Behaviors->load('Calendars.CalendarCrudPlanCommon');
@@ -97,14 +102,15 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			//「この予定ふくめ全て更新」
 			$isArray = array($isOriginRepeat, $isTimeMod, $isRepeatMod);
 			$eventId = $this->updatePlanAll($model, $planParams, $rruleData, $eventData,
-				$newPlan, $isArray, $status, $editRrule);
+				$newPlan, $isArray, $status, $editRrule, $createdUserWhenUpd);
 			return $eventId;	//復帰
 
 		} elseif ($editRrule === self::CALENDAR_PLAN_EDIT_AFTER) {
 			//「この予定以降を更新」
 			$isArray = array($isOriginRepeat, $isTimeMod, $isRepeatMod);
 			$eventId = $this->updatePlanByAfter(
-				$model, $planParams, $rruleData, $eventData, $newPlan, $isArray, $status, $editRrule);
+				$model, $planParams, $rruleData, $eventData, $newPlan, $isArray,
+				$status, $editRrule, $createdUserWhenUpd);
 
 			return $eventId;	//復帰
 
@@ -124,6 +130,8 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 				}
 				//すでにnewPlanを作成する時rruleDataは生成されているので、
 				//rruleDataの上書き(updateRruleData()発行）は無駄なのでしない。
+				//
+				//補足）newPlanを生成するとき、createdUserWhenUpdを考慮してrruleをcopyしています。
 			} else {
 				//「元予定に繰返しなし」=元予定は単一予定
 				//
@@ -132,15 +140,14 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 				//変更後、繰返し指定になっている可能性もあるので、
 				//rruleデータを入力データに従い更新しておく。
 				//
-				$rruleData = $this->updateRruleData($model, $planParams, $rruleData);
+				$rruleData = $this->updateRruleData($model, $planParams, $rruleData, $createdUserWhenUpd);
 			}
 
 			//選択したeventデータを更新 (a). keyは踏襲されている。
 			//
 			$this->setEventData($planParams, $rruleData, $eventData);	//eventDataに値セット
 			$eventData = $this->updateDtstartData($model, $planParams, $rruleData, $eventData,
-				$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule);
-
+				$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule, $createdUserWhenUpd);
 			$eventId = $eventData['CalendarEvent']['id'];
 
 			//「この予定のみ更新or元予定に繰返しなし」
@@ -160,7 +167,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 					if (!$model->Behaviors->hasMethod('insertRrule')) {
 							$model->Behaviors->load('Calendars.CalendarRruleEntry');
 					}
-					$model->insertRrule($planParams, $rruleData, $eventData);
+					$model->insertRrule($planParams, $rruleData, $eventData, $createdUserWhenUpd);
 				}
 			}
 			return $eventId;	//復帰
@@ -213,12 +220,13 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @param array $isArray ($isOriginRepeat, $isTimeMod, $isRepeatMod)をまとめた配列
  * @param string $status status(Workflowステータス)
  * @param int $editRrule editRrule
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return int eventIdを返す
  * @throws InternalErrorException
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
 	public function updatePlanAll(Model &$model, $planParams, $rruleData, $eventData,
-		$newPlan, $isArray, $status, $editRrule) {
+		$newPlan, $isArray, $status, $editRrule, $createdUserWhenUpd) {
 		$isOriginRepeat = $isArray[0];
 		$isTimeMod = $isArray[1];
 		$isRepeatMod = $isArray[2];
@@ -233,7 +241,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			//setRruleDataはsave()を呼んでいないフィールドセットだけのmethodなので、
 			//setRruleData()+save()のupdateRruleData()の変更する。
 			////$this->setRruleData($model, $planParams, $rruleData, self::CALENDAR_UPDATE_MODE);
-			$this->updateRruleData($model, $planParams, $rruleData);
+			$this->updateRruleData($model, $planParams, $rruleData, $createdUserWhenUpd);
 		}
 
 		$eventId = null;
@@ -269,7 +277,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 				$model->Behaviors->load('Calendars.CalendarInsertPlan');
 			}
 			//先頭のeventDataの１件登録
-			$eventData = $model->insertEventData($planParams, $rruleData);
+			$eventData = $model->insertEventData($planParams, $rruleData, $createdUserWhenUpd);
 			if (!isset($eventData['CalendarEvent']['id'])) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
@@ -279,7 +287,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 				if (!$model->Behaviors->hasMethod('insertRrule')) {
 					$model->Behaviors->load('Calendars.CalendarRruleEntry');
 				}
-				$model->insertRrule($planParams, $rruleData, $eventData);
+				$model->insertRrule($planParams, $rruleData, $eventData, $createdUserWhenUpd);
 				////uddateRruleData()は、$isRepeatModがtrueの時だけ発行する関数なので、
 				////ここではなく、前出の if（$isRepeatMod）｛...｝へ移動した。
 				////$this->updateRruleData($model, $planParams, $rruleData);//FUJI
@@ -305,7 +313,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 
 				$eventDataForAllUpd = $this->updateDtstartData(
 					$model, $planParams, $rruleData, $eventDataForAllUpd,
-					$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule);
+					$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule, $createdUserWhenUpd);
 			}
 		}
 
@@ -323,11 +331,12 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @param bool $isTimeMod isTimeMod
  * @param bool $isRepeatMod isRepeatMod
  * @param string $editRrule editRrule
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return array $eventData 変更後の$eventDataを返す
  * @throws InternalErrorException
  */
 	public function updateDtstartData(Model &$model, $planParams, $rruleData, $eventData,
-			$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule) {
+			$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule, $createdUserWhenUpd = null) {
 		if (!(isset($model->CalendarEvent) && is_callable($model->CalendarEvent->create))) {
 			$model->loadModels([
 				'CalendarEvent' => 'Calendars.CalendarEvent',
@@ -362,6 +371,16 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		}
 
 		$eventId = $eventData['CalendarEvent']['id'];	//update対象のststartendIdを退避
+
+		//カレンダー独自の例外追加１）
+		//変更後の公開ルームidが、「元予定生成者の＊ルーム」から「編集者・承認者(＝ログイン者）の
+		//プライベート」に変化していた場合、created_userを、元予定生成者「から」編集者・承認者(＝ログイン者）
+		//「へ」に変更すること。＝＞これを考慮したcreatedUserWhenUpdを使えばよい。
+		//尚、ここのsaveはUPDATなので、save前に、create_user項目へセットして問題なし。
+		if ($createdUserWhenUpd !== null) {
+			$eventData['CalendarEvent']['created_user'] = $createdUserWhenUpd;
+		}
+
 		$model->CalendarEvent->set($eventData);
 
 		if (!$model->CalendarEvent->validates()) {		//eventDataをチェック
@@ -387,11 +406,11 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
-
 		if ($eventId !== $model->CalendarEvent->id) {
 			//insertではなくupdateでなくてはならないのに、insertになってしまった。(つまりid値が新しくなってしまった）
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
+
 		//採番されたidをeventDataにセットしておく
 		$eventData['CalendarEvent']['id'] = $model->CalendarEvent->id;
 
@@ -400,7 +419,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			$model->Behaviors->load('Calendars.CalendarShareUserEntry');
 		}
 		$model->updateShareUsers($planParams['share_users'], $eventId,
-			$eventData['CalendarEvent']['CalendarEventShareUser']);
+			$eventData['CalendarEvent']['CalendarEventShareUser'], $createdUserWhenUpd);
 
 		//関連コンテンツ(calendar_event_contents)の更新
 		//
@@ -408,11 +427,11 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			if (!(isset($model->CalendarEventContent))) {
 				$model->loadModels(['CalendarEventContent' => 'Calendars.CalendarEventContent']);
 			}
-			//saveLinkedData()は、
+			//saveLinkedData()は、内部で
 			//modelとcontent_key一致データなし=> insert
 			//modelとcontent_key一致データあり=> update
-			//と登録・変更を関数である。
-			$model->CalendarEventContent->saveLinkedData($eventData);
+			//と登録・変更を適宜区別して実行する関数である。
+			$model->CalendarEventContent->saveLinkedData($eventData, $createdUserWhenUpd);
 		}
 
 		return $eventData;
@@ -429,12 +448,13 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @param array $isArray ($isOriginRepeat, $isTimeMod, $isRepeatMod)をまとめた配列
  * @param string $status status(Workflowステータス)
  * @param int $editRrule editRrule
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return int $eventIdを返す
  * @throws InternalErrorException
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
 	public function updatePlanByAfter(Model &$model, $planParams, $rruleData, $eventData,
-		$newPlan, $isArray, $status, $editRrule) {
+		$newPlan, $isArray, $status, $editRrule, $createdUserWhenUpd) {
 		$eventId = $newPlan['new_event_id'];
 		////$rruleKey = $rruleData['CalendarRrule']['key'];
 
@@ -515,11 +535,12 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			if (!$model->Behaviors->hasMethod('insertRruleData')) {
 				$model->Behaviors->load('Calendars.CalendarInsertPlan');
 			}
+
 			//rruleDataの新規１件登録
-			$rruleData = $model->insertRruleData($planParams, $newIcalUid);
+			$rruleData = $model->insertRruleData($planParams, $newIcalUid, $createdUserWhenUpd);
 
 			//先頭のeventDataの１件登録
-			$eventData = $model->insertEventData($planParams, $rruleData);
+			$eventData = $model->insertEventData($planParams, $rruleData, $createdUserWhenUpd);
 			if (!isset($eventData['CalendarEvent']['id'])) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
@@ -529,7 +550,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 				if (!$model->Behaviors->hasMethod('insertRrule')) {
 					$model->Behaviors->load('Calendars.CalendarRruleEntry');
 				}
-				$model->insertRrule($planParams, $rruleData, $eventData);
+				$model->insertRrule($planParams, $rruleData, $eventData, $createdUserWhenUpd);
 			}
 
 		} else {
@@ -564,7 +585,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 
 				$eventDataForAfterUpd = $this->updateDtstartData(
 					$model, $planParams, $rruleData, $eventDataForAfterUpd,
-					$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule);
+					$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule, $createdUserWhenUpd);
 			}
 		}
 
@@ -580,6 +601,8 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  */
 	public function setEventDataAndRruleData(Model &$model, $newPlan) {
+		//この時点で、$newPlan['CalendarRrule']、$newPlan['CalendarEvent']のcreated_userは、
+		//createdUserWhenUpd考慮済になっている。
 		$rruleData['CalendarRrule'] = $newPlan['CalendarRrule'];
 		$events = Hash::extract($newPlan, 'CalendarEvent.{n}[id=' . $newPlan['new_event_id'] . ']');
 		$eventData['CalendarEvent'] = $events[0];
@@ -617,10 +640,12 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @param Model &$model モデル
  * @param array $planParams 予定パラメータ
  * @param array $rruleData 更新対象となるrruleData
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return array $rruleDataを返す
  * @throws InternalErrorException
  */
-	public function updateRruleData(Model &$model, $planParams, $rruleData) {
+	public function updateRruleData(Model &$model, $planParams, $rruleData,
+		$createdUserWhenUpd = null) {
 		if (!(isset($model->CalendarRrule) && is_callable($model->CalendarRrule->create))) {
 			$model->loadModels([
 				'CalendarRrule' => 'Calendars.CalendarRrule',
@@ -634,7 +659,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		if (!$model->Behaviors->hasMethod('saveRruleData')) {
 			$model->Behaviors->load('Calendars.CalendarCrudPlanCommon');
 		}
-		$rruleData = $model->saveRruleData($rruleData);
+		$rruleData = $model->saveRruleData($rruleData, $createdUserWhenUpd);
 
 		return $rruleData;
 	}

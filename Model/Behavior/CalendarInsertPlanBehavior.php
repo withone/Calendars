@@ -96,10 +96,12 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
  * @param Model &$model モデル 
  * @param array $planParams 予定パラメータ
  * @param string $icalUidPart icalUidPart
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return array $rruleDataを返す
  * @throws InternalErrorException
  */
-	public function insertRruleData(Model &$model, $planParams, $icalUidPart = '') {
+	public function insertRruleData(Model &$model, $planParams,
+		$icalUidPart = '', $createdUserWhenUpd = null) {
 		if (!(isset($model->CalendarRrule) && is_callable($model->CalendarRrule->create))) {
 			$model->loadModels([
 				'CalendarRrule' => 'Calendars.CalendarRrule',
@@ -122,7 +124,7 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 		if (!$model->Behaviors->hasMethod('saveRruleData')) {
 			$model->Behaviors->load('Calendars.CalendarCrudPlanCommon');
 		}
-		$rruleData = $model->saveRruleData($rruleData);
+		$rruleData = $model->saveRruleData($rruleData, $createdUserWhenUpd);
 
 		return $rruleData;
 	}
@@ -133,10 +135,13 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
  * @param Model &$model モデル 
  * @param array $planParams 予定パラメータ
  * @param array $rruleData rruleデータ
+ * @param int $createdUserWhenUpd created_userを明示指定する時にnull以外を指定。updatePlanで主に利用されている。
  * @return array $eventDataを返す
  * @throws InternalErrorException
+ * @SuppressWarnings(PHPMD)
  */
-	public function insertEventData(Model &$model, $planParams, $rruleData) {
+	public function insertEventData(Model &$model, $planParams, $rruleData,
+		$createdUserWhenUpd = null) {
 		if (!(isset($model->CalendarEvent) && is_callable($model->CalendarEvent->create))) {
 			$model->loadModels([
 				'CalendarEvent' => 'Calendars.CalendarEvent',
@@ -163,6 +168,22 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
+		//カレンダー独自の例外追加１）
+		//変更後の公開ルームidが、「元予定生成者の＊ルーム」から「編集者・承認者(＝ログイン者）の
+		//プライベート」に変化していた場合、created_userを、元予定生成者「から」編集者・承認者(＝ログイン者）
+		//「へ」に変更すること。＝＞これを考慮したcreatedUserWhenUpdを使えばよい。
+		//
+		//尚、saveの中で $createdUserWhenUpd を直接セットせず、以下のsaveField(=UPDATE文)を使ったのは
+		//WFのbeforeSaveによりセットしたcreatedUserWhenUpd以外の値の書き換えられる可能性があるため。
+		//
+		if ($model->CalendarEvent->id > 0 && $createdUserWhenUpd !== null) {
+			//saveが成功し、かつ、createdUserWhenUpd がnull以外なら、created_userを更新しておく。
+			//modifiedも更新されるが、saveの直後なので誤差の範囲として了とする。
+			$model->CalendarEvent->saveField('created_user', $createdUserWhenUpd);
+			//UPDATEでセットしたcreatedUserWhenUpdの値をeventDataに記録しておく
+			$eventData['CalendarEvent']['created_user'] = $createdUserWhenUpd;
+		}
+
 		//採番されたidをeventDataにセットしておく
 		$eventData['CalendarEvent']['id'] = $model->CalendarEvent->id;
 
@@ -172,7 +193,8 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 			$model->Behaviors->load('Calendars.CalendarShareUserEntry');
 		}
 		//カレンダ共有ユーザ登録
-		$model->insertShareUsers($planParams['share_users'], $eventData['CalendarEvent']['id']);
+		$model->insertShareUsers($planParams['share_users'], $eventData['CalendarEvent']['id'],
+			$createdUserWhenUpd);
 		//注: 他のモデルの組み込みBehaviorをcallする場合、第一引数に$modelの指定はいらない。
 
 		//関連コンテンツの登録
@@ -180,7 +202,7 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 			if (!(isset($model->CalendarEventContent))) {
 				$model->loadModels(['CalendarEventContent' => 'Calendars.CalendarEventContent']);
 			}
-			$model->CalendarEventContent->saveLinkedData($eventData);
+			$model->CalendarEventContent->saveLinkedData($eventData, $createdUserWhenUpd);
 		}
 
 		return $eventData;

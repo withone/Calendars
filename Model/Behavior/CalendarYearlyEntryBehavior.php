@@ -42,10 +42,11 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * @param array $eventData eventデータ(CalendarEventのモデルデータ)
  * @param int $first 最初のデータかどうか 1:最初である  0:最初ではない
  * @param int $bymonthday bymonthday
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return array $result 結果
  */
 	public function insertYearly(Model &$model, $planParams, $rruleData, $eventData,
-		$first = 0, $bymonthday = 0) {
+		$first = 0, $bymonthday = 0, $createdUserWhenUpd = null) {
 		//CakeLog::debug("DBG: insertYearly(first[" . $first . "] bymonthday[" . $bymonthday . "] start.");
 
 		//ユーザタイムゾーンを取得しておく。
@@ -90,8 +91,10 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		//CakeLog::debug("DBG: before setStartAndEndDateTimeEtc() first[" . $first .
 		//	"] bymonthday[" . $bymonthday . "] diffNum[" . $diffNum . "] userTz[" . $userTz . "]");
 
+		$etcArray = array($userTz, $createdUserWhenUpd);
 		$ret = $this->setStartAndEndDateTimeEtc($model, $planParams,
-			$rruleData, $dtArray, $first, $bymonthday, $diffNum, $eventData, $userTz);
+			$rruleData, $dtArray, $first, $bymonthday, $diffNum, $eventData, $etcArray);
+
 		if ($ret === false) {
 			//CakeLog::debug(
 			//	"DBG: setStartAndEndDateTimeEtc()がFALSEを返したので、return falseします。");
@@ -124,14 +127,16 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 			//	count($model->rrule['BYDAY']) . "]が0より大きい時の、insertYearly() 再帰call.");
 
 			//insertYearly()の再帰call ケース1
-			return $this->insertYearly($model, $planParams, $rruleData, $eventData);
+			return $this->insertYearly($model, $planParams, $rruleData, $eventData,
+				0, 0, $createdUserWhenUpd);
 		} else {
 
 			//CakeLog::debug("DBG: もう一方の時の、insertYearly() 再帰call. 0 bymonthday[" .
 			//	$bymonthday . "]");
 
 			//insertYearly()の再帰call ケース2
-			return $this->insertYearly($model, $planParams, $rruleData, $eventData, 0, $bymonthday);
+			return $this->insertYearly($model, $planParams, $rruleData, $eventData,
+				0, $bymonthday, $createdUserWhenUpd);
 		}
 	}
 
@@ -228,12 +233,13 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * @param int $bymonthday bymonthday 毎月ｘ日のx日のこと(ユーザー系の日であることに注意すること）
  * @param int $diffNum diffNum開始日と終了日の差分日数
  * @param array $eventData eventData配列データ
- * @param string $userTz ユーザー系タイムゾーンID ('Asia/Tokyo')
+ * @param array $etcArray userTz(ユーザー系タイムゾーンID)とcreatedUserWhenUpdをカブセル化した配列
  * @return mixed 成功時、array($eventData, サーバ系時刻$startDateTime, サーバ系時刻$endDateTime)を返す。失敗時 falseを返す。
  */
 	public function setStartAndEndDateTimeEtc(Model &$model, $planParams, $rruleData,
-		$dtArray, $first, $bymonthday, $diffNum, $eventData, $userTz) {
+		$dtArray, $first, $bymonthday, $diffNum, $eventData, $etcArray) {
 		list($startDate, $startTime, $endDate, $endTime) = $dtArray;
+		list($userTz, $createdUserWhenUpd) = $etcArray;
 
 		$result = true;
 		$userStartDateTime = (new NetCommonsTime())->toUserDatetime(
@@ -255,10 +261,11 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 			$this->setDtStartendData($workParams, $eventData);
 
 			if (!empty($model->rrule['BYDAY']) && count($model->rrule['BYDAY']) > 0) {
-				$result = $this->insertYearlyByday($model, $planParams, $rruleData, $eventData, $first);
+				$result = $this->insertYearlyByday($model, $planParams, $rruleData, $eventData,
+					$first, $createdUserWhenUpd);
 			} else {
 				$result = $this->insertYearlyByMonthday($model, $planParams, $rruleData, $eventData,
-					$bymonthday, $first);
+					$bymonthday, $first, $createdUserWhenUpd);
 			}
 			if ($result === false) {
 				return false;
@@ -351,10 +358,11 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * @param array $eventData eventデータ(CalendarEventのモデルデータ)
  * @param int $bymonthday bymonthday
  * @param int $first 最初のデータかどうか 1:最初である  0:最初ではない
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return mixed boolean true:登録せず終了 false:失敗、array 登録成功: array(insertした結果のrEventData, 登録したサーバ系開始年月日時分秒, 登録したサーバ系終了年月日時分秒)
  */
 	public function insertYearlyByMonthday(Model &$model, $planParams, $rruleData, $eventData,
-		$bymonthday, $first) {
+		$bymonthday, $first, $createdUserWhenUpd = null) {
 		//CakeLog::debug("DBG: insertYearlyByMonthday() start. bymonthday[" . $bymonthday .
 		//	"] first[" . $first . "] rrule[INDEX]=[" . $model->rrule['INDEX'] . "]");
 
@@ -444,7 +452,7 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		//	"] svrEndDateTime[" . $svrEndDate . $svrEndTime . "])実行");
 
 		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData,
-			($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime));
+			($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime), $createdUserWhenUpd);
 		if ($rEventData['CalendarEvent']['id'] === null) {
 			return false;
 		} else {
@@ -460,9 +468,11 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
  * @param array $rruleData rruleData
  * @param array $eventData eventデータ(CalendarEventのモデルデータ)
  * @param int $first 最初のデータかどうか 1:最初である  0:最初ではない
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return mixed boolean true:登録せず終了 false:失敗、array 登録成功: array(insertした結果のrEventData, 登録したサーバ系開始年月日時分秒, 登録したサーバ系終了年月日時分秒)
  */
-	public function insertYearlyByday(Model &$model, $planParams, $rruleData, $eventData, $first = 0) {
+	public function insertYearlyByday(Model &$model, $planParams, $rruleData, $eventData,
+		$first = 0, $createdUserWhenUpd = null) {
 		//CakeLog::debug("DBG: insertYearlyByday() start. first[" . $first .
 		//	"] rrule[INDEX]=[" . $model->rrule['INDEX'] . "]");
 
@@ -531,7 +541,7 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		//	"] svrEndDateTime[" . $svrEndDate . $svrEndTime . "])実行");
 
 		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData,
-			($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime));
+			($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime), $createdUserWhenUpd);
 		if ($rEventData['CalendarEvent']['id'] === null) {
 			return false;
 		}

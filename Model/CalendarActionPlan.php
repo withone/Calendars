@@ -514,10 +514,13 @@ class CalendarActionPlan extends CalendarsAppModel {
  * @param bool $isOriginRepeat isOriginRepeat
  * @param bool $isTimeMod isTimeMod
  * @param bool $isRepeatMod isRepeatMod
+ * @param int $createdUserWhenUpd createdUserWhenUpd
+ * @param int $myself myself 現ログインユーザのプライベートルームID
  * @return bool 成功時true, 失敗時false
  * @throws InternalErrorException
  */
-	public function saveCalendarPlan($data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod) {
+	public function saveCalendarPlan($data, $procMode,
+		$isOriginRepeat, $isTimeMod, $isRepeatMod, $createdUserWhenUpd, $myself) {
 		// 設定画面を表示する前にこのルームのアンケートブロックがあるか確認
 		// 万が一、まだ存在しない場合には作成しておく
 		$this->Calendar->afterFrameSave(Current::read());
@@ -549,21 +552,31 @@ class CalendarActionPlan extends CalendarsAppModel {
 			//}
 			if ($procMode === CalendarsComponent::PLAN_ADD) {
 				//新規追加処理
-				CakeLog::debug("DBG: PLAN_ADD case.");
+				//CakeLog::debug("DBG: PLAN_ADD case.");
 
 				//$this->insertPlan($planParam);
 				$eventId = $this->insertPlan($planParam);
 			} else {	//PLAN_EDIT
 				//変更処理
 
+				//公開対象のルームが、ログイン者（編集者・承認者）のプライベートルームかどうかを判断しておく。
+				$isMyPrivateRoom = ($data['CalendarActionPlan']['plan_room_id'] == $myself);
+
 				//現予定を元に、新世代予定を作成する
-				$newPlan = $this->makeNewGenPlan($data, $status);	//aaaaaaaaaaa cal用新status
-				//CakeLog::debug("DBG: 現予定をもとに作り出した、新世代 newPlan[" . print_r($newPlan, true) . "]");
+				//1. statusは、cal用新statusである。
+				//2. createdUserWhenUpdは、変更後の公開ルームidが「元予定生成者の＊ルーム」から「編集者・承認者
+				//(＝ログイン者）のプライベート」に変化していた場合、created_userを元予定生成者から編集者・承認者
+				//(＝ログイン者）に変更する例外処理用。
+				//3. isMyPrivateRoomは、変更後の公開ルームidが「編集者・承認者（＝ログイン者）のプライベート」以外の場合、
+				//仲間の予定はプライベートの時のみ許される子情報なので、これらはcopy対象から外す（stripする）例外処理用。
+				//
+				$newPlan = $this->makeNewGenPlan($data, $status, $createdUserWhenUpd, $isMyPrivateRoom);
 
 				$editRrule = $this->getEditRruleForUpdate($data);
 
-				$eventId = $this->updatePlan($planParam, $newPlan, $status, $isOriginRepeat,
-					$isTimeMod, $isRepeatMod, $editRrule);
+				$isInfoArray = array($isOriginRepeat, $isTimeMod, $isRepeatMod, $isMyPrivateRoom);
+				$eventId = $this->updatePlan($planParam, $newPlan, $status, $isInfoArray, $editRrule,
+					$createdUserWhenUpd);
 			}
 			$this->_enqueueEmail($data);
 

@@ -346,11 +346,19 @@ class CalendarPlansController extends CalendarsAppController {
 		list($procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod) =
 			$this->CalendarActionPlan->getProcModeOriginRepeatAndModType($this->request->data, $originEvent);
 
+		//変更時の生成者を勘案・取得する。
+		$createdUserWhenUpd = $this->__getCreatedUserWhenUpd(
+			$procMode, $originEvent,
+			$this->request->data['CalendarActionPlan']['plan_room_id'],
+			$this->_myself
+		);
+
 		//成功なら元画面(カレンダーorスケジューラー)に戻る。
 		//FIXME: 遷移元がshow.ctpなら、戻り先をshow.ctpに変える必要あり。
 		//
 		$eventId = $this->CalendarActionPlan->saveCalendarPlan(
-			$this->request->data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod);
+			$this->request->data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod,
+			$createdUserWhenUpd, $this->_myself);
 		if (!$eventId) {
 			//保存失敗
 			CakeLog::error("保存失敗");	//FIXME: エラー処理を記述のこと。
@@ -548,5 +556,49 @@ class CalendarPlansController extends CalendarsAppController {
 			$url = NetCommonsUrl::backToPageUrl();
 		}
 		return $url;
+	}
+
+/**
+ * __getCreatedUserWhenUpd
+ *
+ * 変更時の生成者を勘案・取得する
+ * 
+ * @param string $procMode procMode
+ * @param array $originEvent originEvent
+ * @param int $planRoomId planRoomId 選択された公開対象となるroomId
+ * @param int $myself myself ログイン者のプライベートroomId
+ * @return mixed
+ */
+	private function __getCreatedUserWhenUpd($procMode, $originEvent, $planRoomId, $myself) {
+		//calendarの編集は、元予定のcopy＝＞copiedデータのupdate、で実現している。
+		//keyが変わらな場合は、これで問題ない。
+		//が、keyが変わる場合、＝時間ルールや繰返しルールがかわって、
+		//keyの対応が取れない場合、元eventは削除（物理削除or論理削除）し、
+		//あらたな繰り返しルールで新keyのeventを生成(save)している。
+		//（＝googleカレンダーがこの考え方で、eventのkeyを変えているアルゴリズム仕様に
+		//似せている＋もともとＮＣ２もその考え方を一部導入していた）
+		//これにより、編集の時でも、新しいevent群（そしてその子レコード）がつくられるが
+		//このときの、created（生成者）を、だれにするかが重要。
+		//基本、生成者は現ログインユーザ（編集者）、ではないことに注意。
+		//生成者は、元予定のcreated_userさんである！
+		//
+		//なので、新規saveでありながら、created_userは、元予定のそれ（created_user）
+		//を継承する必要がある。(created日付時刻は、saveするその時でいいとおもう）
+		//
+		//ただし、例外がある。それは、公開予定のルームIDが、元予定の公開予定ルームID
+		//にかかわらず、編集者のプライベートルームＩＤ（注！これは編集者により、ひとりひとり
+		//違うから、要注意）になった場合は、、created_userは、元予定のそれを継承しては
+		//「いけなく」て、編集者自身のuser.idをつかうこと。
+
+		$createdUserWhenUpd = null;	//初期値はnull
+
+		if ($procMode == CalendarsComponent::PLAN_EDIT) {
+			$createdUserWhenUpd = $originEvent['CalendarEvent']['created_user'];
+			if ($planRoomId == $myself) {
+				//例外. この時は、作成者は、元予定生成者ではなく、現ユーザとする。
+				$createdUserWhenUpd = Current::read('User.id');
+			}
+		}
+		return $createdUserWhenUpd;
 	}
 }

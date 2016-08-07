@@ -452,9 +452,10 @@ class CalendarEvent extends CalendarsAppModel {
  * eventデータの内、INSERT時、is_latestとcreated,created_user情報のみ整える。
  *
  * @param array &$event event
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return void
  */
-	public function prepareLatestCreatedForIns(&$event) {
+	public function prepareLatestCreatedForIns(&$event, $createdUserWhenUpd = null) {
 		if (isset($event['CalendarEvent']['id']) && $event['CalendarEvent']['id'] > 0) {
 			//idがある。つまりUPDATE用evnetデータの時は、なにもしない。
 			return;
@@ -482,6 +483,15 @@ class CalendarEvent extends CalendarsAppModel {
 		if ($created) {
 			$event['CalendarEvent']['created'] = $created['CalendarEvent']['created'];
 			$event['CalendarEvent']['created_user'] = $created['CalendarEvent']['created_user'];
+		}
+
+		//カレンダー独自の例外追加１）
+		//変更後の公開ルームidが、「元予定生成者の＊ルーム」から「編集者・承認者(＝ログイン者）の
+		//プライベート」に変化していた場合、created_userを、元予定生成者「から」編集者・承認者(＝ログイン者）
+		//「へ」に変更すること。
+		//＝＞これを考慮したcreatedUserWhenUpdを使えばよい。
+		if ($createdUserWhenUpd !== null) {
+			$event['CalendarEvent']['created'] = $createdUserWhenUpd;
 		}
 
 		//is_latestのセット

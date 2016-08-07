@@ -42,10 +42,11 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
  * @param array $eventData eventデータ(CalendarEventのモデルデータ)
  * @param int $bymonthday bymonthday
  * @param int $first 最初のデータかどうか 1:最初である  0:最初ではない. 初期値は0
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return mixed boolean true:登録せず終了 false:失敗、array 登録成功: array(登録した開始年月日時分秒, 登録した終了年月日時分秒)
  */
 	public function insertMonthlyByMonthday(Model &$model, $planParams, $rruleData,
-	$eventData, $bymonthday, $first = 0) {
+	$eventData, $bymonthday, $first = 0, $createdUserWhenUpd = null) {
 		CakeLog::debug("DBG: insertMonthlyByMonthday() start. 
 			rrule[INDEX]=[" . $model->rrule['INDEX'] . "]");
 
@@ -130,12 +131,13 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 		CakeLog::debug("DBG: insert(svrStartDateTime[" . $svrStartDate . $svrStartTime . "]
 			svrEndDateTime[" . $svrEndDate . $svrEndTime . "])実行");
 		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData,
-			($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime));
+			($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime), $createdUserWhenUpd);
 		if ($rEventData['CalendarEvent']['id'] === null) {
 			return false;
 		}
 
-		return $this->insertMonthlyByMonthday($model, $planParams, $rruleData, $rEventData, $bymonthday);
+		return $this->insertMonthlyByMonthday($model, $planParams, $rruleData, $rEventData,
+			$bymonthday, 0, $createdUserWhenUpd);
 	}
 
 /**
@@ -146,10 +148,11 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
  * @param array $rruleData rruleData
  * @param array $eventData eventデータ(CalendarEventのモデルデータ)
  * @param int $first 最初のデータかどうか 1:最初である  0:最初ではない
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return mixed boolean true:登録せず終了 false:失敗、array 登録成功: array(登録した開始年月日時分秒, 登録した終了年月日時分秒)
  */
 	public function insertMonthlyByDay(Model &$model, $planParams, $rruleData, $eventData,
-		$first = 0) {
+		$first = 0, $createdUserWhenUpd = null) {
 		CakeLog::debug("DBG: insertMonthlyByDay() start. rrule[INDEX]=[" . $model->rrule['INDEX'] . "]");
 		$model->rrule['INDEX']++;
 
@@ -168,7 +171,8 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 				sTime[" . $sTime . "] >= byday[" . $byday, "]. i DEC and ReCall.");
 			//開始日(対象日？）が繰返しENDのb(第x週第y曜日の実日）を超したら、行き過ぎなので、INDEXをデクリメントして、自分を再帰callする。
 			$model->rrule['INDEX']--;
-			return $this->insertMonthlyByDay($model, $planParams, $rruleData, $eventData);
+			return $this->insertMonthlyByDay($model, $planParams, $rruleData, $eventData,
+				0, $createdUserWhenUpd);
 		}
 
 		//setStartDateTiemAndEndDateTime()より返される時刻系はサーバー系です
@@ -194,12 +198,13 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 			svrEndDateTime[" . $svrEndDate . $svrEndTime . "])実行");
 
 		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData,
-			($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime));
+			($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime), $createdUserWhenUpd);
 		if ($rEventData['CalendarEvent']['id'] === null) {
 			return false;
 		}
 
-		return $this->insertMonthlyByDay($model, $planParams, $rruleData, $rEventData);
+		return $this->insertMonthlyByDay($model, $planParams, $rruleData, $rEventData,
+			0, $createdUserWhenUpd);
 	}
 
 /**

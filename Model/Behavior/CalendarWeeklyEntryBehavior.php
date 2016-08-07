@@ -41,13 +41,15 @@ class CalendarWeeklyEntryBehavior extends CalendarAppBehavior {
  * @param ssary $rruleData rruleData
  * @param array $eventData eventデータ(CalendarEventのモデルデータ)
  * @param int $first 最初のデータかどうか 1:最初である  0:最初ではない
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return array $result 結果
  */
-	public function insertWeekly(Model &$model, $planParams, $rruleData, $eventData, $first = 0) {
-		CakeLog::debug("DBGXXX: insertWeekly (model, planParams, rruleData, eventData, first[" .
-			$first . "]) start. startDateTime [" . $eventData['CalendarEvent']['start_date'] .
-			$eventData['CalendarEvent']['start_time'] . "] endDateTime[" .
-			$eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'] . "]");
+	public function insertWeekly(Model &$model, $planParams, $rruleData, $eventData,
+		$first = 0, $createdUserWhenUpd = null) {
+		//CakeLog::debug("DBGXXX: insertWeekly (model, planParams, rruleData, eventData, first[" .
+		//	$first . "]) start. startDateTime [" . $eventData['CalendarEvent']['start_date'] .
+		//	$eventData['CalendarEvent']['start_time'] . "] endDateTime[" .
+		//	$eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'] . "]");
 
 		//ユーザタイムゾーンを取得しておく。
 		$userTz = (new NetCommonsTime())->getUserTimezone();
@@ -56,10 +58,10 @@ class CalendarWeeklyEntryBehavior extends CalendarAppBehavior {
 		$currentWeek = '';
 		$this->setStartEndSundayDateAndTime($model, $eventData, $currentWeek, $first, $userTz);
 
-		CakeLog::debug("DBGXXX: after setStartEndSundayDateAndTime(). startDateTime [" .
-			$eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'] .
-			"] endDateTime[" . $eventData['CalendarEvent']['end_date'] .
-			$eventData['CalendarEvent']['end_time'] . "]");
+		//CakeLog::debug("DBGXXX: after setStartEndSundayDateAndTime(). startDateTime [" .
+		//	$eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'] .
+		//	"] endDateTime[" . $eventData['CalendarEvent']['end_date'] .
+		//	$eventData['CalendarEvent']['end_time'] . "]");
 
 		//setStartEndSundayDateAndTime()の中で、インターバル値を加算した サーバー系時刻
 		//start_date,start_time, end_date, end_timeを$eventData['CalendarEvent']の該当項目に
@@ -73,17 +75,17 @@ class CalendarWeeklyEntryBehavior extends CalendarAppBehavior {
 
 		foreach ($model->rrule['BYDAY'] as $val) {
 			$index = array_search($val, self::$calendarWdayArray);
-			CakeLog::debug("DBGX: array_search(" . $val . ") returned index[" . $index . "]");
+			//CakeLog::debug("DBGX: array_search(" . $val . ") returned index[" . $index . "]");
 			if ($first && $currentWeek >= $index) {
-				CakeLog::debug("DBGX: continue case. first[" . $first .
-				"] is TRUE and  currentWeek[" . $currentWeek . "] >= index[" . $index . "]");
+				//CakeLog::debug("DBGX: continue case. first[" . $first .
+				//"] is TRUE and  currentWeek[" . $currentWeek . "] >= index[" . $index . "]");
 				continue;
 			}
 			//insertWeeklyInterval()のinsert結果は、$eventDataにセットされる。
 			$result = $this->insertWeeklyInterval($model, $planParams, $rruleData, $eventData,
-				$index, $userTz);
+				$index, $userTz, $createdUserWhenUpd);
 			if ($result === false) {
-				CakeLog::debug("DBGX: insertWeeklyInterval() returned FALSE. so i will return.");
+				//CakeLog::debug("DBGX: insertWeeklyInterval() returned FALSE. so i will return.");
 				return $result;
 			}
 		}
@@ -98,7 +100,8 @@ class CalendarWeeklyEntryBehavior extends CalendarAppBehavior {
 		//$eventData['CalendarEvent']['end_date'] = CalendarTime::timezoneDate($endTime, 1, 'Ymd');
 		//$eventData['CalendarEvent']['end_time'] = CalendarTime::timezoneDate($endTime, 1, 'His');
 
-		return $this->insertWeekly($model, $planParams, $rruleData, $eventData);
+		return $this->insertWeekly($model, $planParams, $rruleData, $eventData,
+			0, $createdUserWhenUpd);
 	}
 
 /**
@@ -110,10 +113,11 @@ class CalendarWeeklyEntryBehavior extends CalendarAppBehavior {
  * @param array $eventData eventデータ(CalendarEventのモデルデータ).
  * @param int $interval インターバル
  * @param string $userTz ユーザー系TZID(Asia/Tokyo)
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return array $result 結果
  */
 	public function insertWeeklyInterval(Model &$model, $planParams, $rruleData, $eventData,
-		$interval, $userTz) {
+		$interval, $userTz, $createdUserWhenUpd = null) {
 		//CakeLog::debug("DBGX: insertWeeklyInterval(model, planParams, rruleData, eventData, interval[" . $interval . "] userTz[". $userTz . "] eventData[CalendarEvent]=startDateTime [" . $eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'] . "] endDateTime[" . $eventData['CalendarEvent']['end_date'] . $eventData['CalendarEvent']['end_time'] . "]) start");
 
 		$model->rrule['INDEX']++;
@@ -139,10 +143,10 @@ class CalendarWeeklyEntryBehavior extends CalendarAppBehavior {
 		$svrStartDate = $date->format('Ymd');
 		$svrStartTime = $date->format('His');
 
-		CakeLog::debug("DBGX: BEFORE eventData[start_date]+[start_time][" .
-			$eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'] .
-			"] >> sTime[" . $sTime . "] >> AFTER timestamp[" . $timestamp . "] svrStartDate[" .
-			$svrStartDate . "] svrStartTime[" . $svrStartTime . "]");
+		//CakeLog::debug("DBGX: BEFORE eventData[start_date]+[start_time][" .
+		//	$eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'] .
+		//	"] >> sTime[" . $sTime . "] >> AFTER timestamp[" . $timestamp . "] svrStartDate[" .
+		//	$svrStartDate . "] svrStartTime[" . $svrStartTime . "]");
 
 		//インターバル日数を加算した終了日の計算
 		//eTimeはサーバー系時刻
@@ -170,17 +174,17 @@ class CalendarWeeklyEntryBehavior extends CalendarAppBehavior {
 			return true;
 		}
 
-		CakeLog::debug("DBGXXX: insert(svrStartDateTime[" . $svrStartDate . $svrStartTime .
-			"] svrEndDateTime[" . $svrEndDate . $svrEndTime . "])");
+		//CakeLog::debug("DBGXXX: insert(svrStartDateTime[" . $svrStartDate . $svrStartTime .
+		//	"] svrEndDateTime[" . $svrEndDate . $svrEndTime . "])");
 
 		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData,
-			($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime));
+			($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime), $createdUserWhenUpd);
 		if ($rEventData['CalendarEvent']['id'] === null) {
-			CakeLog::debug("DBGX: insert() returned id[NULL]. so i return FALSE");
+			//CakeLog::debug("DBGX: insert() returned id[NULL]. so i return FALSE");
 			return false;
 		} else {
-			CakeLog::debug("DBGX: insert() returned id[" . $rEventData['CalendarEvent']['id'] .
-				"]. so i return TRUE");
+			//CakeLog::debug("DBGX: insert() returned id[" . $rEventData['CalendarEvent']['id'] .
+			//	"]. so i return TRUE");
 			//insertした結果の$rEventDataは（eventDataとして)call元へもどす
 			//（代入する）必要は、ありません。逆に、eventDataに代入してしま
 			//うと、call元のLOOP foreach ($model->rrule['BYDAY'] as $val)
@@ -238,11 +242,11 @@ class CalendarWeeklyEntryBehavior extends CalendarAppBehavior {
 		$eventData['CalendarEvent']['start_date'] = $svrStartDate;
 		$eventData['CalendarEvent']['start_time'] = $svrStartTime;
 
-		CakeLog::debug("DBGX: BEFORE eventData[start_date]+[start_time][" .
-			$eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'] .
-			"] >> sTime[" . $sTime . "] >> AFTER timestamp[" . $timestamp . "] currentWeek[" .
-			$currentWeek . "] sundayTimestamp[" . $sundayTimestamp . "] SUNサーバ系start_date[" .
-			$svrStartDate . "] start_time[" . $svrStartTime . "]");
+		//CakeLog::debug("DBGX: BEFORE eventData[start_date]+[start_time][" .
+		//	$eventData['CalendarEvent']['start_date'] . $eventData['CalendarEvent']['start_time'] .
+		//	"] >> sTime[" . $sTime . "] >> AFTER timestamp[" . $timestamp . "] currentWeek[" .
+		//	$currentWeek . "] sundayTimestamp[" . $sundayTimestamp . "] SUNサーバ系start_date[" .
+		//	$svrStartDate . "] start_time[" . $svrStartTime . "]");
 
 		//終了日の週の日曜日の日付時刻
 		//NC3ではサーバー系時刻なので、timezoneDateはつかわない

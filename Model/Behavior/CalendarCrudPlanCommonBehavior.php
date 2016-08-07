@@ -29,13 +29,19 @@ class CalendarCrudPlanCommonBehavior extends CalendarAppBehavior {
  *
  * @param Model &$model モデル
  * @param array $rruleData rruleData
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return array $rruleDataを返す
  * @throws InternalErrorException
  */
-	public function saveRruleData(Model &$model, $rruleData) {
+	public function saveRruleData(Model &$model, $rruleData, $createdUserWhenUpd = null) {
 		if (!(isset($model->CalendarRrule))) {
 			$model->loadModels(['CalendarRrule' => 'Calendars.CalendarRrule']);
 		}
+
+		if ($createdUserWhenUpd !== null) {
+			$rruleData['CalendarRrule']['created_user'] = $createdUserWhenUpd;
+		}
+
 		$model->CalendarRrule->set($rruleData);
 
 		if (!$model->CalendarRrule->validates()) {

@@ -49,10 +49,12 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
  * @param array $planParams 予定パラメータ
  * @param array $rruleData rruleデータ
  * @param array $eventData eventデータ
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return void
  * @throws InternalErrorException
  */
-	public function insertRrule(Model &$model, $planParams, $rruleData, $eventData) {
+	public function insertRrule(Model &$model, $planParams, $rruleData, $eventData,
+		$createdUserWhenUpd = null) {
 		if (isset($model->rrule)) {	//behaviorメソッドでrruleを渡すための工夫
 			unset($model->rrule);
 		}
@@ -103,7 +105,7 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 		/////////////////////////////
 		//周期性による、eventの順次登録
 		//rruleのin/outは、$modelのインスタンス変数をつかっておこなう。
-		$this->insertPriodEntry($model, $planParams, $rruleData, $eventData);
+		$this->insertPriodEntry($model, $planParams, $rruleData, $eventData, $createdUserWhenUpd);
 	}
 
 /**
@@ -113,9 +115,11 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
  * @param array $planParams planParams
  * @param array $rruleData rruleData
  * @param array $startEventData eventデータ
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return void
  */
-	public function insertPriodEntry(Model &$model, $planParams, $rruleData, $startEventData) {
+	public function insertPriodEntry(Model &$model, $planParams, $rruleData, $startEventData,
+		$createdUserWhenUpd) {
 		//CakeLog::debug("DBG: In insertPriodEntry(). i set model->rrule[INDEX] to 1.");
 
 		$model->rrule['INDEX'] = 1;
@@ -125,16 +129,17 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 				if (!$model->Behaviors->hasMethod('insertYearly')) {
 					$model->Behaviors->load('Calendars.CalendarYearlyEntry');
 				}
-				$model->insertYearly($planParams, $rruleData, $startEventData, 1);
+				$model->insertYearly($planParams, $rruleData, $startEventData, 1, 0, $createdUserWhenUpd);
 				break;
 			case 'MONTHLY':
-				$this->_insertMonthlyPriodEntry($model, $planParams, $rruleData, $startEventData);
+				$this->_insertMonthlyPriodEntry($model, $planParams, $rruleData, $startEventData,
+					$createdUserWhenUpd);
 				break;
 			case 'WEEKLY':
 				if (!$model->Behaviors->hasMethod('insertWeekly')) {
 					$model->Behaviors->load('Calendars.CalendarWeeklyEntry');
 				}
-				$model->insertWeekly($planParams, $rruleData, $startEventData, 1);
+				$model->insertWeekly($planParams, $rruleData, $startEventData, 1, $createdUserWhenUpd);
 				break;
 			case 'DAILY':
 				if (!$model->Behaviors->hasMethod('insertDaily')) {
@@ -143,7 +148,7 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 
 				//CakeLog::debug("DBGDBG: In insertPriodEntry() DAILY case. before insertDaily[" . print_r($planParams, true) . "] rruleData[" . print_r($rruleData, true) . "] startEventData[" . print_r($startEventData) . "]");
 
-				$model->insertDaily($planParams, $rruleData, $startEventData);
+				$model->insertDaily($planParams, $rruleData, $startEventData, $createdUserWhenUpd);
 				break;
 		}
 	}
@@ -157,17 +162,19 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
  * @param array &$planParams planParams
  * @param array &$rruleData rruleData
  * @param array &$startEventData eventデータ
+ * @param int &$createdUserWhenUpd createdUserWhenUpd
  * @return void
  */
 	protected function _insertMonthlyPriodEntry(Model &$model,
-		&$planParams, &$rruleData, &$startEventData) {
+		&$planParams, &$rruleData, &$startEventData, &$createdUserWhenUpd) {
 		if (!$model->Behaviors->hasMethod('insertMonthlyByMonthday')) {
 			$model->Behaviors->load('Calendars.CalendarMonthlyEntry');
 		}
 		if (isset($model->rrule['BYMONTHDAY'])) {	//指定月のx日、y日
-			$model->insertMonthlyByMonthday($planParams, $rruleData, $startEventData, 1, 1);
+			$model->insertMonthlyByMonthday($planParams, $rruleData, $startEventData, 1, 1,
+				$createdUserWhenUpd);
 		} else {	//第ｘ週ｙ曜日
-			$model->insertMonthlyByDay($planParams, $rruleData, $startEventData, 1);
+			$model->insertMonthlyByDay($planParams, $rruleData, $startEventData, 1, $createdUserWhenUpd);
 		}
 	}
 }

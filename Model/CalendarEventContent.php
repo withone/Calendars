@@ -120,10 +120,11 @@ class CalendarEventContent extends CalendarsAppModel {
  * カレンダーイベントコンテンツ登録 
  *
  * @param array $rEventData イベントデータ
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return mixed 成功時はModel::data、失敗時はfalse
  * @throws InternalErrorException
  */
-	public function saveLinkedData($rEventData) {
+	public function saveLinkedData($rEventData, $createdUserWhenUpd = null) {
 		$data = false;
 		$this->begin();
 		try {
@@ -146,6 +147,15 @@ class CalendarEventContent extends CalendarsAppModel {
 				//これだけは親モデル
 				$data[$this->alias]['calendar_event_id'] = $rEventData['CalendarEvent']['id'];
 			}
+
+			//カレンダー独自の例外追加１）
+			//変更後の公開ルームidが、「元予定生成者の＊ルーム」から「編集者・承認者(＝ログイン者）の
+			//プライベート」に変化していた場合、created_userを、元予定生成者「から」編集者・承認者(＝ログイン者）
+			//「へ」に変更すること。＝＞これを考慮したcreatedUserWhenUpdを使えばよい。
+			if ($createdUserWhenUpd !== null) {
+				$data[$this->alias]['created_user'] = $createdUserWhenUpd;
+			}
+
 			if (! $this->save($data)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}

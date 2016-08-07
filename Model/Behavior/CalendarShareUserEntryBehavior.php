@@ -37,9 +37,11 @@ class CalendarShareUserEntryBehavior extends CalendarAppBehavior {
  * @param Model &$model 実際のモデル名
  * @param array $shareUsers shareUsers
  * @param int $eventId eventId
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return void
  */
-	public function insertShareUsers(Model &$model, $shareUsers, $eventId) {
+	public function insertShareUsers(Model &$model, $shareUsers, $eventId,
+		$createdUserWhenUpd = null) {
 		if (!(isset($model->CalendarEventShareUser))) {
 			$model->CalendarEventShareUser = ClassRegistry::init('Calendars.CalendarEventShareUser', true);
 			//$model->loadModels(['CalendarEventShareUser' => 'Calendar.CalendarEventShareUser']);
@@ -54,6 +56,14 @@ class CalendarShareUserEntryBehavior extends CalendarAppBehavior {
 				'calendar_event_id' => $eventId,
 				'share_user' => intval($value),
 			);
+
+			//カレンダー独自の例外追加１）
+			//変更後の公開ルームidが、「元予定生成者の＊ルーム」から「編集者・承認者(＝ログイン者）の
+			//プライベート」に変化していた場合、created_userを、元予定生成者「から」編集者・承認者(＝ログイン者）
+			//「へ」に変更すること。＝＞これを考慮したcreatedUserWhenUpdを使えばよい。
+			if ($createdUserWhenUpd !== null) {
+				$elm['created_user'] = $createdUserWhenUpd;
+			}
 			//CakeLog::debug("DBG: elm[" . print_r($elm, true) . "]");
 			return $elm;
 		};
@@ -70,9 +80,11 @@ class CalendarShareUserEntryBehavior extends CalendarAppBehavior {
  * @param array $shareUsers shareUsers
  * @param int $eventId eventId
  * @param array $oldShareUserDataAry oldShareUserDataAry
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return void
  */
-	public function updateShareUsers(Model &$model, $shareUsers, $eventId, $oldShareUserDataAry) {
+	public function updateShareUsers(Model &$model, $shareUsers, $eventId, $oldShareUserDataAry,
+		$createdUserWhenUpd = null) {
 		//CakeLog::debug("DBG: IN updateShareUsers(). shareUsers[" .
 		//	print_r($shareUsers, true) . "] eventId[" . $eventId .
 		//	"] oldShareUserDataAry[" . print_r($oldShareUserDataAry, true) . "]");
@@ -93,7 +105,7 @@ class CalendarShareUserEntryBehavior extends CalendarAppBehavior {
 		//CakeLog::debug("DBG: insShareUsers[" . print_r($insShareUsers, true) .
 		//	"] oldShareUsers[" . print_r($oldShareUsers, true) .
 		//	"] shareUsers[" . print_r($shareUsers, true) . "]");
-		$this->insertShareUsers($model, $insShareUsers, $eventId);
+		$this->insertShareUsers($model, $insShareUsers, $eventId, $createdUserWhenUpd);
 
 		//古い共有ユーザ群より、削除すべきユーザ群を抽出
 		$delShareUsers = array_diff($oldShareUsers, $shareUsers);

@@ -102,10 +102,12 @@ class CalendarAppBehavior extends ModelBehavior {
  * @param array $eventData eventデータ(CalendarEventのモデルデータ)
  * @param string $startTime startTime 開始日付時刻文字列
  * @param string $endTime endTime 開始日付時刻文字列
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return array $rEventData
  * @throws InternalErrorException
  */
-	public function insert(Model &$model, $planParams, $rruleData, $eventData, $startTime, $endTime) {
+	public function insert(Model &$model, $planParams, $rruleData, $eventData, $startTime, $endTime,
+		$createdUserWhenUpd = null) {
 		$this->loadEventAndRruleModels($model);
 		$params = array(
 			'conditions' => array('CalendarRrule.id' => $eventData['CalendarEvent']['calendar_rrule_id']),
@@ -139,14 +141,17 @@ class CalendarAppBehavior extends ModelBehavior {
 		//eventのkeyを新しく採番するため、nullクリアします。
 		$rEventData['CalendarEvent']['key'] = null;
 
-		$model->CalendarEvent->set($rEventData);
+		//バリデーションエラー含め、モデルの状態リセット
+		$model->CalendarEvent->clear();
 
+		$model->CalendarEvent->set($rEventData);
+		/* FIXME: なぜか子Modelのcontent_key不正がでる。要調査。
 		if (!$model->CalendarEvent->validates()) {	//rEventDataをチェック
 			$model->validationErrors = Hash::merge(
 				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
-
+		*/
 		//eventの保存。
 		//なお、追加情報(workflowcomment)は WFCのafterSave()で自動セットされる。
 		//
@@ -156,10 +161,26 @@ class CalendarAppBehavior extends ModelBehavior {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
+		//カレンダー独自の例外追加１）
+		//変更後の公開ルームidが、「元予定生成者の＊ルーム」から「編集者・承認者(＝ログイン者）の
+		//プライベート」に変化していた場合、created_userを、元予定生成者「から」編集者・承認者(＝ログイン者）
+		//「へ」に変更すること。＝＞これを考慮したcreatedUserWhenUpdを使えばよい。
+		//
+		//尚、saveの中で $createdUserWhenUpd を直接セットせず、以下のsaveField(=UPDATE文)を使ったのは
+		//WFのbeforeSaveによりセットしたcreatedUserWhenUpd以外の値の書き換えられる可能性があるため。
+		//
+		if ($model->CalendarEvent->id > 0 && $createdUserWhenUpd !== null) {
+			//saveが成功し、かつ、createdUserWhenUpd がnull以外なら、created_userを更新しておく。
+			//modifiedも更新されるが、saveの直後なので誤差の範囲として了とする。
+			$model->CalendarEvent->saveField('created_user', $createdUserWhenUpd);
+			//UPDATEでセットしたcreatedUserWhenUpdの値をeventDataに記録しておく
+			$rEventData['CalendarEvent']['created_user'] = $createdUserWhenUpd;
+		}
+
 		//採番されたidをeventDataにセット
 		$rEventData['CalendarEvent']['id'] = $model->CalendarEvent->id;
 
-		$this->_insertChidren($model, $planParams, $rEventData);
+		$this->_insertChidren($model, $planParams, $rEventData, $createdUserWhenUpd);
 
 		return $rEventData;
 	}
@@ -489,14 +510,16 @@ class CalendarAppBehavior extends ModelBehavior {
  * @param Model &$model モデル
  * @param array $planParams planParams
  * @param array $eventData eventData
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return void
  */
-	protected function _insertChidren(&$model, $planParams, $eventData) {
+	protected function _insertChidren(&$model, $planParams, $eventData, $createdUserWhenUpd = null) {
 		//カレンダ共有ユーザ登録
 		if (!$model->Behaviors->hasMethod('insertShareUsers')) {
 			$model->Behaviors->load('Calendars.CalendarShareUserEntry');
 		}
-		$model->insertShareUsers($planParams['share_users'], $eventData['CalendarEvent']['id']);
+		$model->insertShareUsers($planParams['share_users'], $eventData['CalendarEvent']['id'],
+			$createdUserWhenUpd);
 		//注: 他のモデルの組み込みBehaviorをcallする場合、第一引数に$modelの指定はいらない。
 
 		//関連コンテンツの登録
@@ -505,7 +528,7 @@ class CalendarAppBehavior extends ModelBehavior {
 			if (!(isset($model->CalendarEventContent))) {
 				$model->loadModels(['CalendarEventContent' => 'Calendar.CalendarEventContent']);
 			}
-			$model->CalendarEventContent->saveLinkedData($eventData);
+			$model->CalendarEventContent->saveLinkedData($eventData, $createdUserWhenUpd);
 		}
 	}
 

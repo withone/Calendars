@@ -67,17 +67,20 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
  * @param Model &$model 実際のモデル名
  * @param array $data POSTされたrequest->data配列
  * @param string $status status 変更時のカレンダー独自の新status
+ * @param int $createdUserWhenUpd createdUserWhenUpd
+ * @param bool $isMyPrivateRoom isMyPrivateRoom
  * @return int 生成成功時 新しく生成した次世代予定($plan)を返す。失敗時 InternalErrorExceptionを投げる。
  * @throws InternalErrorException
  */
-	public function makeNewGenPlan(Model &$model, $data, $status) {
+	public function makeNewGenPlan(Model &$model, $data, $status,
+		$createdUserWhenUpd, $isMyPrivateRoom) {
 		$action = 'update';
 		$plan = $this->__makeCommonGenPlan($model, $action, $data,
 			$data['CalendarActionPlan']['origin_rrule_id']);
 
 		//keyが同じrrule -> key同一のevents -> eventsの各子供をcopy保存する
 
-		$plan = $this->__copyRruleData($model, $plan);
+		$plan = $this->__copyRruleData($model, $plan, $createdUserWhenUpd);
 
 		unset($plan['new_event_id']);	//念のため変数クリア
 		foreach ($plan['CalendarEvent'] as &$event) {
@@ -87,7 +90,8 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 				$plan['CalendarRrule']['id'],
 				$status,
 				$data['CalendarActionPlan']['origin_event_id'],
-				$data['CalendarActionPlan']['origin_event_key']
+				$data['CalendarActionPlan']['origin_event_key'],
+				$createdUserWhenUpd, $isMyPrivateRoom
 			);
 			if (!isset($plan['new_event_id']) && !empty($newEventId) && !empty($newEventKey)) {
 				//対象元となったeventの新世代なので、新世代eventのidとkeyの値をplanにセットしておく
@@ -107,10 +111,11 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
  *
  * @param Model &$model 実際のモデル名
  * @param array $plan plan
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return int 生成成功時 新しい$planを返す。失敗時 InternalErrorExceptionを投げる。
  * @throws InternalErrorException
  */
-	private function __copyRruleData(Model &$model, $plan) {
+	private function __copyRruleData(Model &$model, $plan, $createdUserWhenUpd) {
 		//CalendarRruleには、status, is_latest, is_activeはない。
 
 		$rruleData = array();
@@ -119,8 +124,17 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 		//次世代データの新規登録
 		$originRruleId = $rruleData['CalendarRrule']['id'];
 		$rruleData['CalendarRrule']['id'] = null;
-		$rruleData['CalendarRrule']['created_user'] = null;
-		$rruleData['CalendarRrule']['created'] = null;
+
+		//作成者・作成日は原則、元予定のデータを引き継ぐ、、、が！例外がある。
+		//例外追加１）
+		//変更後の公開ルームidが、「元予定生成者の＊ルーム」から「編集者・承認者(＝ログイン者）の
+		//プライベート」に変化していた場合、created_userを、元予定生成者「から」編集者・承認者(＝ログイン者）
+		//「へ」に変更すること。
+		//＝＞これを考慮したcreatedUserWhenUpdを使えばよい。
+		if ($createdUserWhenUpd !== null) {
+			$rruleData['CalendarRrule']['created_user'] = $createdUserWhenUpd;
+		}
+
 		$rruleData['CalendarRrule']['modified_user'] = null;
 		$rruleData['CalendarRrule']['modified'] = null;
 
@@ -161,16 +175,21 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
  * @param string $status status 変更時のカレンダー独自新status
  * @param sring $originEventId 選択されたeventのid(origin_event_id)
  * @param sring $originEventKey 選択されたeventのkey(origin_event_key)
+ * @param int $createdUserWhenUpd createdUserWhenUpd
+ * @param bool $isMyPrivateRoom isMyPrivateRoom
  * @return int 生成成功時 新しい$event、newEventId, newEventKeyを返す。失敗時 InternalErrorExceptionを投げる。
  * @throws InternalErrorException
+ * @SuppressWarnings(PHPMD)
  */
 	private function __copyEventData(Model &$model, $event, $calendarRruleId, $status,
-		$originEventId, $originEventKey) {
+		$originEventId, $originEventKey, $createdUserWhenUpd, $isMyPrivateRoom) {
 		//CalendarEventには、status, is_latest, is_activeがある。
 		//
-		//注：is_latest,is_activeは、WFのbeforeSaveで、insertの時だけ
-		//statusに従い自動調整セットされる。update(updateAll含む)の時は、
-		//is_latest,is_activeは自動調整セットされないので、要注意。
+		//通常、WFを組み込んでいる時は、is_latest,is_activeは、WFのbeforeSaveで、
+		//insertの時だけstatusに従い自動調整セットされ、update(updateAll含む)の時は、
+		//is_latest,is_activeは自動調整セットされない。
+		//が！以下では、WF,WFCommentをunloadして外し、代わりにカレンダー拡張の処理を実行
+		//させているので、注意すること。
 
 		$eventData = array();
 		$eventData['CalendarEvent'] = $event;
@@ -190,10 +209,6 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 
 		//「status, is_active, is_latest, created, created_user について」
 		//statusは、元世代のstatus値を引き継ぐ。
-		//is_active, is_latestは、WorkflowのbeforeSaveのINSERT処理にまかせて
-		//値を自動設定させる。
-		//created, created_userも、WorkflowのbeforeSaveのINSERT処理にまわせて
-		//値を同一key、同一lange_idのcreated, created_userよりcopyさせる。
 
 		$eventData['CalendarEvent']['modified_user'] = $eventData['CalendarEvent']['modified'] = null;
 
@@ -210,12 +225,18 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
-		// 各種Behavior終わったら戻す FUJI ＝＞ WFのbeforeSaveのis_active調整処理は
-		// INSERTではなく、UPDATEまで処理delayさせる必要があるが、is_latestとcreatedは
+		//各種Behavior終わったら戻す FUJI
+		//
+		//＝＞ WFのbeforeSaveのis_active調整処理は
+		//INSERTではなく、UPDATEまで処理delayさせる必要があるが、is_latestとcreatedは
 		// ここで行なうべき。ゆえに、(a) load(WF.WF)をsave()の後に移動し、(b)カレンダ
 		// のLatestおよびCreated準備処理をここに差し込む。
-		// (eventDataの値、一部更新等しています)
-		$model->CalendarEvent->prepareLatestCreatedForIns($eventData);
+		// (eventDataの値、一部更新等しています) HASHI
+		//
+		//例外追加）createdUserWhenUpdにnull以外の値（ユーザID)が入っていたら、
+		//keyが一致する過去世代予定の有無に関係なく、そのcreatedUserWhenUpdを、created_userに
+		//セットするようにした。
+		$model->CalendarEvent->prepareLatestCreatedForIns($eventData, $createdUserWhenUpd);
 
 		//子もsave（）で返ってくる。
 		$eventData = $model->CalendarEvent->save($eventData, false); //aaaaaaaaaaaaa
@@ -239,13 +260,23 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 
 		//calendar_event_contentsをcopyする
 		foreach ($eventData['CalendarEvent']['CalendarEventContent'] as &$content) {
-			$content = $this->__copyEventContentData($model, $content, $eventData['CalendarEvent']['id']);
+			$content = $this->__copyEventContentData($model, $content,
+				$eventData['CalendarEvent']['id'], $createdUserWhenUpd);
 		}
 
-		//calendar_event_share_usersをcopyする
-		foreach ($eventData['CalendarEvent']['CalendarEventShareUser'] as &$shareUser) {
-			$shareUser = $this->__copyEventShareUserData(
-				$model, $shareUser, $eventData['CalendarEvent']['id']);
+		if ($isMyPrivateRoom) {
+			//変更後の公開ルームidが、「編集者・承認者（＝ログイン者）のプライベート」なので
+			//calendar_event_share_usersをcopyする
+			foreach ($eventData['CalendarEvent']['CalendarEventShareUser'] as &$shareUser) {
+				$shareUser = $this->__copyEventShareUserData(
+					$model, $shareUser, $eventData['CalendarEvent']['id'], $createdUserWhenUpd);
+			}
+		} else {
+			//変更後の公開ルームidが、「編集者・承認者（＝ログイン者）のプライベート」「以外」の場合、
+			//仲間の予定はプライベートの時のみ許される子情報なので、これらはcopy対象から外す（stripする)こと。
+			if (isset($eventData['CalendarEvent']['CalendarEventShareUser'])) {
+				unset($eventData['CalendarEvent']['CalendarEventShareUser']);
+			}
 		}
 
 		$event = $eventData['CalendarEvent'];
@@ -261,10 +292,11 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
  * @param Model &$model 実際のモデル名
  * @param array $content content
  * @param int $calendarEventId calendarEventId
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return int 生成成功時 新しい$contentを返す。失敗時 InternalErrorExceptionを投げる。
  * @throws InternalErrorException
  */
-	private function __copyEventContentData(&$model, $content, $calendarEventId) {
+	private function __copyEventContentData(&$model, $content, $calendarEventId, $createdUserWhenUpd) {
 		//CalendarEventContentには、status, is_latest, is_activeはない
 
 		$contentData = array();
@@ -274,8 +306,17 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 		$originContentId = $contentData['CalendarEventContent']['id'];
 		$contentData['CalendarEventContent']['id'] = null;
 		$contentData['CalendarEventContent']['calendar_event_id'] = $calendarEventId;
-		$contentData['CalendarEventContent']['created_user'] = null;
-		$contentData['CalendarEventContent']['created'] = null;
+
+		//作成日と作成者は、元予定のcalendar_event_contentsのものを継承する、、が！例外がある。
+		//例外追加１）
+		//変更後の公開ルームidが、「元予定生成者の＊ルーム」から「編集者・承認者(＝ログイン者）の
+		//プライベート」に変化していた場合、created_userを、元予定生成者「から」編集者・承認者(＝ログイン者）
+		//「へ」に変更すること。
+		//＝＞これを考慮したcreatedUserWhenUpdを使えばよい。
+		if ($createdUserWhenUpd !== null) {
+			$contentData['CalendarEventContent']['created_user'] = $createdUserWhenUpd;
+		}
+
 		$contentData['CalendarEventContent']['modified_user'] = null;
 		$contentData['CalendarEventContent']['modified'] = null;
 
@@ -307,10 +348,12 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
  * @param Model &$model 実際のモデル名
  * @param array $shareUser shareUser
  * @param int $calendarEventId calendarEventId
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return int 生成成功時 新しい$shareUserを返す。失敗時 InternalErrorExceptionを投げる。
  * @throws InternalErrorException
  */
-	private function __copyEventShareUserData(&$model, $shareUser, $calendarEventId) {
+	private function __copyEventShareUserData(&$model, $shareUser, $calendarEventId,
+		$createdUserWhenUpd) {
 		//CalendarEventShareUserには、status, is_latest, is_activeはない
 
 		$shareUserData = array();
@@ -320,8 +363,17 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 		$originShareUserId = $shareUserData['CalendarEventShareUser']['id'];
 		$shareUserData['CalendarEventShareUser']['id'] = null;
 		$shareUserData['CalendarEventShareUser']['calendar_event_id'] = $calendarEventId;
-		$shareUserData['CalendarEventShareUser']['created_user'] = null;
-		$shareUserData['CalendarEventShareUser']['created'] = null;
+
+		//作成日と作成者は、元予定のcalendar_event_share_usersのものを継承する、、が！例外がある。
+		//例外追加１）
+		//変更後の公開ルームidが、「元予定生成者の＊ルーム」から「編集者・承認者(＝ログイン者）の
+		//プライベート」に変化していた場合、created_userを、元予定生成者「から」編集者・承認者(＝ログイン者）
+		//「へ」に変更すること。
+		//＝＞これを考慮したcreatedUserWhenUpdを使えばよい。
+		if ($createdUserWhenUpd !== null) {
+			$shareUserData['CalendarEventShareUser']['created_user'] = $createdUserWhenUpd;
+		}
+
 		$shareUserData['CalendarEventShareUser']['modified_user'] = null;
 		$shareUserData['CalendarEventShareUser']['modified'] = null;
 

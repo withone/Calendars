@@ -40,9 +40,11 @@ class CalendarDailyEntryBehavior extends CalendarAppBehavior {
  * @param array $planParams planParams
  * @param ssary $rruleData rruleData
  * @param array $eventData eventデータ(CalendarEventのモデルデータ)
+ * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return array $result 結果
  */
-	public function insertDaily(Model &$model, $planParams, $rruleData, $eventData) {
+	public function insertDaily(Model &$model, $planParams, $rruleData, $eventData,
+		$createdUserWhenUpd = null) {
 		$model->rrule['INDEX']++;
 
 		//ユーザタイムゾーンを取得しておく。
@@ -107,12 +109,12 @@ class CalendarDailyEntryBehavior extends CalendarAppBehavior {
 
 		//CakeLog::debug("DBGX: insert() svrStartDateTime[" . $svrStartDate . $svrStartTime . "] svrEndDateTime[" . $svrEndDate . $svrEndTime . "]");
 		$rEventData = $this->insert($model, $planParams, $rruleData, $eventData,
-			($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime));
+			($svrStartDate . $svrStartTime), ($svrEndDate . $svrEndTime), $createdUserWhenUpd);
 		if ($rEventData['CalendarEvent']['id'] === null) {
 			return false;
 		}
 
 		//CakeLog::debug("DBGDBG: insertDaily()を再帰CALLします。planParams[" . print_r($planParams, true) . "] rruleData[" . print_r($rruleData, true) . "] rEventData[" . print_r($rEventData, true) . "]");
-		return $this->insertDaily($model, $planParams, $rruleData, $rEventData);
+		return $this->insertDaily($model, $planParams, $rruleData, $rEventData, $createdUserWhenUpd);
 	}
 }
