@@ -127,13 +127,13 @@ class CalendarEventGetEventByKeyTest extends WorkflowGetTest {
 	public function dataProviderGet() {
 		$expectNotExist = array();
 		$expectExist = (new CalendarEventFixture())->records[0];
-
+		$expectExist['is_published'] = true;
 		return array(
 			array('non', 1, $expectNotExist), //存在しない
 			array('', 1, $expectNotExist), //存在しない
 			array('calendarplan1', 1, $expectExist), //存在する(userId = 1)
 			array('calendarplan1', 0, $expectExist), //存在する(userId = 0)
-			array('calendarplan1', 2, $expectExist), //存在する(userId = 0)
+			array('calendarplan1', 2, $expectExist), //存在する(userId = 2)
 
 		);
 	}

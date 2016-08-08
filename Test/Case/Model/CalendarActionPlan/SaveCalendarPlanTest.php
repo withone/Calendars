@@ -331,9 +331,11 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		$isOriginRepeat = '';
 		$isTimeMod = '';
 		$isRepeatMod = '';
+		$createdUserWhenUpd = 1;
+		$myself = 1;
 
 		//テスト実行
-		$result = $this->$model->$method($data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod);
+		$result = $this->$model->$method($data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod, $createdUserWhenUpd, $myself);
 		//print_r($this->$model->validationErrors);
 
 		$this->assertNotEmpty($result);
@@ -401,9 +403,11 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		$isOriginRepeat = '';
 		$isTimeMod = '';
 		$isRepeatMod = '';
+		$createdUserWhenUpd = 1;
+		$myself = 1;
 
 		//テスト実行
-		$result = $this->$model->$method($data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod);
+		$result = $this->$model->$method($data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod, $createdUserWhenUpd, $myself);
 		$this->assertFalse($result);
 	}
 
@@ -464,9 +468,11 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		$isOriginRepeat = '';
 		$isTimeMod = '';
 		$isRepeatMod = '';
+		$createdUserWhenUpd = 1;
+		$myself = 1;
 
 		//テスト実行
-		$result = $this->$model->$method($data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod);
+		$result = $this->$model->$method($data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod, $createdUserWhenUpd, $myself);
 		//print_r($this->$model->CalendarEvent->validationErrors);
 		$this->assertFalse($result);
 	}
