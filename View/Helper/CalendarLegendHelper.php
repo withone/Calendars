@@ -74,7 +74,7 @@ class CalendarLegendHelper extends AppHelper {
  */
 	protected function _getPrivateLegend($vars) {
 		$html = '';
-		if (! $this->_isDisplayLegend($vars, Space::PRIVATE_SPACE_ID)) {
+		if (! $this->_isDisplayLegend($vars, Room::PRIVATE_PARENT_ID)) {
 			return '';
 		}
 		if (in_array(Space::PRIVATE_SPACE_ID, $vars['roomSpaceMaps'])) {
@@ -137,7 +137,7 @@ class CalendarLegendHelper extends AppHelper {
  */
 	protected function _getDoShareLegend($vars) {
 		$html = '';
-		if (! $this->_isDisplayLegend($vars, Space::PRIVATE_SPACE_ID)) {
+		if (! $this->_isDisplayLegend($vars, Room::PRIVATE_PARENT_ID)) {
 			return '';
 		}
 		// 共有した予定を持てるかどうかはプライベートを持っているかです
@@ -162,7 +162,7 @@ class CalendarLegendHelper extends AppHelper {
  */
 	protected function _getDoneShareLegend($vars) {
 		$html = '';
-		if (! $this->_isDisplayLegend($vars, Space::PRIVATE_SPACE_ID)) {
+		if (! $this->_isDisplayLegend($vars, Room::PRIVATE_PARENT_ID)) {
 			return '';
 		}
 		$userId = Current::read('User.id');
@@ -218,8 +218,15 @@ class CalendarLegendHelper extends AppHelper {
  */
 	protected function _isDisplayLegend($vars, $id) {
 		if ($vars['CalendarFrameSetting']['is_select_room']) {
-			if (! Hash::get($vars, 'exposeRoomOptions.' . $id)) {
-				return false;
+			if ($id == Room::PRIVATE_PARENT_ID) {
+				if (! Hash::get($vars, 'exposeRoomOptions.' . $vars['myself'])) {
+					return false;
+				}
+			} else {
+				// 表示対象ルームIDの中にあるか
+				if (! Hash::get($vars, 'exposeRoomOptions.' . $id)) {
+					return false;
+				}
 			}
 		}
 		return true;
