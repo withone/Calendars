@@ -122,10 +122,11 @@ class CalendarsController extends CalendarsAppController {
 			}
 		}
 		$this->_storeRedirectPath($vars);
-		$ctpName = $this->getCtpAndVars($style, $vars);
 
 		$roomPermRoles = $this->CalendarEvent->prepareCalRoleAndPerm();
 		CalendarPermissiveRooms::$roomPermRoles = $roomPermRoles;
+
+		$ctpName = $this->getCtpAndVars($style, $vars);
 
 		$frameId = Current::read('Frame.id');
 		$languageId = Current::read('Language.id');

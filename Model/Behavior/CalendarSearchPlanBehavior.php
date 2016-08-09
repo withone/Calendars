@@ -31,15 +31,22 @@ class CalendarSearchPlanBehavior extends CalendarAppBehavior {
  * (共有予定とのマージ処理を簡易化するため$order は key => valの１要素のみ、ASC, DESC指定はないものとする)
  *
  * @param Model &$model 実際のモデル名
+ * @param array $vars カレンダー設定情報
  * @param array $planParams  予定パラメータ
  * @param array $order ソートパラメータ
  * @return array 検索成功時 予定配列を返す。検索結果が０件の時は、空配列を返す。検索失敗した時はInternalError例外をthrowする。
  * @throws InternalErrorException
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
-	public function getPlans(Model &$model, $planParams, $order = array()) {
+	public function getPlans(Model &$model, $vars, $planParams, $order = array()) {
+		// 探すのはis_activeかis_latestのものだけでよい
 		$baseOptions = array(
-			'conditions' => array(),
+			'conditions' => array(
+				'OR' => array(
+					'CalendarEvent.is_active' => true,
+					'CalendarEvent.is_latest' => true,
+				)
+			),
 			'recursive' => 1,		//belongTo, hasOne, hasMany関係をもつ１階層上下を対象にする。
 			//'order' => array($model->alias . '.start_date'),
 			'order' => $order,
@@ -102,10 +109,32 @@ class CalendarSearchPlanBehavior extends CalendarAppBehavior {
 		////＝＞screenPlansUsingGetable方式に変えたので以下はやめた HASHI
 		////$plans = $this->__screenPlans($model, $plans, $calRoleAndPerm);
 		//スクリーニング方法をCalendarEventのGetableEvnet()を使う方法に変えた HASHI
-		$roomPermRoles = $model->prepareCalRoleAndPerm();
-		CalendarPermissiveRooms::$roomPermRoles = $roomPermRoles;
+		//FUJI$roomPermRoles = $model->prepareCalRoleAndPerm();
+		//FUJICalendarPermissiveRooms::$roomPermRoles = $roomPermRoles;
 		$plans = $model->screenPlansUsingGetable($plans);
 
+		$sharePlans = $this->_getSharePlans($model, $vars, $baseOptions);
+		/////////////////////////////////////////
+		//通常予定と仲間の予定をマージする。
+		$mergedPlans = $this->__mergePlans($plans, $sharePlans, $order);
+
+		return $mergedPlans;
+	}
+
+/**
+ * _getSharePlans
+ *
+ * 共有予定を取得する
+ *
+ * @param Model $model モデル
+ * @param array $vars カレンダー情報
+ * @param array $baseOptions 基本検索条件
+ * @return array
+ */
+	protected function _getSharePlans($model, $vars, $baseOptions) {
+		if ($vars['CalendarFrameSetting']['is_myroom'] == false) {
+			return array();
+		}
 		///////////////////////////////////////////////////////////////////////
 		//自ユーザーを共有指定している他人のプライベート予定をとってくる。
 		//ここは、上記のルームIDの範疇外になるので、別にfindして、plansに
@@ -165,14 +194,8 @@ class CalendarSearchPlanBehavior extends CalendarAppBehavior {
 			//「仲間の予定」であることを擬似項目をつかって、マーキングしておく。
 			$sharePlan['CalendarEvent']['pseudo_friend_share_plan'] = 1;
 		}
-
-		/////////////////////////////////////////
-		//通常予定と仲間の予定をマージする。
-		$mergedPlans = $this->__mergePlans($plans, $sharePlans, $order);
-
-		return $mergedPlans;
+		return $sharePlans;
 	}
-
 /**
  * __mergePlans
  *

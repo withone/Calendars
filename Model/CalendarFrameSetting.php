@@ -268,6 +268,11 @@ class CalendarFrameSetting extends CalendarsAppModel {
 				$this->rollback();
 				return false;
 			}
+			$data['CalendarFrameSetting']['is_myroom'] = false;
+			if (! $data['CalendarFrameSetting']['is_select_room'] ||
+				!empty($data['CalendarFrameSettingSelectRoom'][Room::PRIVATE_PARENT_ID]['room_id'])) {
+				$data['CalendarFrameSetting']['is_myroom'] = true;
+			}
 			//フレームの登録
 			//バリデートは前で終わっているので第二引数=false
 			$data = $this->save($data, false);

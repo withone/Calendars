@@ -357,6 +357,10 @@ class CalendarEvent extends CalendarsAppModel {
 	public function getEventByKey($eventKey) {
 		$conditions = array(
 			$this->alias . '.key' => $eventKey,
+			'OR' => array(
+				$this->alias . '.is_active' => true,
+				$this->alias . '.is_latest' => true,
+			)
 		);
 		$options = array(
 			'conditions' => $conditions,
