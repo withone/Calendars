@@ -31,34 +31,12 @@ class CalendarWorkflowHelper extends AppHelper {
 /**
  * Check deletable permission
  *
- * @param string $model This should be "Pluginname.Modelname"
  * @param array $data Model data
- * @return bool True is editable data
+ * @return bool True is deletable data
  */
-	public function canDelete($model, $data) {
-		list($plugin, $model) = pluginSplit($model);
-		if (! $plugin) {
-			$plugin = Inflector::pluralize(Inflector::classify($this->request->params['plugin']));
-		}
-		${$model} = ClassRegistry::init($plugin . '.' . $model);
-
-		// 発行済み状態を取得
-		$isPublished = Hash::get($data, 'CalendarEvent.is_published');
-
-		$roomId = Hash::get($data, 'CalendarEvent.room_id');
-
-		// データの対象空間での発行権限を取得
-		$canPublish = CalendarPermissiveRooms::isPublishable($roomId);
-
-		// データの編集権限を取得
-		$canEdit = ${$model}->canEditWorkflowContent($data);
-
-		// 発行済みだと
-		if ($isPublished) {
-			return ($canPublish && $canEdit);
-		} else {
-			// 未発行の場合
-			return $canEdit;
-		}
+	public function canDelete($data) {
+		$model = ClassRegistry::init('Calendars.CalendarEvent');
+		$canDel = $model->canDeleteContent($data);
+		return $canDel;
 	}
 }

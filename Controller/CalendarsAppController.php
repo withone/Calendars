@@ -246,13 +246,13 @@ class CalendarsAppController extends AppController {
 			)
 		));
 		$vars['roomSpaceMaps'] = Hash::combine($rooms, '{n}.Room.id', '{n}.Room.space_id');
-		$roomsLanguages = $this->RoomsLanguages->find(
-			'all',
-			array(
+		$roomsLanguages = $this->RoomsLanguages->find('all', array(
+			'conditions' => array(
 				'room_id' => $this->CalendarEvent->getReadableRoomIds(),
-				'recursive' => -1
-			)
-		);
+				'language_id' => Current::read('Language.id'),
+			),
+			'recursive' => -1,
+		));
 		$vars['roomsLanguages'] = $roomsLanguages;
 	}
 

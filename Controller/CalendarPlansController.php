@@ -194,15 +194,12 @@ class CalendarPlansController extends CalendarsAppController {
 				//削除対象イベントあり
 
 				//カレンダー権限管理の承認を考慮した、Event削除権限チェック
-				$roomId = Current::read('Room.id');
-				if ($this->CalendarEvent->isContentPublishableWithCalRoleAndPerm($roomId)) {
-					//ルーム管理を上書きする形でカレンダー権限管理で承認あり
-				} elseif ($this->CalendarEvent->canDeleteWorkflowContent($eventData)) {
-					//WFでcanDeleteとなっている
-				} else {
+				if (! $this->CalendarEvent->canDeleteContent($eventData)) {
+					// 削除権限がない？！
 					$this->throwBadRequest();
 					return false;
 				}
+
 				$this->CalendarDeleteActionPlan->set($this->request->data);
 				if (!$this->CalendarDeleteActionPlan->validates()) {
 					//バリデーションエラー

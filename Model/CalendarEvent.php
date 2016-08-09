@@ -285,6 +285,38 @@ class CalendarEvent extends CalendarsAppModel {
 		}
 		return $this->find('all', $options);
 	}
+
+/**
+ * canDeleteContent
+ *
+ * 削除できる予定データか確認
+ *
+ * @param array $data 予定データ
+ * @return bool
+ */
+	public function canDeleteContent($data) {
+		// 発行済み状態を取得
+		$isPublished = Hash::get($data, 'CalendarEvent.is_published');
+
+		// 予定の対象ルームIDを取得
+		$roomId = Hash::get($data, 'CalendarEvent.room_id');
+
+		// データの対象空間での発行権限を取得
+		$canPublish = CalendarPermissiveRooms::isPublishable($roomId);
+
+		// データの編集権限を取得
+		$canEdit = $this->canEditWorkflowContent($data);
+
+		// 発行済みだと
+		if ($isPublished) {
+			// 発行権限と編集権限の両方がないと削除できない
+			return ($canPublish && $canEdit);
+		} else {
+			// 未発行の場合
+			// 編集権限さえあれば良い
+			return $canEdit;
+		}
+	}
 /**
  * getEventById
  *
