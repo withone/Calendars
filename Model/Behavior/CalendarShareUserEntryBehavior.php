@@ -51,7 +51,8 @@ class CalendarShareUserEntryBehavior extends CalendarAppBehavior {
 			return;
 		}
 
-		$func = function ($value) use($eventId) {
+		//無名関数（クロージャ）は変数を親のスコープから引き継ぐことができ、引き継ぐ変数は、use で渡す必要があり。
+		$func = function ($value) use($eventId, $createdUserWhenUpd) {
 			$elm = array(
 				'calendar_event_id' => $eventId,
 				'share_user' => intval($value),

@@ -515,12 +515,12 @@ class CalendarActionPlan extends CalendarsAppModel {
  * @param bool $isTimeMod isTimeMod
  * @param bool $isRepeatMod isRepeatMod
  * @param int $createdUserWhenUpd createdUserWhenUpd
- * @param int $myself myself 現ログインユーザのプライベートルームID
+ * @param bool $isMyPrivateRoom isMyPrivateRoom
  * @return bool 成功時true, 失敗時false
  * @throws InternalErrorException
  */
 	public function saveCalendarPlan($data, $procMode,
-		$isOriginRepeat, $isTimeMod, $isRepeatMod, $createdUserWhenUpd, $myself) {
+		$isOriginRepeat, $isTimeMod, $isRepeatMod, $createdUserWhenUpd, $isMyPrivateRoom) {
 		// 設定画面を表示する前にこのルームのアンケートブロックがあるか確認
 		// 万が一、まだ存在しない場合には作成しておく
 		$this->Calendar->afterFrameSave(Current::read());
@@ -558,9 +558,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 				$eventId = $this->insertPlan($planParam);
 			} else {	//PLAN_EDIT
 				//変更処理
-
-				//公開対象のルームが、ログイン者（編集者・承認者）のプライベートルームかどうかを判断しておく。
-				$isMyPrivateRoom = ($data['CalendarActionPlan']['plan_room_id'] == $myself);
+				//CakeLog::debug("DBG: PLAN_MODIFY case.");
 
 				//現予定を元に、新世代予定を作成する
 				//1. statusは、cal用新statusである。

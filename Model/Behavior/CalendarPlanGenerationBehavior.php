@@ -267,6 +267,7 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 		if ($isMyPrivateRoom) {
 			//変更後の公開ルームidが、「編集者・承認者（＝ログイン者）のプライベート」なので
 			//calendar_event_share_usersをcopyする
+			//CakeLog::debug("DBG: 変更後の公開ルームidがログイン者のプライべートのケース.");
 			foreach ($eventData['CalendarEvent']['CalendarEventShareUser'] as &$shareUser) {
 				$shareUser = $this->__copyEventShareUserData(
 					$model, $shareUser, $eventData['CalendarEvent']['id'], $createdUserWhenUpd);
@@ -275,7 +276,10 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 			//変更後の公開ルームidが、「編集者・承認者（＝ログイン者）のプライベート」「以外」の場合、
 			//仲間の予定はプライベートの時のみ許される子情報なので、これらはcopy対象から外す（stripする)こと。
 			if (isset($eventData['CalendarEvent']['CalendarEventShareUser'])) {
-				unset($eventData['CalendarEvent']['CalendarEventShareUser']);
+				//unset($eventData['CalendarEvent']['CalendarEventShareUser']);
+				//CakeLog::debug("DBG: 変更後の公開ルームidがログイン者のプライべート「以外」のケース..");
+				//CakeLog::debug("DBG: copyされない共有予定データ群[" . print_r($eventData['CalendarEvent']['CalendarEventShareUser'], true) . "]");
+				$eventData['CalendarEvent']['CalendarEventShareUser'] = array();
 			}
 		}
 

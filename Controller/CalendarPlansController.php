@@ -312,6 +312,8 @@ class CalendarPlansController extends CalendarsAppController {
  * @return void
  */
 	protected function _calendarPost() {
+		//CakeLog::debug("DBG: request_data[" . print_r($this->request->data, true) . "]");
+
 		//登録処理
 		//注) getStatus()はsave_Nからの単純取得ではなくカレンダー独自status取得をしている.
 		//なのでControllerにきた直後のここで、request->dataをすり替えておくのが望ましい.
@@ -350,6 +352,17 @@ class CalendarPlansController extends CalendarsAppController {
 			$this->request->data['CalendarActionPlan']['plan_room_id'],
 			$this->_myself
 		);
+
+		//公開対象のルームが、ログイン者（編集者・承認者）のプライベートルームかどうかを判断しておく。
+		$isMyPrivateRoom = ($this->request->data['CalendarActionPlan']['plan_room_id'] == $this->_myself);
+
+		if (! $isMyPrivateRoom) {
+			//CakeLog::debug("DBG: 予定のルームが、ログインの者のプライベートルーム以外の時");
+			if (isset($this->request->data['GroupsUser'])) {
+				//CakeLog::debug("DBG: 予定を共有する人情報は存在してはならないので、stripする。");
+				unset($this->request->data['GroupsUser']);
+			}
+		}
 
 		//成功なら元画面(カレンダーorスケジューラー)に戻る。
 		//FIXME: 遷移元がshow.ctpなら、戻り先をshow.ctpに変える必要あり。
