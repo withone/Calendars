@@ -418,8 +418,12 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		if (!$model->Behaviors->hasMethod('updateShareUsers')) {
 			$model->Behaviors->load('Calendars.CalendarShareUserEntry');
 		}
-		$model->updateShareUsers($planParams['share_users'], $eventId,
-			$eventData['CalendarEvent']['CalendarEventShareUser'], $createdUserWhenUpd);
+		$model->updateShareUsers(
+			$planParams['share_users'],
+			$eventId,
+			Hash::get($eventData, 'CalendarEvent.CalendarEventShareUser'),
+			$createdUserWhenUpd
+		);
 
 		//関連コンテンツ(calendar_event_contents)の更新
 		//

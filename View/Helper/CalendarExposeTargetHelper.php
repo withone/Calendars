@@ -78,8 +78,8 @@ class CalendarExposeTargetHelper extends AppHelper {
 
 		// 発行権限がなくて、かつ、すでに発行済みデータの場合は空間変更を認めない
 		// 固定的な文字列と、hiddenを設定して返す
-		if (! $this->CalendarWorkflow->canDelete('Calendars.CalendarEvent', $event) &&
-			Hash::get($event, 'CalendarEvent.is_published') == true) {
+		if (Hash::get($event, 'CalendarEvent.is_published') &&
+			! $this->CalendarWorkflow->canDelete('Calendars.CalendarEvent', $event)) {
 			$html .= '<div>';
 			$html .= $this->CalendarCategory->getCategoryName($vars, $event);
 			$html .= '<span class="help-block">';

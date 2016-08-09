@@ -105,8 +105,11 @@ class CalendarPermissiveRooms {
  * @return bool
  */
 	public static function isPublishable($roomId) {
-		// ここが呼ばれるってことは絶対にroomInfosが絶対あることが前提
-		$useWorkflow = self::$roomPermRoles['roomInfos'][$roomId]['use_workflow'];
+		// ルーム情報自体がない
+		if (! isset(self::$roomPermRoles['roomInfos'][$roomId])) {
+			return false;
+		}
+		$useWorkflow = Hash::get(self::$roomPermRoles, 'roomInfos.' . $roomId . '.use_workflow');
 
 		if ($useWorkflow == false) {
 			// ルームが承認不要の場合は、creatble権限があればよい
