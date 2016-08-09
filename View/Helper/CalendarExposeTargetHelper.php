@@ -29,7 +29,8 @@ class CalendarExposeTargetHelper extends AppHelper {
 		'NetCommons.NetCommonsHtml',
 		'Form',
 		'Rooms.Rooms',
-		'Calendars.CalendarCategory'
+		'Calendars.CalendarCategory',
+		'Calendars.CalendarWorkflow',
 	);
 
 /**
@@ -77,7 +78,7 @@ class CalendarExposeTargetHelper extends AppHelper {
 
 		// 発行権限がなくて、かつ、すでに発行済みデータの場合は空間変更を認めない
 		// 固定的な文字列と、hiddenを設定して返す
-		if (! $this->Workflow->canDelete('Calendars.CalendarEvent', $event) &&
+		if (! $this->CalendarWorkflow->canDelete('Calendars.CalendarEvent', $event) &&
 			Hash::get($event, 'CalendarEvent.is_published') == true) {
 			$html .= '<div>';
 			$html .= $this->CalendarCategory->getCategoryName($vars, $event);

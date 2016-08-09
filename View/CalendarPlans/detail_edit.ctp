@@ -181,7 +181,7 @@ echo $this->element('Calendars.scripts');
 		</div><!--panel-footerの閉じるタグ-->
 	<?php echo $this->NetCommonsForm->end(); ?>
 
-	<?php if (isset($event['CalendarEvent']) && ($this->request->params['action'] === 'edit' && $this->Workflow->canDelete('Calendars.CalendarEvent', $event))) : ?>
+	<?php if (isset($event['CalendarEvent']) && ($this->request->params['action'] === 'edit' && $this->CalendarWorkflow->canDelete('Calendars.CalendarEvent', $event))) : ?>
 		<div class="panel-footer text-right">
 			<?php
 			echo $this->element('Calendars.CalendarPlans/delete_form', array(

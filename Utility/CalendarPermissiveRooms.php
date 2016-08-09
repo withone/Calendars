@@ -105,7 +105,16 @@ class CalendarPermissiveRooms {
  * @return bool
  */
 	public static function isPublishable($roomId) {
-		$rooms = self::getPublishableRoomIdList();
+		// ここが呼ばれるってことは絶対にroomInfosが絶対あることが前提
+		$useWorkflow = self::$roomPermRoles['roomInfos'][$roomId]['use_workflow'];
+
+		if ($useWorkflow == false) {
+			// ルームが承認不要の場合は、creatble権限があればよい
+			$rooms = self::getCreatableRoomIdList();
+		} else {
+			// 承認式の場合は
+			$rooms = self::getPublishableRoomIdList();
+		}
 		return isset($rooms[$roomId]);
 	}
 /**
@@ -147,9 +156,19 @@ class CalendarPermissiveRooms {
 		if (! empty(self::$backupPermissions)) {
 			return;
 		}
+		// ここが呼ばれるってことは絶対にroomInfosが絶対あることが前提
+		$useWorkflow = self::$roomPermRoles['roomInfos'][$roomId]['use_workflow'];
+
 		self::$backupPermissions = Current::$current['Permission'];
-		Current::$current['Permission']['content_publishable']['value'] =
-			self::$roomPermRoles['roomInfos'][$roomId]['content_publishable_value'];
+
+		// 承認不要のときは作成権限があれば発行できる
+		if ($useWorkflow == false) {
+			Current::$current['Permission']['content_publishable']['value'] =
+				self::$roomPermRoles['roomInfos'][$roomId]['content_creatable_value'];
+		} else {
+			Current::$current['Permission']['content_publishable']['value'] =
+				self::$roomPermRoles['roomInfos'][$roomId]['content_publishable_value'];
+		}
 		Current::$current['Permission']['content_editable']['value'] =
 			self::$roomPermRoles['roomInfos'][$roomId]['content_editable_value'];
 		Current::$current['Permission']['content_creatable']['value'] =

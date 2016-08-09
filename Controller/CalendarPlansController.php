@@ -64,6 +64,7 @@ class CalendarPlansController extends CalendarsAppController {
 		'Calendars.CalendarEventShareUser',
 		'Calendars.CalendarFrameSettingSelectRoom',
 		'Calendars.CalendarSetting',
+		'Calendars.CalendarWorkflow',
 		'Holidays.Holiday',
 		'Rooms.Room',
 		'Calendars.CalendarActionPlan',	//予定追加変更action専用
