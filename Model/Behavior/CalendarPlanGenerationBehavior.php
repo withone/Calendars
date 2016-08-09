@@ -83,7 +83,14 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 		$plan = $this->__copyRruleData($model, $plan, $createdUserWhenUpd);
 
 		unset($plan['new_event_id']);	//念のため変数クリア
+		$effectiveEvents = array();	//有効なeventだけを格納する配列を用意
 		foreach ($plan['CalendarEvent'] as &$event) {
+			//exception_event_id int ... 1以上のとき、例外（削除）イベントidを指す」より、
+			//ここの値が１以上の時は、例外（削除）イベントなので、copy対象から外す.
+			if ($event['exception_event_id'] >= 1) {
+				continue;
+			}
+
 			$newEventId = $newEventKey = null;
 			list($event, $newEventId, $newEventKey) = $this->__copyEventData($model,
 				$event,
@@ -99,7 +106,9 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 				$plan['new_event_id'] = $newEventId;
 				$plan['new_event_key'] = $newEventKey;
 			}
+			$effectiveEvents[] = $event;	//有効なeventだったので配列にappend
 		}
+		$plan['CalendarEvent'] = $effectiveEvents;	//有効なイベント集合配列に置き換える
 
 		return $plan;
 	}
