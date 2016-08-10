@@ -70,6 +70,7 @@ class CalendarFrameSettingSaveFrameSettingTest extends NetCommonsSaveTest {
 	public function dataProviderSave() {
 		$data['CalendarFrameSetting'] = (new CalendarFrameSettingFixture())->records[0];
 		$data['CalendarFrameSetting']['is_select_room'] = '1';
+		$data['CalendarFrameSetting']['is_myroom'] = false;
 
 		$data['CalendarFrameSettingSelectRoom'] = array();
 		$selectRoomFixture = new CalendarFrameSettingSelectRoomFixture();
