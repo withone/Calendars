@@ -379,12 +379,33 @@ class CalendarEvent extends CalendarsAppModel {
 				// 発行済みデータかどうかチェックし、値を追加する
 				$conditions[$this->alias . '.is_active'] = true;
 				$options = array(
-					'fields' => array('is_active'),
+					'fields' => array(
+						'CalendarEvent.is_active',
+						'Room.space_id'
+					),
 					'conditions' => $conditions,
 					'recursive' => -1,
+					'joins' => array(
+						array(
+							'table' => 'rooms',
+							'alias' => 'Room',
+							'type' => 'LEFT',
+							'conditions' => array(
+								'CalendarEvent.room_id = Room.id'
+							)
+						)
+					),
 				);
 				$isPublished = $this->find('first', $options);
-				$event[$this->alias]['is_published'] = Hash::get($isPublished, $this->alias . '.is_active');
+				// 最終発行公開空間がプライベート空間であった時は「発行済みだよ」にしない
+				// プライベート空間での発行は「公開」と見なさないのである
+				$event[$this->alias]['is_published'] = false;
+				if ($isPublished) {
+					if ($isPublished['Room']['space_id'] != Space::PRIVATE_SPACE_ID) {
+						$event[$this->alias]['is_published'] =
+							Hash::get($isPublished, $this->alias . '.is_active');
+					}
+				}
 				return $event;
 			}
 		}
