@@ -609,17 +609,17 @@ msgid "detail information"
 msgstr "詳細な情報の入力"
 
 #: View/CalendarPlans/detail_edit.ctp:1072
-#: View/CalendarPlans/show.ctp:164
+#: View/CalendarPlans/view.ctp:164
 msgid  "Location"
 msgstr  "場所"
 
 #: View/CalendarPlans/detail_edit.ctp:1089
-#: View/CalendarPlans/show.ctp:175
+#: View/CalendarPlans/view.ctp:175
 msgid  "Contact"
 msgstr  "連絡先"
 
 #: View/CalendarPlans/detail_edit.ctp:1105
-#: View/CalendarPlans/show.ctp:186
+#: View/CalendarPlans/view.ctp:186
 msgid  "Details"
 msgstr  "詳細"
 
@@ -629,7 +629,7 @@ msgid  "Time zone"
 msgstr  "タイムゾーン"
 
 #: View/CalendarPlans/easy_edit.ctp:10
-#: View/CalendarPlans/show.ctp:10
+#: View/CalendarPlans/view.ctp:10
 msgid  "Calendar"
 msgstr  "カレンダー"
 
@@ -657,39 +657,39 @@ msgstr  "メールで通知"
 msgid  "E-mail notification timing"
 msgstr  "メール通知タイミング"
 
-#: View/CalendarPlans/show.ctp:66;73
+#: View/CalendarPlans/view.ctp:66;73
 msgid  "Date and time"
 msgstr  "日時"
 
-#: View/CalendarPlans/show.ctp:86
+#: View/CalendarPlans/view.ctp:86
 msgid  "End date and time"
 msgstr  "終了日時"
 
-#: View/CalendarPlans/show.ctp:94
+#: View/CalendarPlans/view.ctp:94
 msgid  "-"
 msgstr  "－"
 
-#: View/CalendarPlans/show.ctp:111
+#: View/CalendarPlans/view.ctp:111
 msgid  "Repeat the event:"
 msgstr  "※繰返し予定："
 
-#: View/CalendarPlans/show.ctp:129
+#: View/CalendarPlans/view.ctp:129
 #: View/Elements/CalendarPlans/select_target_to_expose.ctp:21
 #: View/Helper/CalendarExposeTargetHelper.php:61
 msgid  "Category"
 msgstr  "公開対象"
 
-#: View/CalendarPlans/show.ctp:145
+#: View/CalendarPlans/view.ctp:145
 msgid  "People to share the schedule"
 msgstr  "予定を共有する人"
 msgid  "Person who made the schedule"
 msgstr  "予定を入れた人"
 
-#: View/CalendarPlans/show.ctp:198
+#: View/CalendarPlans/view.ctp:198
 msgid  "Author"
 msgstr  "作成者"
 
-#: View/CalendarPlans/show.ctp:207
+#: View/CalendarPlans/view.ctp:207
 msgid  "Date"
 msgstr  "更新日時"
 
@@ -1006,7 +1006,7 @@ msgstr  "今日に戻る"
 msgid  "Back to First view"
 msgstr  "最初の画面に戻る"
 
-#: View/CalendarPlans/show.ctp:255
+#: View/CalendarPlans/view.ctp:255
 msgid  "Back"
 msgstr  "戻る"
 

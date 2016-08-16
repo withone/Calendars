@@ -47,7 +47,7 @@ class CalendarUrlHelper extends AppHelper {
 		$url = NetCommonsUrl::actionUrl(array(
 			'plugin' => 'calendars',
 			'controller' => 'calendar_plans',
-			'action' => 'show',
+			'action' => 'view',
 			'key' => $plan['CalendarEvent']['key'],
 			'frame_id' => Current::read('Frame.id'),
 		));

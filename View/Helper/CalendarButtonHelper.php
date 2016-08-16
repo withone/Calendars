@@ -163,7 +163,7 @@ class CalendarButtonHelper extends AppHelper {
 /**
  * getEditButton
  *
- * show.ctpから呼び出されることを想定
+ * view.ctpから呼び出されることを想定
  * $eventの予定が閲覧者にとって編集可能なものであるかどうかを判断する
  *
  * @param array $vars カレンダー情報

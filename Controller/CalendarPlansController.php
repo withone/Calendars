@@ -87,7 +87,7 @@ class CalendarPlansController extends CalendarsAppController {
 				//indexとviewは祖先基底クラスNetCommonsAppControllerで許可済
 				'edit,add,delete' => 'content_creatable',
 				//null, //content_readableは全員に与えられているので、チェック省略
-				'show' => 'content_readable',
+				'view' => 'content_readable',
 				////'select' => null,
 			),
 		),*/
@@ -138,7 +138,7 @@ class CalendarPlansController extends CalendarsAppController {
 		// 表示データ上の意味がないのでチェックは行わない
 		// 表示ブロックIDがないときは、パブリックTOPページで仮表示されることに話が決まった
 
-		$this->Auth->allow('add', 'delete', 'edit', 'show');
+		$this->Auth->allow('add', 'delete', 'edit', 'view');
 
 		$this->CalendarEvent->initSetting($this->Workflow);
 
@@ -365,7 +365,7 @@ class CalendarPlansController extends CalendarsAppController {
 		}
 
 		//成功なら元画面(カレンダーorスケジューラー)に戻る。
-		//FIXME: 遷移元がshow.ctpなら、戻り先をshow.ctpに変える必要あり。
+		//FIXME: 遷移元がview.ctpなら、戻り先をview.ctpに変える必要あり。
 		//
 		$eventId = $this->CalendarActionPlan->saveCalendarPlan(
 			$this->request->data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod,
@@ -378,7 +378,7 @@ class CalendarPlansController extends CalendarsAppController {
 		$event = $this->CalendarEvent->findById($eventId);
 		$url = NetCommonsUrl::actionUrl(array(
 			'controller' => 'calendar_plans',
-			'action' => 'show',
+			'action' => 'view',
 			'key' => $event['CalendarEvent']['key'],
 			'frame_id' => Current::read('Frame.id'),
 		));
@@ -467,11 +467,11 @@ class CalendarPlansController extends CalendarsAppController {
 	}
 
 /**
- * show
+ * view
  *
  * @return void
  */
-	public function show() {
+	public function view() {
 		$event = $this->eventData;
 		$shareUserInfos = array();
 		foreach ($this->shareUsers as $shareUser) {

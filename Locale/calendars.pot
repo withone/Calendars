@@ -386,12 +386,12 @@ msgid  "all"
 msgstr ""
 
 #: View/CalendarPlans/delete.ctp:103
-#: View/CalendarPlans/show.ctp:221
+#: View/CalendarPlans/view.ctp:221
 msgid  "Cancel"
 msgstr ""
 
 #: View/CalendarPlans/delete.ctp:115
-#: View/CalendarPlans/show.ctp:272
+#: View/CalendarPlans/view.ctp:272
 msgid  "Delete"
 msgstr ""
 
@@ -611,17 +611,17 @@ msgid  "Event 1 week ago"
 msgstr ""
 
 #: View/CalendarPlans/detail_edit.ctp:1072
-#: View/CalendarPlans/show.ctp:164
+#: View/CalendarPlans/view.ctp:164
 msgid  "Location"
 msgstr ""
 
 #: View/CalendarPlans/detail_edit.ctp:1089
-#: View/CalendarPlans/show.ctp:175
+#: View/CalendarPlans/view.ctp:175
 msgid  "Contact"
 msgstr ""
 
 #: View/CalendarPlans/detail_edit.ctp:1105
-#: View/CalendarPlans/show.ctp:186
+#: View/CalendarPlans/view.ctp:186
 msgid  "Details"
 msgstr ""
 
@@ -631,7 +631,7 @@ msgid  "Time zone"
 msgstr ""
 
 #: View/CalendarPlans/easy_edit.ctp:10
-#: View/CalendarPlans/show.ctp:10
+#: View/CalendarPlans/view.ctp:10
 msgid  "Calendar"
 msgstr ""
 
@@ -659,40 +659,40 @@ msgstr ""
 msgid  "E-mail notification timing"
 msgstr ""
 
-#: View/CalendarPlans/show.ctp:66;73
+#: View/CalendarPlans/view.ctp:66;73
 msgid  "Date and time"
 msgstr ""
 
-#: View/CalendarPlans/show.ctp:86
+#: View/CalendarPlans/view.ctp:86
 msgid  "End date and time"
 msgstr ""
 
-#: View/CalendarPlans/show.ctp:94
+#: View/CalendarPlans/view.ctp:94
 msgid  "-"
 msgstr ""
 
-#: View/CalendarPlans/show.ctp:111
+#: View/CalendarPlans/view.ctp:111
 msgid  "Repeat the event:"
 msgstr ""
 
-#: View/CalendarPlans/show.ctp:129
+#: View/CalendarPlans/view.ctp:129
 #: View/Elements/CalendarPlans/select_target_to_expose.ctp:21
 #: View/Helper/CalendarExposeTargetHelper.php:61
 msgid  "Category"
 msgstr ""
 
-#: View/CalendarPlans/show.ctp:145
+#: View/CalendarPlans/view.ctp:145
 msgid  "People to share the schedule"
 msgstr ""
 msgid  "Person who made the schedule"
 msgstr  ""
 
 
-#: View/CalendarPlans/show.ctp:198
+#: View/CalendarPlans/view.ctp:198
 msgid  "Author"
 msgstr ""
 
-#: View/CalendarPlans/show.ctp:207
+#: View/CalendarPlans/view.ctp:207
 msgid  "Date"
 msgstr ""
 
@@ -1009,7 +1009,7 @@ msgstr ""
 msgid  "Back to First view"
 msgstr ""
 
-#: View/CalendarPlans/show.ctp:255
+#: View/CalendarPlans/view.ctp:255
 msgid  "Back"
 msgstr ""
 

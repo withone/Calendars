@@ -36,7 +36,7 @@ class CalendarPermissionComponent extends Component {
 	public function startup(Controller $controller) {
 		$this->controller = $controller;
 		// add -> どこか一つでもcreatableな空間を持っている人なら
-		// show -> 対象の空間に参加しているなら
+		// view -> 対象の空間に参加しているなら
 		//         ただし、対象空間がプライベートのときに限り、共有者となっているなら
 		// edit -> 対象空間での編集権限を持っているか、対象予定の作成者なら
 		// delete -> 対象空間での編集権限を持っているか、対象予定の作成者なら
@@ -52,7 +52,7 @@ class CalendarPermissionComponent extends Component {
 					return;
 				}
 				break;
-			case 'show':
+			case 'view':
 				if ($this->_canReadEvent()) {
 					return;
 				}
