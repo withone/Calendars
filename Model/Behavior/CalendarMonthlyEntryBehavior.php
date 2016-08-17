@@ -122,7 +122,7 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 			svrEndTime[" . $svrEndTime . "]");
 
 		if (!CalendarSupport::isRepeatable($model->rrule, ($svrStartDate . $svrStartTime),
-			$eventData['CalendarEvent']['timezone_offset'])) {
+			$eventData['CalendarEvent']['timezone_offset'], $model->isOverMaxRruleIndex)) {
 			CakeLog::debug("DBG: 繰返しがとまったので、callから復帰する。");
 			//繰返しがとまったので、callから復帰する。
 			return true;
@@ -185,7 +185,7 @@ class CalendarMonthlyEntryBehavior extends CalendarAppBehavior {
 			svrEndDate[" . $svrEndDate . "] svrEndTime[" . $svrEndTime . "]");
 
 		if (!CalendarSupport::isRepeatable($model->rrule, ($svrStartDate . $svrStartTime),
-			$eventData['CalendarEvent']['timezone_offset'])) {
+			$eventData['CalendarEvent']['timezone_offset'], $model->isOverMaxRruleIndex)) {
 
 			CakeLog::debug("DBG: isRepeatable() がFALSEを返したので、
 				繰返しをとめて復帰します。");

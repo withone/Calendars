@@ -69,7 +69,7 @@ class CalendarWeeklyEntryBehavior extends CalendarAppBehavior {
 		//
 		if (!CalendarSupport::isRepeatable($model->rrule, ($eventData['CalendarEvent']['start_date'] .
 			$eventData['CalendarEvent']['start_time']),
-			$eventData['CalendarEvent']['timezone_offset'])) {
+			$eventData['CalendarEvent']['timezone_offset'], $model->isOverMaxRruleIndex)) {
 			return true;
 		}
 
@@ -170,7 +170,7 @@ class CalendarWeeklyEntryBehavior extends CalendarAppBehavior {
 		$svrEndTime = $date->format('His');
 
 		if (!CalendarSupport::isRepeatable($model->rrule, ($svrStartDate . $svrStartTime),
-			$eventData['CalendarEvent']['timezone_offset'])) {
+			$eventData['CalendarEvent']['timezone_offset'], $model->isOverMaxRruleIndex)) {
 			return true;
 		}
 

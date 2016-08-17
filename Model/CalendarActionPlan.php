@@ -14,6 +14,7 @@
 
 App::uses('CalendarsAppModel', 'Calendars.Model');
 App::uses('CalendarsComponent', 'Calendars.Controller/Component');
+App::uses('CalendarSupport', 'Calendars.Utility');
 
 /**
  * Calendar Action Plan Model
@@ -576,6 +577,15 @@ class CalendarActionPlan extends CalendarsAppModel {
 				$eventId = $this->updatePlan($planParam, $newPlan, $status, $isInfoArray, $editRrule,
 					$createdUserWhenUpd);
 			}
+
+			if ($this->isOverMaxRruleIndex) {
+				CakeLog::info("save(CalendarPlanの内部でカレンダーのrruleIndex回数超過が" .
+				"発生している。強制rollbackし、画面にINDEXオーバーであることを" .
+				"出す流れに乗せ、例外は投げないようにする。");
+				$this->rollback();
+				return false;
+			}
+
 			$this->_enqueueEmail($data);
 
 			$this->commit();

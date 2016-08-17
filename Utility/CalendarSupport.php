@@ -50,12 +50,13 @@ class CalendarSupport {
  * @param array $rrule rrule配列
  * @param string $startDateTime 開始日付時刻文字列 YmdHis形式
  * @param float $timezoneOffset timezoneOffset (-12.0～+12.0)
- * @param string $calendarWeek calendar_week(Sun|Mon|....Sat、日|月|....|土 などの文字列。初期値は''
+ * @param bool &$isOverMaxRruleIndex isOverMaxRruleIndex
  * @return true or false
  */
-	public static function isRepeatable($rrule, $startDateTime, $timezoneOffset, $calendarWeek = '') {
+	public static function isRepeatable($rrule, $startDateTime, $timezoneOffset,
+		&$isOverMaxRruleIndex) {
 		if (isset($rrule['UNTIL'])) {
-			////$until = self::calendarDateFormat((substr($rrule['UNTIL'], 0, 8) . substr($rrule['UNTIL'], -6)), $timezoneOffset, 0, $calendarWeek);
+			////$until = self::calendarDateFormat((substr($rrule['UNTIL'], 0, 8) . substr($rrule['UNTIL'], -6)), $timezoneOffset, 0, $calendarWeek); ////$calendarWeek calendar_week(Sun|Mon|....Sat、日|月|....|土 などの文字列。初期値は''
 			//NC3では、rrule['UNTIL']はサーバ系(UTC)になっている。また、$startDateTimeもサーバ系(UTC)になっている。
 			//なので、calendarDateFormatをつかってTZ考慮したcalendarDateFormatはつかわなくてＯＫ。
 			$until = substr($rrule['UNTIL'], 0, 8) . substr($rrule['UNTIL'], -6);
@@ -77,6 +78,17 @@ class CalendarSupport {
 				return false;
 			}
 		}
+
+		//CakeLog::debug("DBG: rrule[INDEX]=[" . $rrule['INDEX'] . "]");
+		$maxIndexCnt = intval(CalendarsComponent::CALENDAR_RRULE_COUNT_MAX);
+		if ($rrule['INDEX'] > ($maxIndexCnt)) {
+			CakeLog::info("INDEX[" . $rrule['INDEX'] . "]が、最大回数[" . $maxIndexCnt . "]を" .
+				"超過したので強制的に抜けます.");
+			$isOverMaxRruleIndex = true;	//忘れずに、isOverをtrueにておくこと。
+
+			return false;
+		}
+
 		return true;
 	}
 

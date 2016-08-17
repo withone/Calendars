@@ -1135,6 +1135,7 @@ msgstr ""
 
 msgid "|January|February|March|April|May|June|July|August|September|October|November|December"
 msgstr ""
+
 msgid "Day %s"
 msgstr ""
 
@@ -1143,3 +1144,10 @@ msgstr "%d月%d日(%s)"
 
 msgid "You can not change the target space  after published."
 msgstr ""
+
+msgid "Cyclic rules using deadline specified exceeds the maximum number of %d"
+msgstr ""
+
+msgid "An unknown error has occurred."
+msgstr ""
+

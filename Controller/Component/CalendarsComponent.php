@@ -120,6 +120,14 @@ class CalendarsComponent extends Component {
 	const	CALENDAR_DEFAULT_MAIL_SEND_TIME = 60;
 
 /**
+ * xdebug.max_nesting_levelのカレンダ用上限値
+ * 
+ * @var int
+ */
+	//xdebug.max_nesting_levelのカレンダ用上限値。但し、Xdebugが入っている環境の時だけ意味がある値。
+	const	CALENDAR_XDEBUG_MAX_NESTING_LEVEL = 1000;
+
+/**
  * 繰り返し上限
  *
  * @var string

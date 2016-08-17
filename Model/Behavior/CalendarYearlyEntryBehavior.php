@@ -63,7 +63,8 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		//	$startDate . $startTime . "]");
 
 		if (!CalendarSupport::isRepeatable($model->rrule,
-			($startDate . $startTime), $eventData['CalendarEvent']['timezone_offset'])) {
+			($startDate . $startTime), $eventData['CalendarEvent']['timezone_offset'],
+			$model->isOverMaxRruleIndex)) {
 			//CakeLog::debug("DBG: isRepeatable() がFALSEを返した. よって復帰する.");
 			//insertYearly()は再帰callされるが、ここ(isRepeatable()===falseになった時、復帰する。
 			return true;
@@ -443,7 +444,7 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		//	$svrEndDate . "] svrEndTime[" . $svrEndTime . "]");
 
 		if (!CalendarSupport::isRepeatable($model->rrule, ($svrStartDate . $svrStartTime),
-			$eventData['CalendarEvent']['timezone_offset'])) {
+			$eventData['CalendarEvent']['timezone_offset'], $model->isOverMaxRruleIndex)) {
 			//繰返しがとまったので、callから復帰する。
 			return true;
 		}
@@ -530,7 +531,7 @@ class CalendarYearlyEntryBehavior extends CalendarAppBehavior {
 		//	$svrEndDate . "] svrEndTime[" . $svrEndTime . "]");
 
 		if (!CalendarSupport::isRepeatable($model->rrule, ($svrStartDate . $svrStartTime),
-			$eventData['CalendarEvent']['timezone_offset'])) {
+			$eventData['CalendarEvent']['timezone_offset'], $model->isOverMaxRruleIndex)) {
 			//CakeLog::debug("DBG: 繰返しがとまったので、復帰する。");
 
 			//繰返しがとまったので、復帰する。

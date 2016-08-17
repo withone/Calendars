@@ -310,9 +310,22 @@ class CalendarPlansController extends CalendarsAppController {
  * _calendarPost
  *
  * @return void
+ * @SuppressWarnings(PHPMD)
  */
 	protected function _calendarPost() {
 		//CakeLog::debug("DBG: request_data[" . print_r($this->request->data, true) . "]");
+
+		//CalenarActionPlanモデルの繰返し回数超過フラグをoffにしておく。
+		$this->CalendarActionPlan->isOverMaxRruleIndex = false;
+
+		//Xdebugがインストールされている環境だと、xdebug.max_nesting_levelの値（100とか200とか256とか）
+		//の制限を受けてしまうので、再帰callを多用するカレンダー登録では一時的に閾値を引き上げておく。
+		$xdebugMaxNestingLvl = ini_get('xdebug.max_nesting_level');
+		if ($xdebugMaxNestingLvl) {
+			//Xdebugが入っている環境
+			$xdebugMaxNestingLvl = ini_set('xdebug.max_nesting_level',
+				CalendarsComponent::CALENDAR_XDEBUG_MAX_NESTING_LEVEL);
+		}
 
 		//登録処理
 		//注) getStatus()はsave_Nからの単純取得ではなくカレンダー独自status取得をしている.
@@ -367,12 +380,34 @@ class CalendarPlansController extends CalendarsAppController {
 		//成功なら元画面(カレンダーorスケジューラー)に戻る。
 		//FIXME: 遷移元がview.ctpなら、戻り先をview.ctpに変える必要あり。
 		//
+
 		$eventId = $this->CalendarActionPlan->saveCalendarPlan(
 			$this->request->data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod,
 			$createdUserWhenUpd, $this->_myself);
 		if (!$eventId) {
 			//保存失敗
 			CakeLog::error("保存失敗");	//FIXME: エラー処理を記述のこと。
+
+			if ($this->CalendarActionPlan->isOverMaxRruleIndex) {
+				CakeLog::info("save(CalendarPlanの内部でカレンダーのrruleIndex回数超過が" .
+					"発生している。");
+				$this->CalendarActionPlan->validationErrors['rrule_until'] = array();
+				$this->CalendarActionPlan->validationErrors['rrule_until'][] =
+					sprintf(__d('calendars',
+						'Cyclic rules using deadline specified exceeds the maximum number of %d',
+						intval(CalendarsComponent::CALENDAR_RRULE_COUNT_MAX)));
+			} else {
+				CakeLog::error("DBG: その他の不明なエラーが発生しました。");
+				$this->CalendarActionPlan->validationErrors['rrule_until'] = array();
+				$this->CalendarActionPlan->validationErrors['rrule_until'][] =
+						__d('calendars', '不明なエラーが発生しました。');
+			}
+
+			//これでエラーmsgが画面上部に数秒間flashされる。
+			$this->NetCommons->handleValidationError($this->CalendarActionPlan->validationErrors);
+
+			return;
+
 		}
 		//保存成功
 		$event = $this->CalendarEvent->findById($eventId);

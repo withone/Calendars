@@ -1141,3 +1141,10 @@ msgstr "%d月%d日(%s)"
 
 msgid "You can not change the target space  after published."
 msgstr "あなたは公開された後の予定の対象空間を変更する権限がありません。"
+
+msgid "Cyclic rules using deadline specified exceeds the maximum number of %d"
+msgstr "指定期限まで繰返しルールを適用した場合、最大回数%dを超えます。"
+
+msgid "An unknown error has occurred."
+msgstr "不明なエラーが発生しました。"
+
