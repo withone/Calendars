@@ -132,7 +132,7 @@ class CalendarsComponent extends Component {
  *
  * @var string
  */
-	const CALENDAR_RRULE_COUNT_MAX = '100';
+	const CALENDAR_RRULE_COUNT_MAX = '366';
 	const CALENDAR_RRULE_COUNT_MIN = '1';
 	const CALENDAR_RRULE_TERM_UNTIL_MAX = '2033-12-31 23:59:59';
 	const CALENDAR_RRULE_TERM_UNTIL_MIN = '2001-01-01 00:00:00';
