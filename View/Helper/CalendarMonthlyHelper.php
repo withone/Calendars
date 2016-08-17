@@ -135,6 +135,10 @@ class CalendarMonthlyHelper extends AppHelper {
 
 		$html .= "<div class='hidden-xs calendar-plan-line " . $calendarLinePlanMark .
 						"'  id='" . $id . '_' . $this->_week . "'>";
+		$label = $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarEvent']['status']);
+		if (! empty($label)) {
+			$html .= '<small>' . $label . '</small>&nbsp;';
+		}
 		$title = $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']) .
 			h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...'));
 		$html .= $this->NetCommonsHtml->link($title, $url, array(
