@@ -793,21 +793,21 @@ NetCommonsApp.controller('CalendarsDetailEdit',
 
          var url = NC3_URL + '/calendars/calendar_plans/delete';
          url = url + '/' + eventKey;
+         url = url + '?frame_id=' + frameId;
          if (action != '') {
-           url = url + '/action:' + action;
+           url = url + '&action=' + action;
          }
          if (firstSibEventId > 0) {
-           url = url + '/first_sib_event_id:' + firstSibEventId;
+           url = url + '&first_sib_event_id=' + firstSibEventId;
          }
          if (originEventId > 0) {
-           url = url + '/origin_event_id:' + originEventId;
+           url = url + '&origin_event_id=' + originEventId;
          }
          if (isRecurrence == 1) {
-           url = url + '/is_recurrence:1';
+           url = url + '&is_recurrence=1';
          } else {
-           url = url + '/is_recurrence:0';
+           url = url + '&is_recurrence=0';
          }
-         url = url + '?frame_id=' + frameId;
 
          //NetCommonsModal.show()の実体は
          // $uibModal.open()です。

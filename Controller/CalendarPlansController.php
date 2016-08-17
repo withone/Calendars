@@ -239,31 +239,31 @@ class CalendarPlansController extends CalendarsAppController {
 		//Viewに必要な処理があれば以下にかく。
 
 		$this->request->data['CalendarDeleteActionPlan']['is_repeat'] = 0;
-		if (!empty($this->request->params['named']['action'])) {
-			if ($this->request->params['named']['action'] == 'repeatdelete') {
+		if (!empty($this->request->query['action'])) {
+			if ($this->request->query['action'] == 'repeatdelete') {
 				$this->request->data['CalendarDeleteActionPlan']['is_repeat'] = 1;
 			}
 		}
 		$isRepeat = $this->request->data['CalendarDeleteActionPlan']['is_repeat'];
 
 		$this->request->data['CalendarDeleteActionPlan']['first_sib_event_id'] = 0;
-		if (!empty($this->request->params['named']['first_sib_event_id'])) {
+		if (!empty($this->request->query['first_sib_event_id'])) {
 			$this->request->data['CalendarDeleteActionPlan']['first_sib_event_id'] =
-				intval($this->request->params['named']['first_sib_event_id']);
+				intval($this->request->query['first_sib_event_id']);
 		}
 		$firstSibEventId = $this->request->data['CalendarDeleteActionPlan']['first_sib_event_id'];
 
 		$this->request->data['CalendarDeleteActionPlan']['origin_event_id'] = 0;
-		if (!empty($this->request->params['named']['origin_event_id'])) {
+		if (!empty($this->request->query['origin_event_id'])) {
 			$this->request->data['CalendarDeleteActionPlan']['origin_event_id'] =
-				intval($this->request->params['named']['origin_event_id']);
+				intval($this->request->query['origin_event_id']);
 		}
 		$originEventId = $this->request->data['CalendarDeleteActionPlan']['origin_event_id'];
 
 		$this->request->data['CalendarDeleteActionPlan']['is_recurrence'] = 0;
-		if (!empty($this->request->params['named']['is_recurrence'])) {
+		if (!empty($this->request->query['is_recurrence'])) {
 			$this->request->data['CalendarDeleteActionPlan']['is_recurrence'] =
-				intval($this->request->params['named']['is_recurrence']);
+				intval($this->request->query['is_recurrence']);
 		}
 		$isRecurrence = $this->request->data['CalendarDeleteActionPlan']['is_recurrence'];
 
