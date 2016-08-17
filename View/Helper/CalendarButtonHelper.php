@@ -159,7 +159,8 @@ class CalendarButtonHelper extends AppHelper {
 		} else {
 			$url = $this->CalendarUrl->makeEditUrl($year, $mon, $day, $vars);
 		}
-		$url = str_replace('calendar_plans/edit', 'calendar_plans/add', $url);
+		//$url = str_replace('calendar_plans/edit', 'calendar_plans/add', $url);
+		$url['action'] = 'add';
 		return $url;
 	}
 

@@ -158,6 +158,9 @@ class CalendarUrlHelper extends AppHelper {
  */
 	public function getBackFirstButton($vars) {
 		// urlパラメタにstyleがなくて、表示画面がデフォルトの画面と一緒ならこのボタンは不要
+		// 本当は共通関数[getQueryParam]を使いたかったが、
+		// AppControllerに作っちゃったためHelperから呼びづらく、似たコードを書いてしまった
+		// 許してほしい
 		$isNotMain = Hash::get($this->request->params, 'requested');
 		$frameId = Hash::get($this->request->query, 'frame_id');
 
