@@ -99,9 +99,6 @@ class CalendarEditDatetimeHelper extends AppHelper {
 				$dtDatetimeVal = $dtValue . ' 00:00';
 			}
 			$jsFormat = 'YYYY-MM-DD HH:mm';
-			if ($enableTime) {
-				$addNgInit = $jsFuncName . "('CalendarActionPlan" . Inflector::camelize($fieldName) . "')";
-			}
 		} elseif ($type == 'date') {
 			if (strpos($dtValue, ':') !== false) {
 				$dtDatetimeVal = substr($dtValue, 0, 10);
@@ -109,10 +106,8 @@ class CalendarEditDatetimeHelper extends AppHelper {
 				$dtDatetimeVal = $dtValue;
 			}
 			$jsFormat = 'YYYY-MM-DD';
-			if (! $enableTime) {
-				$addNgInit = $jsFuncName . "('CalendarActionPlan" . Inflector::camelize($fieldName) . "')";
-			}
 		}
+		$addNgInit = $jsFuncName . "('CalendarActionPlan" . Inflector::camelize($fieldName) . "')";
 
 		$pickerOpt = str_replace('"', "'", json_encode(array(
 			'format' => $jsFormat,
