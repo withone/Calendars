@@ -124,12 +124,15 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 
 			$html .= '<p class="calendar-plan-spacename small">' . h($spaceName) . '</p>';
 
-			$html .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>';
-			//タイトルアイコン
-			$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
-
-			$html .= h($plan['CalendarEvent']['title']);
-			$html .= '</a></h3>';
+			$html .= '<h3 class="calendar-plan-tittle">';
+			//タイトルアイコン+タイトル
+			$html .= $this->NetCommonsHtml->link(
+				$this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']) .
+				h($plan['CalendarEvent']['title']),
+				$url,
+				array('escape' => false)
+			);
+			$html .= '</h3>';
 			if ($plan['CalendarEvent']['location'] != '') {
 				$html .= '<p class="calendar-plan-place small">' . __d('calendars', 'Location details:');
 				$html .= h($plan['CalendarEvent']['location']) . '</p>';
@@ -210,12 +213,15 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 			$spaceName = $this->CalendarCommon->decideRoomName($spaceName, $calendarPlanMark);
 			$htmlPlan .= '<p class="calendar-plan-spacename small">' . h($spaceName) . '</p>';
 
-			$htmlPlan .= '<h3 class="calendar-plan-tittle"><a href=' . $url . '>';
-			//タイトルアイコン
-			$htmlPlan .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
-
-			$htmlPlan .= h($plan['CalendarEvent']['title']);
-			$htmlPlan .= '</a></h3>';
+			$htmlPlan .= '<h3 class="calendar-plan-tittle">';
+			//タイトルアイコン+タイトル
+			$htmlPlan .= $this->NetCommonsHtml->link(
+				$this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']) .
+				h($plan['CalendarEvent']['title']),
+				$url,
+				array('escape' => false)
+			);
+			$htmlPlan .= '</h3>';
 
 			if ($plan['CalendarEvent']['location'] != '') {
 				$htmlPlan .= '<p class="calendar-plan-place small">';

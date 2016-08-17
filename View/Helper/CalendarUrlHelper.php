@@ -25,11 +25,10 @@ class CalendarUrlHelper extends AppHelper {
  * @var array
  */
 	public $helpers = array(
-		'NetCommonsForm',
-		'NetCommonsHtml',
-		'Form',
-		'Calendars.CalendarCommon',
+		'NetCommons.NetCommonsForm',
+		'NetCommons.NetCommonsHtml',
 		'NetCommons.BackTo',
+		'Calendars.CalendarCommon',
 	);
 
 /**
@@ -44,7 +43,7 @@ class CalendarUrlHelper extends AppHelper {
  * @return string url
  */
 	public function makePlanShowUrl($year, $month, $day, $plan) {
-		$url = NetCommonsUrl::actionUrl(array(
+		$url = $this->getCalendarUrl(array(
 			'plugin' => 'calendars',
 			'controller' => 'calendar_plans',
 			'action' => 'view',
@@ -77,7 +76,7 @@ class CalendarUrlHelper extends AppHelper {
 				'day' => $day,
 			)
 		);
-		$url = NetCommonsUrl::actionUrl($options);
+		$url = $this->getCalendarUrl($options);
 		return $url;
 	}
 /**
@@ -105,7 +104,7 @@ class CalendarUrlHelper extends AppHelper {
 				'hour' => $hour,
 			)
 		);
-		$url = NetCommonsUrl::actionUrl($options);
+		$url = $this->getCalendarUrl($options);
 		return $url;
 	}
 
@@ -120,7 +119,7 @@ class CalendarUrlHelper extends AppHelper {
  * @return string URL
  */
 	public function getCalendarDailyUrl($year, $month, $day) {
-		$url = NetCommonsUrl::actionUrl(array(
+		$url = $this->getCalendarUrl(array(
 			'plugin' => 'calendars',
 			'controller' => 'calendars',
 			'action' => 'index',
@@ -155,5 +154,17 @@ class CalendarUrlHelper extends AppHelper {
 		}
 		//return $this->BackTo->indexLinkButton(__d('calendars', 'Back to First view'));
 		return $this->BackTo->pageLinkButton(__d('calendars', 'Back'));
+	}
+
+/**
+ * getCalendarUrl
+ *
+ * URL取得汎用関数
+ *
+ * @param array $arr URL作成のためのパラメータ配列
+ * @return string URL文字列
+ */
+	public function getCalendarUrl($arr) {
+		return Router::url(NetCommonsUrl::actionUrlAsArray($arr));
 	}
 }

@@ -10,7 +10,7 @@
  */
 ?>
 <?php
-	$timeLink = NetCommonsUrl::actionUrl(array(
+	$timeLink = $this->CalendarUrl->getCalendarUrl(array(
 		'controller' => 'calendars',
 		'action' => 'index',
 		'frame_id' => Current::read('Frame.id'),
@@ -20,7 +20,7 @@
 		)
 	));
 
-	$memberLink = NetCommonsUrl::actionUrl(array(
+	$memberLink = $this->CalendarUrl->getCalendarUrl(array(
 		'controller' => 'calendars',
 		'action' => 'index',
 		'frame_id' => Current::read('Frame.id'),

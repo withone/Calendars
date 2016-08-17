@@ -153,8 +153,6 @@ NetCommonsApp.controller('CalendarSchedule', function($scope) {
 });
 
 NetCommonsApp.controller('CalendarsTimeline', ['$scope', function($scope) {
-  console.log('TIMELINE...');
-
   //タイムラインdiv
   var coordinateOrigins = $('.calendar-daily-timeline-coordinate-origin');
 
@@ -201,12 +199,9 @@ NetCommonsApp.controller('CalendarsTimeline', ['$scope', function($scope) {
 
 NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
   $scope.calendarPlans = [];
-  console.log('TIMELINE.Plan!!!..%d', $scope.rowHeight);
 
   $scope.initialize = function(data) {
-    console.log('TIMELINE.Plan!INIT!..');
     $scope.calendarPlans = data.calendarPlans;
-    console.log('plan! %d', data.calendarPlans.length);
 
     //位置情報を設定
     for (var i = 0; i < data.calendarPlans.length;
@@ -217,7 +212,6 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
   };
 
   $scope.setTimelinePos = function(id, fromTime, toTime) {
-    console.log('TIMELINE.Plan!setTimelinePos!..');
     var planObj = document.getElementById('plan' + String(id));
 
     var start = fromTime.split(':');
@@ -249,7 +243,6 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
 
     //前回の位置が蓄積されてくる※位置調整のため
     $scope.prevMargin = $scope.prevMargin + height;
-    console.log('prevMargin%d', $scope.prevMargin);
 
     //次回の重なりチェックのため、値保持
     var data = {x: top, y: (height + top)};
@@ -261,7 +254,6 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
   };
 
   $scope.getLineNum = function(x, y) {
-    console.log('TIMELINE.Plan!getLineNum!..%d %d', x, y);
 
     //0列目からチェック
     for (var i = 0; i <= $scope.maxLineNum; i++) {
@@ -276,13 +268,11 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
   };
 
   $scope.checkColumn = function(checkColumn, x, y) {
-    console.log('TIMELINE.Plan!checkColumn!..');
 
     //指定列の重なりチェック
     for (var i = 0; i < $scope.Column[checkColumn].length; i++) {
       if ($scope.checkOverlap($scope.Column[checkColumn][i].
           x, $scope.Column[checkColumn][i].y, x, y) == true) {
-        console.log('OVER!! checkColumn %d', i);
         return true;
       }
     }
@@ -290,7 +280,6 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
   };
 
   $scope.checkOverlap = function(x1, y1, x2, y2) {
-    console.log('TIMELINE.Plan!checkOverlap!..');
 
     //線分1と線分2の重なりチェック
     if (x1 >= x2 && x1 >= y2 &&
@@ -318,7 +307,6 @@ NetCommonsApp.directive('resize', function($window) {
 
 NetCommonsApp.controller('CalendarsMonthlyLinePlan', function($scope) {
   $scope.calendarPlans = [];
-  console.log('MONTHLYLINE.Plan!!!..%d', $scope.rowHeight);
 
   $scope.initialize = function(data) {
 
@@ -507,8 +495,8 @@ NetCommonsApp.controller('CalendarDetailEditWysiwyg',
     }]
 );
 NetCommonsApp.controller('CalendarsDetailEdit',
-    ['$scope', '$location', 'ConfirmRepeat', 'NetCommonsModal', '$http', function($scope, $location,
-     ConfirmRepeat, NetCommonsModal, $http) {
+    ['$scope', '$location', 'ConfirmRepeat', 'NetCommonsModal', '$http', 'NC3_URL',
+      function($scope, $location, ConfirmRepeat, NetCommonsModal, $http, NC3_URL) {
        $scope.repeatArray = [];  //key=Frame.id、value=T/F of checkbox
        //key=Frame.id,value=index number
        //of option elements
@@ -532,15 +520,11 @@ NetCommonsApp.controller('CalendarsDetailEdit',
 
        $scope.rruleUntil;
 
-       console.log('DEBUGGING...');
-
        $scope.initialize = function(data) {
          $scope.data = angular.fromJson(data);
        };
 
        $scope.changeEditRrule = function(frameId, firstSibEditLink) {
-         console.log(
-         'changeEditRrule() frameId[' + frameId + '] firstSibEditLink[' + firstSibEditLink + ']');
          var nums = ['0', '1', '2'];
          for (var num in nums) {
            var checked = $('#CalendarActionPlanEditRrule' + num).prop('checked');
@@ -558,7 +542,7 @@ NetCommonsApp.controller('CalendarsDetailEdit',
                    angular.element('#CalendarActionPlanEditForm select').prop('disabled', true);
                    window.location = firstSibEditLink;
                  } else {
-                   console.log('全ての繰り返しを選択したのに、繰返しの先頭eventへのeditLinkがないのはおかしい');
+                   //console.log('全ての繰り返しを選択したのに、繰返しの先頭eventへのeditLinkがないのはおかしい');
                  }
                }
              }
@@ -650,7 +634,6 @@ NetCommonsApp.controller('CalendarsDetailEdit',
 
        $scope.setInitRepeatPeriod = function(frameId, idx) {
          //これで、画面をリフレッシュ
-         console.log(frameId + '/' + idx);
          $scope.selectRepeatPeriodArray[frameId] = idx;
        };
 
@@ -662,28 +645,24 @@ NetCommonsApp.controller('CalendarsDetailEdit',
 
          switch ($scope.selectRepeatPeriodArray[frameId]) {
            case CalendarJS.variables.REPEAT_FREQ_DAILY:
-             console.log('日単位');
              elmDaily.removeClass('hidden').addClass('show');
              elmWeekly.removeClass('show').addClass('hidden');
              elmMonthly.removeClass('show').addClass('hidden');
              elmYearly.removeClass('show').addClass('hidden');
              break;
            case CalendarJS.variables.REPEAT_FREQ_WEEKLY:
-             console.log('週単位');
              elmDaily.removeClass('show').addClass('hidden');
              elmWeekly.removeClass('hidden').addClass('show');
              elmMonthly.removeClass('show').addClass('hidden');
              elmYearly.removeClass('show').addClass('hidden');
              break;
            case CalendarJS.variables.REPEAT_FREQ_MONTHLY:
-             console.log('月単位');
              elmDaily.removeClass('show').addClass('hidden');
              elmWeekly.removeClass('show').addClass('hidden');
              elmMonthly.removeClass('hidden').addClass('show');
              elmYearly.removeClass('show').addClass('hidden');
              break;
            case CalendarJS.variables.REPEAT_FREQ_YEARLY:
-             console.log('年単位');
              elmDaily.removeClass('show').addClass('hidden');
              elmWeekly.removeClass('show').addClass('hidden');
              elmMonthly.removeClass('show').addClass('hidden');
@@ -698,7 +677,6 @@ NetCommonsApp.controller('CalendarsDetailEdit',
        };
 
        $scope.toggleEnableTime = function(frameId) {
-         console.log('useTime[' + $scope.useTime + ']');
          if ($scope.useTime[frameId]) {
            //時刻なし(YYYY-MM-DD) -> 時刻あり(YYYY-MM-DD HH:mm)
            if ($scope.detailStartDatetime && $scope.detailStartDatetime.indexOf(':') >= 0) {
@@ -719,7 +697,6 @@ NetCommonsApp.controller('CalendarsDetailEdit',
                $('#CalendarActionPlanDetailEndDatetime').val($scope.detailEndDatetime);
              }
            }
-           console.log('時刻なし(YYYY-MM-DD) -> 時刻あり(YYYY-MM-DD HH:mm)');
          } else {
            //時刻あり(YYYY-MM-DD HH:mm) -> 時刻なし(YYYY-MM-DD)
            if ($scope.detailStartDate && $scope.detailStartDate.indexOf(':') === (-1)) {
@@ -740,23 +717,11 @@ NetCommonsApp.controller('CalendarsDetailEdit',
                $('#CalendarActionPlanDetailEndDatetime').val($scope.detailEndDate);
              }
            }
-           console.log('時刻あり(YYYY-MM-DD HH:mm) -> 時刻なし(YYYY-MM-DD)');
 
            //checkboxのDOMの値も同期させておく。
            /////$('#CalendarActionPlanEnableTime').prop('checked', true);
 
          }
-         //結果
-         console.log('$scope:');
-         console.log('sdt[' + $scope.detailStartDatetime + ']');
-         console.log('sd [' + $scope.detailStartDate + ']');
-         console.log('edt[' + $scope.detailEndDatetime + ']');
-         console.log('ed [' + $scope.detailEndDate + ']');
-         console.log('DOM:');
-         console.log('sdt[' + $('#CalendarActionPlanDetailStartDatetime').val() + ']');
-         console.log('edt[' + $('#CalendarActionPlanDetailEndDatetime').val() + ']');
-
-         console.log('enable_time[' + $('#CalendarActionPlanEnableTime').prop('checked') + ']');
        };
 
        $scope.changeMonthlyDayOfTheWeek = function(frameId) {
@@ -786,12 +751,10 @@ NetCommonsApp.controller('CalendarsDetailEdit',
 
          switch ($scope.selectRepeatEndType[frameId]) {
            case CalendarJS.variables.RRULE_TERM_COUNT:
-             console.log('回数指定');
              elmCount.removeClass('hidden').addClass('show');
              elmEndDate.removeClass('show').addClass('hidden');
              break;
            case CalendarJS.variables.RRULE_TERM_UNTIL:
-             console.log('終了日指定');
              elmCount.removeClass('show').addClass('hidden');
              elmEndDate.removeClass('hidden').addClass('show');
              break;
@@ -799,20 +762,17 @@ NetCommonsApp.controller('CalendarsDetailEdit',
        };
 
        $scope.selectCancel = function() {
-         console.log('selectCancelがクリックされました');
        };
        $scope.doSelect = function() {
-         console.log('selectしました');
        };
 
        $scope.showRepeatTypeSelect = function(frameId, action, $event, eventId) {
-         console.log('1');
          //クリックのデフォルト動作(この場合form のsubmit)を抑止しておく。
          $event.preventDefault();
          if (action === 'delete') {
            //３選択をエコーバックさせるために、modalを使う。modalの中ではCRUDはさせない.
            var modalInstance = NetCommonsModal.show($scope, 'CalendarsDetailEdit',
-           $scope.baseUrl + '/calendars/calendar_plans/select/event:' + eventId +
+           NC3_URL + '/calendars/calendar_plans/select/event:' + eventId +
            '?frame_id=' + frameId);
            //コールバックセット
            modalInstance.result.then(
@@ -830,11 +790,8 @@ NetCommonsApp.controller('CalendarsDetailEdit',
 
        $scope.showRepeatConfirmEx = function(frameId,
        action, $event, eventKey, firstSibEventId, originEventId, isRecurrence) {
-         console.log('frameId[' + frameId + '] action[' + action +
-         '] $event firstSibEventId[' + firstSibEventId + '] originEventId[' +
-         originEventId + '] isRecurrence[' + isRecurrence + ']');
 
-         var url = $scope.baseUrl + '/calendars/calendar_plans/delete';
+         var url = NC3_URL + '/calendars/calendar_plans/delete';
          url = url + '/' + eventKey;
          if (action != '') {
            url = url + '/action:' + action;
@@ -851,7 +808,6 @@ NetCommonsApp.controller('CalendarsDetailEdit',
            url = url + '/is_recurrence:0';
          }
          url = url + '?frame_id=' + frameId;
-         console.log('生成したurlは[ ' + url + ']です');
 
          //NetCommonsModal.show()の実体は
          // $uibModal.open()です。
@@ -867,8 +823,6 @@ NetCommonsApp.controller('CalendarsDetailEdit',
          modalInstance.result.then(
          function(result) {
            //決定ボタンをクリック
-           console.log('ＯＫ case');
-
            //クリックのデフォルト動作(この場合form のsubmit)を抑止しておく。
            $event.preventDefault();
            return true;
@@ -878,8 +832,6 @@ NetCommonsApp.controller('CalendarsDetailEdit',
            //背景部分クリックや
            //キャンセルボタンクリックをすると
            //失敗扱いで、ここにくる。
-           console.log('キャンセル case');
-
            //クリックのデフォルト動作(この場合form のsubmit)を抑止しておく。
            $event.preventDefault();
            return false;
@@ -890,50 +842,7 @@ NetCommonsApp.controller('CalendarsDetailEdit',
          $event.preventDefault();
          return false;
 
-         /*
-        if (result) {
-          return true;
-        } else {
-          //$event.preventDefault()発行しないと、
-          //return falseしても決定の挙動になる.
-          $event.preventDefault();
-          return false;
-        }
-        return;
-        */
        };
-
-       /*
-      $scope.showRepeatConfirm = function(frameId, isRepeat, action) {
-        if (isRepeat === 'On') {
-          console.log('繰返し処理');
-          var modalInstance = ConfirmRepeat($scope, frameId, action);
-          modalInstance.result.then(function(result) {
-            console.log('成功 case');
-          },
-          function() {
-            console.log('失敗 case');
-          });
-          return;
-        }
-
-        //繰返しなし
-        if (action === 'edit') {
-          console.log('編集画面へ遷移');
-          return;
-        }
-
-        if (action === 'delete') {
-          if (confirm('delete ok')) {
-            //
-            //予定の削除処理をpostします。
-            //
-            console.log('１件削除処理実行');
-          }
-          return;
-        }
-      };
-      */
 
        $scope.setInitNoticeMailSetting = function(frameId, bVal) {
          $scope.useNoticeMail[frameId] = bVal;  //画面をリフレッシュ
@@ -981,11 +890,9 @@ NetCommonsApp.controller('CalendarsDelete',
 NetCommonsApp.controller('CalendarModalCtrl', [
   '$scope', '$modalInstance', function($scope, $modalInstance) {
     $scope.ok = function() {
-      console.log('ok clicked');
       $modalInstance.close();
     };
     $scope.cancel = function() {
-      console.log('candel clicked');
       $modalInstance.dismiss();
     };
   }

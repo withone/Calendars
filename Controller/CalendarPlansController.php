@@ -376,7 +376,8 @@ class CalendarPlansController extends CalendarsAppController {
 		}
 		//保存成功
 		$event = $this->CalendarEvent->findById($eventId);
-		$url = NetCommonsUrl::actionUrl(array(
+		$url = NetCommonsUrl::actionUrlAsArray(array(
+			'plugin' => 'calendars',
 			'controller' => 'calendar_plans',
 			'action' => 'view',
 			'key' => $event['CalendarEvent']['key'],
@@ -509,7 +510,7 @@ class CalendarPlansController extends CalendarsAppController {
 		$vars = array();
 		$this->setCalendarCommonVars($vars);
 
-		$eventKey = Hash::get($this->request->params, 'pass.0');
+		$eventKey = Hash::get($this->request->params, 'key');
 		if ($eventKey) {
 			$this->eventData = $this->CalendarEvent->getEventByKey($eventKey);
 			$vars['eventId'] = Hash::get($this->eventData, 'CalendarEvent.id');

@@ -10,7 +10,7 @@
  */
 ?>
 <?php
-	$timelineLink = NetCommonsUrl::actionUrl(array(
+	$timelineLink = $this->CalendarUrl->getCalendarUrl(array(
 		'controller' => 'calendars',
 		'action' => 'index',
 		'block_id' => '',
@@ -24,7 +24,7 @@
 		)
 	));
 
-	$dailyLink = NetCommonsUrl::actionUrl(array(
+	$dailyLink = $this->CalendarUrl->getCalendarUrl(array(
 		'controller' => 'calendars',
 		'action' => 'index',
 		'block_id' => '',

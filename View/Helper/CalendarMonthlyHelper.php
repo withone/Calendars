@@ -79,56 +79,6 @@ class CalendarMonthlyHelper extends AppHelper {
 	}
 
 /**
- * _getPlanIfMatchThisDay
- *
- * この日に該当する予定ならばそれを返す
- *
- * @param array $plan 予定データ
- * @param string $beginOfDay この日のはじまり(日付時刻/YmdHis(YYYYMMDDhhmmss)形式)
- * @param string $endOfDay この日のおわり(日付時刻/YmdHis(YYYYMMDDhhmmss)形式)
- * @param string $fromTimeOfDay この予定の開始時刻(HH:MM形式)
- * @param string $toTimeOfDay この予定の終了時刻(HH:MM形式)
- * @param object &$nctm NetCommonsTimeオブジェクトへの参照
- * @return mixed 該当するなら、拡張予定データを返す。該当しないならfalseを返す。
- */
-	/*
-	protected function _getPlanIfMatchThisDay($plan, $beginOfDay, $endOfDay, $fromTimeOfDay,
-		$toTimeOfDay, &$nctm) {
-		//$plan['CalendarEvent']['line'] = false; //日跨ぎPlan判定
-		//begin-end, dtstart-dtendともに、以上-未満であることに注意すること。
-		if ($beginOfDay <= $plan['CalendarEvent']['dtstart'] &&
-			$plan['CalendarEvent']['dtstart'] < $endOfDay) {
-			//予定の開始日時が、この日に含まれる時
-			$plan['CalendarEvent']['fromTime'] = CalendarTime::getHourColonMin(
-				$nctm->toUserDatetime($plan['CalendarEvent']['dtstart']));
-			$plan['CalendarEvent']['toTime'] = CalendarTime::getHourColonMin(
-				$nctm->toUserDatetime((($plan['CalendarEvent']['dtend'] <= $endOfDay) ?
-					$plan['CalendarEvent']['dtend'] : $endOfDay)));
-			return $plan;
-		}
-		if ($beginOfDay < $plan['CalendarEvent']['dtend'] &&
-			$plan['CalendarEvent']['dtend'] <= $endOfDay) {
-			//予定の終了日時が、この日に含まれる時
-			$plan['CalendarEvent']['fromTime'] = CalendarTime::getHourColonMin(
-				$nctm->toUserDatetime((($beginOfDay <= $plan['CalendarEvent']['dtstart']) ?
-					$plan['CalendarEvent']['dtstart'] : $beginOfDay)));
-			$plan['CalendarEvent']['toTime'] = CalendarTime::getHourColonMin(
-				$nctm->toUserDatetime($plan['CalendarEvent']['dtend']));
-			return $plan;
-		}
-		if ($plan['CalendarEvent']['dtstart'] <= $beginOfDay &&
-			$endOfDay <= $plan['CalendarEvent']['dtend']) {
-			//この日が、予定の期間(開始日時-終了日時)に包含される時
-			$plan['CalendarEvent']['fromTime'] = $fromTimeOfDay;
-			$plan['CalendarEvent']['toTime'] = $toTimeOfDay;
-			//$plan['CalendarEvent']['line'] = true;
-			return $plan;
-		}
-		return false;
-	}
-	*/
-
-/**
  * _makePlanSummariesHtml
  *
  * 予定概要群html生成
@@ -147,30 +97,6 @@ class CalendarMonthlyHelper extends AppHelper {
 		return $this->getPlanSummariesHtml($vars, $year, $month, $day, $fromTimeOfDay, $toTimeOfDay,
 			$plansOfDay);
 	}
-
-/**
- * isLinePlan
- *
- * 日跨ぎ(日跨ぎLine)判定
- *
- * @param array $plan 予定
- * @return bool
- */
-	/*
-	public function isLinePlan($plan) {
-		$startUserDate = $this->CalendarPlan->makeDateWithUserSiteTz(
-			$plan['CalendarEvent']['dtstart'], $plan['CalendarEvent']['is_allday']);
-		$endUserDate = $this->CalendarPlan->makeDateWithUserSiteTz(
-			$plan['CalendarEvent']['dtend'], $plan['CalendarEvent']['is_allday']);
-
-		//日跨ぎ（ユーザー時刻で同一日ではない）
-		if ($startUserDate != $endUserDate && $plan['CalendarEvent']['is_allday'] == false) {
-			return true;
-		}
-
-		return false;
-	}
-	*/
 
 /**
  * isExistLinePlan
@@ -209,10 +135,12 @@ class CalendarMonthlyHelper extends AppHelper {
 
 		$html .= "<div class='hidden-xs calendar-plan-line " . $calendarLinePlanMark .
 						"'  id='" . $id . '_' . $this->_week . "'>";
-		$html .= '<a href=' . $url . ' class="calendar-line-link">';
-		$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
-		$html .= h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...'));
-		$html .= '</a>';
+		$title = $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']) .
+			h(mb_strimwidth($plan['CalendarEvent']['title'], 0, 20, '...'));
+		$html .= $this->NetCommonsHtml->link($title, $url, array(
+			'class' => 'calendar-line-link',
+			'escape' => false
+		));
 		$html .= '</div>';
 		$this->_lineData[$this->_week][$this->_linePlanCnt]['id'] = $plan['CalendarEvent']['id'];
 		$this->_lineData[$this->_week][$this->_linePlanCnt]['fromCell'] = $this->_celCnt;
@@ -367,10 +295,11 @@ class CalendarMonthlyHelper extends AppHelper {
 		} else {
 			$title = h($plan['CalendarEvent']['title']);
 		}
-		$html .= '<a href=' . $url . '>';
-		$html .= $this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']);
-		$html .= $title;
-		$html .= '</a>';
+		$html .= $this->NetCommonsHtml->link(
+			$this->TitleIcon->titleIcon($plan['CalendarEvent']['title_icon']) . $title,
+			$url,
+			array('escape' => false)
+		);
 		$html .= '</h3></div>';
 		return $html;
 	}
@@ -418,7 +347,7 @@ class CalendarMonthlyHelper extends AppHelper {
 			if ($vars['style'] === 'smallmonthly') {
 				$html .= '<tr>';
 			} else {	//largemonthly
-				$url = NetCommonsUrl::actionUrl(array(
+				$url = $this->CalendarUrl->getCalendarUrl(array(
 					'plugin' => 'calendars',
 					'controller' => 'calendars',
 					'action' => 'index',

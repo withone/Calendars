@@ -9,7 +9,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 echo $this->element('Calendars.scripts');
-$url = NetCommonsUrl::actionUrl(array(
+$url = NetCommonsUrl::actionUrlAsArray(array(
 	'plugin' => 'calendars',
 	'controller' => 'calendars',
 	'action' => 'index',
@@ -18,16 +18,14 @@ $url = NetCommonsUrl::actionUrl(array(
 	'?' => array(
 	'style' => 'largemonthly',
 )));
+$title = '<div class="h2">' . sprintf(__d('calendars', '<small>%d/</small> %d'), $vars['mInfo']['year'], $vars['mInfo']['month']) . '</div>';
 ?>
 
 <article ng-controller="CalendarsDetailEdit" class="block-setting-body">
 
 	<div class="row">
 		<div class="col-xs-12 text-center calendar-smonthly-div calendar-small-title">
-			<a href='<?php echo $url; ?>'>
-			<div class="h2">
-				<?php echo sprintf(__d('calendars', '<small>%d/</small> %d'), $vars['mInfo']['year'], $vars['mInfo']['month']); ?>
-			</div></a>
+			<?php echo $this->NetCommonsHtml->link($title, $url, array('escape' => false)); ?>
 		</div>
 	</div>
 

@@ -64,22 +64,31 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		$html .= '<div class="calendar-date-move-operations">';
 
 		if ($prevUrl) {
-			$html .= '<a href="' . $prevUrl .
-				'"><span class="glyphicon glyphicon-chevron-left"></span></a>';
+			$html .= $this->NetCommonsHtml->link(
+				'<span class="glyphicon glyphicon-chevron-left"></span>',
+				$prevUrl,
+				array('escape' => false)
+			);
 		}
 
 		$html .= $this->_getDateTitle($type, $vars);
 
 		if ($nextUrl) {
-			$html .= '<a href="' . $nextUrl .
-				'"><span class="glyphicon glyphicon-chevron-right"></span></a>';
+			$html .= $this->NetCommonsHtml->link(
+				'<span class="glyphicon glyphicon-chevron-right"></span>',
+				$nextUrl,
+				array('escape' => false)
+			);
 		}
 
 		if ($thisDayUrl) {
 			$html .= '<div class="calendar-this-month">';
-			$html .= '<a href="' . $thisDayUrl . '" >';
-			$html .= $this->_getNowButtonTitle($type);
-			$html .= '</a></div>';
+			$html .= $this->NetCommonsHtml->link(
+				$this->_getNowButtonTitle($type),
+				$thisDayUrl,
+				array('escape' => false)
+			);
+			$html .= '</div>';
 		}
 		$html .= '</div>';
 		return $html;
@@ -192,7 +201,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		if (isset($vars['tab'])) {
 			$urlArray['?']['tab'] = $vars['tab'];
 		}
-		$url = NetCommonsUrl::actionUrl($urlArray);
+		$url = $this->CalendarUrl->getCalendarUrl($urlArray);
 		return $url;
 	}
 /**
@@ -356,7 +365,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		}
 		//angularJSのdatetimepicker変化の時に使う雛形URL
 		$prototypeUrlOpt['style'] = $vars['style'];
-		$prototypeUrl = NetCommonsUrl::actionUrl(array(
+		$prototypeUrl = $this->CalendarUrl->getCalendarUrl(array(
 			'controller' => 'calendars',
 			'action' => 'index',
 			'frame_id' => Current::read('Frame.id'),

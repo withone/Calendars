@@ -133,7 +133,7 @@ class CalendarPlanHelper extends AppHelper {
 		if (isset($vars['returnUrl'])) {
 			$cancelUrl = $vars['returnUrl'];
 		} else {
-			$cancelUrl = NetCommonsUrl::actionUrl($options);
+			$cancelUrl = $this->CalendarUrl->getCalendarUrl($options);
 		}
 
 		//キャンセル、一時保存、決定ボタンのoption生成

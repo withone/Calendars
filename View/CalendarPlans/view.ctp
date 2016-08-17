@@ -123,7 +123,7 @@ echo $this->element('Calendars.scripts');
 			if (isset($vars['returnUrl'])) {
 				$cancelUrl = $vars['returnUrl'];
 			} else {
-				$cancelUrl = NetCommonsUrl::actionUrl($urlOptions);
+				$cancelUrl = $this->CalendarUrl->getCalendarUrl($urlOptions);
 			}
 			echo $this->Button->cancel(__d('calendars', 'Back'), $cancelUrl);
 		?>

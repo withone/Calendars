@@ -133,7 +133,10 @@ class CalendarButtonHelper extends AppHelper {
 		}
 		// ボタンで出すか、＋マークリンクで出すか
 		if (isset($options['button']) && $options['button'] == 'plus-link') {
-			$html = "<a class='pull-right calendar-edit-plus-icon' href='" . $url . "'>+</a>";
+			$html = $this->NetCommonsHtml->link('+', $url, array(
+				'class' => 'pull-right calendar-edit-plus-icon',
+				'escape' => false
+			));
 		} else {
 			$html = $this->LinkButton->add('', $url);
 		}
