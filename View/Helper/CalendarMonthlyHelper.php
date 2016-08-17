@@ -120,7 +120,7 @@ class CalendarMonthlyHelper extends AppHelper {
 	}
 
 /**
- * addLinePlanHTML
+ * addLinePlanHtml
  *
  * 日跨ぎ(日跨ぎLine)HTML取得
  *
@@ -129,7 +129,7 @@ class CalendarMonthlyHelper extends AppHelper {
  * @param array $url リンクURL
  * @return string HTML
  */
-	public function addLinePlanHTML($plan, $calendarLinePlanMark, $url) {
+	public function addLinePlanHtml($plan, $calendarLinePlanMark, $url) {
 		$html = '';
 		$id = 'planline' . (string)$plan['CalendarEvent']['id']; //位置制御用id
 
@@ -177,7 +177,7 @@ class CalendarMonthlyHelper extends AppHelper {
 				continue;
 			}
 
-			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
+			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan, true);
 			$checkStartDate = $nctm->toUserDatetime($plan['CalendarEvent']['dtstart']);
 
 			//予定クラス名取得関数に予定(日跨ぎライン)マーククラス名取得を統合した
@@ -277,7 +277,7 @@ class CalendarMonthlyHelper extends AppHelper {
 	public function getPlanTitle(
 		$vars, $year, $month, $day, $fromTime, $toTime, $plan, $options = array()) {
 		$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan);
-		$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
+		$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan, true);
 		$html = '<div class="calendar-plan-mark ' . $calendarPlanMark . '">';
 		$html .= '<div>';
 		$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarEvent']['status']);

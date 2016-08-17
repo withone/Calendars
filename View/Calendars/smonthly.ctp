@@ -9,7 +9,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 echo $this->element('Calendars.scripts');
-$url = $this->CalendarUrl->getCalendarUrl(array(
+$url = $this->CalendarUrl->getCalendarUrlAsArray(array(
 	'plugin' => 'calendars',
 	'controller' => 'calendars',
 	'action' => 'index',

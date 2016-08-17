@@ -82,7 +82,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 
 		foreach ($plans as $plan) { //※プランは表示対象ルームのみと想定
 			$cnt++; //プラン件数カウント
-			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
+			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan, true);
 			$html .= "<div class='calendar-schedule-row'>"; //１プランの開始
 			if ($prevUser != $plan['TrackableCreator']['handlename']) {
 				if ($prevUser != '') {
@@ -178,7 +178,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 
 		foreach ($plans as $plan) { //※プランは表示対象ルームのみと想定
 			$cnt++; //プラン件数カウント
-			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
+			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan, true);
 			$htmlPlan .= '<tr><td>';
 
 			//予定が１件以上あるとき）

@@ -111,7 +111,7 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 		$html .= '<div>';
 		$html .= $this->CalendarCommon->makeWorkFlowLabel($plan['CalendarEvent']['status']);
 		$html .= '</div>';
-		$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
+		$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan, true);
 		if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !==
 			$plan['CalendarEvent']['toTime']) {
 			$html .= '<p class="calendar-daily-nontimeline-plan calendar-plan-time small">';

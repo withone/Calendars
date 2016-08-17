@@ -201,7 +201,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		if (isset($vars['tab'])) {
 			$urlArray['?']['tab'] = $vars['tab'];
 		}
-		$url = $this->CalendarUrl->getCalendarUrl($urlArray);
+		$url = $this->CalendarUrl->getCalendarUrlAsArray($urlArray);
 		return $url;
 	}
 /**

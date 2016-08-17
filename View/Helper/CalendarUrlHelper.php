@@ -40,16 +40,28 @@ class CalendarUrlHelper extends AppHelper {
  * @param int $month 月
  * @param int $day 日
  * @param array $plan 予定
+ * @param bool $isArray 配列での戻り値を求めているか
  * @return string url
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function makePlanShowUrl($year, $month, $day, $plan) {
-		$url = $this->getCalendarUrl(array(
-			'plugin' => 'calendars',
-			'controller' => 'calendar_plans',
-			'action' => 'view',
-			'key' => $plan['CalendarEvent']['key'],
-			'frame_id' => Current::read('Frame.id'),
-		));
+	public function makePlanShowUrl($year, $month, $day, $plan, $isArray = false) {
+		if ($isArray) {
+			$url = $this->getCalendarUrlAsArray(array(
+				'plugin' => 'calendars',
+				'controller' => 'calendar_plans',
+				'action' => 'view',
+				'key' => $plan['CalendarEvent']['key'],
+				'frame_id' => Current::read('Frame.id'),
+			));
+		} else {
+			$url = $this->getCalendarUrl(array(
+				'plugin' => 'calendars',
+				'controller' => 'calendar_plans',
+				'action' => 'view',
+				'key' => $plan['CalendarEvent']['key'],
+				'frame_id' => Current::read('Frame.id'),
+			));
+		}
 		return $url;
 	}
 
@@ -76,7 +88,7 @@ class CalendarUrlHelper extends AppHelper {
 				'day' => $day,
 			)
 		);
-		$url = $this->getCalendarUrl($options);
+		$url = $this->getCalendarUrlAsArray($options);
 		return $url;
 	}
 /**
@@ -104,7 +116,7 @@ class CalendarUrlHelper extends AppHelper {
 				'hour' => $hour,
 			)
 		);
-		$url = $this->getCalendarUrl($options);
+		$url = $this->getCalendarUrlAsArray($options);
 		return $url;
 	}
 
@@ -166,5 +178,18 @@ class CalendarUrlHelper extends AppHelper {
  */
 	public function getCalendarUrl($arr) {
 		return Router::url(NetCommonsUrl::actionUrlAsArray($arr));
+	}
+/**
+ * getCalendarUrlAsArray
+ *
+ * URL取得汎用関数
+ *
+ * @param array $arr URL作成のためのパラメータ配列
+ * @return array URL配列
+ */
+	public function getCalendarUrlAsArray($arr) {
+		$ret = NetCommonsUrl::actionUrlAsArray($arr);
+		$ret['block_id'] = '';
+		return $ret;
 	}
 }
