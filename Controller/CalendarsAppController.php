@@ -101,7 +101,6 @@ class CalendarsAppController extends AppController {
 		$qYear = $this->getQueryParam('year');
 		$qMonth = $this->getQueryParam('month');
 		$qDay = $this->getQueryParam('day');
-
 		if ($qYear) {
 			if ($qYear < CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_YEAR_MIN) {
 				$qYear = CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_YEAR_MIN;
@@ -117,7 +116,7 @@ class CalendarsAppController extends AppController {
 			$vars['day'] = intval($qDay);
 		} else { //省略時は、現在の日を設置
 			// 年月の指定がない場合は当日
-			if ($qYear === false && $qMonth === false) {
+			if ($qYear == false && $qMonth == false) {
 				$vars['day'] = intval($userNowArray['day']);
 			} else {
 				//月末日は月によって替わるので、すべての月でかならず存在する日(つまり一日）にする。
