@@ -590,6 +590,7 @@ td.calendar-col-day .calendar-out-of-range  .calendar-day {
 	padding-bottom:4px;
 	clear: left;
 	font-size: 1.07em;
+	word-break: break-all;
 }
 
 /* カレンダーの場所 */
