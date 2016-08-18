@@ -292,13 +292,11 @@ class CalendarsAppController extends AppController {
 		if ($this->name != 'Calendars') {
 			return;
 		}
-		$currentPath = Router::url();
 		// style指定がないときはデフォルト表示にしているときのはずです
 		// あるときは特殊画面から移動してます
 		$style = $this->getQueryParam('style');
 		if ($style) {
-			//$currentPath = substr($currentPath, 0, strpos($currentPath, '?'));
-			$currentPath .= '?' . http_build_query($this->request->query);
+			$currentPath = $this->request->here(false);
 		} else {
 			$currentPath = NetCommonsUrl::backToPageUrl();
 		}
