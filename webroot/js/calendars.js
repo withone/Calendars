@@ -708,6 +708,9 @@ NetCommonsApp.controller('CalendarsDetailEdit',
                $('#CalendarActionPlanDetailStartDatetime').val($scope.detailStartDate);
              }
            }
+           // 終日設定にされているわけだから終わりの日は最初の日と同じでないと
+           $('#CalendarActionPlanDetailEndDatetime').val($scope.detailStartDate);
+           /*
            if ($scope.detailEndDate && $scope.detailEndDate.indexOf(':') === (-1)) {
              //$scopeの方はYYYY-MM-DD
              var domVal = $('#CalendarActionPlanDetailEndDatetime').val();
@@ -716,7 +719,7 @@ NetCommonsApp.controller('CalendarsDetailEdit',
                //なので、$scopeの値を、DOMに反映する。
                $('#CalendarActionPlanDetailEndDatetime').val($scope.detailEndDate);
              }
-           }
+           }*/
 
            //checkboxのDOMの値も同期させておく。
            /////$('#CalendarActionPlanEnableTime').prop('checked', true);

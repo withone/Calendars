@@ -15,19 +15,10 @@
 		array('detail_start_datetime', 'detail_end_datetime')
 	);
 ?>
-<?php /* 期間・時間の指定のチェックボックスがOFFで終日指定の場合の部分 */ ?>
-<div ng-show="<?php echo '!' . $useTime; ?>" class="col-xs-12 col-sm-4"><!--表示条件２START-->
-	<?php echo $this->CalendarEditDatetime->makeEditDatetimeHtml(
-		$vars,
-		'date',
-		'All day',
-		'detail_start_datetime',
-		'detailStartDate',
-		'changeDetailStartDate'
-	); ?>
-</div><!--ng-show 表示条件２END-->
-
-
+<?php /* 要注意
+ ここの「日指定」「日時指定」のdatetimeのinputは、日時が先で日が後の並びにしなくてはならない
+ なんとなれば、ng-initの操作によるパラメータ設定が日時を先にしないとデフォルトの設定にならないから
+*/ ?>
 <?php /* 期間・時間の指定のチェックボックスがONで期間指定の場合の「開始」部分 */ ?>
 <div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-4" ng-cloak><!--表示条件１START-->
 	<?php echo $this->CalendarEditDatetime->makeEditDatetimeHtml(
@@ -39,6 +30,18 @@
 		'changeDetailStartDatetime'
 	); ?>
 </div><!--ng-show 表示条件１END-->
+
+<?php /* 期間・時間の指定のチェックボックスがOFFで終日指定の場合の部分 */ ?>
+<div ng-show="<?php echo '!' . $useTime; ?>" class="col-xs-12 col-sm-4"><!--表示条件２START-->
+	<?php echo $this->CalendarEditDatetime->makeEditDatetimeHtml(
+	$vars,
+	'date',
+	'All day',
+	'detail_start_datetime',
+	'detailStartDate',
+	'changeDetailStartDate'
+	); ?>
+</div><!--ng-show 表示条件２END-->
 
 
 <?php /* 期間・時間の指定のチェックボックスがONで期間指定の場合の「-」部分 */ ?>

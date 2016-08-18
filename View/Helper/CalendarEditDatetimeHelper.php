@@ -89,7 +89,7 @@ class CalendarEditDatetimeHelper extends AppHelper {
 		);
 		$dtValue = $dttmObj->format('Y-m-d H-i');
 
-		$addNgInit = '';
+		$addNgInit = $jsFuncName . "('CalendarActionPlan" . Inflector::camelize($fieldName) . "')";
 		$enableTime = $this->request->data['CalendarActionPlan']['enable_time'];
 		//
 		if ($type == 'datetime') {
@@ -107,7 +107,8 @@ class CalendarEditDatetimeHelper extends AppHelper {
 			}
 			$jsFormat = 'YYYY-MM-DD';
 		}
-		$addNgInit = $jsFuncName . "('CalendarActionPlan" . Inflector::camelize($fieldName) . "')";
+
+		$ngInit = sprintf("%s = '%s'; ", $ngModel, $dtDatetimeVal) . $addNgInit;
 
 		$pickerOpt = str_replace('"', "'", json_encode(array(
 			'format' => $jsFormat,
@@ -129,7 +130,7 @@ class CalendarEditDatetimeHelper extends AppHelper {
 				'convert_timezone' => false,
 				'ng-model' => $ngModel,
 				'ng-change' => $addNgInit,	//FIXME: selectイベントに変えたい。
-				'ng-init' => sprintf("%s = '%s'; ", $ngModel, $dtDatetimeVal) . $addNgInit,
+				'ng-init' => $ngInit,
 			));
 
 		return $html;
