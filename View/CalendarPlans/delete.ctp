@@ -38,7 +38,7 @@ echo $this->element('Calendars.scripts');
 					'div' => 'form-control',
 					'novalidate' => true,
 					'type' => 'delete',
-					'url' => $this->NetCommonsHtml->url(
+					'url' => $this->CalendarUrl->getCalendarUrl(
 						array(
 							'action' => 'delete',
 							'block_id' => '',
