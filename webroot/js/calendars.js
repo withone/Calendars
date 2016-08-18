@@ -988,7 +988,18 @@ $(function() {
   var expr = '.calendar-col-week, .calendar-easy-edit,';
   expr += ' .calendar-daily-disp, .calendar-detail-edit';
   $(expr).on('click', function(evt) {
-    window.location = $(evt.target).attr('data-url');
+    var url = $(evt.target).attr('data-url');
+    // イベント発火要素が１階層もぐりこんでいる構造の場合があるので
+    if (! url) {
+      var p = $(evt.target).parent(expr);
+      if (p) {
+        url = $(p.get(0)).attr('data-url');
+      }
+    }
+    if (! url) {
+      return;
+    }
+    window.location = url;
   });
   $('.calendar-plan-list').on('click', function(evt) {
     var url = $(evt.target).attr('data-url');
