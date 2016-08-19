@@ -68,6 +68,16 @@ class CalendarExposeTargetHelper extends AppHelper {
 			'6' => __d('calendars', '全会員'),
 		);
 		*/
+		// 予定データが指定されていて、その予定のターゲットルームが表示形式設定で
+		// 許可されているoptions（選択対象ルーム）の中にない場合は
+		// URLの直叩きなどで、直接編集を試みているような場合と想定できる
+		// そんなときはoptions配列に無理やりターゲットルームの選択肢を加えておく
+		if ($event) {
+			$eventRoomId = $event['CalendarEvent']['room_id'];
+			if (! isset($options[$eventRoomId])) {
+				$options[$eventRoomId] = $vars['allRoomNames'][$eventRoomId];
+			}
+		}
 		// 渡されたoptionから投稿権限のないものを外す
 		$rooms = CalendarPermissiveRooms::getCreatableRoomIdList();
 		$targetRooms = array_intersect_key($options, $rooms);

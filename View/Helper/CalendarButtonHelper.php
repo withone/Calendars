@@ -176,24 +176,17 @@ class CalendarButtonHelper extends AppHelper {
  */
 	public function getEditButton($vars, $event) {
 		$roomId = $event['CalendarEvent']['room_id'];
-		// 共有のとき
-		if (empty($vars['spaceNameOfRooms'][$roomId])) {
+		// それ以外の時
+		$canEdit = CalendarPermissiveRooms::isEditable($roomId);
+		$canCreate = CalendarPermissiveRooms::isCreatable($roomId);
+		// 表示ルームにおける自分の権限がeditable以上なら無条件に編集可能
+		// creatbleのとき=自分が作ったデータならOK
+		if (!$canCreate) {
 			return '';
-		} elseif ($vars['spaceNameOfRooms'][$roomId] == 'private') {
-
-		} else {
-			// それ以外の時
-			$canEdit = CalendarPermissiveRooms::isEditable($roomId);
-			$canCreate = CalendarPermissiveRooms::isCreatable($roomId);
-			// 表示ルームにおける自分の権限がeditable以上なら無条件に編集可能
-			// creatbleのとき=自分が作ったデータならOK
-			if (!$canCreate) {
+		}
+		if (!$canEdit) {
+			if ($event['CalendarEvent']['created_user'] != Current::read('User.id')) {
 				return '';
-			}
-			if (!$canEdit) {
-				if ($event['CalendarEvent']['created_user'] != Current::read('User.id')) {
-					return '';
-				}
 			}
 		}
 		$html = $this->Button->editLink('', array(

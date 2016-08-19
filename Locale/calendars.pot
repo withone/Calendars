@@ -1151,3 +1151,5 @@ msgstr ""
 msgid "An unknown error has occurred."
 msgstr ""
 
+msgid "Registration and editing of the plan please go from correctly installed in the calendar on the screen ."
+msgstr ""

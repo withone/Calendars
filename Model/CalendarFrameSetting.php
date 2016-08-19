@@ -352,6 +352,7 @@ class CalendarFrameSetting extends CalendarsAppModel {
 				'display_count' => CalendarsComponent::CALENDAR_STANDARD_DISPLAY_DAY_COUNT,
 				'timeline_base_time' => CalendarsComponent::CALENDAR_TIMELINE_DEFAULT_BASE_TIME,
 				'is_select_room' => false,
+				'is_myroom' => true,
 			)
 		);
 	}

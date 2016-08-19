@@ -436,10 +436,10 @@ class CalendarEvent extends CalendarsAppModel {
  *
  * 見てもよいイベント情報なのか判断する
  *
- * @param array $event calendar event data
+ * @param array &$event calendar event data
  * @return bool
  */
-	protected function _isGetableEvent($event) {
+	protected function _isGetableEvent(&$event) {
 		// eventの空間取り出す
 		$roomId = $event['CalendarEvent']['room_id'];
 		// 作成者取り出す
@@ -449,18 +449,44 @@ class CalendarEvent extends CalendarsAppModel {
 			CalendarPermissiveRooms::isEditable($roomId)) {
 			// is_latestのものを返す
 			if ($event['CalendarEvent']['is_latest']) {
+				// 共有予定フラグを立てておく
+				$this->_setSharedFlag($event);
 				return true;
 			}
 		} else {
 			// 上記以外
 			// is_activeのものを返す
 			if ($event['CalendarEvent']['is_active']) {
+				// 共有予定フラグを立てておく
+				$this->_setSharedFlag($event);
 				return true;
 			}
 		}
 		return false;
 	}
 
+/**
+ * _setSharedFlag
+ *
+ * 共有した、共有された予定である場合は、フラグを設定しておく
+ * @param &$event イベント情報
+ * @return void
+ */
+	protected function _setSharedFlag(&$event) {
+		$event[$this->alias]['pseudo_friend_share_plan'] = false; // 共有された
+		$event[$this->alias]['is_share'] = false; // 共有した
+		$userId = Current::read('User.id');
+		if (! empty($userId)) {
+			$share = Hash::extract($event, 'CalendarEventShareUser.{n}[share_user=' . $userId . ']');
+			if (! empty($share)) {
+				$event[$this->alias]['pseudo_friend_share_plan'] = true;
+			} else {
+				if (! empty($event['CalendarEventShareUser'])) {
+					$event[$this->alias]['is_share'] = true;
+				}
+			}
+		}
+	}
 /**
  * prepareActiveForUpd
  *

@@ -36,32 +36,20 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 		}
 
 		$spaces = $model->Room->getSpaces();
-
-		//$spaceNames = Hash::combine($spaces, '{n}.Room.space_id',
-		//	'{n}.RoomsLanguage.{n}[language_id=' .
-		//	Current::read('Language.id') . '].name');	//for DBG
-		//CakeLog::debug("DBG: spaces[" . print_r($spaces, true) .
-		//	"] spaceNames[" . print_r($spaceNames, true) . "]");
-
 		$spaceIds = array(Space::PUBLIC_SPACE_ID, Space::ROOM_SPACE_ID);
+
 		$rooms = array();
 		$roomTreeList = array();
 		foreach ($spaceIds as $spaceId) {
 			$rooms[$spaceId] = $this->getRoomsOfSpace($model, $spaceId);
-
-			//CakeLog::debug("DBG: 空間名[" . $spaceNames[$spaceId] .
-			//	"]配下でreadableなroomId一覧[" . print_r($rooms[$spaceId], true) . "]");
-
 			$roomTreeList[$spaceId] = $this->getRoomTreeOfSpace(
 				$model, $spaces[$spaceId]['Room']['id'], $rooms[$spaceId]);
-
-			//CakeLog::debug("DBG: 空間名[" . $spaceNames[$spaceId] . "]配下の ルームTree[" .
-			//	$spaceId . "]=" . print_r($roomTreeList[$spaceId], true) . "]");
 		}
 
 		//オプション生成
 		$options = array();
 		$spaceNameOfRooms = array();
+		$allRoomNames = array();
 		$myself = null;
 		$userId = Current::read('User.id');
 		foreach ($spaces as $space) {	//Space::PUBLIC_SPACE_ID, Space::ROOM_SPACE_IDを順次処理.
@@ -72,30 +60,32 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 
 			if ($space['Space']['type'] == Space::PRIVATE_SPACE_TYPE) {
 				//プライベート
-				list($myself, $options, $spaceNameOfRooms) = $this->__getRoomIdEtcWhenPrivateCase(
-					$model, $space, $frameSetting, $userId, $title, $myself, $options, $spaceNameOfRooms);
+				list($myself, $options, $spaceNameOfRooms, $allRoomNames) =
+					$this->__getRoomIdEtcWhenPrivateCase(
+						$model, $space, $frameSetting, $userId, $title,
+						$myself, $options, $spaceNameOfRooms, $allRoomNames);
 			} else {	//公開空間またはグループ空間
-				list($options, $spaceNameOfRooms) = $this->mergeSelectExposeTargetOptions(
-					$model, $options, $title, $space, $roomTreeList[$space['Space']['id']],
-					$rooms[$space['Space']['id']], $frameSetting, $spaceNameOfRooms);
+				list($options, $spaceNameOfRooms, $allRoomNames) =
+					$this->mergeSelectExposeTargetOptions(
+						$model, $options, $title, $space, $roomTreeList[$space['Space']['id']],
+						$rooms[$space['Space']['id']], $frameSetting, $spaceNameOfRooms, $allRoomNames);
 			}
 		}
 
 		// 全会員
 		//
 		// 全会員が、指定したルームのみ表示ONの時表示ＯＫになっているか確認
-		if ($this->_isEnableRoomInFrameSetting(Room::ROOM_PARENT_ID, $frameSetting)) {
-			if (!empty($userId)) {
+		if (! empty($userId)) {
+			$roomId = Room::ROOM_PARENT_ID;	//全会員を表すIDはこれです。
+			$spaceNameOfRooms[$roomId] = 'member';	//例外的に文字列を渡す
+			$allRoomNames[$roomId] = __d('calendars', 'All the members');
+			if ($this->_isEnableRoomInFrameSetting(Room::ROOM_PARENT_ID, $frameSetting)) {
 				//ログインしている時、optionに積む
-				$roomId = Room::ROOM_PARENT_ID;	//全会員を表すIDはこれです。
 				$options[$roomId] = __d('calendars', 'All the members');
-				$spaceNameOfRooms[$roomId] = 'member';	//例外的に文字列を渡す
 			}
 		}
 
-		//CakeLog::debug("DBG: options[" . print_r($options, true) . "] myself[" .
-		//	$myself . "] spaceNameOfRooms[" . print_r($spaceNameOfRooms, true) . "]");
-		return array($options, $myself, $spaceNameOfRooms);
+		return array($options, $myself, $spaceNameOfRooms, $allRoomNames);
 	}
 
 /**
@@ -111,39 +101,40 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
  * @param array $rooms 単一空間でのルーム群
  * @param int $frameSetting カレンダーフレーム設定情報
  * @param array $spaceNameOfRooms ルーム毎空間名配列
+ * @param array $allRoomNames ルーム名一覧
  * @return array マージ後のoptions配列とルーム毎空間名配列
  */
 	public function mergeSelectExposeTargetOptions(Model &$model, $options, $title, $space,
-		$roomTreeList, $rooms, $frameSetting, $spaceNameOfRooms) {
+		$roomTreeList, $rooms, $frameSetting, $spaceNameOfRooms, $allRoomNames) {
 		$userId = Current::read('User.id');
 		if ($roomTreeList) {
 			foreach ($roomTreeList as $roomId => $tree) {
 				if (Hash::get($rooms, $roomId)) {
 					$nest = substr_count($tree, Room::$treeParser);
+					$roomsLanguage = Hash::extract($rooms[$roomId],
+						'RoomsLanguage.{n}[language_id=' . Current::read('Language.id') . ']');
+					$targetTitle = h($roomsLanguage[0]['name']);
+
+					$spaceNameOfRooms[$roomId] =
+						($space['Space']['type'] == Space::ROOM_SPACE_ID) ? 'group' : 'public';
+					$allRoomNames[$roomId] = $targetTitle;
+
 					if ($this->_isEnableRoomInFrameSetting($roomId, $frameSetting)) {
 						if ($space['Space']['type'] == Space::ROOM_SPACE_ID) {
 							if (empty($userId)) {
 								//未ログインなので、グループ空間をoptionに積んではいけない。抜ける。
 								continue;
 							}
-
 							//グループ空間の時は、インデントを１つ減らす。..これにより、NC2と同じレベルの表現になる。
 							$nest -= 1;
 						}
-						$roomsLanguage = Hash::extract($rooms[$roomId],
-							'RoomsLanguage.{n}[language_id=' . Current::read('Language.id') . ']');
-						$targetTitle = h($roomsLanguage[0]['name']);
-						//$options[$roomId] = str_repeat('　', $nest * 1) . h($model->Rooms->roomName($rooms[$roomId]));
 						$options[$roomId] = str_repeat('　', $nest * 1) . $targetTitle;
-
-						$spaceNameOfRooms[$roomId] =
-							($space['Space']['type'] == Space::ROOM_SPACE_ID) ? 'group' : 'public';
 					}
 				}
 			}
 		}
 		//CakeLog::debug("DBG: options[" . print_r($options, true) . "]");
-		return array($options, $spaceNameOfRooms);
+		return array($options, $spaceNameOfRooms, $allRoomNames);
 	}
 
 /**
@@ -246,27 +237,32 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
  * @param mixed $myself ログインしている人のプライベートルームID
  * @param array $options ルーム選択（兼、表示）時の選択できうるルームのoptions配列
  * @param array $spaceNameOfRooms ルーム毎の空間名を格納した配列
+ * @param array $allRoomNames ルーム名一覧
  * @return array プライベート時の情報を、$myselfと$optionsと$spaceNameOfRoomsにセットし、配列に格納して返す。
  */
 	private function __getRoomIdEtcWhenPrivateCase(&$model, $space, $frameSetting,
-		$userId, $title, $myself, $options, $spaceNameOfRooms) {
+		$userId, $title, $myself, $options, $spaceNameOfRooms, $allRoomNames) {
 		//プライベート
 		//
 		//プライベートが、指定したルームのみ表示ONの時表示ＯＫになっているか確認
-		if ($this->_isEnableRoomInFrameSetting($space['Room']['id'], $frameSetting)) {
-			$roomId = $this->getMyPrivateRoomId($model);
-			if ($roomId) {
-				//プライベートルームＩＤが見つかった
-				$myself = $roomId;
+		$roomId = $this->getMyPrivateRoomId($model);
+
+		//プライベートルームＩＤが見つかった
+		if ($roomId) {
+
+			$spaceNameOfRooms[$roomId] = 'private';
+			$allRoomNames[$roomId] = $this->__getPrivateRoomName($model, $roomId);
+
+			if ($this->_isEnableRoomInFrameSetting($space['Room']['id'], $frameSetting)) {
 				if (!empty($userId)) {
+					$myself = $roomId;
 					//ログインしている時、optionに積む
 					/////$options[$roomId] = $title;
-					$options[$roomId] = $this->__getPrivateRoomName($model, $myself);
-					$spaceNameOfRooms[$roomId] = 'private';
+					$options[$roomId] = $allRoomNames[$roomId];
 				}
 			}
 		}
-		return array($myself, $options, $spaceNameOfRooms);
+		return array($myself, $options, $spaceNameOfRooms, $allRoomNames);
 	}
 
 /**

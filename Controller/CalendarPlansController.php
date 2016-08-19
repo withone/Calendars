@@ -144,7 +144,7 @@ class CalendarPlansController extends CalendarsAppController {
 
 		// カレンダー権限設定情報確保
 		$this->roomPermRoles = $this->CalendarEvent->prepareCalRoleAndPerm();
-		CalendarPermissiveRooms::$roomPermRoles = $this->roomPermRoles;
+		CalendarPermissiveRooms::setRoomPermRoles($this->roomPermRoles);
 
 		// 表示のための各種共通パラメータ設定
 		$this->_vars = $this->getVarsForShow();
@@ -498,8 +498,8 @@ class CalendarPlansController extends CalendarsAppController {
 		$this->set('frameId', Current::read('Frame.id'));
 		$this->set('languageId', Current::read('Language.id'));
 
-		$this->request->data['CalendarFrameSettingSelectRoom'] =
-			$this->CalendarFrameSetting->getSelectRooms($this->_frameSetting['CalendarFrameSetting']['id']);
+		//$this->request->data['CalendarFrameSettingSelectRoom'] =
+		//	$this->CalendarFrameSetting->getSelectRooms($this->_frameSetting['CalendarFrameSetting']['id']);
 	}
 
 /**
@@ -562,8 +562,15 @@ class CalendarPlansController extends CalendarsAppController {
 		$this->_frameSetting = $this->CalendarFrameSetting->getFrameSetting();
 
 		//公開対象一覧のoptions配列と自分自身のroom_idとルーム別空間名を取得
-		list($this->_exposeRoomOptions, $this->_myself, ) =
-			$this->CalendarActionPlan->getExposeRoomOptions($this->_frameSetting);
+		$this->_exposeRoomOptions = $vars['exposeRoomOptions'];
+		$this->_myself = null;
+		$userId = Current::read('User.id');
+		if ($userId) {
+			$myRoom = $this->Room->getPrivateRoomByUserId($userId);
+			if ($myRoom) {
+				$this->_myself = $myRoom['Room']['id'];
+			}
+		}
 
 		//eメール通知の選択options配列を取得
 		$this->_emailOptions = $this->CalendarActionPlan->getNoticeEmailOption();

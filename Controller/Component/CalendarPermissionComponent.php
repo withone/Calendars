@@ -96,13 +96,13 @@ class CalendarPermissionComponent extends Component {
 		if (! $this->_existEvent()) {
 			return false;
 		}
-		$roomPermRoles = $this->controller->roomPermRoles;
+		//$roomPermRoles = $this->controller->roomPermRoles;
 		$calendarEv = $this->controller->eventData['CalendarEvent'];
 		$shareUsersIds = Hash::extract(
 			$this->controller->shareUsers, '{n}.CalendarEventShareUser.share_user');
 
 		// ルームに参加している
-		if (in_array($calendarEv['room_id'], $roomPermRoles['readableRoomIds'])) {
+		if (in_array($calendarEv['room_id'], CalendarPermissiveRooms::getAccessibleRoomIdList())) {
 			return true;
 		}
 		// 参加してなくても対象ルームがプライベートで共有者であればOK

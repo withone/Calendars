@@ -271,11 +271,12 @@ class CalendarsAppController extends AppController {
 		//
 		$frameSetting = $this->CalendarFrameSetting->getFrameSetting();
 		//公開対象一覧のoptions配列と自分自身のroom_idとルーム毎空間名配列を取得
-		list($exposeRoomOptions, $myself, $spaceNameOfRooms) =
+		list($exposeRoomOptions, $myself, $spaceNameOfRooms, $allRoomNames) =
 			$this->CalendarActionPlan->getExposeRoomOptions($frameSetting);
 		$vars['exposeRoomOptions'] = $exposeRoomOptions;
 		$vars['myself'] = $myself;
 		$vars['spaceNameOfRooms'] = $spaceNameOfRooms;
+		$vars['allRoomNames'] = $allRoomNames;
 	}
 
 /**

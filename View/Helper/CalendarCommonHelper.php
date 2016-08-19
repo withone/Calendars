@@ -24,8 +24,8 @@ class CalendarCommonHelper extends AppHelper {
  * @var array
  */
 	public $helpers = array(
-		'NetCommonsForm',
-		'NetCommonsHtml',
+		'NetCommons.NetCommonsForm',
+		'NetCommons.NetCommonsHtml',
 		'Form',
 	);
 
@@ -80,8 +80,12 @@ class CalendarCommonHelper extends AppHelper {
 		if ($plan !== null) {
 			$roomId = $plan['CalendarEvent']['room_id'];
 		}
-		if (empty($vars['spaceNameOfRooms'][$roomId])) {
-			//「仲間の予定」の場合、その１
+		//「仲間の予定」の場合
+		// 共有された、にフラグが立っている
+		// 「週表示」などで予定ではなく表題を表示するときに呼ばれることがある
+		// そんなときにはplan=nullでルームIDだけ指定されてくることがあるので存在チェックが欠かせない
+		if (empty($vars['spaceNameOfRooms'][$roomId]) ||
+			$plan['CalendarEvent']['pseudo_friend_share_plan']) {
 			$html = $prefix . 'share';
 			return $html;
 		}
@@ -91,9 +95,8 @@ class CalendarCommonHelper extends AppHelper {
 			$html = $prefix . $vars['spaceNameOfRooms'][$roomId];
 		}
 		if ($vars['spaceNameOfRooms'][$roomId] === 'private' && $plan !== null) {
-			$shareUsers = Hash::extract($plan, 'CalendarEventShareUser.{n}.share_user');
-			if (!empty($shareUsers) && !in_array(Current::read('User.id'), $shareUsers)) {
-				//共有者の一覧は「全て自分以外」である＝「共有した予定」なのでshareグリフを追加しておく。
+			if ($plan['CalendarEvent']['is_share']) {
+				//「共有した予定」なのでshareグリフを追加しておく。
 				$html .= ' glyphicon glyphicon-share';
 			}
 		}

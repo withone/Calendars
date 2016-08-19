@@ -53,6 +53,7 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 	}
 /**
  * isContentPublishableWithCalRoleAndPerm
+ * 現在未使用 削除予定
  *
  * カレンダー権限管理を考慮したCurrentユーザの指定oomで付与された役割での承認権限の有無
  *
@@ -60,21 +61,21 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  * @param int $roomId roomId
  * @return array $readableRoomIds(参照可能room一覧), $roleOfRooms(ルームごとでの役割一覧)、$roomInfos(ルームでのルーム管理＋カレンダー権限管理での承認権限有無一覧), $rooms(ルームでの役割別権限一覧)を格納した配列を返す。
  */
-	public function isContentPublishableWithCalRoleAndPerm(Model &$model, $roomId) {
-		//カレンダー役割・権限の準備
-		if ($this->_calRoleAndPerm === null) {
-			$this->_calRoleAndPerm = $this->prepareCalRoleAndPerm($model);
-		}
-		$roomInfos = &$this->_calRoleAndPerm['roomInfos'];
-
-		$isContentPublishable = false;
-		if ($roomInfos[$roomId]['use_workflow']) {
-			if (!empty($roomInfos[$roomId]['content_publishable_value'])) {
-				$isContentPublishable = true;
-			}
-		}
-		return $isContentPublishable;
-	}
+//	public function isContentPublishableWithCalRoleAndPerm(Model &$model, $roomId) {
+//		//カレンダー役割・権限の準備
+//		if ($this->_calRoleAndPerm === null) {
+//			$this->_calRoleAndPerm = $this->prepareCalRoleAndPerm($model);
+//		}
+//		$roomInfos = &$this->_calRoleAndPerm['roomInfos'];
+//
+//		$isContentPublishable = false;
+//		if ($roomInfos[$roomId]['use_workflow']) {
+//			if (!empty($roomInfos[$roomId]['content_publishable_value'])) {
+//				$isContentPublishable = true;
+//			}
+//		}
+//		return $isContentPublishable;
+//	}
 
 /**
  * prepareCalRoleAndPerm
@@ -94,18 +95,25 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 		if (isset($this->_calRoleAndPerm[$frameId])) {
 			return $this->_calRoleAndPerm[$frameId];
 		}
+
+		// 必要なモデルのロード
+		$model->loadModels([
+			'CalendarFrameSetting' => 'Calendars.CalendarFrameSetting',
+			'CalendarActionPlan' => 'Calendars.CalendarActionPlan',
+			'CalendarPermission' => 'Calendars.CalendarPermission',
+			'RolesRoomsUser' => 'Rooms.RolesRoomsUser',
+			'RolesRoom' => 'Rooms.RolesRoom',
+			'Room' => 'Rooms.Room'
+		]);
+
 		//表示対象（readable）なルームIDの一覧を取得
 		//
-		if (!isset($model->CalendarFrameSetting)) {
-			$model->loadModels(['CalendarFrameSetting' => 'Calendars.CalendarFrameSetting']);
-		}
 		$frameSetting = $model->CalendarFrameSetting->getFrameSetting();
-		if (!isset($model->CalendarActionPlan)) {
-			$model->loadModels(['CalendarActionPlan' => 'Calendars.CalendarActionPlan']);
-		}
+
 		list($exposeRoomOptions, ) =
 			$model->CalendarActionPlan->getExposeRoomOptions($frameSetting);
 		$readableRoomIds = array_keys($exposeRoomOptions);
+
 
 		////////////////////////////////////////////////////////////////////
 		//カレンダーの予定では、複数の空間・ルームの予定を一度に扱うため
@@ -114,16 +122,12 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 		//Current::permission（'content_creatable'）だけではなく、さらに
 		//カレンダー管理＞権限管理でルーム毎に指定した予定作成可否
 		//も、オーバーライドした判断を行う準備をする。
+
 		//
 		//1. カレンダーの権限管理のコントローラーで取得・利用している、
 		//全会員を含む、カレンダー＋ブロック＋ルーム配列を取得する。
-		$rooms = $this->__getRooms($model);
 
 		//2. ログインユーザが所属する各ルームでの役割（role_key）を取得する。
-		$model->loadModels([
-			'RolesRoomsUser' => 'Rooms.RolesRoomsUser',
-			'RolesRoom' => 'Rooms.RolesRoom']);
-
 		$rolesRoomsUsers = $model->RolesRoomsUser->getRolesRoomsUsers(array(
 			'RolesRoomsUser.user_id' => Current::read('User.id'),
 		));
@@ -145,11 +149,10 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 			$roleOfRooms[Room::ROOM_PARENT_ID] = $this->__getAllMemberRoleKey($model, $userId);
 		}
 		//3. ルーム管理＋カレンダー権限管理での承認権限ありなしを取得
-		$roomInfos = $this->__getRolePerms($roleOfRooms);
+		$roomInfos = $this->__getRolePerms($model, $roleOfRooms);
 
 		$this->_calRoleAndPerm[$frameId] = array(
 			'readableRoomIds' => $readableRoomIds,
-			'rooms' => $rooms,
 			'roleOfRooms' => $roleOfRooms,
 			'roomInfos' => $roomInfos,
 		);
@@ -161,19 +164,19 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  *
  * 権限情報の取得
  *
+ * @param Model &$model 実際のモデル名
  * @param array $roleOfRooms ルームに置けるロール情報配列
  * @return array
  */
-	private function __getRolePerms($roleOfRooms) {
+	private function __getRolePerms(Model &$model, $roleOfRooms) {
 		//　Roleが何もない＝未ログイン
 		if (empty($roleOfRooms)) {
 			return array();
 		}
-		$permModel = ClassRegistry::init('Calendars.CalendarPermission');
+		$permRooms = $model->CalendarPermission->getCalendarRoomBlocks($this->__workflowCompo);
 
-		$permRooms = $permModel->getCalendarRoomBlocks($this->__workflowCompo);
-
-		$allMemberRoom = $permModel->getCalendarAllMemberRoomBlocks($this->__workflowCompo);
+		// 全会員ルームの情報
+		$allMemberRoom = $model->CalendarPermission->getCalendarAllMemberRoomBlocks($this->__workflowCompo);
 		// 全会員ルーム情報もマージしてしまう
 		$permRooms = Hash::mergeDiff($permRooms, $allMemberRoom);
 
@@ -223,63 +226,10 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 			'content_creatable_value' => $creatable
 		);
 	}
-/**
- * __getRooms
- *
- * カレンダーの権限管理のコントローラーで取得・利用している、
- * 全会員を含む、カレンダー＋ブロック＋ルーム配列を取得する。
- *
- * @param Model &$model 実際のモデル名
- * @return array 検索成功時 カレンダー＋ブロック＋ルームの配列を返す。検索結果が０件の時は、空配列を返す。
- * @throws InternalErrorException
- */
-	private function __getRooms(Model &$model) {
-		//空間情報をとってくる。
-		if (!isset($model->Room)) {
-			$model->loadModels(['Room' => 'Rooms.Room']);
-		}
-
-		//$spaces = $model->Room->getSpaces();	//管理画面用につき外す
-		// デフォルトロールをとってくる。
-		if (!isset($model->CalendarPermission)) {
-			$model->loadModels(['CalendarPermission' => 'Calendars.CalendarPermission']);
-		}
-		//$defaultRoles = $model->CalendarPermission->getDefaultRoles(); //管理画面用につき外す
-		// 全会員以外の、カレンダー＋ブロック+ルームをとってくる。
-
-		//workflowコンポーネントの準備
-		if (!isset($model->Workflow)) {
-			if (!isset($model->Components)) {
-				$model->Components = new ComponentCollection();
-			}
-			$settings = array();
-			$model->Workflow = $model->Components->load('Workflow', $settings);
-		}
-		$rooms = $model->CalendarPermission->getCalendarRoomBlocks($model->Workflow);
-		$roomTree = array();
-		foreach ($rooms as $spaceId => $room) { // ルームツリー
-			$roomTree[$spaceId] = $model->Room->formatTreeList($room, array(
-				'keyPath' => '{n}.Room.id',
-				'valuePath' => '{n}.RoomsLanguage.name',
-				'spacer' => Room::$treeParser
-			));
-		}
-		// ツリー情報の作成が終わったので次に、全会員ルーム情報取得
-		$allMemberRoom = $model->CalendarPermission->getCalendarAllMemberRoomBlocks($model->Workflow);
-		$rooms = Hash::mergeDiff($rooms, $allMemberRoom); // 全会員ルーム情報を$roomsにマージ
-
-		//CakeLog::debug("DBG: spaces[" . print_r($spaces, true) . "]");
-		//CakeLog::debug("DBG: defaultRoles[" . print_r($defaultRoles, true) . "]");
-		//CakeLog::debug("DBG: 全会員を除くrooms[" . print_r($rooms, true) . "]");
-		//CakeLog::debug("DBG: ルームツリー roomTree[" . print_r($roomTree, true) . "]");
-		//CakeLog::debug("DBG: 全会員ルーム情報 allMemberRoom[" . print_r($allMemberRoom, true) . "]");
-		//CakeLog::debug("DBG: 全会員ルーム情報マージ後の rooms[" . print_r($rooms, true) . "]");
-
-		return $rooms;
-	}
 
 /**
  * getRoleInRoom
+ * 現在未使用関数となった
  *
  * Currentユーザの、指定ルームにおける役割(role_key)を取得
  *
@@ -288,30 +238,31 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  * @param int $roomId roomId
  * @return string 取得したrole_keyを返す
  */
-	public function getRoleInRoom(Model &$model, $calRoleAndPerm, $roomId = null) {
-		if ($roomId === null) {
-			$roomId = Current::read('Room.id');
-		}
-
-		//copyを避け、参照代入にする
-		//$readableRoomIds = &$calRoleAndPerm['readableRoomIds'];
-		//$rooms = &$calRoleAndPerm['rooms'];
-		//$roleOfRooms = &$calRoleAndPerm['roleOfRooms'];
-		$roomInfos = &$calRoleAndPerm['roomInfos'];
-
-		$roleKey = '';
-		if (empty($roomInfos)) {
-			//ルームでの役割がない＝未ログイン
-			return $roleKey;
-		}
-		if (!empty($roomInfos[$roomId])) {
-			$roleKey = $roomInfos[$roomId]['role_key'];
-		}
-		return $roleKey;
-	}
+//	public function getRoleInRoom(Model &$model, $calRoleAndPerm, $roomId = null) {
+//		if ($roomId === null) {
+//			$roomId = Current::read('Room.id');
+//		}
+//
+//		//copyを避け、参照代入にする
+//		//$readableRoomIds = &$calRoleAndPerm['readableRoomIds'];
+//		//$rooms = &$calRoleAndPerm['rooms'];
+//		//$roleOfRooms = &$calRoleAndPerm['roleOfRooms'];
+//		$roomInfos = &$calRoleAndPerm['roomInfos'];
+//
+//		$roleKey = '';
+//		if (empty($roomInfos)) {
+//			//ルームでの役割がない＝未ログイン
+//			return $roleKey;
+//		}
+//		if (!empty($roomInfos[$roomId])) {
+//			$roleKey = $roomInfos[$roomId]['role_key'];
+//		}
+//		return $roleKey;
+//	}
 
 /**
  * isContentCreatableAtRoleInRoom
+ * 使用されていない
  *
  * ルーム管理＋カレンダー権限管理による、指定ルームにおける指定役割の人は、content_creatableかどうかの判断
  *
@@ -321,13 +272,14 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  * @param int $roomId roomId
  * @return string content_creatableならtrue。そうでないならfalseを返す。
  */
-	public function isContentCreatableAtRoleInRoom(Model &$model,
-		$calRoleAndPerm, $roleKey, $roomId = null) {
-		return $this->isCommonAbleAtRoleInRoom($calRoleAndPerm, 'content_creatable', $roleKey, $roomId);
-	}
+//	public function isContentCreatableAtRoleInRoom(Model &$model,
+//		$calRoleAndPerm, $roleKey, $roomId = null) {
+//		return $this->isCommonAbleAtRoleInRoom($calRoleAndPerm, 'content_creatable', $roleKey, $roomId);
+//	}
 
 /**
  * isContentEditableAtRoleInRoom
+ * 使用されていない
  *
  * ルーム管理＋カレンダー権限管理による、指定ルームにおける指定役割の人は、content_editableかどうかの判断
  *
@@ -337,13 +289,14 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  * @param int $roomId roomId
  * @return string content_editableならtrue。そうでないならfalseを返す。
  */
-	public function isContentEditableAtRoleInRoom(Model &$model,
-		$calRoleAndPerm, $roleKey, $roomId = null) {
-		return $this->__isCommonAbleAtRoleInRoom($calRoleAndPerm, 'content_editable', $roleKey, $roomId);
-	}
+//	public function isContentEditableAtRoleInRoom(Model &$model,
+//		$calRoleAndPerm, $roleKey, $roomId = null) {
+//		return $this->__isCommonAbleAtRoleInRoom($calRoleAndPerm, 'content_editable', $roleKey, $roomId);
+//	}
 
 /**
  * __isCommonAbleAtRoleInRoom
+ * 使用されていない
  *
  * ルーム管理＋カレンダー権限管理による、指定ルームにおける指定役割の人は、content_xxxxxかどうかの判断
  *
@@ -353,26 +306,26 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  * @param int $roomId roomId
  * @return string content_xxxxxならtrue。そうでないならfalseを返す。
  */
-	private function __isCommonAbleAtRoleInRoom(&$calRoleAndPerm, $able, $roleKey, $roomId = null) {
-		if ($roomId === null) {
-			$roomId = Current::read('Room.id');
-		}
-
-		//copyを避け、参照代入にする
-		//$readableRoomIds = &$calRoleAndPerm['readableRoomIds'];
-		$rooms = &$calRoleAndPerm['rooms'];
-		//$roleOfRooms = &$calRoleAndPerm['roleOfRooms'];
-		//$roomInfos = &$calRoleAndPerm['roomInfos'];
-
-		$value = Hash::extract($rooms, '{n}.' . $roomId .
-			'.BlockRolePermission.' . $able . '.' . $roleKey . '.value');
-		if (!empty($value)) {
-			$value = $value[0];
-		} else {
-			$value = 0;
-		}
-		return ($value) ? true : false;
-	}
+//	private function __isCommonAbleAtRoleInRoom(&$calRoleAndPerm, $able, $roleKey, $roomId = null) {
+//		if ($roomId === null) {
+//			$roomId = Current::read('Room.id');
+//		}
+//
+//		//copyを避け、参照代入にする
+//		//$readableRoomIds = &$calRoleAndPerm['readableRoomIds'];
+//		$rooms = &$calRoleAndPerm['rooms'];
+//		//$roleOfRooms = &$calRoleAndPerm['roleOfRooms'];
+//		//$roomInfos = &$calRoleAndPerm['roomInfos'];
+//
+//		$value = Hash::extract($rooms, '{n}.' . $roomId .
+//			'.BlockRolePermission.' . $able . '.' . $roleKey . '.value');
+//		if (!empty($value)) {
+//			$value = $value[0];
+//		} else {
+//			$value = 0;
+//		}
+//		return ($value) ? true : false;
+//	}
 
 /**
  * __getAllMemberRoleKey
