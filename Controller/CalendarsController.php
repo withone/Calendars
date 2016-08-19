@@ -291,7 +291,13 @@ class CalendarsController extends CalendarsAppController {
  * @return array $vars スケジュール変数
  */
 	public function getScheduleVars($vars) {
-		$sort = $this->getQueryParam('sort');
+		//$sort = $this->getQueryParam('sort');
+		// スケジュール表示のときだけは直接覗くようにする(正式取得しない)
+		// 理由１：スケジュール表示は左カラムから表示されない
+		// 理由２：スケジュール表示の種別指定パラメータをデフォルト表示のときもqueryに入れている
+		// 理由３：デフォ表示のときrequestedパラメータがないから、まるでよそ様フレーム処理に見える
+		// 上記理由から直接見ないと処理できないし、直接見てもよそ様フレームと混同しないから
+		$sort = $this->request->query['sort'];
 		if ($sort === 'member') {
 			$vars = $this->getMemberScheduleVars($vars);
 		} else {

@@ -59,7 +59,7 @@ class CalendarsAppController extends AppController {
 		}
 
 		$queryFrameId = Hash::get($this->request->query, 'frame_id');
-		if (Current::read('Frame.id') == $queryFrameId) {
+		if (! $queryFrameId || Current::read('Frame.id') == $queryFrameId) {
 			return Hash::get($this->request->query, $paramName);
 		}
 		return false;
