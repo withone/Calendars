@@ -220,7 +220,11 @@
 .calendar_event_target_year {
 	margin-bottom: 0px;
 }
-/* 年月移動DateTimePickerInputのCSS 隠れて見えないようにしている */
+.calendar_event_target_title {
+	font-size: 26px !important;
+	margin: 0px !important;
+}
+	/* 年月移動DateTimePickerInputのCSS 隠れて見えないようにしている */
 .calendar-datetimepicker-hide-input {
 	margin: 0;
 	width: 0;
@@ -276,10 +280,10 @@
 .calendar-weekly-col-day-head .calendar-day {
 	font-size: 1.8em;
 	display: inline-block;
-	padding: 0em 0.2em;
+	padding: 0em 0.1em;
 }
 .calendar-weekly-col-day-head .calendar-day small {
-	font-size:70%;
+	font-size:55%;
 }
 .calendar-weekly-col-day-head-bottom {
 	width: 12%;
@@ -336,7 +340,7 @@
 	position:relative !important;
 }
 
-.calendar-weekly-subroom, .calendar-daily-nontimeline-plan, .calendar-schedule-row-title {
+.calendar-weekly-subroom, .calendar-schedule-row-title {
 	margin-left: 10px;
 	padding-bottom: 10px;
 	padding-top: 5px;
@@ -568,11 +572,12 @@ td.calendar-col-day .calendar-out-of-range  .calendar-day {
 }
 
 /* カレンダーの時間 */
-
-.calendar-plan-time {
-	margin: 1px 5px 1px 5px;
+p.calendar-plan-time {
 	font-weight: normal;
+	margin: 1px 0px 1px 0px;
 	float: left;
+	max-width:100%;
+	word-wrap: break-word;
 }
 
 /* カレンダーのスペース名 */
@@ -586,10 +591,10 @@ td.calendar-col-day .calendar-out-of-range  .calendar-day {
 
 /* カレンダーのタイトル */
 .calendar-plan-tittle {
-	margin: 0px;
+	margin: 0px !important;
 	padding-bottom:4px;
 	clear: left;
-	font-size: 1.07em;
+	font-size: 1.07em !important;
 	word-break: break-all;
 }
 
@@ -636,15 +641,20 @@ padding: 0;
 }
 
 .calendar-small-title{
-padding:10px;
+	padding:10px;
+}
+.calendar-small-title .h2 {
+	font-size: 22px !important;
+	margin: 0px !important;
 }
 
 /* スケジュール */
 
 .calendar-schedule-membername {
 	font-size: 1.20em;
-	margin: 0px 0px 0px 15px;
-	padding:20px 0 5px 0;
+	margin: 0px;
+	padding:0.5em 0 0.3em 0;
+	word-break: break-all;
 }
 
 .calendar-tablestyle {

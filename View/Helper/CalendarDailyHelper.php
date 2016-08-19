@@ -115,7 +115,7 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
 		if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !==
 			$plan['CalendarEvent']['toTime']) {
 			$html .= '<p class="calendar-daily-nontimeline-plan calendar-plan-time small">';
-			$html .= h($plan['CalendarEvent']['fromTime']) . '-' .
+			$html .= h($plan['CalendarEvent']['fromTime']) . ' - ' .
 				h($plan['CalendarEvent']['toTime']) . '</p>';
 		}
 		$spaceName = $this->getSpaceName(

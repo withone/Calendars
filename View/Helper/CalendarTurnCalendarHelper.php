@@ -112,7 +112,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		$turnNavId = 'CalendarEventTargetYear_' . Current::read('Frame.id');
 
 		$html = '<div><label class="calendar_event_target_year" for="' . $turnNavId . '">';
-		$html .= '<h2 class="' . $textColor . ' calendar-space0">';
+		$html .= '<h2 class="calendar_event_target_title ' . $textColor . ' calendar-space0">';
 		switch($type) {
 			case 'month':
 			case 'week':

@@ -290,7 +290,9 @@ class CalendarMonthlyHelper extends AppHelper {
 		if ($fromTime !== $plan['CalendarEvent']['fromTime'] ||
 			$toTime !== $plan['CalendarEvent']['toTime']) {
 			$html .= '<p class="calendar-plan-time small">';
-			$html .= h($plan['CalendarEvent']['fromTime']) . '-' . h($plan['CalendarEvent']['toTime']);
+			$html .= h($plan['CalendarEvent']['fromTime']) .
+				' - ' . // この両側のブランクに「折り返しはここで」の意味があるから削除しちゃダメよ
+				h($plan['CalendarEvent']['toTime']);
 			$html .= '</p>';
 		}
 		$html .= '<h3 class="calendar-plan-tittle">';

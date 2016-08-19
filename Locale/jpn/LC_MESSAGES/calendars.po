@@ -806,10 +806,10 @@ msgstr  "タイムライン"
 
 #: View/Helper/CalendarTurnCalendarHelper.php:132;145;155
 msgid  "<small>%d/</small> %d"
-msgstr  "<small>%d年</small>%d月"
+msgstr  "<small>%d年</small> %d月"
 
 msgid  "<small>%d/</small>%d/%d<small class=\"%s\">(%s)&nbsp;<br class=\"visible-xs\" />%s</small>"
-msgstr  "<small>%d年</small>%d月%d日<small class=\"%s\">(%s)&nbsp;<br class=\"visible-xs\" />%s</small>"
+msgstr  "<small>%d年</small> %d月%d日<small class=\"%s\">(%s)&nbsp;<br class=\"visible-xs\" />%s</small>"
 
 #: View/Helper/CalendarTurnCalendarHelper.php:182
 msgid  "This month"

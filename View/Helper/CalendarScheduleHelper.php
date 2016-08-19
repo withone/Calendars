@@ -90,11 +90,11 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 				}
 
 				$html .= '<div class="row calendar-tablecontainer" uib-collapse="isCollapsed[' . $idx . ']">';
-				$html .= '<div class="col-xs-12 col-sm-2">';
+				$html .= '<div class="col-xs-12 col-sm-3">';
 				$html .= '<p class="calendar-schedule-membername">';
 				$html .= $this->DisplayUser->handleLink($plan, array('avatar' => false));
 				$html .= '</p></div>';
-				$html .= '<div class="col-xs-12 col-sm-10">';
+				$html .= '<div class="col-xs-12 col-sm-9">';
 				$html .= '<table class="table table-hover calendar-tablestyle"><tbody>';
 			}
 			$prevUser = $plan['TrackableCreator']['handlename'];
@@ -104,7 +104,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan);
 
 			//予定
-			$html .= '<div class="col-xs-12 col-sm-10">';
+			$html .= '<div class="col-xs-12">';
 			$html .= "<div class='calendar-plan-mark {$calendarPlanMark}'>";
 			$html .= '<div>';
 			// ワークフロー（一時保存/承認待ち、など）のマーク
@@ -186,14 +186,14 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan);
 
 			//ユーザー名
-			$htmlPlan .= '<div class="col-xs-12 col-sm-2 col-sm-push-10">';
+			$htmlPlan .= '<div class="col-xs-12 col-sm-3 col-sm-push-9">';
 			$htmlPlan .= '<p class="text-right calendar-schedule-membername">';
 			//$html .= "<span class='text-success'>";
 			$htmlPlan .= $this->DisplayUser->handleLink($plan, array('avatar' => false));
 			$htmlPlan .= '</p></div>';
 
 			//予定
-			$htmlPlan .= '<div class="col-xs-12 col-sm-10 col-sm-pull-2">';
+			$htmlPlan .= '<div class="col-xs-12 col-sm-9 col-sm-pull-3">';
 			$htmlPlan .= "<div class='calendar-plan-mark {$calendarPlanMark}'>";
 			$htmlPlan .= '<div>';
 			// ワークフロー（一時保存/承認待ち、など）のマーク
