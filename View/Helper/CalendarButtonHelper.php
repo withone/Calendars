@@ -103,6 +103,13 @@ class CalendarButtonHelper extends AppHelper {
  * @return string
  */
 	public function getAddButton($vars, $options = null) {
+		// FIXME
+		// フレームIDがないと編集できないため仮処置
+		$frameId = Current::read('Frame.id');
+		if (! $frameId) {
+			return '';
+		}
+
 		// まだ作成可能かどうかの判断フラグが設定されていない場合
 		// まず設定する
 		$frameId = Current::read('Frame.id');
@@ -175,6 +182,13 @@ class CalendarButtonHelper extends AppHelper {
  * @return string 編集ボタンHTML
  */
 	public function getEditButton($vars, $event) {
+		// FIXME
+		// フレームIDがないと編集できないため仮処置
+		$frameId = Current::read('Frame.id');
+		if (! $frameId) {
+			return '';
+		}
+
 		$roomId = $event['CalendarEvent']['room_id'];
 		// それ以外の時
 		$canEdit = CalendarPermissiveRooms::isEditable($roomId);

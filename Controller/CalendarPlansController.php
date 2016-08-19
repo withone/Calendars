@@ -279,6 +279,11 @@ class CalendarPlansController extends CalendarsAppController {
  * @return void
  */
 	public function add() {
+		$frameId = Current::read('Frame.id');
+		if (! $frameId) {
+			$this->setAction('can_not_edit');
+			return;
+		}
 		if ($this->request->is('post')) {
 			$this->_calendarPost();
 		}
@@ -293,6 +298,11 @@ class CalendarPlansController extends CalendarsAppController {
  * @return void
  */
 	public function edit() {
+		$frameId = Current::read('Frame.id');
+		if (! $frameId) {
+			$this->setAction('can_not_edit');
+			return;
+		}
 		if ($this->request->is('post')) {
 			$this->_calendarPost();
 		}
@@ -306,6 +316,17 @@ class CalendarPlansController extends CalendarsAppController {
 		$this->view = 'detail_edit';
 	}
 
+/**
+ * can_not_edit
+ *
+ * カレンダーは現在フレームIDがないと、編集ができないため
+ * フレームID未指定で編集画面へ来てしまった時のエラーメッセージ画面を用意しておく
+ *
+ * @return void
+ */
+	public function can_not_edit() {
+
+	}
 /**
  * _calendarPost
  *
