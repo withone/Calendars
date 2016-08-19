@@ -82,13 +82,17 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  * (現ユーザにおける）カレンダー用役割と権限の取得準備
  *
  * @param Model &$model 実際のモデル名
- * @return array $readableRoomIds(参照可能room一覧), $roleOfRooms(ルームごとでの役割一覧)、$roomInfos(ルームでのルーム管理＋カレンダー権限管理での承認権限有無一覧), $rooms(ルームでの役割別権限一覧)を格納した配列を返す。
+ * @return array $readableRoomIds(参照可能room一覧),
+ *                $roleOfRooms(ルームごとでの役割一覧)、
+ *                $roomInfos(ルームでのルーム管理＋カレンダー権限管理での承認権限有無一覧),
+ *                $rooms(ルームでの役割別権限一覧)を格納した配列を返す。
  * @throws InternalErrorException
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
 	public function prepareCalRoleAndPerm(Model &$model) {
-		if ($this->_calRoleAndPerm !== null) {
-			return $this->_calRoleAndPerm;
+		$frameId = Current::read('Frame.id');
+		if (isset($this->_calRoleAndPerm[$frameId])) {
+			return $this->_calRoleAndPerm[$frameId];
 		}
 		//表示対象（readable）なルームIDの一覧を取得
 		//
@@ -143,13 +147,13 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 		//3. ルーム管理＋カレンダー権限管理での承認権限ありなしを取得
 		$roomInfos = $this->__getRolePerms($roleOfRooms);
 
-		$this->_calRoleAndPerm = array(
+		$this->_calRoleAndPerm[$frameId] = array(
 			'readableRoomIds' => $readableRoomIds,
 			'rooms' => $rooms,
 			'roleOfRooms' => $roleOfRooms,
 			'roomInfos' => $roomInfos,
 		);
-		return $this->_calRoleAndPerm;
+		return $this->_calRoleAndPerm[$frameId];
 	}
 
 /**

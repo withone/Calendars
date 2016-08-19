@@ -124,7 +124,7 @@ class CalendarsController extends CalendarsAppController {
 		$this->_storeRedirectPath($vars);
 
 		$roomPermRoles = $this->CalendarEvent->prepareCalRoleAndPerm();
-		CalendarPermissiveRooms::$roomPermRoles = $roomPermRoles;
+		CalendarPermissiveRooms::setRoomPermRoles($roomPermRoles);
 
 		$ctpName = $this->getCtpAndVars($style, $vars);
 

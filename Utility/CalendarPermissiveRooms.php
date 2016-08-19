@@ -37,6 +37,17 @@ class CalendarPermissiveRooms {
 	public static $backupPermissions = array();
 
 /**
+ * setRoomPermRoles
+ *
+ * ルームパーミッション情報を設定する
+ *
+ * @param $roomPermRoles
+ * @return void
+ */
+	public static function setRoomPermRoles($roomPermRoles) {
+		self::$roomPermRoles = $roomPermRoles;
+	}
+/**
  * getPublishableRoomIdList
  *
  * 発行権限を持つルームIDリストを返す
