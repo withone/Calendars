@@ -62,12 +62,29 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 
 		/*
 		//SHONINMAIL: ここから
+		//前提：CalendarPermmission状況下であること。
 		//新規追加予定の１件目 insertEventData()の直前
 		if (! $isMyPrivateRoom)) { //予定の公開対象が自分のプライベートルーム以外で
-		   if ($planParams['status'] == WorkflowComponent::STATUS_APPROVED) {	//かつ承認依頼の時
-				//CalendarPermmission状況下で、承認依頼メール送信要求をQueueに入れる
-				//なお、insertEventData()失敗した時は、DeQueしないといけない。この場所がいいか要確認
+			if (カレンダー予定の公開対象ルームがルーム管理で「承認あり」の時or
+				カレンダー権限管理で「承認あり」の時) {
+				swithc($planParams['status']) {
+				case 承認依頼:
+					(承認依頼)...タイトルのメールが予定公開対象ルーム承認権限者に飛ぶ
+					break;
+				case 差し戻し:
+					(差し戻し)...タイトルのメールが予定公開対象ルーム承認権限者に飛ぶ
+					break;
+				case 発行済:
+					(承認完了)...タイトルのメールが予定公開対象ルーム承認権限者に飛ぶ
+					()なしタイトルのメールが、予定の
+						公開対象ルーム参加者全員（除く承認権限者）に飛ぶ
+				}
+			} else {
+				if ($planParams['status'] == 発行済) {
+					()なしタイトルのメールが予定の公開対象者全員に、飛ぶ
+				}
 			}
+			//なお、insertEventData()失敗した時は、メールQueからDeQueしないといけない。この場所がいいか要確認
 		}
 		//SHONINMAIL: ここまで
 		*/

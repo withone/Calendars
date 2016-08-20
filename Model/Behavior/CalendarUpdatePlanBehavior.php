@@ -285,12 +285,30 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 
 			/*
 			//SHONINMAIL: ここから
+			//前提：CalendarPermmission状況下であること。
 			//先頭の予定 insertEventData()の直前
 			if (! $isMyPrivateRoom) { //予定の公開対象が自分のプライベートルーム以外で
-				if ($planParams['status'] == WorkflowComponent::STATUS_APPROVED) {  //かつ承認依頼の時
-                   	//CalendarPermmission状況下で、承認依頼メール送信要求をQueueに入れる
-                   	//なお、insertEventData()失敗した時は、DeQueしないといけない。この場所がいいか要確認
+				if (カレンダー予定公開対象ルームが、ルーム管理で「承認あり」の時
+					or カレンダー権限管理で「承認あり」の時) {
+					swithc($planParams['status']) {
+					case 承認依頼:
+						(承認依頼)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
+						break;
+					case 差し戻し:
+						(差し戻し)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
+						break;
+					case 発行済:
+						(承認完了)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
+						()なしタイトルメールが
+							予定の公開対象ルーム参加者全員（除く承認権限者）に飛ぶ
+					}
+				} else {
+					if ($planParams['status'] == 発行済) {
+						()なしタイトルのメールが予定の公開対象者全員に、飛ぶ
+					}
 				}
+				//なお、insertEventData()失敗した時は、メールQueからDeQueしないといけない。
+				//この場所がいいか要確認
            	}
 			//SHONINMAIL: ここまで
 			*/
@@ -427,17 +445,34 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 
 		/*
 		//SHONINMAIL: ここから
+		//前提：CalendarPermmission状況下であること。
 		if ($index == 1) {	//1件目の更新eventだけ承認メールを飛ばすことが有り得る
 			if (! $isMyPrivateRoom) {	//予定の公開対象が自分のプライベートルーム以外で
-				if ($eventData['status'] == WorkflowComponent::STATUS_APPROVED) {	//かつ承認依頼の時
-					//CalendarPermmission状況下で、承認依頼メール送信要求をQueueに入れる
-					//
-					//なお、insertEventData()失敗した時は、DeQueしないといけない。この場所がいいか要確認
-					//
-					//また、更新前のstatusが承認依頼の時（つまり、承認依頼＝＞承認依頼）の時でも、
-					//なんらかの値が変わって更新したのだから、承認権限者に再度承認依頼メールが飛ぶのは
-					//正しいと考える、ので、１世代前のstatusとの比較は、しない。
+				if (カレンダー予定公開対象ルームが、ルーム管理で「承認あり」の時
+					or カレンダー権限管理で「承認あり」の時) {
+					swithc($eventData['status']) {
+					case 承認依頼:
+						(承認依頼)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
+						break;
+					case 差し戻し:
+						(差し戻し)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
+						break;
+					case 発行済:
+						(承認完了)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
+						()なしタイトルメールが
+							予定の公開対象ルーム参加者全員（除く承認権限者）に飛ぶ
+					}
+				} else {
+					if ($eventData['status'] == 発行済) {
+						()なしタイトルのメールが予定の公開対象者全員に、飛ぶ
+					}
 				}
+				//なお、insertEventData()失敗した時は、メールQueからDeQueしないといけない。
+				//この場所がいいか要確認
+				//
+				//また、更新前のstatusが承認依頼の時（つまり、承認依頼＝＞承認依頼）の時でも、
+				//なんらかの値が変わって更新したのだから、承認権限者に再度承認依頼メールが飛ぶのは
+				//正しいと考える、ので、１世代前のstatusとの比較は、しない。
 			}
 		}
 		//SHONINMAIL: ここまで
@@ -592,12 +627,30 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 
 			/*
 			//SHONINMAIL: ここから
+			//前提：CalendarPermmission状況下であること。
 			//先頭の予定 insertEventData()の直前
 			if (! $isMyPrivateRoom) {	//予定の公開対象が自分のプライベートルーム以外で
-				if ($planParams['status'] == WorkflowComponent::STATUS_APPROVED) {  //かつ承認依頼の時
-                   	//CalendarPermmission状況下で、承認依頼メール送信要求をQueueに入れる
-                   	//なお、insertEventData()失敗した時は、DeQueしないといけない。この場所がいいか要確認
+				if (カレンダー予定公開対象ルームが、ルーム管理で「承認あり」の時
+					or カレンダー権限管理で「承認あり」の時) {
+					swithc($planParams['status']) {
+					case 承認依頼:
+						(承認依頼)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
+						break;
+					case 差し戻し:
+						(差し戻し)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
+						break;
+					case 発行済:
+						(承認完了)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
+						()なしタイトルメールが
+							予定の公開対象ルーム参加者全員（除く承認権限者）に飛ぶ
+					}
+				} else {
+					if ($planParams['status'] == 発行済) {
+						()なしタイトルのメールが予定の公開対象者全員に、飛ぶ
+					}
 				}
+				//なお、insertEventData()失敗した時は、メールQueからDeQueしないといけない。
+				//この場所がいいか要確認
            	}
 			//SHONINMAIL: ここまで
 			*/
