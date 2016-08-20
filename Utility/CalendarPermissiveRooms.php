@@ -41,7 +41,7 @@ class CalendarPermissiveRooms {
  *
  * ルームパーミッション情報を設定する
  *
- * @param $roomPermRoles
+ * @param array $roomPermRoles roomPermRoles
  * @return void
  */
 	public static function setRoomPermRoles($roomPermRoles) {

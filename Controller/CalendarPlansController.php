@@ -325,8 +325,9 @@ class CalendarPlansController extends CalendarsAppController {
  * @return void
  */
 	public function can_not_edit() {
-
+		//実装中
 	}
+
 /**
  * _calendarPost
  *

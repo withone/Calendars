@@ -556,7 +556,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 				//CakeLog::debug("DBG: PLAN_ADD case.");
 
 				//$this->insertPlan($planParam);
-				$eventId = $this->insertPlan($planParam);
+				$eventId = $this->insertPlan($planParam, $isMyPrivateRoom);
 			} else {	//PLAN_EDIT
 				//変更処理
 				//CakeLog::debug("DBG: PLAN_MODIFY case.");

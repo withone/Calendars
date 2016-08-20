@@ -90,7 +90,9 @@ class CalendarEditDatetimeHelper extends AppHelper {
 		$dtValue = $dttmObj->format('Y-m-d H-i');
 
 		$addNgInit = $jsFuncName . "('CalendarActionPlan" . Inflector::camelize($fieldName) . "')";
-		$enableTime = $this->request->data['CalendarActionPlan']['enable_time'];
+
+		//$enableTimeは未使用変数なのでコメントアウトした HASHI
+		////$enableTime = $this->request->data['CalendarActionPlan']['enable_time'];
 		//
 		if ($type == 'datetime') {
 			if (strpos($dtValue, ':') !== false) {

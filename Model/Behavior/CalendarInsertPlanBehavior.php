@@ -48,10 +48,11 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
  *
  * @param Model &$model 実際のモデル名
  * @param array $planParams  予定パラメータ
+ * @param bool $isMyPrivateRoom isMyPrivateRoom 予定の公開対象が自分のプライベートルームかどうか
  * @return int 追加成功時 $eventId(calendarEvent.id)を返す。追加失敗時 InternalErrorExceptionを投げる。
  * @throws InternalErrorException
  */
-	public function insertPlan(Model &$model, $planParams) {
+	public function insertPlan(Model &$model, $planParams, $isMyPrivateRoom) {
 		if (!$model->Behaviors->hasMethod('doArrangeData')) {
 			$model->Behaviors->load('Calendars.CalendarCrudPlanCommon');
 		}
@@ -59,6 +60,17 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 
 		$rruleData = $this->insertRruleData($model, $planParams); //rruleDataの１件登録
 
+		/*
+		//SHONINMAIL: ここから
+		//新規追加予定の１件目 insertEventData()の直前
+		if (! $isMyPrivateRoom)) { //予定の公開対象が自分のプライベートルーム以外で
+		   if ($planParams['status'] == WorkflowComponent::STATUS_APPROVED) {	//かつ承認依頼の時
+				//CalendarPermmission状況下で、承認依頼メール送信要求をQueueに入れる
+				//なお、insertEventData()失敗した時は、DeQueしないといけない。この場所がいいか要確認
+			}
+		}
+		//SHONINMAIL: ここまで
+		*/
 		$eventData = $this->insertEventData($model, $planParams, $rruleData);	//eventDataの１件登録
 		if (!isset($eventData['CalendarEvent']['id'])) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));

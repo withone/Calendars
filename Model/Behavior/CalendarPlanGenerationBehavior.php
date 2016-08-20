@@ -247,6 +247,14 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 		//セットするようにした。
 		$model->CalendarEvent->prepareLatestCreatedForIns($eventData, $createdUserWhenUpd);
 
+		/*
+		//SHONINMAIL: ここから
+		//__copyEventData()での、以下CalendarEvent->save()では、
+		//承認依頼要求のキューイングをさせてはいけない。メール管理のBehavior発動を抑止する必要あり。
+	 	//save前にメール管理Behaviorの unloadが必要。
+		//SHONINMAIL: ここまで
+		*/
+
 		//子もsave（）で返ってくる。
 		$eventData = $model->CalendarEvent->save($eventData, false); //aaaaaaaaaaaaa
 		if (!$eventData) { //保存のみ
@@ -259,6 +267,14 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 
 		// 各種Behavior終わったら戻す FUJI
 		$model->CalendarEvent->Behaviors->load('Workflow.WorkflowComment');
+
+		/*
+		//SHONINMAIL: ここから
+		//__copyEventData()での、以下CalendarEvent->save()後では、
+		//メール管理のBehavior発動を復活する必要あり。
+	 	//save後にメール管理Behaviorの loadが必要。
+		//SHONINMAIL: ここまで
+		*/
 
 		$newEventId = $newEventKey = null;
 		if ($setNewIdAndKey) {

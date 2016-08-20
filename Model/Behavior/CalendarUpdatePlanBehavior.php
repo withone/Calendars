@@ -100,14 +100,14 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		//「全更新」、「指定以降更新」、「この予定のみ更新or元予定に繰返しなし」
 		if ($editRrule === self::CALENDAR_PLAN_EDIT_ALL) {
 			//「この予定ふくめ全て更新」
-			$isArray = array($isOriginRepeat, $isTimeMod, $isRepeatMod);
+			$isArray = array($isOriginRepeat, $isTimeMod, $isRepeatMod, $isMyPrivateRoom);
 			$eventId = $this->updatePlanAll($model, $planParams, $rruleData, $eventData,
 				$newPlan, $isArray, $status, $editRrule, $createdUserWhenUpd);
 			return $eventId;	//復帰
 
 		} elseif ($editRrule === self::CALENDAR_PLAN_EDIT_AFTER) {
 			//「この予定以降を更新」
-			$isArray = array($isOriginRepeat, $isTimeMod, $isRepeatMod);
+			$isArray = array($isOriginRepeat, $isTimeMod, $isRepeatMod, $isMyPrivateRoom);
 			$eventId = $this->updatePlanByAfter(
 				$model, $planParams, $rruleData, $eventData, $newPlan, $isArray,
 				$status, $editRrule, $createdUserWhenUpd);
@@ -145,9 +145,14 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 
 			//選択したeventデータを更新 (a). keyは踏襲されている。
 			//
+
 			$this->setEventData($planParams, $rruleData, $eventData);	//eventDataに値セット
+
+			//SHONINMAIL: updateDtstarData()内でケースバイケースで承認依頼メールを出すこと。
+
+			$isArrays = array($isOriginRepeat, $isTimeMod, $isRepeatMod, $isMyPrivateRoom);
 			$eventData = $this->updateDtstartData($model, $planParams, $rruleData, $eventData,
-				$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule, $createdUserWhenUpd);
+				$isArrays, 1, $editRrule, $createdUserWhenUpd);
 			$eventId = $eventData['CalendarEvent']['id'];
 
 			//「この予定のみ更新or元予定に繰返しなし」
@@ -217,7 +222,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @param array $rruleData rruleData
  * @param array $eventData eventData(編集画面のevent)
  * @param array $newPlan 新世代予定データ
- * @param array $isArray ($isOriginRepeat, $isTimeMod, $isRepeatMod)をまとめた配列
+ * @param array $isArray ($isOriginRepeat, $isTimeMod, $isRepeatMod, $isMyPrivateRoom)をまとめた配列
  * @param string $status status(Workflowステータス)
  * @param int $editRrule editRrule
  * @param int $createdUserWhenUpd createdUserWhenUpd
@@ -230,6 +235,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		$isOriginRepeat = $isArray[0];
 		$isTimeMod = $isArray[1];
 		$isRepeatMod = $isArray[2];
+		$isMyPrivateRoom = $isArray[3];
 
 		if (!(isset($model->CalendarRrule))) {
 			$model->loadModels([
@@ -276,6 +282,19 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			if (!$model->Behaviors->hasMethod('insertEventData')) {
 				$model->Behaviors->load('Calendars.CalendarInsertPlan');
 			}
+
+			/*
+			//SHONINMAIL: ここから
+			//先頭の予定 insertEventData()の直前
+			if (! $isMyPrivateRoom) { //予定の公開対象が自分のプライベートルーム以外で
+				if ($planParams['status'] == WorkflowComponent::STATUS_APPROVED) {  //かつ承認依頼の時
+                   	//CalendarPermmission状況下で、承認依頼メール送信要求をQueueに入れる
+                   	//なお、insertEventData()失敗した時は、DeQueしないといけない。この場所がいいか要確認
+				}
+           	}
+			//SHONINMAIL: ここまで
+			*/
+
 			//先頭のeventDataの１件登録
 			$eventData = $model->insertEventData($planParams, $rruleData, $createdUserWhenUpd);
 			if (!isset($eventData['CalendarEvent']['id'])) {
@@ -301,7 +320,9 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			//書き換え後のデータは、以下の全書き換えの雛形eventとする。
 			//
 			$this->setEventData($planParams, $rruleData, $eventData);
+			$index = 0;
 			foreach ($newPlan['CalendarEvent'] as $fields) {
+				++$index;
 				$event = array();
 				$event['CalendarEvent'] = $fields;	//$eventは元のeventを指す。
 				$eventDataForAllUpd = $this->__getEventDataForUpdateAllOrAfter($event,
@@ -311,9 +332,12 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 					$eventId = $eventDataForAllUpd['CalendarEvent']['id'];
 				}
 
+				//SHONINMAIL: updateDtstarData()内でケースバイケースで承認依頼メールを出すこと。
+
+				$isArrays = array($isOriginRepeat, $isTimeMod, $isRepeatMod, $isMyPrivateRoom);
 				$eventDataForAllUpd = $this->updateDtstartData(
 					$model, $planParams, $rruleData, $eventDataForAllUpd,
-					$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule, $createdUserWhenUpd);
+					$isArrays, $index, $editRrule, $createdUserWhenUpd);
 			}
 		}
 
@@ -327,16 +351,20 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @param array $planParams 予定パラメータ
  * @param array $rruleData rruleデータ
  * @param array $eventData eventデータ
- * @param bool $isOriginRepeat isOriginRepeat
- * @param bool $isTimeMod isTimeMod
- * @param bool $isRepeatMod isRepeatMod
+ * @param array $isArrays isArrays (isOriginRepeat,isTimeMod,isRepeatMod,isMyPrivateRoom)を格納した配列
+ * @param int $index index 何回目のupdateのindex(1はじまり)
  * @param string $editRrule editRrule
  * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return array $eventData 変更後の$eventDataを返す
  * @throws InternalErrorException
  */
 	public function updateDtstartData(Model &$model, $planParams, $rruleData, $eventData,
-			$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule, $createdUserWhenUpd = null) {
+			$isArrays, $index, $editRrule, $createdUserWhenUpd = null) {
+		//bool $isOriginRepeat isOriginRepeat
+		//bool $isTimeMod isTimeMod
+		//bool $isRepeatMod isRepeatMod
+		list($isOriginRepeat, $isTimeMod, $isRepeatMod, $isMyPrivateRoom) = $isArrays;
+
 		if (!(isset($model->CalendarEvent) && is_callable($model->CalendarEvent->create))) {
 			$model->loadModels([
 				'CalendarEvent' => 'Calendars.CalendarEvent',
@@ -397,6 +425,24 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		//is_active調整処理を行う。（eventDataの値が一部変更されます）
 		$model->CalendarEvent->prepareActiveForUpd($eventData);
 
+		/*
+		//SHONINMAIL: ここから
+		if ($index == 1) {	//1件目の更新eventだけ承認メールを飛ばすことが有り得る
+			if (! $isMyPrivateRoom) {	//予定の公開対象が自分のプライベートルーム以外で
+				if ($eventData['status'] == WorkflowComponent::STATUS_APPROVED) {	//かつ承認依頼の時
+					//CalendarPermmission状況下で、承認依頼メール送信要求をQueueに入れる
+					//
+					//なお、insertEventData()失敗した時は、DeQueしないといけない。この場所がいいか要確認
+					//
+					//また、更新前のstatusが承認依頼の時（つまり、承認依頼＝＞承認依頼）の時でも、
+					//なんらかの値が変わって更新したのだから、承認権限者に再度承認依頼メールが飛ぶのは
+					//正しいと考える、ので、１世代前のstatusとの比較は、しない。
+				}
+			}
+		}
+		//SHONINMAIL: ここまで
+		*/
+
 		if (!$model->CalendarEvent->save($eventData,
 			array(
 				'validate' => false,
@@ -449,7 +495,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @param array $rruleData rruleData
  * @param array $eventData eventData
  * @param array $newPlan 新世代予定データ
- * @param array $isArray ($isOriginRepeat, $isTimeMod, $isRepeatMod)をまとめた配列
+ * @param array $isArray ($isOriginRepeat, $isTimeMod, $isRepeatMod, $isMyPrivateRoom)をまとめた配列
  * @param string $status status(Workflowステータス)
  * @param int $editRrule editRrule
  * @param int $createdUserWhenUpd createdUserWhenUpd
@@ -465,6 +511,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		$isOriginRepeat = $isArray[0];
 		$isTimeMod = $isArray[1];
 		$isRepeatMod = $isArray[2];
+		$isMyPrivateRoom = $isArray[3];
 
 		if (!(isset($model->CalendarRrule))) {
 			$model->loadModels([
@@ -543,6 +590,18 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			//rruleDataの新規１件登録
 			$rruleData = $model->insertRruleData($planParams, $newIcalUid, $createdUserWhenUpd);
 
+			/*
+			//SHONINMAIL: ここから
+			//先頭の予定 insertEventData()の直前
+			if (! $isMyPrivateRoom) {	//予定の公開対象が自分のプライベートルーム以外で
+				if ($planParams['status'] == WorkflowComponent::STATUS_APPROVED) {  //かつ承認依頼の時
+                   	//CalendarPermmission状況下で、承認依頼メール送信要求をQueueに入れる
+                   	//なお、insertEventData()失敗した時は、DeQueしないといけない。この場所がいいか要確認
+				}
+           	}
+			//SHONINMAIL: ここまで
+			*/
+
 			//先頭のeventDataの１件登録
 			$eventData = $model->insertEventData($planParams, $rruleData, $createdUserWhenUpd);
 			if (!isset($eventData['CalendarEvent']['id'])) {
@@ -577,7 +636,9 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			$eventsAfterBase = Hash::extract(
 				$newPlan['CalendarEvent'], '{n}[dtstart>=' . $baseDtstart . ']');
 
+			$index = 0;
 			foreach ($eventsAfterBase as $fields) {
+				++$index;
 				$event = array();
 				$event['CalendarEvent'] = $fields;	//$eventは元のeventを指す。
 				$eventDataForAfterUpd = $this->__getEventDataForUpdateAllOrAfter($event,
@@ -587,9 +648,12 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 					$eventId = $eventDataForAfterUpd['CalendarEvent']['id'];
 				}
 
+				//SHONINMAIL: updateDtstarData()内でケースバイケースで承認依頼メールを出すこと。
+
+				$isArrays = array($isOriginRepeat, $isTimeMod, $isRepeatMod, $isMyPrivateRoom);
 				$eventDataForAfterUpd = $this->updateDtstartData(
 					$model, $planParams, $rruleData, $eventDataForAfterUpd,
-					$isOriginRepeat, $isTimeMod, $isRepeatMod, $editRrule, $createdUserWhenUpd);
+					$isArrays, $index, $editRrule, $createdUserWhenUpd);
 			}
 		}
 

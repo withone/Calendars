@@ -469,7 +469,8 @@ class CalendarEvent extends CalendarsAppModel {
  * _setSharedFlag
  *
  * 共有した、共有された予定である場合は、フラグを設定しておく
- * @param &$event イベント情報
+ *
+ * @param array &$event イベント情報
  * @return void
  */
 	protected function _setSharedFlag(&$event) {

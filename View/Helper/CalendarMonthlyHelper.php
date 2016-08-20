@@ -15,6 +15,7 @@ App::uses('WorkflowComponent', 'Workflow.Controller/Component');
  *
  * @author Allcreator Co., Ltd. <info@allcreator.net>
  * @package NetCommons\Calendars\View\Helper
+ * @SuppressWarnings(PHPMD)
  */
 class CalendarMonthlyHelper extends AppHelper {
 
@@ -291,7 +292,9 @@ class CalendarMonthlyHelper extends AppHelper {
 			$toTime !== $plan['CalendarEvent']['toTime']) {
 			$html .= '<p class="calendar-plan-time small">';
 			$html .= h($plan['CalendarEvent']['fromTime']) .
-				' - ' . // この両側のブランクに「折り返しはここで」の意味があるから削除しちゃダメよ
+				' - ' .
+				// 上の両側のブランクに「折り返しはここで」の
+				//意味があるから削除しちゃダメよ
 				h($plan['CalendarEvent']['toTime']);
 			$html .= '</p>';
 		}
