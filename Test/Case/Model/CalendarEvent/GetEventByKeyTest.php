@@ -128,12 +128,18 @@ class CalendarEventGetEventByKeyTest extends WorkflowGetTest {
 		$expectNotExist = array();
 		$expectExist = (new CalendarEventFixture())->records[0];
 		$expectExist['is_published'] = true;
+		$expectExist2 = Hash::merge($expectExist,
+			array('pseudo_friend_share_plan' => true,  'is_share' => false));
+		$expectExist3 = Hash::merge($expectExist,
+			array('pseudo_friend_share_plan' => false,  'is_share' => false));
+		$expectExist4 = Hash::merge($expectExist,
+			array('pseudo_friend_share_plan' => false,  'is_share' => true));
 		return array(
 			array('non', 1, $expectNotExist), //存在しない
 			array('', 1, $expectNotExist), //存在しない
-			array('calendarplan1', 1, $expectExist), //存在する(userId = 1)
-			array('calendarplan1', 0, $expectExist), //存在する(userId = 0)
-			array('calendarplan1', 2, $expectExist), //存在する(userId = 2)
+			array('calendarplan1', 1, $expectExist2), //存在する(userId = 1)
+			array('calendarplan1', 0, $expectExist3), //存在する(userId = 0)
+			array('calendarplan1', 2, $expectExist4), //存在する(userId = 2)
 
 		);
 	}

@@ -127,13 +127,19 @@ class CalendarEventGetEventByIdTest extends WorkflowGetTest {
 	public function dataProviderGet() {
 		$expectNotExist = array();
 		$expectExist = (new CalendarEventFixture())->records[0];
+		$expectExist2 = Hash::merge($expectExist,
+			array('pseudo_friend_share_plan' => true,  'is_share' => false));
+		$expectExist3 = Hash::merge($expectExist,
+			array('pseudo_friend_share_plan' => false,  'is_share' => false));
+		$expectExist4 = Hash::merge($expectExist,
+			array('pseudo_friend_share_plan' => false,  'is_share' => true));
 
 		return array(
 			array(999, 1, $expectNotExist), //存在しない
 			array(0, 1, $expectNotExist), //存在しない
-			array(1, 1, $expectExist), //存在する(userId = 1)
-			array(1, 0, $expectExist), //存在する(userId = 0)
-			array(1, 2, $expectExist), //存在する(userId = 0)
+			array(1, 1, $expectExist2), //存在する(userId = 1)
+			array(1, 0, $expectExist3), //存在する(userId = 0)
+			array(1, 2, $expectExist4), //存在する(userId = 0)
 
 		);
 	}
