@@ -334,6 +334,15 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		$createdUserWhenUpd = 1;
 		$myself = 1;
 
+		//モック設定
+		if ($data['CalendarActionPlan']['title'] == 'testdata7') {
+			$this->setExpectedException('InternalErrorException');
+			$this->_mockForReturnFalse($model, 'Calendars.CalendarRrule', 'find', 1);
+		}
+
+		//CalenarActionPlanモデルの繰返し回数超過フラグをoffにしておく。
+		$this->$model->isOverMaxRruleIndex = false;
+
 		//テスト実行
 		$result = $this->$model->$method($data, $procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod, $createdUserWhenUpd, $myself);
 		//print_r($this->$model->validationErrors);

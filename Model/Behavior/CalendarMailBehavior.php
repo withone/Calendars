@@ -36,6 +36,10 @@ class CalendarMailBehavior extends CalendarAppBehavior {
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 	public function sendWorkflowAndNoticeMail(Model &$model, $eventId, $isMyPrivateRoom) {
+		// modelにMailQueueBehaviorがロードされてなかったらすぐリターンする
+		if (!$model->Behaviors->hasMethod('saveQueue')) {
+			return;
+		}
 		if (!isset($model->CalendarEvent)) {
 			$model->loadModels(['CalendarEvent' => 'Calendars.CalendarEvent']);
 		}
