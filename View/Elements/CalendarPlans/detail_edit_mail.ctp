@@ -16,18 +16,23 @@
 		$checkMailStyle = "style='display: none;'";
 	}
 ?>
+<?php
+echo $this->NetCommonsForm->hidden('CalendarActionPlan.enable_email', array('value' => false));
+echo $this->NetCommonsForm->hidden('CalendarActionPlan.email_send_timing', array('value' => 5));
+?>
+<!--
 <div class="form-group" data-calendar-name="checkMail" <?php echo $checkMailStyle; ?>>
 	<div class="col-xs-12">
 		<br />
 		<?php
-			echo $this->NetCommonsForm->label('', __d('calendars', 'Notify by e-mail'));
+			/*echo $this->NetCommonsForm->label('', __d('calendars', 'Notify by e-mail'));*/
 		?>
 		<div class="form-inline">
-			<?php
+			<?php /*
 				echo $this->NetCommonsForm->checkbox('CalendarActionPlan.enable_email', array(
 					'checked' => ($this->request->data['CalendarActionPlan']['enable_email']) ? true : false,
 					'label' => __d('calendars', 'e-mail notification before event'),
-				));
+				));*/
 			?>
 			<?php
 				$options = array(
@@ -47,14 +52,15 @@
 					'8540' => __d('calendars', 'Event 1 week ago'),
 				);
 			?>
-			<?php
+			<?php /*
 				echo $this->NetCommonsForm->select('CalendarActionPlan.email_send_timing', $options, array(
 					'value' => $this->request->data['CalendarActionPlan']['email_send_timing'], //valueは初期値
 					'class' => 'form-control',
 					'empty' => false,
 					'required' => true,
-				));
+				)); */
 			?>
-		</div><!-- form-inline おわり -->
+		</div>
 	</div>
-</div><!-- form-groupおわり-->
+</div>
+-->
