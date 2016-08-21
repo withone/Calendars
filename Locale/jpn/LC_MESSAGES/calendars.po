@@ -1150,3 +1150,6 @@ msgstr "不明なエラーが発生しました。"
 
 msgid "Registration and editing of the plan please go from correctly installed in the calendar on the screen ."
 msgstr "申し訳ありませんが、予定の登録・編集は画面に正しく設置されたカレンダーから行ってください。"
+
+msgid "nothing"
+msgstr "なし"

@@ -76,26 +76,15 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		//CalendarEventの対象データ取得
 		$this->loadEventAndRruleModels($model);
 
-		//$results = $this->getCalendarEventAndRrule($model, $eventId, $editRrule);
-		//if (empty($results)) {
-		//	return $eventId;	//対象が無い場合、成功したとみなし、$eventIdを返す。
-		//}
-
 		//対象となるデータを$eventData、$rruleDataそれぞれにセット
 		$eventData = $rruleData = array();
 
 		list($eventData, $rruleData) = $this->setEventDataAndRruleData($model, $newPlan);
 
-		////$rruleKey = $rruleData['CalendarRrule']['key'];
-
 		//timezone_offsetがなければ、calendar_eventテーブルからセットする。
 		if (!isset($planParams['timezone_offset'])) {
 			$planParams['timezone_offset'] = $eventData['CalendarEvent']['timezone_offset'];
 		}
-
-		//CakeLog::debug("DBG: IN Update(). planParams[" . print_r($planParams, true) .
-		//	"] eventData[" . print_r($eventData, true) .
-		//	"] rruleData[". print_r($rruleData, true) . "]");
 
 		//「全更新」、「指定以降更新」、「この予定のみ更新or元予定に繰返しなし」
 		if ($editRrule === self::CALENDAR_PLAN_EDIT_ALL) {
@@ -147,8 +136,6 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			//
 
 			$this->setEventData($planParams, $rruleData, $eventData);	//eventDataに値セット
-
-			//SHONINMAIL: updateDtstarData()内でケースバイケースで承認依頼メールを出すこと。
 
 			$isArrays = array($isOriginRepeat, $isTimeMod, $isRepeatMod, $isMyPrivateRoom);
 			$eventData = $this->updateDtstartData($model, $planParams, $rruleData, $eventData,
@@ -283,36 +270,6 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 				$model->Behaviors->load('Calendars.CalendarInsertPlan');
 			}
 
-			/*
-			//SHONINMAIL: ここから
-			//前提：CalendarPermmission状況下であること。
-			//先頭の予定 insertEventData()の直前
-			if (! $isMyPrivateRoom) { //予定の公開対象が自分のプライベートルーム以外で
-				if (カレンダー予定公開対象ルームが、ルーム管理で「承認あり」の時
-					or カレンダー権限管理で「承認あり」の時) {
-					swithc($planParams['status']) {
-					case 承認依頼:
-						(承認依頼)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
-						break;
-					case 差し戻し:
-						(差し戻し)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
-						break;
-					case 発行済:
-						(承認完了)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
-						()なしタイトルメールが
-							予定の公開対象ルーム参加者全員（除く承認権限者）に飛ぶ
-					}
-				} else {
-					if ($planParams['status'] == 発行済) {
-						()なしタイトルのメールが予定の公開対象者全員に、飛ぶ
-					}
-				}
-				//なお、insertEventData()失敗した時は、メールQueからDeQueしないといけない。
-				//この場所がいいか要確認
-           	}
-			//SHONINMAIL: ここまで
-			*/
-
 			//先頭のeventDataの１件登録
 			$eventData = $model->insertEventData($planParams, $rruleData, $createdUserWhenUpd);
 			if (!isset($eventData['CalendarEvent']['id'])) {
@@ -349,8 +306,6 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 					//繰返しの最初のeventIdを記録しておく。
 					$eventId = $eventDataForAllUpd['CalendarEvent']['id'];
 				}
-
-				//SHONINMAIL: updateDtstarData()内でケースバイケースで承認依頼メールを出すこと。
 
 				$isArrays = array($isOriginRepeat, $isTimeMod, $isRepeatMod, $isMyPrivateRoom);
 				$eventDataForAllUpd = $this->updateDtstartData(
@@ -442,41 +397,6 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		//よって、「ここ」UPDATEsaveで、prepareActiveForUpdを事前実行し、INSERTsaveでdelayさせた
 		//is_active調整処理を行う。（eventDataの値が一部変更されます）
 		$model->CalendarEvent->prepareActiveForUpd($eventData);
-
-		/*
-		//SHONINMAIL: ここから
-		//前提：CalendarPermmission状況下であること。
-		if ($index == 1) {	//1件目の更新eventだけ承認メールを飛ばすことが有り得る
-			if (! $isMyPrivateRoom) {	//予定の公開対象が自分のプライベートルーム以外で
-				if (カレンダー予定公開対象ルームが、ルーム管理で「承認あり」の時
-					or カレンダー権限管理で「承認あり」の時) {
-					swithc($eventData['status']) {
-					case 承認依頼:
-						(承認依頼)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
-						break;
-					case 差し戻し:
-						(差し戻し)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
-						break;
-					case 発行済:
-						(承認完了)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
-						()なしタイトルメールが
-							予定の公開対象ルーム参加者全員（除く承認権限者）に飛ぶ
-					}
-				} else {
-					if ($eventData['status'] == 発行済) {
-						()なしタイトルのメールが予定の公開対象者全員に、飛ぶ
-					}
-				}
-				//なお、insertEventData()失敗した時は、メールQueからDeQueしないといけない。
-				//この場所がいいか要確認
-				//
-				//また、更新前のstatusが承認依頼の時（つまり、承認依頼＝＞承認依頼）の時でも、
-				//なんらかの値が変わって更新したのだから、承認権限者に再度承認依頼メールが飛ぶのは
-				//正しいと考える、ので、１世代前のstatusとの比較は、しない。
-			}
-		}
-		//SHONINMAIL: ここまで
-		*/
 
 		if (!$model->CalendarEvent->save($eventData,
 			array(
@@ -625,36 +545,6 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			//rruleDataの新規１件登録
 			$rruleData = $model->insertRruleData($planParams, $newIcalUid, $createdUserWhenUpd);
 
-			/*
-			//SHONINMAIL: ここから
-			//前提：CalendarPermmission状況下であること。
-			//先頭の予定 insertEventData()の直前
-			if (! $isMyPrivateRoom) {	//予定の公開対象が自分のプライベートルーム以外で
-				if (カレンダー予定公開対象ルームが、ルーム管理で「承認あり」の時
-					or カレンダー権限管理で「承認あり」の時) {
-					swithc($planParams['status']) {
-					case 承認依頼:
-						(承認依頼)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
-						break;
-					case 差し戻し:
-						(差し戻し)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
-						break;
-					case 発行済:
-						(承認完了)...タイトルメールが予定公開対象ルーム承認権限者に飛ぶ
-						()なしタイトルメールが
-							予定の公開対象ルーム参加者全員（除く承認権限者）に飛ぶ
-					}
-				} else {
-					if ($planParams['status'] == 発行済) {
-						()なしタイトルのメールが予定の公開対象者全員に、飛ぶ
-					}
-				}
-				//なお、insertEventData()失敗した時は、メールQueからDeQueしないといけない。
-				//この場所がいいか要確認
-           	}
-			//SHONINMAIL: ここまで
-			*/
-
 			//先頭のeventDataの１件登録
 			$eventData = $model->insertEventData($planParams, $rruleData, $createdUserWhenUpd);
 			if (!isset($eventData['CalendarEvent']['id'])) {
@@ -700,8 +590,6 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 					//繰返しの最初のeventIdを記録しておく。
 					$eventId = $eventDataForAfterUpd['CalendarEvent']['id'];
 				}
-
-				//SHONINMAIL: updateDtstarData()内でケースバイケースで承認依頼メールを出すこと。
 
 				$isArrays = array($isOriginRepeat, $isTimeMod, $isRepeatMod, $isMyPrivateRoom);
 				$eventDataForAfterUpd = $this->updateDtstartData(

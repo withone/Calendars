@@ -56,6 +56,20 @@ class CalendarActionPlan extends CalendarsAppModel {
 		'Calendars.CalendarPlanValidate',	//予定バリデーション専用
 		////'Calendars.CalendarRruleHandle',	//concatRrule()など
 		'Calendars.CalendarPlanGeneration',	//元予定の新世代予定生成関連
+		// 自動でメールキューの登録, 削除。ワークフロー利用時はWorkflow.Workflowより下に記述する
+		'Mails.MailQueue' => array(
+			'embedTags' => array(
+				'X-SUBJECT' => 'CalendarActionPlan.title',
+				'X-LOCATION' => 'CalendarActionPlan.location',
+				'X-CONTACT' => 'CalendarActionPlan.contact',
+				'X-URL' => array(
+					'controller' => 'calendar_plans'
+				)
+			),
+			'workflowType' => 'workflow',
+		),
+		'Mails.MailQueueDelete',
+		'Calendars.CalendarMail',
 	);
 	// @codingStandardsIgnoreStart
 	// $_schemaはcakePHP2の予約語だが、宣言するとphpcsが警告を出すので抑止する。
@@ -525,6 +539,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		// 設定画面を表示する前にこのルームのアンケートブロックがあるか確認
 		// 万が一、まだ存在しない場合には作成しておく
 		$this->Calendar->afterFrameSave(Current::read());
+
 		$this->begin();
 		$eventId = 0;
 		$this->aditionalData = $data['WorkflowComment'];
@@ -585,6 +600,9 @@ class CalendarActionPlan extends CalendarsAppModel {
 				$this->rollback();
 				return false;
 			}
+
+			// 承認メール、公開通知メールの送信
+			$this->sendWorkflowAndNoticeMail($eventId, $isMyPrivateRoom);
 
 			$this->_enqueueEmail($data);
 

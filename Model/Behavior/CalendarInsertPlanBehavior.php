@@ -60,55 +60,11 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 
 		$rruleData = $this->insertRruleData($model, $planParams); //rruleDataの１件登録
 
-		/*
-		//SHONINMAIL: ここから
-		//前提：CalendarPermmission状況下であること。
-		//新規追加予定の１件目 insertEventData()の直前
-		if (! $isMyPrivateRoom)) { //予定の公開対象が自分のプライベートルーム以外で
-			if (カレンダー予定の公開対象ルームがルーム管理で「承認あり」の時or
-				カレンダー権限管理で「承認あり」の時) {
-				swithc($planParams['status']) {
-				case 承認依頼:
-					(承認依頼)...タイトルのメールが予定公開対象ルーム承認権限者に飛ぶ
-					break;
-				case 差し戻し:
-					(差し戻し)...タイトルのメールが予定公開対象ルーム承認権限者に飛ぶ
-					break;
-				case 発行済:
-					(承認完了)...タイトルのメールが予定公開対象ルーム承認権限者に飛ぶ
-					()なしタイトルのメールが、予定の
-						公開対象ルーム参加者全員（除く承認権限者）に飛ぶ
-				}
-			} else {
-				if ($planParams['status'] == 発行済) {
-					()なしタイトルのメールが予定の公開対象者全員に、飛ぶ
-				}
-			}
-			//なお、insertEventData()失敗した時は、メールQueからDeQueしないといけない。この場所がいいか要確認
-		}
-		//SHONINMAIL: ここまで
-		*/
 		$eventData = $this->insertEventData($model, $planParams, $rruleData);	//eventDataの１件登録
 		if (!isset($eventData['CalendarEvent']['id'])) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 		$eventId = $eventData['CalendarEvent']['id'];
-
-		//ShareUserとContentへの登録は、insertEventData()の中に移動した。
-		//if (!$model->Behaviors->hasMethod('insertShareUsers')) {
-		//	$model->Behaviors->load('Calendars.CalendarShareUserEntry');
-		//}
-		////カレンダ共有ユーザ登録
-		//$model->insertShareUsers($planParams['share_users'], $eventId);
-		////注: 他のモデルの組み込みBehaviorをcallする場合、第一引数に$modelの指定はいらない。
-		//
-		////関連コンテンツの登録
-		//if ($eventData['CalendarEventContent']['linked_model'] !== '') {
-		//	if (!(isset($model->CalendarEventContent))) {
-		//		$model->loadModels(['CalendarEventContent' => 'Calendars.CalendarEventContent']);
-		//	}
-		//	$model->CalendarEventContent->saveLinkedData($eventData);
-		//}
 
 		if ($rruleData['CalendarRrule']['rrule'] !== '') {	//Rruleの登録
 			if (!$model->Behaviors->hasMethod('insertRrule')) {
@@ -116,6 +72,7 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 			}
 			$model->insertRrule($planParams, $rruleData, $eventData);
 		}
+
 		return $eventId;
 	}
 
