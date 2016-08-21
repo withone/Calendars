@@ -89,6 +89,7 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 			$model->CalendarActionPlan->getExposeRoomOptions($frameSetting);
 		$readableRoomIds = array_keys($exposeRoomOptions);
 
+		$accessibleRoomIds = $model->getReadableRoomIds();
 
 		////////////////////////////////////////////////////////////////////
 		//カレンダーの予定では、複数の空間・ルームの予定を一度に扱うため
@@ -128,6 +129,7 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 
 		$this->_calRoleAndPerm[$frameId] = array(
 			'readableRoomIds' => $readableRoomIds,
+			'accessibleRoomIds' => $accessibleRoomIds,
 			'roleOfRooms' => $roleOfRooms,
 			'roomInfos' => $roomInfos,
 		);

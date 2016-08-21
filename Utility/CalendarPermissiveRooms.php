@@ -95,9 +95,7 @@ class CalendarPermissiveRooms {
  * @return array
  */
 	public static function getAccessibleRoomIdList() {
-		// 結局roomInfosに入っているルームが参加可能なやつなのよ
-		$rooms = array_keys(self::$roomPermRoles['roomInfos']);
-		return $rooms;
+		return self::$roomPermRoles['accessibleRoomIds'];
 	}
 
 /**
