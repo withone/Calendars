@@ -29,10 +29,10 @@ class CalendarMailBehavior extends CalendarAppBehavior {
  * 承認依頼メールや公開通知メールを送る処理
  * カレンダーは「カレント」のルームIDじゃない情報を作ったりするのでカレントのすり替え処理が必要
  *
- * @param Model $model モデル
+ * @param Model &$model モデル
  * @param int $eventId イベントID（繰り返しの場合は先頭のイベント）
  * @param bool $isMyPrivateRoom （プライベートルームの情報かどうか）
- * @param void
+ * @return void
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 	public function sendWorkflowAndNoticeMail(Model &$model, $eventId, $isMyPrivateRoom) {
@@ -78,7 +78,7 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 /**
  * _setDateTags
  *
- * @param Model $model モデル
+ * @param Model &$model モデル
  * @param array $data 予定データ
  * @return void
  */
@@ -99,7 +99,7 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 /**
  * _setRruleTags
  *
- * @param Model $model モデル
+ * @param Model &$model モデル
  * @param array $data 予定データ
  * @return void
  */
@@ -119,7 +119,7 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 /**
  * _setUrlTags
  *
- * @param Model $model モデル
+ * @param Model &$model モデル
  * @param array $data 予定データ
  * @return void
  */
