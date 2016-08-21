@@ -646,7 +646,19 @@ class CalendarActionPlan extends CalendarsAppModel {
 				$data[$this->alias]['timezone_offset']);
 			$planParam = $this->_setAndMergeDateTime($planParam, $data);
 			$planParam = $this->_setAndMergeRrule($planParam, $data);
-			$planParam['share_users'] = Hash::extract($data, 'GroupsUser.{n}.user_id');
+
+			$shareUsers = Hash::extract($data, 'GroupsUser.{n}.user_id');
+			$myUserId = Current::read('User.id');
+			$newShareUsers = array();
+			foreach ($shareUsers as $user) {
+				if ($user == $myUserId) {
+					CakeLog::info('予定を共有する人に自分自身 user_id[' .
+						$user . ']がいます。自分自身は除外します。');
+					continue;
+				}
+				$newShareUsers[] = $user;
+			}
+			$planParam['share_users'] = $newShareUsers;
 
 			//単純なcopyでＯＫな項目群
 			$fields = array(

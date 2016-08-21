@@ -206,6 +206,7 @@ class CalendarSearchPlanBehavior extends CalendarAppBehavior {
  * @param array $plansB plansB
  * @param array $order ソートパラメータ
  * @return array マージした配列を返す。
+ * @SuppressWarnings(PHPMD)
  */
 	private function __mergePlans($plansA, $plansB, $order) {
 		list($orderModel, $orderField) = explode('.', array_shift($order));
@@ -215,26 +216,58 @@ class CalendarSearchPlanBehavior extends CalendarAppBehavior {
 		while ($planA !== null || $planB !== null) {
 			if ($planA === null) {
 				//plansAは終わった
-				$mergedPlans[] = $planB;
+				if (! $this->__overwriteSameKeyEvent($mergedPlans, $planB)) {
+					$mergedPlans[] = $planB;
+				}
 				$planB = array_shift($plansB);
 				continue;
 			}
+
 			if ($planB === null) {
 				//plansBは終わった
-				$mergedPlans[] = $planA;
+				if (! $this->__overwriteSameKeyEvent($mergedPlans, $planA)) {
+					$mergedPlans[] = $planA;
+				}
 				$planA = array_shift($plansA);
 				continue;
 			}
 
 			if ($planA[$orderModel][$orderField] < $planB[$orderModel][$orderField]) {
-				$mergedPlans[] = $planA;
+				if (! $this->__overwriteSameKeyEvent($mergedPlans, $planA)) {
+					$mergedPlans[] = $planA;
+				}
 				$planA = array_shift($plansA);
 			} else {
-				$mergedPlans[] = $planB;
+				if (! $this->__overwriteSameKeyEvent($mergedPlans, $planB)) {
+					$mergedPlans[] = $planB;
+				}
 				$planB = array_shift($plansB);
 			}
 		}
+
 		return $mergedPlans;
+	}
+
+/**
+ * __overwriteSameKeyEvent
+ *
+ * $mergedPlansの中に、$planと同一キーでid値がより大きいeventがあればplanを上書きする
+ *
+ * @param array &$mergedPlans mergedPlans
+ * @param array $plan plan
+ * @return bool 上書き実行されればtrue。上書き実行されなければfalse。
+ */
+	private function __overwriteSameKeyEvent(&$mergedPlans, $plan) {
+		foreach ($mergedPlans as &$mergedPlan) {
+			if ($mergedPlan['CalendarEvent']['key'] == $plan['CalendarEvent']['key']) {
+				if ($mergedPlan['CalendarEvent']['id'] < $plan['CalendarEvent']['id']) {
+					//key一致で後出のeventのidの方が大きければ上書きして抜ける。
+					$mergedPlan = $plan;
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 /**
