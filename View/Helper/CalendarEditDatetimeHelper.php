@@ -91,8 +91,7 @@ class CalendarEditDatetimeHelper extends AppHelper {
 
 		$addNgInit = $jsFuncName . "('CalendarActionPlan" . Inflector::camelize($fieldName) . "')";
 
-		//$enableTimeは未使用変数なのでコメントアウトした HASHI
-		////$enableTime = $this->request->data['CalendarActionPlan']['enable_time'];
+		$enableTime = $this->request->data['CalendarActionPlan']['enable_time'];
 		//
 		if ($type == 'datetime') {
 			if (strpos($dtValue, ':') !== false) {
@@ -109,8 +108,20 @@ class CalendarEditDatetimeHelper extends AppHelper {
 			}
 			$jsFormat = 'YYYY-MM-DD';
 		}
+		$ngInit = sprintf("%s = '%s'; ", $ngModel, $dtDatetimeVal);
+		if ($type == 'datetime') {
+			if ($enableTime) {
+				$ngInit .= $addNgInit;
+			}
 
-		$ngInit = sprintf("%s = '%s'; ", $ngModel, $dtDatetimeVal) . $addNgInit;
+		} elseif ($type == 'date') {
+			if (! $enableTime) {
+				$ngInit .= $addNgInit;
+			}
+
+		}
+
+
 
 		$pickerOpt = str_replace('"', "'", json_encode(array(
 			'format' => $jsFormat,

@@ -550,9 +550,22 @@ NetCommonsApp.controller('CalendarsDetailEdit',
            }
          }
        };
+       $scope.getUseTimeFlag = function() {
+          var useTimeFlag;
+          angular.forEach($scope.useTime, function(value, key) {
+            useTimeFlag = value;
+          }, useTimeFlag);
+          return useTimeFlag;
+       };
 
        $scope.changeDetailStartDate = function(targetId) {
          //
+         // 期間指定フラグONのときは日の設定しない
+         var useTimeFlag = $scope.getUseTimeFlag();
+         if (useTimeFlag == true) {
+           return;
+         }
+
          if ($scope.detailStartDate != '') {
            $('#' + targetId).val($scope.detailStartDate);
 
@@ -567,6 +580,11 @@ NetCommonsApp.controller('CalendarsDetailEdit',
        };
 
        $scope.changeDetailStartDatetime = function(targetId) {
+         // 期間指定フラグOFFのときは時間の設定しない
+         var useTimeFlag = $scope.getUseTimeFlag();
+         if (useTimeFlag == false) {
+           return;
+         }
          //
          if ($scope.detailStartDatetime != '') {
            $('#' + targetId).val($scope.detailStartDatetime);
@@ -575,6 +593,12 @@ NetCommonsApp.controller('CalendarsDetailEdit',
        };
 
        $scope.changeDetailEndDate = function(targetId) {
+         // 期間指定フラグONのときは日の設定しない
+         var useTimeFlag = $scope.getUseTimeFlag();
+         if (useTimeFlag == true) {
+           return;
+         }
+
          //
          if ($scope.detailEndDate != '') {
            $('#' + targetId).val($scope.detailEndDate);
@@ -583,6 +607,11 @@ NetCommonsApp.controller('CalendarsDetailEdit',
        };
 
        $scope.changeDetailEndDatetime = function(targetId) {
+         // 期間指定フラグOFFのときは時間の設定しない
+         var useTimeFlag = $scope.getUseTimeFlag();
+         if (useTimeFlag == false) {
+           return;
+         }
          //
          if ($scope.detailEndDatetime != '') {
            $('#' + targetId).val($scope.detailEndDatetime);
