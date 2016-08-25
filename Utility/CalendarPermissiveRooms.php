@@ -97,7 +97,17 @@ class CalendarPermissiveRooms {
 	public static function getAccessibleRoomIdList() {
 		return self::$roomPermRoles['accessibleRoomIds'];
 	}
-
+/**
+ * getMailEditableRoomIdList
+ *
+ * 発行権限を持つルームIDリストを返す
+ *
+ * @return array
+ */
+	public static function getMailEditableRoomIdList() {
+		$rooms = self::getAbleRoomIdList(array('mail_editable_value'));
+		return $rooms;
+	}
 /**
  * getAbleRoomIdList
  *

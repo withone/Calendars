@@ -10,11 +10,37 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
+$urlParams = array(
+	'controller' => 'calendar_mail_settings',
+	'action' => 'edit',
+	'?' => array(
+		'frame_id' => Current::read('Frame.id'),
+	)
+);
 ?>
 <article class="block-setting-body">
 	<?php echo $this->BlockTabs->main(BlockTabsHelper::MAIN_TAB_MAIL_SETTING); ?>
 
 	<div class="tab-content">
+
+		<div class="form-group">
+			<label><?php echo __d('calendars', 'Room'); ?></label>
+			<span class="btn-group">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+					<?php echo $mailRooms[Current::read('Room.id')]; ?>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					<?php foreach ($mailRooms as $key => $name) : ?>
+					<li<?php echo ($key == Current::read('Room.id') ? ' class="active"' : ''); ?>>
+						<?php echo $this->NetCommonsHtml->link($name,
+							Hash::merge($urlParams, array('?' => array('room' => $key)))
+						); ?>
+					</li>
+					<?php endforeach; ?>
+				</ul>
+			</span>
+		</div>
 
 		<?php echo $this->MailForm->editFrom(
 			array(

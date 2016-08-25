@@ -40,9 +40,11 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 		if (!$model->Behaviors->hasMethod('saveQueue')) {
 			return;
 		}
-		if (!isset($model->CalendarEvent)) {
-			$model->loadModels(['CalendarEvent' => 'Calendars.CalendarEvent']);
-		}
+		$model->loadModels([
+				'Block' => 'Blocks.Block',
+				'CalendarEvent' => 'Calendars.CalendarEvent'
+		]);
+
 		// 指定されたイベント情報を取得
 		$data = $model->CalendarEvent->getEventById($eventId);
 		if (! $data) {
@@ -59,12 +61,34 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 
 		// すり替え前にオリジナルルームIDを確保
 		$originalRoomId = Current::read('Room.id');
+		// オリジナルのBlockID
+		$originalBlockId = Current::read('Block.id');
+		// オリジナルのBlockKey
+		$originalBlockKey = Current::read('Block.key');
+
 		// 予定のルームID
 		$eventRoomId = $data['CalendarEvent']['room_id'];
+		$eventBlockId = $originalBlockId;
+		$eventBlockKey = $originalBlockKey;
+		$block = $model->Block->find('first', array(
+			'conditions' => array(
+				'plugin_key' => 'calendars',
+				'room_id' => $eventRoomId
+			)
+		));
+		if ($block) {
+			$eventBlockId = $block['Block']['id'];
+			$eventBlockKey = $block['Block']['key'];
+		}
+
+
 		// パーミッション情報をターゲットルームのものにすり替え
 		CalendarPermissiveRooms::setCurrentPermission($eventRoomId);
 		// カレントのルームIDをすり替え
 		Current::$current['Room']['id'] = $eventRoomId;
+		Current::$current['Block']['id'] = $eventBlockId;
+		Current::$current['Block']['key'] = $eventBlockKey;
+
 		// メールキュー作成
 		$model->saveQueue();
 		// キューからメール送信
@@ -72,6 +96,8 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 
 		// すり替えものをリカバー
 		Current::$current['Room']['id'] = $originalRoomId;
+		Current::$current['Block']['id'] = $originalBlockId;
+		Current::$current['Block']['key'] = $originalBlockKey;
 		CalendarPermissiveRooms::recoverCurrentPermission();
 	}
 
@@ -92,9 +118,12 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 
 		if ($data['CalendarEvent']['is_allday']) {
 			$endDate = $planHelper->makeDatetimeWithUserSiteTz(
+				$data['CalendarEvent']['dtstart'], $data['CalendarEvent']['is_allday']);
+		} else {
+			$endDate = $planHelper->makeDatetimeWithUserSiteTz(
 				$data['CalendarEvent']['dtend'], $data['CalendarEvent']['is_allday']);
-			$model->setAddEmbedTagValue('X-END_TIME', $endDate);
 		}
+		$model->setAddEmbedTagValue('X-END_TIME', $endDate);
 	}
 /**
  * _setRruleTags

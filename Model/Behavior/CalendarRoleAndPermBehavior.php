@@ -184,7 +184,8 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 				'use_workflow' => false,
 				'content_publishable_value' => true,
 				'content_editable_value' => true,
-				'content_creatable_value' => true
+				'content_creatable_value' => true,
+				'mail_editable_value' => true,
 			);
 		}
 		$room = $room[0];
@@ -196,12 +197,15 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 			$room, 'BlockRolePermission.content_editable.' . $roleName . '.value');
 		$creatable = Hash::get(
 			$room, 'BlockRolePermission.content_creatable.' . $roleName . '.value');
+		$mail = Hash::get(
+			$room, 'BlockRolePermission.mail_editable.' . $roleName . '.value');
 		return array(
 			'role_key' => $roleName,
 			'use_workflow' => $useWorkFlow,
 			'content_publishable_value' => $publishable,
 			'content_editable_value' => $editable,
-			'content_creatable_value' => $creatable
+			'content_creatable_value' => $creatable,
+			'mail_editable_value' => $mail
 		);
 	}
 

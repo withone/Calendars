@@ -213,7 +213,8 @@ class CalendarPermission extends CalendarsAppModel {
 					'content_creatable',
 					'content_editable',
 					'content_publishable',
-					'block_permission_editable'),
+					'block_permission_editable',
+					'mail_editable'),
 				$roomBlock['Room']['id'],
 				$blockKey
 			);
@@ -304,7 +305,7 @@ class CalendarPermission extends CalendarsAppModel {
 					// Calendar.idが空っぽ
 					//if (empty($room['Calendar']['id'])) {
 						// その場合はブロック未作成なので前もってブロック&Calendar作る
-						$block = $this->_saveBlock($roomId);
+						$block = $this->saveBlock($roomId);
 						// そのブロックキーを設定して
 						foreach ($room['BlockRolePermission']['content_creatable'] as &$perm) {
 							$perm['block_key'] = $block['Block']['key'];
@@ -341,14 +342,14 @@ class CalendarPermission extends CalendarsAppModel {
 		return true;
 	}
 /**
- * _saveBlock
+ * saveBlock
  *
  * ブロックを登録（すでにある場合は取得）
  *
  * @param int $roomId ルームID
  * @return array
  */
-	protected function _saveBlock($roomId) {
+	public function saveBlock($roomId) {
 		$block = $this->Block->find('first', array(
 			'conditions' => array(
 				'room_id' => $roomId,
