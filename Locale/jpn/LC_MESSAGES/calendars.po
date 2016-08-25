@@ -351,8 +351,8 @@ msgid  "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
 msgstr  "日|月|火|水|木|金|土"
 
 #: View/CalendarMailSettings/edit.ctp:22
-msgid  "{X-SITE_NAME} : サイト名<br />{X-PLUGIN_NAME} : プラグイン名<br />{X-ROOM} : 公開対象<br />{X-SUBJECT} : 件名<br />{X-START_TIME} : 開始日時<br />{X-END_TIME} : 終了日時<br />{X-LOCATION} : 場所<br />{X-CONTACT} : 連絡先<br />{X-USER} : 記入者<br />{X-TO_DATE} : 記入日時<br />{X-RRULE} : 繰返し<br />{X-URL} : この予定へのURL"
-msgstr  "MailSetting.mail_fixed_phrase_body.popover"
+msgid  "MailSetting.mail_fixed_phrase_body.popover"
+msgstr  "{X-SITE_NAME} : サイト名<br />{X-PLUGIN_NAME} : プラグイン名<br />{X-ROOM} : 公開対象<br />{X-SUBJECT} : 件名<br />{X-START_TIME} : 開始日時<br />{X-END_TIME} : 終了日時<br />{X-LOCATION} : 場所<br />{X-CONTACT} : 連絡先<br />{X-USER} : 記入者<br />{X-TO_DATE} : 記入日時<br />{X-RRULE} : 繰返し<br />{X-URL} : この予定へのURL"
 
 #: View/CalendarPlans/daylist.ctp:22
 msgid  "back to calendar"
