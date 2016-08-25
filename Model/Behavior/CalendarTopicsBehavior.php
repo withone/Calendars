@@ -100,7 +100,8 @@ class CalendarTopicsBehavior extends CalendarAppBehavior {
  * @return void
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function deleteCalendarTopics(Model &$model, $eventKey, $isOriginRepeat, $originEventKey, $editRrule) {
+	public function deleteCalendarTopics(Model &$model, $eventKey, $isOriginRepeat,
+		$originEventKey, $editRrule) {
 		// 繰り返し系で
 		// 全て削除、以外で
 		// 今のキーと、もともとの繰り返しデータのキーが同じ場合は新着は消さない

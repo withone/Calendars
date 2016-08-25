@@ -121,8 +121,6 @@ class CalendarEditDatetimeHelper extends AppHelper {
 
 		}
 
-
-
 		$pickerOpt = str_replace('"', "'", json_encode(array(
 			'format' => $jsFormat,
 			'minDate' => CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MIN,
