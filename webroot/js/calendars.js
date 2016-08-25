@@ -72,85 +72,11 @@ NetCommonsApp.filter('formatYyyymmdd', function() {
   }
 });
 
-
-/**
- * 予定の編集・削除のモーダル表示サービス
- */
-NetCommonsApp.factory('ConfirmRepeat', ['NetCommonsModal',
-  function(NetCommonsModal) {
-    return function($scope, frameId, action) {
-      var actionWord = 'UNKNOWN';
-      var actionButton = '';
-      if (action == 'edit') {
-        actionWord = '変更';
-        actionButton =
-            "<button name='edit' type='button' ng-click='ok()' " +
-            "class='btn btn-primary'>" +
-            "<span class='glyphicon glyphicon-edit'></span>編集" +
-            '</button>';
-      } else if (action == 'delete') {
-        actionWord = '削除';
-        actionButton =
-            "<button name='edit' type='button' ng-click='ok()' " +
-            "class='btn btn-danger'>" +
-            "<span class='glyphicon glyphicon-trash'></span>" +
-            '</button>';
-      }
-      var tmpl =
-          "<form action='#' method='get'>" +
-          "<div class='row form-group'>" +
-          "<div class='col-xs-12' style='margin:1em 0.5em 0.5em 0.5em; " +
-          "text-align:center'>" +
-          "<span class='h3'>繰返しタイプの選択</span>" +
-          '</div>' +
-          "<div class='clearfix'></div>" +
-          '<hr />' +
-          "<div class='col-xs-11 col-xs-offset-1'>" +
-          "<input name= 'selectRepeatType" + frameId + "' type='radio' " +
-          "value='1'>この予定のみ" + actionWord + 'する' +
-          '</div>' +
-          "<div class='clearfix'></div>" +
-          "<div class='col-xs-11 col-xs-offset-1'>" +
-          "<input name= 'selectRepeatType" + frameId + "' " +
-          "type='radio' value='2'>" +
-          'この予定以降を' + actionWord + 'する' +
-          '</div>' +
-          "<div class='clearfix'></div>" +
-          "<div class='col-xs-11 col-xs-offset-1'>" +
-          "<input name= 'selectRepeatType" + frameId + "' type='radio' " +
-          "value='3'>全ての予定を" + actionWord + 'する' +
-          '</div>' +
-          "<div class='clearfix'></div>" +
-          '<hr/>' +
-          "<div class='col-xs-12 text-center'>" +
-          "<button name='cancel' type='button' ng-click='cancel()' " +
-          "class='btn btn-default' style='margin-right:1em'>" +
-          "<span class='glyphicon glyphicon-remove'></span>キャンセル" +
-          '</button>' +
-          actionButton +
-          '</div>' +
-          '</div><!--form-groupおわり-->' +
-          '</form>';
-
-      return NetCommonsModal.show(
-          $scope,            //モーダルと呼び元で共有するスコープ変数
-          'CalendarModalCtrl',     //'CalendarsDetailEdit',    //controller名
-          //$scope.baseUrl + '/faqs/faq_questions/selectrepeat?frame_id=11',
-          null,            //url=templateUrlはなし
-          {
-            template: tmpl,
-            backdrop: false //'static'
-          }
-      );
-    }
-  }
-]);
-
-NetCommonsApp.controller('CalendarSchedule', function($scope) {
+NetCommonsApp.controller('CalendarSchedule', ['$scope', function($scope) {
   $scope.initialize = function(data) {
     $scope.isCollapsed = data.isCollapsed;
   };
-});
+}]);
 
 NetCommonsApp.controller('CalendarsTimeline', ['$scope', function($scope) {
   //タイムラインdiv
@@ -197,7 +123,7 @@ NetCommonsApp.controller('CalendarsTimeline', ['$scope', function($scope) {
 
 }]);
 
-NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
+NetCommonsApp.controller('CalendarsTimelinePlan', ['$scope', function($scope) {
   $scope.calendarPlans = [];
 
   $scope.initialize = function(data) {
@@ -293,19 +219,19 @@ NetCommonsApp.controller('CalendarsTimelinePlan', function($scope) {
     return true; //重なりあり
   };
 
-});
+}]);
 
 //リサイズ 日跨ぎライン対応
-NetCommonsApp.directive('resize', function($window) {
+NetCommonsApp.directive('resize', ['$window', function($window) {
   return function(scope, element) {
     var w = angular.element($window);
     w.bind('resize', function() {
       scope.$apply();
     });
   };
-});
+}]);
 
-NetCommonsApp.controller('CalendarsMonthlyLinePlan', function($scope) {
+NetCommonsApp.controller('CalendarsMonthlyLinePlan', ['$scope', function($scope) {
   $scope.calendarPlans = [];
 
   $scope.initialize = function(data) {
@@ -482,7 +408,7 @@ NetCommonsApp.controller('CalendarsMonthlyLinePlan', function($scope) {
     return true; //重なりあり
   };
 
-});
+}]);
 
 NetCommonsApp.controller('CalendarDetailEditWysiwyg',
     ['$scope', 'NetCommonsWysiwyg', function($scope, NetCommonsWysiwyg) {
@@ -495,8 +421,8 @@ NetCommonsApp.controller('CalendarDetailEditWysiwyg',
     }]
 );
 NetCommonsApp.controller('CalendarsDetailEdit',
-    ['$scope', '$location', 'ConfirmRepeat', 'NetCommonsModal', '$http', 'NC3_URL',
-      function($scope, $location, ConfirmRepeat, NetCommonsModal, $http, NC3_URL) {
+    ['$scope', '$location', 'NetCommonsModal', '$http', 'NC3_URL',
+      function($scope, $location, NetCommonsModal, $http, NC3_URL) {
        $scope.repeatArray = [];  //key=Frame.id、value=T/F of checkbox
        //key=Frame.id,value=index number
        //of option elements
@@ -623,9 +549,6 @@ NetCommonsApp.controller('CalendarsDetailEdit',
          var elms = $scope.targetYear.split('-');
          var url = prototypeUrl.replace('YYYY', elms[0]);
          url = url.replace('MM', elms[1]);
-         //console.log('frameId[' + frameId + '] prototypeUrl[' +
-         //  prototypeUrl + '] targetYear[' + $scope.targetYear +
-         //  '] url[' + url + ']');
          window.location = url;
        };
        $scope.changeYearMonthDay = function(prototypeUrl) {
@@ -635,9 +558,6 @@ NetCommonsApp.controller('CalendarsDetailEdit',
          var url = prototypeUrl.replace('YYYY', elms[0]);
          url = url.replace('MM', elms[1]);
          url = url.replace('DD', elms[2]);
-         //console.log('frameId[' + frameId + '] prototypeUrl[' +
-         //  prototypeUrl + '] targetYear[' + $scope.targetYear +
-         //  '] url[' + url + ']');
          window.location = url;
        };
 
@@ -915,7 +835,7 @@ NetCommonsApp.controller('Calendars.showRepeatConfirmExModal',
 );
 
 NetCommonsApp.controller('CalendarsDelete',
-    ['$scope', function($scope, $uibModalInstance) {
+    ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
     }]
 );
 
