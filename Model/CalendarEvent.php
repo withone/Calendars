@@ -43,6 +43,15 @@ class CalendarEvent extends CalendarsAppModel {
 		'Wysiwyg.Wysiwyg' => array(
 			'fields' => array('description'),
 		),
+		//新着情報
+		'Topics.Topics' => array(
+			'fields' => array(
+				'path' => '/:plugin_key/calendar_plans/view/:content_key',
+			),
+			'search_contents' => array(
+				'title', 'location', 'contact', 'description'
+			),
+		),
 	);
 
 /**
@@ -110,6 +119,21 @@ class CalendarEvent extends CalendarsAppModel {
 
 	);
 
+/**
+ * Constructor. Binds the model's database table to the object.
+ *
+ * @param bool|int|string|array $id Set this ID for this model on startup,
+ * can also be an array of options, see above.
+ * @param string $table Name of database table to use.
+ * @param string $ds DataSource connection name.
+ * @see Model::__construct()
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
+	public function __construct($id = false, $table = null, $ds = null) {
+		parent::__construct($id, $table, $ds);
+		// すぐはずす
+		$this->Behaviors->unload('Topics.Topics');
+	}
 /**
  * _doMergeWorkflowParamValidate
  *

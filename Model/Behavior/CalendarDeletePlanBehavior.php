@@ -54,13 +54,13 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
  * @param array $curPlan 現世代予定（この現世代予定に対して削除を行う)
  * @param bool $isOriginRepeat 現予定が繰返しありかなしか
  * @param string $editRrule 編集ルール (この予定のみ、この予定以降、全ての予定)
- * @return 変更成功時 int calendarEventId
+ * @return 変更成功時 string calendarEventKey
  * @throws InternalErrorException
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
 	public function deletePlan(Model &$model, $curPlan,
 		$isOriginRepeat, $editRrule = self::CALENDAR_PLAN_EDIT_THIS) {
-		$eventId = $curPlan['cur_event_id'];
+		$eventKey = $curPlan['cur_event_key'];
 
 		//CalendarEventの対象データ取得
 		$this->loadEventAndRruleModels($model);
@@ -73,14 +73,14 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 		//「全削除」、「指定以降削除」、「この予定のみ削除or元予定に繰返しなし」
 		if ($editRrule === self::CALENDAR_PLAN_EDIT_ALL) {
 			//「この予定ふくめ全て削除」
-			$eventId = $this->deletePlanAll($model, $rruleData, $eventData, $curPlan);
-			return $eventId;	//復帰
+			$eventKey = $this->deletePlanAll($model, $rruleData, $eventData, $curPlan);
+			return $eventKey;	//復帰
 		} elseif ($editRrule === self::CALENDAR_PLAN_EDIT_AFTER) {
 			//「この予定以降を削除」
-			$eventId = $this->deletePlanByAfter(
+			$eventKey = $this->deletePlanByAfter(
 				$model, $rruleData, $eventData, $curPlan);
 
-			return $eventId;	//復帰
+			return $eventKey;	//復帰
 		} else {
 			//「この予定のみ削除or元予定に繰返しなし」
 
@@ -139,7 +139,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 				}
 			}
 
-			return $eventId;	//復帰
+			return $eventKey;	//復帰
 		}
 	}
 
@@ -218,7 +218,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
  * @param array $rruleData rruleData
  * @param array $eventData eventData(編集画面のevent)
  * @param array $curPlan 現世代予定データ
- * @return int eventIdを返す
+ * @return string eventKeyを返す
  * @throws InternalErrorException
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
@@ -228,7 +228,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 				'CalendarRrule' => 'Calendars.CalendarRrule',
 			]);
 		}
-		$eventId = $curPlan['cur_event_id'];
+		$eventKey = $curPlan['cur_event_key'];
 		$rruleId = $curPlan['cur_rrule_id'];
 
 		////////////////////////
@@ -277,7 +277,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 			}
 		}
 
-		return $eventId;
+		return $eventKey;
 	}
 
 /**
@@ -287,7 +287,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
  * @param array $rruleData rruleData
  * @param array $eventData eventData
  * @param array $curPlan 現世代予定データ
- * @return int $eventIdを返す
+ * @return string $eventKeyを返す
  * @throws InternalErrorException
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
@@ -298,7 +298,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 			]);
 		}
 
-		$eventId = $curPlan['cur_event_id'];
+		$eventKey = $curPlan['cur_event_key'];
 
 		////////////////////////
 		//(1)指定eventのdtstart以降の全eventDataを消す
@@ -352,7 +352,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 		}
 		$model->auditEventOrRewriteUntil($eventData, $rruleData, $baseDtstart); //aaaaaa
 
-		return $eventId;
+		return $eventKey;
 	}
 
 /**

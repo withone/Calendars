@@ -54,6 +54,19 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 		'Calendars.CalendarPlanRruleValidate',	//予定（Rrule関連）バリデーション専用
 		'Calendars.CalendarPlanValidate',	//予定バリデーション専用
 		'Calendars.CalendarPlanGeneration',	//予定世代
+		//新着情報
+		'Topics.Topics' => array(
+			'fields' => array(
+				'path' => '/:plugin_key/calendar_plans/view/:content_key',
+				'is_active' => 'is_active',
+				'is_latest' => 'is_latest',
+				'status' => 'status',
+			),
+			'search_contents' => array(
+				'title', 'location', 'contact', 'description'
+			),
+		),
+		'Calendars.CalendarTopics',
 	);
 	// @codingStandardsIgnoreStart
 	// $_schemaはcakePHP2の予約語だが、宣言するとphpcsが警告を出すので抑止する。
@@ -189,7 +202,7 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 	public function deleteCalendarPlan($data, $originEventId, $originEventKey,
 		$originRruleId, $isOriginRepeat) {
 		$this->begin();
-		$eventId = 0;
+		$eventKey = 0;
 
 		try {
 			$this->_dequeueEmail($data); //mailQueueからのDequeueを先にする。
@@ -202,7 +215,9 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 
 			$editRrule = $this->getEditRruleForDelete($data);
 
-			$eventId = $this->deletePlan($curPlan, $isOriginRepeat, $editRrule);
+			$eventKey = $this->deletePlan($curPlan, $isOriginRepeat, $editRrule);
+
+			$this->deleteCalendarTopics($eventKey, $isOriginRepeat, $originEventKey, $editRrule);
 
 			$this->commit();
 		} catch (Exception $ex) {
@@ -212,7 +227,7 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 			return 0;
 		}
 
-		return $eventId;
+		return $eventKey;
 	}
 
 /**

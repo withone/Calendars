@@ -70,6 +70,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		),
 		'Mails.MailQueueDelete',
 		'Calendars.CalendarMail',
+		'Calendars.CalendarTopics',
 	);
 	// @codingStandardsIgnoreStart
 	// $_schemaはcakePHP2の予約語だが、宣言するとphpcsが警告を出すので抑止する。
@@ -603,6 +604,8 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 			// 承認メール、公開通知メールの送信
 			$this->sendWorkflowAndNoticeMail($eventId, $isMyPrivateRoom);
+
+			$this->saveCalendarTopics($eventId);
 
 			$this->_enqueueEmail($data);
 
