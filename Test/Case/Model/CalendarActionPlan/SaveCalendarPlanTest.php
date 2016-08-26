@@ -335,6 +335,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		$myself = 1;
 
 		//モック設定
+		$this->_mockForReturnTrue($model, 'Calendars.CalendarActionPlan', 'saveCalendarTopics', 1);
 		if ($data['CalendarActionPlan']['title'] == 'testdata7') {
 			$this->setExpectedException('InternalErrorException');
 			$this->_mockForReturnFalse($model, 'Calendars.CalendarRrule', 'find', 1);

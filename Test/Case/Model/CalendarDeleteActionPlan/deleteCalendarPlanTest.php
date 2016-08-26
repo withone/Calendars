@@ -104,10 +104,10 @@ class CalendarDeleteActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCa
 
 		$results = array();
 		// * 編集の登録処理
-		$results[0] = array($data1, 1, 'calendarplan1', 1, 0, 1);
-		$results[1] = array($data2, 1, 'calendarplan1', 1, 0, 1);
-		$results[2] = array($data3, 1, 'calendarplan1', 1, 0, 1);
-		$results[3] = array($data4, 1, 'calendarplan1', 1, 0, 1, 'InternalErrorException');
+		$results[0] = array($data1, 1, 'calendarplan1', 1, 0, 'calendarplan1');
+		$results[1] = array($data2, 1, 'calendarplan1', 1, 0, 'calendarplan1');
+		$results[2] = array($data3, 1, 'calendarplan1', 1, 0, 'calendarplan1');
+		$results[3] = array($data4, 1, 'calendarplan1', 1, 0, 'calendarplan1', 'InternalErrorException');
 
 		return $results;
 	}
