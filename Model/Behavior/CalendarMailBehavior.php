@@ -59,11 +59,9 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 		$this->_setRruleTags($model, $data);
 		$this->_setUrlTags($model, $data);
 
-		// すり替え前にオリジナルルームIDを確保
+		// すり替え前にオリジナルルームID,オリジナルのBlockID,オリジナルのBlockKeyを確保
 		$originalRoomId = Current::read('Room.id');
-		// オリジナルのBlockID
 		$originalBlockId = Current::read('Block.id');
-		// オリジナルのBlockKey
 		$originalBlockKey = Current::read('Block.key');
 
 		// 予定のルームID
@@ -81,18 +79,26 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 			$eventBlockKey = $block['Block']['key'];
 		}
 
-
 		// パーミッション情報をターゲットルームのものにすり替え
 		CalendarPermissiveRooms::setCurrentPermission($eventRoomId);
-		// カレントのルームIDをすり替え
+		// カレントのルームIDなどをすり替え
 		Current::$current['Room']['id'] = $eventRoomId;
 		Current::$current['Block']['id'] = $eventBlockId;
 		Current::$current['Block']['key'] = $eventBlockKey;
 
-		// メールキュー作成
-		$model->saveQueue();
-		// キューからメール送信
-		MailSend::send();
+		$model->Behaviors->load('Mails.IsMailSend');
+
+		$isMailSend = $model->isMailSend(
+			MailSettingFixedPhrase::DEFAULT_TYPE, $data['CalendarEvent']['key'], 'calendars');
+
+		if ($isMailSend) {
+			// メールキュー作成
+			$model->saveQueue();
+			// キューからメール送信
+			MailSend::send();
+		}
+
+		$model->Behaviors->unload('Mails.IsMailSend');
 
 		// すり替えものをリカバー
 		Current::$current['Room']['id'] = $originalRoomId;
