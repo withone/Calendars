@@ -94,7 +94,7 @@ class CalendarMailSettingsController extends MailSettingsController {
 		$this->set('mailRooms', $mailSelect);
 
 		$specifiedRoomId = Hash::get($this->request->query, 'room');
-		if($specifiedRoomId !== false && isset($mailRooms[$specifiedRoomId])) {
+		if ($specifiedRoomId !== false && isset($mailRooms[$specifiedRoomId])) {
 			// 問題なければ強制すり替え
 			Current::$current['Room']['id'] = $specifiedRoomId;
 			Current::$current['Block']['key'] = $mailRooms[$specifiedRoomId]['blockKey'];

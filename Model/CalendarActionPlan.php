@@ -62,7 +62,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 				'X-SUBJECT' => 'CalendarActionPlan.title',
 				'X-LOCATION' => 'CalendarActionPlan.location',
 				'X-CONTACT' => 'CalendarActionPlan.contact',
-				'X-BODY' =>  'CalendarActionPlan.description',
+				'X-BODY' => 'CalendarActionPlan.description',
 				'X-URL' => array(
 					'controller' => 'calendar_plans'
 				)

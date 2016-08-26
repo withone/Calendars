@@ -121,6 +121,12 @@ class CalendarTopicsBehavior extends CalendarAppBehavior {
 		$model->afterDeleteTopics();
 	}
 
+/**
+ * _getShareUsers
+ *
+ * @param array $data 予定データ
+ * @return array ShareUser配列
+ */
 	protected function _getShareUsers($data) {
 		$ret = array();
 		$ret = Hash::combine($data['CalendarEventShareUser'], '{n}.share_user', '{n}.share_user');
