@@ -91,7 +91,7 @@ class CalendarEditDatetimeHelper extends AppHelper {
 
 		$addNgInit = $jsFuncName . "('CalendarActionPlan" . Inflector::camelize($fieldName) . "')";
 
-		$enableTime = $this->request->data['CalendarActionPlan']['enable_time'];
+		//$enableTime = $this->request->data['CalendarActionPlan']['enable_time'];
 		//
 		if ($type == 'datetime') {
 			if (strpos($dtValue, ':') !== false) {
