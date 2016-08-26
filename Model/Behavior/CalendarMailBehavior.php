@@ -86,9 +86,9 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 		Current::$current['Block']['id'] = $eventBlockId;
 		Current::$current['Block']['key'] = $eventBlockKey;
 
-		$model->Behaviors->load('Mails.IsMailSend');
+		$model->CalendarEvent->Behaviors->load('Mails.IsMailSend', array('keyField' => 'key'));
 
-		$isMailSend = $model->isMailSend(
+		$isMailSend = $model->CalendarEvent->isMailSend(
 			MailSettingFixedPhrase::DEFAULT_TYPE, $data['CalendarEvent']['key'], 'calendars');
 
 		if ($isMailSend) {
@@ -98,7 +98,7 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 			MailSend::send();
 		}
 
-		$model->Behaviors->unload('Mails.IsMailSend');
+		$model->CalendarEvent->Behaviors->unload('Mails.IsMailSend');
 
 		// すり替えものをリカバー
 		Current::$current['Room']['id'] = $originalRoomId;
