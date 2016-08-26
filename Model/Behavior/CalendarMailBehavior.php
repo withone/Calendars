@@ -58,7 +58,6 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 		$this->_setDateTags($model, $data);
 		$this->_setRruleTags($model, $data);
 		$this->_setUrlTags($model, $data);
-		$this->_setBodyTags($model, $data);
 
 		// すり替え前にオリジナルルームID,オリジナルのBlockID,オリジナルのBlockKeyを確保
 		$originalRoomId = Current::read('Room.id');
@@ -112,9 +111,6 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 		CalendarPermissiveRooms::recoverCurrentPermission();
 	}
 
-	protected function _setBodyTags(Model &$model, $data) {
-
-	}
 /**
  * _setDateTags
  *
