@@ -1156,3 +1156,9 @@ msgstr ""
 
 msgid "nothing"
 msgstr ""
+
+msgid "Target room"
+msgstr "対象のルーム"
+
+msgid "Please set from Select the room for which you want e-mail notification settings . It will be the setting of one room."
+msgstr ""

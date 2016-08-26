@@ -59,6 +59,7 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 		$this->_setDateTags($model, $data);
 		$this->_setRruleTags($model, $data);
 		$this->_setUrlTags($model, $data);
+		$this->_setRoomTags($model, $data);
 
 		// すり替え前にオリジナルルームID,オリジナルのBlockID,オリジナルのBlockKeyを確保
 		$originalRoomId = Current::read('Room.id');
@@ -174,5 +175,18 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 		));
 		$url = NetCommonsUrl::url($url, true);
 		$model->setAddEmbedTagValue('X-URL', $url);
+	}
+
+/**
+ * _setRoomTags
+ *
+ * @param Model $model モデル
+ * @param array $data 予定データ
+ * @return void
+ */
+	protected function _setRoomTags(Model&$model, $data) {
+		if ($data['CalendarEvent']['room_id'] == Room::ROOM_PARENT_ID) {
+			$model->setAddEmbedTagValue('X-ROOM', __d('calendars', 'All the members'));
+		}
 	}
 }

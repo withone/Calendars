@@ -123,14 +123,18 @@ class CalendarMailSettingsController extends MailSettingsController {
 			$retRoom[$roomId] = array();
 			$retRoom[$roomId]['roomId'] = $roomId;
 
-			// それぞれのルーム名を取りだして配列作成
-			$roomLang = $this->RoomsLanguage->find('first', array(
-				'conditions' => array(
-					'room_id' => $roomId,
-					'language_id' => Current::read('Language.id')
-				)
-			));
-			$retRoom[$roomId]['name'] = $roomLang['RoomsLanguage']['name'];
+			if ($roomId == Room::ROOM_PARENT_ID) {
+				$retRoom[$roomId]['name'] = __d('calendars', 'All the members');
+			} else {
+				// それぞれのルーム名を取りだして配列作成
+				$roomLang = $this->RoomsLanguage->find('first', array(
+					'conditions' => array(
+						'room_id' => $roomId,
+						'language_id' => Current::read('Language.id')
+					)
+				));
+				$retRoom[$roomId]['name'] = $roomLang['RoomsLanguage']['name'];
+			}
 
 			// それぞれのルームにすでにカレンダーブロックがあるかチェック
 			// ない場合はブロック作成

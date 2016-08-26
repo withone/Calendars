@@ -24,7 +24,8 @@ $urlParams = array(
 	<div class="tab-content">
 
 		<div class="form-group">
-			<label><?php echo __d('calendars', 'Room'); ?></label>
+			<div class="well well-sm"><?php echo __d('calendars', 'Please set from Select the room for which you want e-mail notification settings . It will be the setting of one room.'); ?></div>
+			<label><?php echo __d('calendars', 'Target room'); ?></label>
 			<span class="btn-group">
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 					<?php echo $mailRooms[Current::read('Room.id')]; ?>

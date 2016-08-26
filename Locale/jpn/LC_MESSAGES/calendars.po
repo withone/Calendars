@@ -1153,3 +1153,9 @@ msgstr "申し訳ありませんが、予定の登録・編集は画面に正し
 
 msgid "nothing"
 msgstr "なし"
+
+msgid "Target room"
+msgstr "対象のルーム"
+
+msgid "Please set from Select the room for which you want e-mail notification settings . It will be the setting of one room."
+msgstr "メール通知設定を行う対象のルームを選んでから設定してください。１ルームずつの設定となります。"

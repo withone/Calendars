@@ -108,18 +108,17 @@ class CalendarEditDatetimeHelper extends AppHelper {
 			}
 			$jsFormat = 'YYYY-MM-DD';
 		}
-		$ngInit = sprintf("%s = '%s'; ", $ngModel, $dtDatetimeVal);
-		if ($type == 'datetime') {
-			if ($enableTime) {
-				$ngInit .= $addNgInit;
-			}
+		$ngInit = sprintf("%s = '%s'; ", $ngModel, $dtDatetimeVal) .$addNgInit;
 
-		} elseif ($type == 'date') {
-			if (! $enableTime) {
-				$ngInit .= $addNgInit;
-			}
-
-		}
+		//if ($type == 'datetime') {
+		//	if ($enableTime) {
+		//		$ngInit .= $addNgInit;
+		//	}
+		//} elseif ($type == 'date') {
+		//	if (! $enableTime) {
+		//		$ngInit .= $addNgInit;
+		//	}
+		//}
 
 		$pickerOpt = str_replace('"', "'", json_encode(array(
 			'format' => $jsFormat,
