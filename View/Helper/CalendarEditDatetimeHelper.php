@@ -108,7 +108,7 @@ class CalendarEditDatetimeHelper extends AppHelper {
 			}
 			$jsFormat = 'YYYY-MM-DD';
 		}
-		$ngInit = sprintf("%s = '%s'; ", $ngModel, $dtDatetimeVal) .$addNgInit;
+		$ngInit = sprintf("%s = '%s'; ", $ngModel, $dtDatetimeVal) . $addNgInit;
 
 		//if ($type == 'datetime') {
 		//	if ($enableTime) {

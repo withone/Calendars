@@ -180,11 +180,11 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 /**
  * _setRoomTags
  *
- * @param Model $model モデル
+ * @param Model &$model モデル
  * @param array $data 予定データ
  * @return void
  */
-	protected function _setRoomTags(Model&$model, $data) {
+	protected function _setRoomTags(Model &$model, $data) {
 		if ($data['CalendarEvent']['room_id'] == Room::ROOM_PARENT_ID) {
 			$model->setAddEmbedTagValue('X-ROOM', __d('calendars', 'All the members'));
 		}
