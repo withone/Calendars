@@ -44,18 +44,20 @@ class CalendarTopicsBehavior extends CalendarAppBehavior {
 			return;
 		}
 
-		//$topicData = $data;
-		//$topicData[$model->alias] = $data['CalendarEvent'];
 		$model->CalendarEvent->set($data);
+
+		// プライベート予定のとき、共有者がいたら共有者情報を取得しておく
+		$shareUsers = $this->_getShareUsers($data);
 
 		// すり替え前にオリジナルルームID, オリジナルブロックIDを確保
 		$originalRoomId = Current::read('Room.id');
 		$originalBlockId = Current::read('Block.id');
+		$originalFrameBlockId = Current::read('Frame.block_id');
 
 		// 予定のルームID
 		$eventRoomId = $data['CalendarEvent']['room_id'];
 
-		//
+		// 予定のブロック情報
 		$eventBlockId = $originalBlockId;
 		$block = $model->Block->find('first', array(
 			'conditions' => array(
@@ -70,6 +72,7 @@ class CalendarTopicsBehavior extends CalendarAppBehavior {
 		// カレントのルームIDをすり替え
 		Current::$current['Room']['id'] = $eventRoomId;
 		Current::$current['Block']['id'] = $eventBlockId;
+		Current::$current['Frame']['block_id'] = $eventBlockId;
 
 		$model->CalendarEvent->Behaviors->load('Topics.Topics', array(
 			'fields' => array(
@@ -77,7 +80,8 @@ class CalendarTopicsBehavior extends CalendarAppBehavior {
 			),
 			'search_contents' => array(
 				'title', 'location', 'contact', 'description'
-			)
+			),
+			'users' => $shareUsers
 		));
 		$model->CalendarEvent->saveTopics();
 		$model->CalendarEvent->Behaviors->unload('Topics.Topics');
@@ -85,6 +89,7 @@ class CalendarTopicsBehavior extends CalendarAppBehavior {
 		// すり替えものをリカバー
 		Current::$current['Room']['id'] = $originalRoomId;
 		Current::$current['Block']['id'] = $originalBlockId;
+		Current::$current['Frame']['block_id'] = $originalFrameBlockId;
 	}
 
 /**
@@ -116,4 +121,9 @@ class CalendarTopicsBehavior extends CalendarAppBehavior {
 		$model->afterDeleteTopics();
 	}
 
+	protected function _getShareUsers($data) {
+		$ret = array();
+		$ret = Hash::combine($data['CalendarEventShareUser'], '{n}.share_user', '{n}.share_user');
+		return $ret;
+	}
 }
