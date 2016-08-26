@@ -54,6 +54,7 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 		$mailData = $data;
 		$mailData[$model->alias] = $data['CalendarEvent'];
 		$model->set($mailData);
+		$model->CalendarEvent->set($data);
 
 		$this->_setDateTags($model, $data);
 		$this->_setRruleTags($model, $data);
