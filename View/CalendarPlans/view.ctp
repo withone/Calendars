@@ -97,7 +97,7 @@ echo $this->element('Calendars.scripts');
 
 			<div data-calendar-name="writer" class="calendar-eachplan-box">
 				<h3><?php echo __d('calendars', 'Author'); ?></h3>
-				<p><?php echo $this->DisplayUser->handleLink($event, array('avatar' => false)); ?></p>
+				<p><?php echo $this->DisplayUser->handleLink($event, array('avatar' => true)); ?></p>
 			</div><!-- おわり-->
 
 			<div data-calendar-name="updateDate" class="calendar-eachplan-box">
