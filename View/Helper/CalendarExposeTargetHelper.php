@@ -107,6 +107,7 @@ class CalendarExposeTargetHelper extends AppHelper {
 				'value' => $this->request->data['CalendarActionPlan']['plan_room_id'],
 				'data-frame-id' => $frameId,
 				'data-myself' => $myself,
+				'escape' => false,
 			));
 		}
 
