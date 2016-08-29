@@ -234,7 +234,7 @@ class CalendarWeeklyHelper extends CalendarMonthlyHelper {
 			$html .= '<td class="calendar-weekly-col-room-name calendar-tbl-td-pos">';
 			$html .= '<div class="row"><div class="col-xs-12">';
 			$html .= '<div class="calendar-plan-mark ' . $calendarPlanMark . '">';
-			$html .= h($room);
+			$html .= $room; // ここに来る前にすでにエスケープ処理が終わっていた
 			$html .= '</div></div></div></td>';
 			$vars['currentRoomId'] = $roomID[0];//$cnt;
 			//予定（7日分繰り返し）
