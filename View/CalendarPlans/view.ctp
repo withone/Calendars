@@ -42,11 +42,9 @@ echo $this->element('Calendars.scripts');
 	<?php /* ステータス＆タイトル */ ?>
 	<h1 data-calendar-name="dispTitle">
 		<div class="calendar-eachplan-box">
+			<?php echo $this->CalendarCommon->makeWorkFlowLabel($event['CalendarEvent']['status']); ?>
 			<?php echo $this->TitleIcon->titleIcon($event['CalendarEvent']['title_icon']); ?>
-			<?php
-				echo $this->CalendarCommon->makeWorkFlowLabel($event['CalendarEvent']['status']) . ' ';
-				echo h($event['CalendarEvent']['title']);
-			?>
+			<?php echo h($event['CalendarEvent']['title']); ?>
 		</div>
 	</h1>
 
