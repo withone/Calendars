@@ -13,24 +13,46 @@ echo $this->element('Calendars.scripts');
 
 <article ng-controller="CalendarsDetailEdit" class="block-setting-body">
 
-	<!--- 編集ボタン -->
-	<div class="text-right">
-		<?php echo $this->CalendarButton->getEditButton($vars, $event);?>
-	</div>
+	<header class="clearfix">
+		<div class="pull-left">
+			<?php
+				$urlOptions = array(
+					'controller' => 'calendars',
+					'action' => 'index',
+					'frame_id' => Current::read('Frame.id'),
+					'?' => array(
+						'year' => $vars['year'],
+						'month' => $vars['month'],
+					)
+				);
+				if (isset($vars['returnUrl'])) {
+					$cancelUrl = $vars['returnUrl'];
+				} else {
+					$cancelUrl = $this->CalendarUrl->getCalendarUrl($urlOptions);
+				}
+				echo $this->LinkButton->toList(null, $cancelUrl);
+			?>
+		</div>
+
+		<div class="pull-right">
+			<?php echo $this->CalendarButton->getEditButton($vars, $event);?>
+		</div>
+	</header>
+
+	<?php /* ステータス＆タイトル */ ?>
+	<h1 data-calendar-name="dispTitle">
+		<div class="calendar-eachplan-box">
+			<?php echo $this->TitleIcon->titleIcon($event['CalendarEvent']['title_icon']); ?>
+			<?php
+				echo $this->CalendarCommon->makeWorkFlowLabel($event['CalendarEvent']['status']) . ' ';
+				echo h($event['CalendarEvent']['title']);
+			?>
+		</div>
+	</h1>
 
 	<div class="row">
 
 		<div class="col-xs-12">
-
-			<?php /* ステータス＆タイトル */ ?>
-			<h2 data-calendar-name="dispTitle">
-				<?php echo $this->CalendarCommon->makeWorkFlowLabel($event['CalendarEvent']['status']);?>
-				<div class="calendar-eachplan-box">
-					<?php echo $this->TitleIcon->titleIcon($event['CalendarEvent']['title_icon']); ?>
-					<?php echo h($event['CalendarEvent']['title']); ?>
-				</div>
-			</h2><!-- おわり-->
-
 			<?php /* 日時 */ ?>
 			<div data-calendar-name="showDatetime" class="calendar-eachplan-box">
 				<h3><?php echo __d('calendars', 'Date and time'); ?></h3>
@@ -105,27 +127,5 @@ echo $this->element('Calendars.scripts');
 				<p><?php echo h((new NetCommonsTime())->toUserDatetime($event['CalendarEvent']['modified'])); ?></p>
 			</div><!-- おわり-->
 		</div>
-	</div>
-
-
-	<div class="text-center">
-		<!--- 戻るボタン -->
-		<?php
-			$urlOptions = array(
-				'controller' => 'calendars',
-				'action' => 'index',
-				'frame_id' => Current::read('Frame.id'),
-				'?' => array(
-					'year' => $vars['year'],
-					'month' => $vars['month'],
-				)
-			);
-			if (isset($vars['returnUrl'])) {
-				$cancelUrl = $vars['returnUrl'];
-			} else {
-				$cancelUrl = $this->CalendarUrl->getCalendarUrl($urlOptions);
-			}
-			echo $this->Button->cancel(__d('calendars', 'Back'), $cancelUrl);
-		?>
 	</div>
 </article>
