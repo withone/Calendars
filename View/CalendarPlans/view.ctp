@@ -20,7 +20,7 @@ echo $this->element('Calendars.scripts');
 
 	<div class="row">
 
-		<div class="col-xs-12 col-sm-10 col-sm-offset-1">
+		<div class="col-xs-12">
 
 			<?php /* ステータス＆タイトル */ ?>
 			<h2 data-calendar-name="dispTitle">
