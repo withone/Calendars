@@ -28,7 +28,7 @@ $urlParams = array(
 			<label><?php echo __d('calendars', 'Target room'); ?></label>
 			<span class="btn-group">
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-					<?php echo $mailRooms[Current::read('Room.id')]; ?>
+					<?php echo h($mailRooms[Current::read('Room.id')]); ?>
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" role="menu">
