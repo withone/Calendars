@@ -56,6 +56,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		'Calendars.CalendarPlanValidate',	//予定バリデーション専用
 		////'Calendars.CalendarRruleHandle',	//concatRrule()など
 		'Calendars.CalendarPlanGeneration',	//元予定の新世代予定生成関連
+		/*
 		// 自動でメールキューの登録, 削除。ワークフロー利用時はWorkflow.Workflowより下に記述する
 		'Mails.MailQueue' => array(
 			'embedTags' => array(
@@ -70,6 +71,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 			'workflowType' => 'workflow',
 		),
 		'Mails.MailQueueDelete',
+		*/
 		'Calendars.CalendarMail',
 		'Calendars.CalendarTopics',
 	);

@@ -43,6 +43,20 @@ class CalendarEvent extends CalendarsAppModel {
 		'Wysiwyg.Wysiwyg' => array(
 			'fields' => array('description'),
 		),
+		// 自動でメールキューの登録, 削除。ワークフロー利用時はWorkflow.Workflowより下に記述する
+		'Mails.MailQueue' => array(
+			'embedTags' => array(
+				'X-SUBJECT' => 'title',
+				'X-LOCATION' => 'location',
+				'X-CONTACT' => 'contact',
+				'X-BODY' => 'description',
+				'X-URL' => array(
+					'controller' => 'calendar_plans'
+				)
+			),
+			'workflowType' => 'workflow',
+		),
+		'Mails.MailQueueDelete',
 		//新着情報
 		'Topics.Topics' => array(
 			'fields' => array(
@@ -132,6 +146,8 @@ class CalendarEvent extends CalendarsAppModel {
 	public function __construct($id = false, $table = null, $ds = null) {
 		parent::__construct($id, $table, $ds);
 		// すぐはずす
+		$this->Behaviors->unload('Mails.MailQueue');
+		$this->Behaviors->unload('Mails.MailQueueDelete');
 		$this->Behaviors->unload('Topics.Topics');
 	}
 /**

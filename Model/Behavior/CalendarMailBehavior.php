@@ -36,14 +36,11 @@ class CalendarMailBehavior extends CalendarAppBehavior {
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 	public function sendWorkflowAndNoticeMail(Model &$model, $eventId, $isMyPrivateRoom) {
-		// modelにMailQueueBehaviorがロードされてなかったらすぐリターンする
-		if (!$model->Behaviors->hasMethod('saveQueue')) {
-			return;
-		}
 		$model->loadModels([
-				'Block' => 'Blocks.Block',
-				'CalendarEvent' => 'Calendars.CalendarEvent'
+			'Block' => 'Blocks.Block',
+			'CalendarEvent' => 'Calendars.CalendarEvent'
 		]);
+		$model->CalendarEvent->Behaviors->load('Mails.MailQueue');
 
 		// 指定されたイベント情報を取得
 		$data = $model->CalendarEvent->getEventById($eventId);
@@ -51,15 +48,16 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 			return;
 		}
 
-		$mailData = $data;
-		$mailData[$model->alias] = $data['CalendarEvent'];
-		$model->set($mailData);
 		$model->CalendarEvent->set($data);
 
 		$this->_setDateTags($model, $data);
 		$this->_setRruleTags($model, $data);
 		$this->_setUrlTags($model, $data);
 		$this->_setRoomTags($model, $data);
+		$model->CalendarEvent->setAddEmbedTagValue('X-SUBJECT', $data['CalendarEvent']['title']);
+		$model->CalendarEvent->setAddEmbedTagValue('X-CONTACT', $data['CalendarEvent']['contact']);
+		$model->CalendarEvent->setAddEmbedTagValue('X-LOCATION', $data['CalendarEvent']['location']);
+		$model->CalendarEvent->setAddEmbedTagValue('X-BODY', $data['CalendarEvent']['description']);
 
 		// すり替え前にオリジナルルームID,オリジナルのBlockID,オリジナルのBlockKeyを確保
 		$originalRoomId = Current::read('Room.id');
@@ -99,12 +97,13 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 
 		if ($isMailSend) {
 			// メールキュー作成
-			$model->saveQueue();
+			$model->CalendarEvent->saveQueue();
 			// キューからメール送信
 			MailSend::send();
 		}
 
 		$model->CalendarEvent->Behaviors->unload('Mails.IsMailSend');
+		$model->CalendarEvent->Behaviors->unload('Mails.MailQueue');
 
 		// すり替えものをリカバー
 		Current::$current['Room']['id'] = $originalRoomId;
@@ -126,7 +125,7 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 
 		$startDate = $planHelper->makeDatetimeWithUserSiteTz(
 			$data['CalendarEvent']['dtstart'], $data['CalendarEvent']['is_allday']);
-		$model->setAddEmbedTagValue('X-START_TIME', $startDate);
+		$model->CalendarEvent->setAddEmbedTagValue('X-START_TIME', $startDate);
 
 		if ($data['CalendarEvent']['is_allday']) {
 			$endDate = $planHelper->makeDatetimeWithUserSiteTz(
@@ -135,7 +134,7 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 			$endDate = $planHelper->makeDatetimeWithUserSiteTz(
 				$data['CalendarEvent']['dtend'], $data['CalendarEvent']['is_allday']);
 		}
-		$model->setAddEmbedTagValue('X-END_TIME', $endDate);
+		$model->CalendarEvent->setAddEmbedTagValue('X-END_TIME', $endDate);
 	}
 /**
  * _setRruleTags
@@ -152,9 +151,9 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 
 		if ($rrule != '') {
 			$rrule = str_replace('&nbsp;', ' ', $rrule);
-			$model->setAddEmbedTagValue('X-RRULE', htmlspecialchars_decode($rrule));
+			$model->CalendarEvent->setAddEmbedTagValue('X-RRULE', htmlspecialchars_decode($rrule));
 		} else {
-			$model->setAddEmbedTagValue('X-RRULE', __d('calendars', 'nothing'));
+			$model->CalendarEvent->setAddEmbedTagValue('X-RRULE', __d('calendars', 'nothing'));
 		}
 	}
 /**
@@ -174,7 +173,7 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 			'key' => $data['CalendarEvent']['key']
 		));
 		$url = NetCommonsUrl::url($url, true);
-		$model->setAddEmbedTagValue('X-URL', $url);
+		$model->CalendarEvent->setAddEmbedTagValue('X-URL', $url);
 	}
 
 /**
@@ -186,7 +185,7 @@ class CalendarMailBehavior extends CalendarAppBehavior {
  */
 	protected function _setRoomTags(Model &$model, $data) {
 		if ($data['CalendarEvent']['room_id'] == Room::ROOM_PARENT_ID) {
-			$model->setAddEmbedTagValue('X-ROOM', __d('calendars', 'All the members'));
+			$model->CalendarEvent->setAddEmbedTagValue('X-ROOM', __d('calendars', 'All the members'));
 		}
 	}
 }
