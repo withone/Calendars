@@ -260,7 +260,7 @@ class CalendarSupport {
 		$wdays = explode('|', CalendarsComponent::CALENDAR_REPEAT_WDAY);
 
 		$rooms = array_keys($exposeRoomOptions);
-		if (in_array(Current::read('Roomd.id'), $rooms)) {
+		if (in_array(Current::read('Room.id'), $rooms)) {
 			//公開対象ルーム一覧にCurrentのRoom.idが存在する
 			$planRoomId = Current::read('Room.id');
 		} else {
