@@ -200,24 +200,6 @@ class Calendar extends CalendarsAppModel {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
-			////コメント）メール設定は、上記とことなり「メール設定」タブ画面で、チェック＋決定した時はじめてレコード生成されるタイプと思われるので、以下の処理は抑止する。
-			////メール設定
-			////MailSettingモデルに存在するか調べる
-			//$mailSetting = $this->MailSetting->find('first', array(
-			//	'conditions' => array(
-			//		'MailSetting.block_key' => Current::read('Block.key'),
-			//		'MailSetting.plugin_key' => Current::read('Block.plugin_key'),
-			//	)
-			//));
-			// まだない場合
-			//if (empty($mailSetting)) {
-			//	// メール設定を作成・登録する
-			//	if (! ($mailSetting = $this->_saveMailSetting())) {
-			//		throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			//	}
-			//	Current::$current['MailSetting'] = $mailSetting['MailSetting'];	//新規に生成したMailSettingをCurrent[MailSetting]に記録しておく。
-			//}
-
 			$this->commit();
 		} catch (Exception $ex) {
 			//トランザクションRollback
@@ -230,6 +212,56 @@ class Calendar extends CalendarsAppModel {
 		}
 
 		return $data;
+	}
+
+/**
+ * prepareBlock
+ *
+ * フレームも何もなくても予定登録のときはこいつをたたいて準備しないといけない
+ *
+ * @param int $roomId ルームID（企保的に予定の対象のルームID
+ * @param int $langId 言語ID
+ * @param string $pluginKey プラグインキー（calendars
+ * @return mixed 見つかった、もしくは作成したブロック
+ * @throws InternalErrorException
+ */
+	public function prepareBlock($roomId, $langId, $pluginKey) {
+		$this->begin();
+		try {
+			//Frameモデルに記録されているのと同じ「ルーム,言語,plugin_key=カレンダ」のレコードが
+			//Blockモデルに存在するか調べる
+			$block = $this->Block->find('first', array(
+				'conditions' => array(
+					'Block.room_id' => $roomId,
+					'Block.language_id' => $langId,
+					'Block.plugin_key' => $pluginKey,
+				)
+			));
+
+			// まだない場合
+			if (empty($block)) {
+				// ブロックを作成する
+				$block = $this->Block->save(array(
+					'room_id' => $roomId,
+					'language_id' => $langId,
+					'plugin_key' => $pluginKey,
+				));
+				if (! $block) {
+					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+				}
+			}
+
+			//権限設定
+			if (! $this->_saveCalendar($block)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			$this->commit();
+		} catch (Exception $ex) {
+			$this->rollback();
+			CakeLog::error($ex);
+			throw $ex;		//再throw
+		}
+		return $block;
 	}
 
 /**

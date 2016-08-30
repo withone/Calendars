@@ -603,6 +603,12 @@ class CalendarActionPlan extends CalendarsAppModel {
 				return false;
 			}
 
+			// メールやらなんやらが動作する前にはブロックをちゃんと用意しておかねばならない
+			$this->Calendar->prepareBlock(
+				$data['CalendarActionPlan']['plan_room_id'],
+				Current::read('Language.id'),
+				'calendars');
+
 			// 承認メール、公開通知メールの送信
 			$this->sendWorkflowAndNoticeMail($eventId, $isMyPrivateRoom);
 
