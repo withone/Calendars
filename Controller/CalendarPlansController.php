@@ -231,6 +231,7 @@ class CalendarPlansController extends CalendarsAppController {
 						//エラーメッセージのセット. 便宜的にis_repeatを利用
 						$this->CalendarDeleteActionPlan->validationErrors['is_repeat'] =
 							__d('calendars', 'Delete failed.');
+						return $this->throwBadRequest();
 					}
 				}
 			}
