@@ -34,7 +34,8 @@ class CalendarBlockRolePermissionsController extends CalendarsAppController {
  */
 	public $components = array(
 		'NetCommons.Permission' => array(
-			'allow' => array( 'edit' => 'block_editable' ),
+			//'allow' => array( 'edit' => 'block_editable' ),
+			'allow' => array( 'edit' => 'block_permission_editable' ),
 		),
 		'Paginator',
 	);
