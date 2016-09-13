@@ -81,7 +81,8 @@ class CalendarTopicsBehavior extends CalendarAppBehavior {
 			'search_contents' => array(
 				'title', 'location', 'contact', 'description'
 			),
-			'users' => $shareUsers
+			'users' => $shareUsers,
+			'data' => array('is_in_room' => !(int)$shareUsers)
 		));
 		$model->CalendarEvent->saveTopics();
 		$model->CalendarEvent->Behaviors->unload('Topics.Topics');
