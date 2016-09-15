@@ -138,7 +138,24 @@ class CalendarRruleFixture extends CakeTestFixture {
 			'modified_user' => 3,
 			'modified' => '2016-03-24 07:10:24'
 		),
-
+		array(
+			'id' => 7,
+			'calendar_id' => 1,
+			'key' => 'calendarplan7',
+			'name' => 'Lorem ipsum dolor sit amet',
+			'rrule' => 'FREQ=DAILY;INTERVAL=1;COUNT=2',
+			'icalendar_uid' => 'Lorem ipsum dolor sit amet',
+			'icalendar_comp_name' => 'Lorem ipsum dolor sit amet',
+			'room_id' => 1,
+			'language_id' => 1,
+			'status' => 1,
+			'is_active' => 0,
+			'is_latest' => 1,
+			'created_user' => 3,
+			'created' => '2016-03-24 07:10:24',
+			'modified_user' => 3,
+			'modified' => '2016-03-24 07:10:24'
+		),
 	);
 
 }

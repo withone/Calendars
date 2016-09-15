@@ -67,13 +67,6 @@ class CalendarPlansControllerDeleteTest extends WorkflowControllerDeleteTest {
 	private function __getData($originEventId = '1') {
 		$frameId = '6';
 		$blockId = '2';
-		//if ($calendarPlanKey === '') {
-		//	$faqQuestionId = '3';
-		//} elseif ($calendarPlanKey === 'faq_question_4') {
-		//	$faqQuestionId = '5';
-		//} else {
-		//	$faqQuestionId = '2';
-		//}
 
 		$data = array(
 			'delete' => null,
@@ -116,7 +109,6 @@ class CalendarPlansControllerDeleteTest extends WorkflowControllerDeleteTest {
 	public function dataProviderDeleteGet() {
 		$data = $this->__getData();
 		$results = array();
-
 		$results[0] = array('role' => null,
 			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'key' => 'calendarplan1'),
 			'assert' => null, 'exception' => 'ForbiddenException'
@@ -125,14 +117,17 @@ class CalendarPlansControllerDeleteTest extends WorkflowControllerDeleteTest {
 			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'key' => 'calendarplan1'),
 			'assert' => null, 'exception' => 'ForbiddenException'
 		);
-
 		$results[2] = array('role' => Role::ROOM_ROLE_KEY_EDITOR,
 			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'key' => 'calendarplan1'),
 			'assert' => null,
 		);
-
 		$results[3] = array('role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
 			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'key' => 'calendarplan1'),
+			'assert' => null,
+		);
+		$results[4] = array('role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
+			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'key' => 'calendarplan7', //繰り返しあり
+			'?' => array('action' => 'repeatdelete', 'first_sib_event_id' => '1', 'origin_event_id' => '7', 'is_recurrence' => '1') ),
 			'assert' => null,
 		);
 
@@ -244,11 +239,19 @@ class CalendarPlansControllerDeleteTest extends WorkflowControllerDeleteTest {
 				//'exception' => 'ForbiddenException' //pending 一度公開している（getWorkflowContentsでnullを返す方法）
 			),
 			//公開権限あり
+			//--削除対象なし
+			array(
+				'data' => $data2, 'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
+				'urlOptions' => array('frame_id' => $data2['Frame']['id'], 'block_id' => $data2['Block']['id'], 'key' => 'calendarplanxx'),
+				'exception' => 'ForbiddenException',
+			),
+			//公開権限あり
 			//フレームID指定なしテスト
 			array(
 				'data' => $data2, 'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
 				'urlOptions' => array('frame_id' => null, 'block_id' => $data2['Block']['id'], 'key' => 'calendarplan2'),
 			),
+
 		);
 	}
 
