@@ -81,7 +81,7 @@ class CalendarPlansControllerViewTest extends WorkflowControllerViewTest {
 			'urlOptions' => array('frame_id' => '6', 'key' => 'calendarplan1'),
 			'assert' => array('method' => 'assertNotEmpty'),
 		);
-		$results[1] = Hash::merge($results[0], array(
+		$results[1] = Hash::merge($results[0], array( //編集ボタンなし
 			'assert' => array('method' => 'assertActionLink', 'action' => 'edit', 'linkExist' => false, 'url' => array()),
 		));
 		//--コンテンツなし
@@ -115,7 +115,7 @@ class CalendarPlansControllerViewTest extends WorkflowControllerViewTest {
 			'urlOptions' => array('frame_id' => '6', 'key' => 'calendarplan3'),
 			'assert' => array('method' => 'assertNotEmpty'),
 		);
-		$results[1] = Hash::merge($results[0], array(
+		$results[1] = Hash::merge($results[0], array( //編集ボタンあり
 			//'assert' => array('method' => 'assertActionLink', 'action' => 'edit', 'linkExist' => true, 'url' => array()),
 			'assert' => array('method' => 'assertContains', 'expected' => '/calendars/calendar_plans/edit/calendarplan3'),
 		));
@@ -124,7 +124,7 @@ class CalendarPlansControllerViewTest extends WorkflowControllerViewTest {
 			'urlOptions' => array('frame_id' => '6', 'key' => 'calendarplan2'),
 			'assert' => array('method' => 'assertNotEmpty'),
 		);
-		$results[3] = Hash::merge($results[2], array(
+		$results[3] = Hash::merge($results[2], array( //編集ボタンあり
 			//'assert' => array('method' => 'assertActionLink', 'action' => 'edit', 'linkExist' => true, 'url' => array()),
 			'assert' => array('method' => 'assertContains', 'expected' => '/calendars/calendar_plans/edit/calendarplan2'),
 		));
@@ -133,7 +133,7 @@ class CalendarPlansControllerViewTest extends WorkflowControllerViewTest {
 			'urlOptions' => array('frame_id' => '6', 'key' => 'calendarplan5'),
 			'assert' => array('method' => 'assertNotEmpty'),
 		);
-		$results[5] = Hash::merge($results[4], array(
+		$results[5] = Hash::merge($results[4], array( //編集ボタンなし
 			//'assert' => array('method' => 'assertActionLink', 'action' => 'edit', 'linkExist' => false, 'url' => array()),
 			'assert' => array('method' => 'assertNotContains', 'expected' => '/calendars/calendar_plans/edit/calendarplan5'),
 		));
@@ -183,7 +183,7 @@ class CalendarPlansControllerViewTest extends WorkflowControllerViewTest {
 			'urlOptions' => array('frame_id' => '6', 'key' => 'calendarplan1'),
 			'assert' => array('method' => 'assertNotEmpty'),
 		);
-		$results[1] = Hash::merge($results[0], array(
+		$results[1] = Hash::merge($results[0], array( //編集ボタンあり
 			//'assert' => array('method' => 'assertActionLink', 'action' => 'edit', 'linkExist' => true, 'url' => array()),
 			'assert' => array('method' => 'assertContains', 'expected' => '/calendars/calendar_plans/edit/calendarplan1'),
 		));

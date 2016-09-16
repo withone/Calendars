@@ -11,7 +11,6 @@
 
 App::uses('CalendarPlansController', 'Calendars.Controller');
 App::uses('WorkflowControllerAddTest', 'Workflow.TestSuite');
-//App::uses('GroupFixture', 'Groups.Test/Fixture');
 App::uses('CalendarsComponent', 'Calendars.Controller/Component');	//constを使うため
 
 /**

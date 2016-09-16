@@ -119,16 +119,16 @@ class CalendarPlansControllerDeleteTest extends WorkflowControllerDeleteTest {
 		);
 		$results[2] = array('role' => Role::ROOM_ROLE_KEY_EDITOR,
 			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'key' => 'calendarplan1'),
-			'assert' => null,
+			'assert' => array('method' => 'assertNotEmpty'),
 		);
 		$results[3] = array('role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
 			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'key' => 'calendarplan1'),
-			'assert' => null,
+			'assert' => array('method' => 'assertNotEmpty'),
 		);
 		$results[4] = array('role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
 			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'key' => 'calendarplan7', //繰り返しあり
 			'?' => array('action' => 'repeatdelete', 'first_sib_event_id' => '1', 'origin_event_id' => '7', 'is_recurrence' => '1') ),
-			'assert' => null,
+			'assert' => array('method' => 'assertNotEmpty'),
 		);
 
 		return $results;
