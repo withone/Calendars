@@ -400,7 +400,7 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 			//ログインなし
 			array(
 				'data' => $data, 'role' => null,
-				'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => $data['CalendarActionPlan']['key']),
+				'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan1'),
 				'exception' => 'ForbiddenException',
 			),
 			//作成権限のみ
