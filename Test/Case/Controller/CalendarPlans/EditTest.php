@@ -234,7 +234,9 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 		));
 		//フレームID指定なしテスト
 		$results[6] = Hash::merge($results[2], array(
-			'urlOptions' => array('frame_id' => null, 'block_id' => $data['Block']['id'], 'key' => 'calendarplan2'),
+			//'urlOptions' => array('frame_id' => null, 'block_id' => $data['Block']['id'], 'key' => 'calendarplan2'),
+			//'urlOptions' => array('frame_id' => null, 'block_id' => $data['Block']['id']),
+			'urlOptions' => array('frame_id' => null, 'block_id' => 0),
 			'assert' => array('method' => 'assertNotEmpty'),
 		));
 		return $results;
@@ -308,6 +310,12 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 		$results[0] = array(
 			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan6'),
 			'assert' => array('method' => 'assertNotEmpty'),
+		);
+		//繰り返しあり
+		$results[1] = array(
+			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan7'),
+			//'assert' => array('method' => 'assertNotEmpty'),
+			'assert' => array('method' => 'assertContains', 'expected' => __d('calendars', 'only this one')),
 		);
 		array_push($results, Hash::merge($results[$base], array(
 			'assert' => array('method' => 'assertActionLink', 'action' => 'delete', 'linkExist' => false, 'url' => array()),

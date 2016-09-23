@@ -76,9 +76,6 @@ class CalendarPlansControllerDeleteTest extends WorkflowControllerDeleteTest {
 			'Block' => array(
 				'id' => $blockId,
 			),
-			//'Faq' => array(
-			//	'key' => $faqKey,
-			//),
 			'CalendarDeleteActionPlan' => array(
 				//'id' => $faqQuestionId,
 				//'key' => $calendarPlanKey,
@@ -128,7 +125,8 @@ class CalendarPlansControllerDeleteTest extends WorkflowControllerDeleteTest {
 		$results[4] = array('role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
 			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'key' => 'calendarplan7', //繰り返しあり
 			'?' => array('action' => 'repeatdelete', 'first_sib_event_id' => '1', 'origin_event_id' => '7', 'is_recurrence' => '1') ),
-			'assert' => array('method' => 'assertNotEmpty'),
+			//'assert' => array('method' => 'assertNotEmpty'),
+			'assert' => array('method' => 'assertContains', 'expected' => __d('calendars', 'only this one')),
 		);
 
 		return $results;
@@ -208,18 +206,18 @@ class CalendarPlansControllerDeleteTest extends WorkflowControllerDeleteTest {
 				'exception' => 'ForbiddenException'
 			),
 			//作成権限のみ
-			//--他人の記事
+			//--他人の予定
 			array(
 				'data' => $data2, 'role' => Role::ROOM_ROLE_KEY_GENERAL_USER,
 				'urlOptions' => array('frame_id' => $data2['Frame']['id'], 'block_id' => $data2['Block']['id'], 'key' => 'calendarplan2'),
 				//'exception' => 'ForbiddenException'
 			),
-			//--自分の記事＆一度も公開されていない
+			//--自分の予定＆一度も公開されていない
 			array(
 				'data' => $data2, 'role' => Role::ROOM_ROLE_KEY_GENERAL_USER,
 				'urlOptions' => array('frame_id' => $data2['Frame']['id'], 'block_id' => $data2['Block']['id'], 'key' => 'calendarplan2'),
 			),
-			//--自分の記事＆一度公開している
+			//--自分の予定＆一度公開している
 			array(
 				'data' => $this->__getData(3), 'role' => Role::ROOM_ROLE_KEY_GENERAL_USER,
 				'urlOptions' => array('frame_id' => $data2['Frame']['id'], 'block_id' => $data2['Block']['id'], 'key' => 'calendarplan3'),

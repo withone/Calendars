@@ -88,18 +88,18 @@ class CalendarsControllerIndexTest extends NetCommonsControllerTestCase {
  *
  * @param array $urlOptions URLオプション
  * @param array $assert テストの期待値
- * @param string $style スタイル
+ * @param string $defStyle 表示設定（スタイル）
  * @param string $startPos 開始位置（昨日/今日）
  * @param string|null $exception Exception
  * @param string $return testActionの実行後の結果
  * @dataProvider dataProviderIndex
  * @return void
  */
-	public function testIndex($urlOptions, $assert, $style = '', $startPos = '', $exception = null, $return = 'view') {
+	public function testIndex($urlOptions, $assert, $defStyle = '', $startPos = '', $exception = null, $return = 'view') {
 		//スタイル Fixture書き換え
 		//Current::$current['CalendarFrameSetting']['display_type'] = $style;
 		$data['CalendarFrameSetting'] = (new CalendarFrameSettingFixture())->records[0];
-		$data['CalendarFrameSetting']['display_type'] = $style;
+		$data['CalendarFrameSetting']['display_type'] = $defStyle;
 
 		if ($startPos == CalendarsComponent::CALENDAR_START_POS_WEEKLY_YESTERDAY) {
 			$data['CalendarFrameSetting']['start_pos'] = CalendarsComponent::CALENDAR_START_POS_WEEKLY_YESTERDAY;
@@ -130,68 +130,101 @@ class CalendarsControllerIndexTest extends NetCommonsControllerTestCase {
  * @return array
  */
 	public function dataProviderIndex() {
-		//$data = $this->__getData();
 		$results = array();
-
 		//ログインなし（月縮小）
 		$results[0] = array(
 			'urlOptions' => array('frame_id' => '6'),
 			'assert' => array('method' => 'assertNotEmpty'),
 		);
 		//ログインなし（月拡大）
+		//(年月日指定なし)
 		$results[1] = array(
 			'urlOptions' => array('frame_id' => '6'),
 			'assert' => array('method' => 'assertNotEmpty'),
-			'style' => CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY,
+			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY,
+		);
+		//(年が不正 最小値（CALENDAR_RRULE_TERM_UNTIL_YEAR_MIN以下）2001)
+		$results[2] = array(
+			'urlOptions' => array('frame_id' => '6', '?' => array('year' => '2000', 'month' => '9', 'day' => '9')),
+			'assert' => array('method' => 'assertNotEmpty'),
+			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY,
+		);
+		//(年が不正 最大値（CALENDAR_RRULE_TERM_UNTIL_YEAR_MAX以上）2033)
+		$results[3] = array(
+			'urlOptions' => array('frame_id' => '6', '?' => array('year' => '2034', 'month' => '9', 'day' => '9')),
+			'assert' => array('method' => 'assertNotEmpty'),
+			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY,
 		);
 		//ログインなし（週表示）
-		$results[2] = array(
-			'urlOptions' => array('frame_id' => '6'),
+		// (年月日指定あり)
+		$results[4] = array(
+			'urlOptions' => array('frame_id' => '6', '?' => array('year' => '2016', 'month' => '9', 'day' => '9')),
 			'assert' => array('method' => 'assertNotEmpty'),
-			'style' => CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY,
+			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY,
+		);
+		// (week指定あり)
+		$results[5] = array(
+			'urlOptions' => array('frame_id' => '6', '?' => array('year' => '2016', 'month' => '9', 'week' => '1')),
+			'assert' => array('method' => 'assertNotEmpty'),
+			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY,
+		);
+		// (初期表示は週表示、style(パラメータ)で日表示:daily、リスト表示)
+		$results[6] = array(
+			'urlOptions' => array('frame_id' => '6', '?' => array('year' => '2016', 'month' => '9', 'day' => '9', 'style' => 'daily', 'tab' => 'list')),
+			//'assert' => array('method' => 'assertNotEmpty'),
+			'assert' => array('method' => 'assertContains', 'expected' => 'calendarplan1'),
+			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY,
+		);
+		// (初期表示は週表示、style(パラメータ)で日表示:daily、タイムライン表示)
+		$results[7] = array(
+			'urlOptions' => array('frame_id' => '6', '?' => array('year' => '2016', 'month' => '9', 'day' => '9', 'style' => 'daily', 'tab' => 'timeline')),
+			'assert' => array('method' => 'assertNotEmpty'),
+			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY,
+		);
+		// (初期表示は週表示、style(パラメータ)不正（不正時は月縮小表示）)
+		$results[8] = array(
+			'urlOptions' => array('frame_id' => '6', '?' => array('year' => '2016', 'month' => '9', 'day' => '9', 'style' => 'aaaa')),
+			'assert' => array('method' => 'assertNotEmpty'),
+			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_WEEKLY,
 		);
 		//ログインなし（日表示）(タイムライン)
-		$results[3] = array(
+		$results[9] = array(
 			'urlOptions' => array('frame_id' => '6', '?' => array('tab' => 'timeline')),
 			'assert' => array('method' => 'assertNotEmpty'),
-			'style' => CalendarsComponent::CALENDAR_DISP_TYPE_DAILY,
+			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_DAILY,
 		);
 		//ログインなし（スケジュール（時間順）表示）(今日から表示)
-		$results[4] = array(
+		$results[10] = array(
 			'urlOptions' => array('frame_id' => '6'),
 			'assert' => array('method' => 'assertNotContains', 'expected' => __d('calendars', 'yesterday')),
-			'style' => CalendarsComponent::CALENDAR_DISP_TYPE_TSCHEDULE,
+			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_TSCHEDULE,
 		);
 		//ログインなし（スケジュール（時間順）表示）（昨日から表示）
-		$results[5] = array(
-			'urlOptions' => array('frame_id' => '6'),
+		$results[11] = array(
+			'urlOptions' => array('frame_id' => '6', '?' => array('year' => '2016', 'month' => '9', 'day' => '9')),
 			'assert' => array('method' => 'assertContains', 'expected' => __d('calendars', 'yesterday')),
-			'style' => CalendarsComponent::CALENDAR_DISP_TYPE_TSCHEDULE,
+			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_TSCHEDULE,
 			'startPos' => CalendarsComponent::CALENDAR_START_POS_WEEKLY_YESTERDAY,
 		);
 		//ログインなし（スケジュール（会員順）表示）(今日から表示)
-		$results[6] = array(
-			'urlOptions' => array('frame_id' => '6'),
+		$results[12] = array(
+			'urlOptions' => array('frame_id' => '6', '?' => array('year' => '2016', 'month' => '9', 'day' => '9')),
 			'assert' => array('method' => 'assertNotContains', 'expected' => __d('calendars', 'yesterday')),
-			'style' => CalendarsComponent::CALENDAR_DISP_TYPE_MSCHEDULE,
+			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_MSCHEDULE,
 			'startPos' => CalendarsComponent::CALENDAR_START_POS_WEEKLY_TODAY,
 		);
 		//ログインなし（スケジュール（会員順）表示）（昨日から表示）
-		$results[7] = array(
+		$results[13] = array(
 			'urlOptions' => array('frame_id' => '6'),
 			'assert' => array('method' => 'assertContains', 'expected' => __d('calendars', 'yesterday')),
-			'style' => CalendarsComponent::CALENDAR_DISP_TYPE_MSCHEDULE,
+			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_MSCHEDULE,
 			'startPos' => CalendarsComponent::CALENDAR_START_POS_WEEKLY_YESTERDAY,
 		);
-
-		//  pending 120行目の最後のelse「月縮小とみなす」のルートは通せない？？
-		//チェック
-		//--追加ボタンチェック(なし)
-		$results[8] = array(
+		//チェック--追加ボタンチェック(なし)
+		$results[14] = array(
 			'urlOptions' => array('frame_id' => '6', 'block_id' => '2'),
 			'assert' => array('method' => 'assertActionLink', 'action' => 'add', 'linkExist' => false, 'url' => array()),
 		);
-
 		return $results;
 	}
 
@@ -200,19 +233,19 @@ class CalendarsControllerIndexTest extends NetCommonsControllerTestCase {
  *
  * @param array $urlOptions URLオプション
  * @param array $assert テストの期待値
- * @param string $style スタイル
+ * @param string $defStyle スタイル
  * @param string|null $exception Exception
  * @param string $return testActionの実行後の結果
  * @dataProvider dataProviderIndexByEditable
  * @return void
  */
-	public function testIndexByEditable($urlOptions, $assert, $style = '', $exception = null, $return = 'view') {
+	public function testIndexByEditable($urlOptions, $assert, $defStyle = '', $exception = null, $return = 'view') {
 		//ログイン
 		TestAuthGeneral::login($this, Role::ROOM_ROLE_KEY_EDITOR);
 
 		//スタイル Fixture書き換え
 		$data['CalendarFrameSetting'] = (new CalendarFrameSettingFixture())->records[0];
-		$data['CalendarFrameSetting']['display_type'] = $style;
+		$data['CalendarFrameSetting']['display_type'] = $defStyle;
 		$this->controller->CalendarFrameSetting->save($data);
 
 		//テスト実施
@@ -266,6 +299,12 @@ class CalendarsControllerIndexTest extends NetCommonsControllerTestCase {
 			'urlOptions' => array('frame_id' => null, 'block_id' => '2'),
 			'assert' => array('method' => 'assertContains', 'expected' => 'index'),
 		)));
+		//  pending 120行目の表示形式が不明の場合の最後のelse「月縮小とみなす」のルートは通せない？？
+		//（スケジュール（defStyleが不正）
+		//array_push($results, Hash::merge($results[$base], array(
+		//	'urlOptions' => array('frame_id' => '6'),
+		//	'assert' => array('method' => 'assertNotEmpty'), 'defStyle' => '99',
+		//)));
 
 		return $results;
 	}

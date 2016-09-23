@@ -119,7 +119,7 @@ class CalendarEventGetSiblingsTest extends WorkflowGetTest {
 		return array(
 			array(1, true, 22, $expectNotExist), //存在しない
 			array(2, true, null, $expectNotExist), //存在しない
-			array(1, 0, 1, $expectExist), //存在する
+			array(1, 0, 2, $expectExist), //存在する
 
 		);
 	}

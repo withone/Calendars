@@ -81,9 +81,6 @@ class CalendarPlansControllerAddTest extends WorkflowControllerAddTest {
 				'id' => $blockId,
 				'key' => $blockKey,
 			),
-			//'Faq' => array(
-			//	'key' => $faqKey,
-			//),
 			'CalendarActionPlan' => array(
 				'origin_event_id' => $originEventId,
 				'origin_event_key' => 0,
@@ -249,6 +246,11 @@ class CalendarPlansControllerAddTest extends WorkflowControllerAddTest {
 		$dataGroupN = $dataGroup;
 		$dataGroupN['CalendarActionPlan']['plan_room_id'] = '4';
 
+		//繰り返しあり
+		$dataRep = $data;
+		$dataRep['CalendarAction']['is_repeat'] = 1;
+		$dataRep['CalendarAction']['rrule_term'] = 'UNTIL';
+
 		$dataError1 = $data;
 		unset($dataError1['save_' . WorkflowComponent::STATUS_PUBLISHED]);
 		$dataError1['save_' . ''] = '';
@@ -279,7 +281,11 @@ class CalendarPlansControllerAddTest extends WorkflowControllerAddTest {
 				'data' => $dataGroupN, 'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
 				'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id']),
 			),
-
+			//(繰り返しあり（期限）)
+			array(
+				'data' => $dataRep, 'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
+				'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id']),
+			),
 			//フレームID指定なしテスト
 			array(
 				'data' => $data, 'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
@@ -337,6 +343,65 @@ class CalendarPlansControllerAddTest extends WorkflowControllerAddTest {
 						'The number of repetition is %d or more and %d or less.', CalendarsComponent::CALENDAR_RRULE_COUNT_MIN, CalendarsComponent::CALENDAR_RRULE_COUNT_MAX),
 				)
 			)),
+		);
+	}
+
+/**
+ * addアクションのExceptionErrorテスト
+ *
+ * @param string $mockModel Mockのモデル
+ * @param string $mockMethod Mockのメソッド
+ * @param array $data POSTデータ
+ * @param string $role ロール
+ * @param array $urlOptions URLオプション
+ * @param string $exception Exception
+ * @param string $return testActionの実行後の結果
+ * @dataProvider dataProviderAddExceptionError
+ * @return void
+ */
+	public function testAddExceptionError($mockModel, $mockMethod, $data, $role, $urlOptions,
+												$exception = null, $return = 'view') {
+		//ログイン
+		if (isset($role)) {
+			TestAuthGeneral::login($this, $role);
+		}
+
+		$this->_mockForReturn($mockModel, $mockMethod, false, 1);
+
+		//テスト実施
+		$this->_testPostAction(
+			'post', $data, Hash::merge(array('action' => 'add'), $urlOptions), $exception, $return
+		);
+		//ログアウト
+		if (isset($role)) {
+			TestAuthGeneral::logout($this);
+		}
+	}
+
+/**
+ * addアクションのExceptionErrorテスト用DataProvider
+ *
+ * ### 戻り値
+ *  - mockModel: Mockのモデル
+ *  - mockMethod: Mockのメソッド
+ *  - data: 登録データ
+ *  - role: ロール
+ *  - urlOptions: URLオプション
+ *  - exception: Exception
+ *  - return: testActionの実行後の結果
+ *
+ * @return array
+ */
+	public function dataProviderAddExceptionError() {
+		$data = $this->__getData();
+
+		return array(
+			array(
+				'mockModel' => 'CalendarActionPlan', 'mockMethod' => 'saveCalendarPlan', 'data' => $data,
+				'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
+				'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id']),
+				//'exception' => 'BadRequestException' //pending save失敗
+			),
 		);
 	}
 
