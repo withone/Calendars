@@ -189,7 +189,7 @@ class CalendarsControllerIndexTest extends NetCommonsControllerTestCase {
 		);
 		//ログインなし（日表示）(タイムライン)
 		$results[9] = array(
-			'urlOptions' => array('frame_id' => '6', '?' => array('tab' => 'timeline')),
+			'urlOptions' => array('frame_id' => '6', '?' => array('tab' => 'timeline', 'year' => '2016', 'month' => '9', 'day' => '1')),
 			'assert' => array('method' => 'assertNotEmpty'),
 			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_DAILY,
 		);

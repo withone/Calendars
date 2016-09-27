@@ -178,33 +178,64 @@ class CalendarPlansControllerViewTest extends WorkflowControllerViewTest {
 		$results = array();
 
 		//編集権限あり
-		//--コンテンツあり
+		//--コンテンツあり 繰り返し(日/1日ごと/2回)
 		$results[0] = array(
-			'urlOptions' => array('frame_id' => '6', 'key' => 'calendarplan1'),
+			'urlOptions' => array('frame_id' => '6', 'key' => 'calendarplan7'),
 			'assert' => array('method' => 'assertNotEmpty'),
 		);
-		$results[1] = Hash::merge($results[0], array( //編集ボタンあり
+		//--コンテンツあり 繰り返し(週/1週/2回)
+		$results[1] = array(
+			'urlOptions' => array('frame_id' => '6', 'key' => 'calendarplan10'),
+			'assert' => array('method' => 'assertNotEmpty'),
+		);
+		//--コンテンツあり 繰り返し(月/第1週日曜日/2回)
+		$results[2] = array(
+			'urlOptions' => array('frame_id' => '6', 'key' => 'calendarplan12'),
+			'assert' => array('method' => 'assertNotEmpty'),
+		);
+		//--コンテンツあり 繰り返し(年/2回)
+		$results[3] = array(
+			'urlOptions' => array('frame_id' => '6', 'key' => 'calendarplan14'),
+			'assert' => array('method' => 'assertNotEmpty'),
+		);
+		//--コンテンツあり 繰り返し(週/週指定なし(木)/2016.9.2まで)
+		$results[4] = array(
+			'urlOptions' => array('frame_id' => '6', 'key' => 'calendarplan16'),
+			'assert' => array('method' => 'assertNotEmpty'),
+		);
+		//--コンテンツあり 繰り返し(月/2か月ごとに2日/2016.10.01まで)
+		$results[5] = array(
+			'urlOptions' => array('frame_id' => '6', 'key' => 'calendarplan17'),
+			'assert' => array('method' => 'assertNotEmpty'),
+		);
+		//--コンテンツあり 繰り返し(年/2年ごとに,9月 / 開始日と同日 / 2017年09月01日まで)
+		$results[6] = array(
+			'urlOptions' => array('frame_id' => '6', 'key' => 'calendarplan18'),
+			'assert' => array('method' => 'assertNotEmpty'),
+		);
+
+		$results[7] = Hash::merge($results[0], array( //編集ボタンあり
 			//'assert' => array('method' => 'assertActionLink', 'action' => 'edit', 'linkExist' => true, 'url' => array()),
-			'assert' => array('method' => 'assertContains', 'expected' => '/calendars/calendar_plans/edit/calendarplan1'),
+			'assert' => array('method' => 'assertContains', 'expected' => '/calendars/calendar_plans/edit/calendarplan7'),
 		));
 		//--コンテンツなし
-		$results[2] = array(
+		$results[8] = array(
 			'urlOptions' => array('frame_id' => '14', 'key' => null),
-			//'assert' => array('method' => 'assertEquals', 'expected' => 'emptyRender'),
+			//'assert' => array('method' => 'assertEquals', 'expected' => 'emptyRender'),FREQ=MONTHLY;INTERVAL=1;BYDAY=1SU;COUNT=2
 			//'exception' => null, 'return' => 'viewFile'
 			'assert' => null,
 			'exception' => 'ForbiddenException',
 		);
 		//フレームID指定なしテスト
-		$results[3] = array(
+		$results[9] = array(
 			'urlOptions' => array('frame_id' => null, 'key' => 'calendarplan6'),
 			'assert' => array('method' => 'assertNotEmpty'),
 		);
-		$results[4] = Hash::merge($results[3], array(
+		//$results[10] = Hash::merge($results[3], array(
 			//'assert' => array('method' => 'assertActionLink', 'action' => 'edit', 'linkExist' => true, 'url' => array()),
 			//'assert' => array('method' => 'assertContains', 'expected' => '/calendars/calendar_plans/edit/calendarplan6'),
 			//frame_idを省略すると編集不可（３．０．０では編集をOFFにする動き）
-		));
+		//));
 
 		return $results;
 	}
