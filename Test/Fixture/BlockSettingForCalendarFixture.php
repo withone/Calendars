@@ -36,5 +36,16 @@ class BlockSettingForCalendarFixture extends BlockSettingFixture {
  * @var string
  */
 	public $table = 'block_settings';
-
+	/*
+	public $records = array(
+		array(
+			'plugin_key' => 'calendars',
+			'room_id' => 1,
+			'block_key' => 'block_1',
+			'field_name' => BlockSettingBehavior::FIELD_USE_WORKFLOW,
+			'value' => '1',
+			'type' => BlockSettingBehavior::TYPE_BOOLEAN,
+		),
+	);
+	*/
 }

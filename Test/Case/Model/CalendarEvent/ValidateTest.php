@@ -112,8 +112,8 @@ class CalendarEventValidateTest extends NetCommonsValidateTest {
 			// Workflowパラメータ関連バリデーション（_doMergeWorkflowParamValidate）
 			array('data' => $data, 'field' => 'language_id', 'value' => 'a',
 				'message' => __d('net_commons', 'Invalid request.')),
-			//array('data' => $data, 'field' => 'status', 'value' => 'a', //pending(お知らせ) ここには到達しないようです。WorkflowBehaviorのbeforeValidateでエラーになりました。
-			//	'message' => __d('net_commons', 'Invalid request.')),
+			array('data' => $data, 'field' => 'status', 'value' => 'a',
+				'message' => __d('net_commons', 'Invalid request.')),
 			array('data' => $data, 'field' => 'is_active', 'value' => 'a',
 				'message' => __d('net_commons', 'Invalid request.')),
 			array('data' => $data, 'field' => 'is_latest', 'value' => 'a',
