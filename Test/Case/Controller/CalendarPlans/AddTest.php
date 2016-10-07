@@ -93,7 +93,8 @@ class CalendarPlansControllerAddTest extends WorkflowControllerAddTest {
 				'first_sib_event_id' => '0',
 				'is_recurrence' => '0',
 				'edit_rrule' => '0',
-				'first_sib_event_id' => 0,
+				'first_sib_event_id' => 7,
+				'first_sib_event_key' => 'calendarplanx',
 				'first_sib_year' => '2016',
 				'first_sib_month' => '9',
 				'first_sib_day' => '4',
@@ -366,7 +367,11 @@ class CalendarPlansControllerAddTest extends WorkflowControllerAddTest {
 			TestAuthGeneral::login($this, $role);
 		}
 
+		//if ($mockMethod == 'maxtime') {
+		//	$this->_mockForReturn($mockModel, 'saveCalendarPlan', 1, 3);
+		//} else {
 		$this->_mockForReturn($mockModel, $mockMethod, false, 1);
+		//}
 
 		//テスト実施
 		$this->_testPostAction(
@@ -395,6 +400,11 @@ class CalendarPlansControllerAddTest extends WorkflowControllerAddTest {
 	public function dataProviderAddExceptionError() {
 		$data = $this->__getData();
 
+		//繰り返しあり
+		$dataRep = $data;
+		$dataRep['CalendarAction']['is_repeat'] = 1;
+		$dataRep['CalendarAction']['rrule_count'] = 400;
+
 		return array(
 			array(
 				'mockModel' => 'CalendarActionPlan', 'mockMethod' => 'saveCalendarPlan', 'data' => $data,
@@ -402,6 +412,12 @@ class CalendarPlansControllerAddTest extends WorkflowControllerAddTest {
 				'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id']),
 				//'exception' => 'BadRequestException' //pending save失敗
 			),
+		//	array(
+		//		'mockModel' => 'CalendarActionPlan', 'mockMethod' => 'maxtime', 'data' => $dataRep,
+		//		'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
+		//		'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id']),
+		//		'exception' => '' //pending save失敗
+		//	),
 		);
 	}
 
