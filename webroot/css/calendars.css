@@ -169,15 +169,20 @@
 }
 /* カレンダー先頭の年月移動リンク入れ物 */
 .calendar-date-move-operations {
-	margin-bottom:1em;
-	display:-webkit-box;
-	display:-moz-box;
-	display:-ms-flexbox;
-	display:box;
-	-moz-box-align:center;
-	-webkit-box-align:center;
-	box-align:center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
 }
+.calendar-date-move-operations-top {
+	margin-bottom:1em;
+}
+.calendar-date-move-operations-bottom {
+	margin-top:1em;
+	justify-content: flex-end;
+}
+
 .calendar-date-move-operations > a {
 	display:block;
 	padding: 5px 14px;
@@ -219,9 +224,14 @@
 }
 .calendar_event_target_year {
 	margin-bottom: 0px;
+	cursor: pointer;
 }
-.calendar_event_target_title {
+.calendar-date-move-operations-top .calendar_event_target_title {
 	font-size: 26px !important;
+	margin: 0px !important;
+}
+.calendar-date-move-operations-bottom .calendar_event_target_title {
+	font-size: 18px !important;
 	margin: 0px !important;
 }
 	/* 年月移動DateTimePickerInputのCSS 隠れて見えないようにしている */

@@ -36,13 +36,14 @@ class CalendarTurnCalendarHelper extends AppHelper {
  * カレンダー上部の年月移動オペレーション部
  *
  * @param string $type month, week, day のいずれか
+ * @param string $pos position
  * @param array $vars カレンダー日付情報
  * @return string html
  */
-	public function getTurnCalendarOperationsWrap($type, $vars) {
+	public function getTurnCalendarOperationsWrap($type, $pos, $vars) {
 		$html = '';
 		$html .= '<div class="row"><div class="col-xs-12">';
-		$html .= $this->getTurnCalendarOperations($type, $vars);
+		$html .= $this->getTurnCalendarOperations($type, $pos, $vars);
 		$html .= '</div></div>';
 		return $html;
 	}
@@ -52,16 +53,17 @@ class CalendarTurnCalendarHelper extends AppHelper {
  * カレンダー上部の年月移動オペレーション部
  *
  * @param string $type month, week, day のいずれか
+ * @param string $pos position
  * @param array $vars カレンダー日付情報
  * @return string html
  */
-	public function getTurnCalendarOperations($type, $vars) {
+	public function getTurnCalendarOperations($type, $pos, $vars) {
 		$prevUrl = $this->_getUrl('prev', $type, $vars);
 		$nextUrl = $this->_getUrl('next', $type, $vars);
 		$thisDayUrl = $this->_getUrl('now', $type, $vars);
 
 		$html = '';
-		$html .= '<div class="calendar-date-move-operations">';
+		$html .= '<div class="calendar-date-move-operations calendar-date-move-operations-' . $pos . '">';
 
 		if ($prevUrl) {
 			$html .= $this->NetCommonsHtml->link(
@@ -71,7 +73,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 			);
 		}
 
-		$html .= $this->_getDateTitle($type, $vars);
+		$html .= $this->_getDateTitle($type, $pos, $vars);
 
 		if ($nextUrl) {
 			$html .= $this->NetCommonsHtml->link(
@@ -99,19 +101,26 @@ class CalendarTurnCalendarHelper extends AppHelper {
  * カレンダー上部の年月表示部
  *
  * @param string $type month, week, day のいずれか
+ * @param string $pos position
  * @param array $vars カレンダー日付情報
  * @return string html
  */
-	protected function _getDateTitle($type, $vars) {
+	protected function _getDateTitle($type, $pos, $vars) {
 		$textColor = '';
 		if ($type == 'day') {
 			// 文字色
 			$textColor = $this->CalendarCommon->makeTextColor(
 				$vars['year'], $vars['month'], $vars['day'], $vars['holidays'], $vars['week']);
 		}
-		$turnNavId = 'CalendarEventTargetYear_' . Current::read('Frame.id');
+		$turnNavId = 'CalendarEventTargetYear_' . Current::read('Frame.id') . '_' . $pos;
 
-		$html = '<div><label class="calendar_event_target_year" for="' . $turnNavId . '">';
+		$dateTimePickerInput = $this->_getDateTimePickerForMoveOperation($type, $pos, $vars);
+
+		$html = '<div>';
+		if ($pos == 'bottom') {
+			$html .= $dateTimePickerInput;
+		}
+		$html .= '<label class="calendar_event_target_year" for="' . $turnNavId . '">';
 		$html .= '<h2 class="calendar_event_target_title ' . $textColor . ' calendar-space0">';
 		switch($type) {
 			case 'month':
@@ -135,8 +144,11 @@ class CalendarTurnCalendarHelper extends AppHelper {
 				break;
 
 		}
-		$dateTimePickerInput = $this->_getDateTimePickerForMoveOperation($type, $vars);
-		$html .= '</h2></label>' . $dateTimePickerInput . '</div>';
+		$html .= '</h2></label>';
+		if ($pos == 'top') {
+			$html .= $dateTimePickerInput;
+		}
+		$html .= '</div>';
 		return $html;
 	}
 /**
@@ -320,10 +332,11 @@ class CalendarTurnCalendarHelper extends AppHelper {
  * カレンダー上部今への日付
  *
  * @param string $type month, week, day のいずれか
+ * @param string $pos position
  * @param array $vars カレンダー日付情報
  * @return array
  */
-	protected function _getDateTimePickerForMoveOperation($type, $vars) {
+	protected function _getDateTimePickerForMoveOperation($type, $pos, $vars) {
 		if ($type == 'month') {
 			$prototypeUrlOpt = array(
 				'year' => 'YYYY',
@@ -375,7 +388,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 		$dateTimePickerInput = $this->NetCommonsForm->input('CalendarEvent.target_year', array(
 			'div' => false,
 			'label' => false,
-			'id' => 'CalendarEventTargetYear_' . Current::read('Frame.id'),
+			'id' => 'CalendarEventTargetYear_' . Current::read('Frame.id') . '_' . $pos,
 			'data-toggle' => 'dropdown',
 			'aria-haspopup' => "true", 'aria-expanded' => "false",
 			'datetimepicker' => 'datetimepicker',
