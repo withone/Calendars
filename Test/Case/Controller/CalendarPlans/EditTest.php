@@ -43,6 +43,9 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 		'plugin.calendars.roles_rooms_user4test', //add
 		'plugin.user_attributes.user_attribute_layout',
 		'plugin.calendars.room4test',
+		//'plugin.rooms.room_role', //add 2016.09.30
+		//'plugin.rooms.room_role_permission4test', //add 2016.09.30
+
 	);
 
 /**
@@ -103,7 +106,7 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 				'is_repeat' => '0',
 				'first_sib_event_id' => '0',
 				'is_recurrence' => '0',
-				'edit_rrule' => '0',
+				'edit_rrule' => '0', //null,
 				'first_sib_event_id' => 0,
 				'first_sib_year' => '2016',
 				'first_sib_month' => '9',
@@ -232,8 +235,13 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 			//'assert' => array('method' => 'assertInput', 'type' => 'input', 'name' => '_method', 'value' => 'DELETE'),
 			'assert' => array('method' => 'assertInput', 'type' => 'button', 'name' => 'delete', 'value' => null),
 		));
+		//--自分の記事(一度公開済み)
+		$results[6] = array(
+			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan3'),
+			'assert' => array('method' => 'assertNotEmpty'),
+		);
 		//フレームID指定なしテスト
-		$results[6] = Hash::merge($results[2], array(
+		$results[7] = Hash::merge($results[2], array(
 			//'urlOptions' => array('frame_id' => null, 'block_id' => $data['Block']['id'], 'key' => 'calendarplan2'),
 			//'urlOptions' => array('frame_id' => null, 'block_id' => $data['Block']['id']),
 			'urlOptions' => array('frame_id' => null, 'block_id' => 0),
@@ -311,11 +319,17 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan6'),
 			'assert' => array('method' => 'assertNotEmpty'),
 		);
-		//繰り返しあり
+		//繰り返しあり(この予定のみ変更)
 		$results[1] = array(
 			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan7'),
 			//'assert' => array('method' => 'assertNotEmpty'),
 			'assert' => array('method' => 'assertContains', 'expected' => __d('calendars', 'only this one')),
+		);
+		//繰り返しあり
+		$results[2] = array(
+			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan10'),
+			//'assert' => array('method' => 'assertNotEmpty'),
+			'assert' => array('method' => 'assertContains', 'expected' => __d('calendars', 'only this one')), //あとで変更pending
 		);
 		array_push($results, Hash::merge($results[$base], array(
 			'assert' => array('method' => 'assertActionLink', 'action' => 'delete', 'linkExist' => false, 'url' => array()),
