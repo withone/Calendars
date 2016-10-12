@@ -63,6 +63,7 @@ class CalendarMailSettingsControllerEditTest extends NetCommonsControllerTestCas
  *
  * @return array
  */
+	/*
 	private function __getData() {
 		$data = array(
 			'save' => '',
@@ -76,6 +77,7 @@ class CalendarMailSettingsControllerEditTest extends NetCommonsControllerTestCas
 		);
 		return $data;
 	}
+	*/
 
 /**
  * editアクションのGETテスト
@@ -115,12 +117,11 @@ class CalendarMailSettingsControllerEditTest extends NetCommonsControllerTestCas
  * @return array
  */
 	public function dataProviderEditGet() {
-		$data = $this->__getData();
 		$results = array();
 
 		//ログインなし
 		$results[0] = array(
-			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => '2'),
+			'urlOptions' => array('frame_id' => '6', 'block_id' => '2'),
 			'assert' => null,
 			'exception' => 'ForbiddenException',
 		);
