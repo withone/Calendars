@@ -178,10 +178,10 @@ class CalendarMailSettingsControllerEditTest extends NetCommonsControllerTestCas
 			'assert' => null
 		);
 		// ブロックが存在しないフレームID
-		$results[1] = array(
-			'urlOptions' => array('frame_id' => 15, 'block_id' => '2'),
-			'assert' => null,
-		);
+		//$results[1] = array(
+		//	'urlOptions' => array('frame_id' => 15, 'block_id' => '2'),
+		//	'assert' => null,
+		//);
 		// 存在しないフレームID
 		//$results[2] = array(
 		//	'urlOptions' => array('frame_id' => 9999, 'block_id' => '2'),
