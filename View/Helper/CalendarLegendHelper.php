@@ -217,16 +217,25 @@ class CalendarLegendHelper extends AppHelper {
  * @return bool
  */
 	protected function _isDisplayLegend($vars, $id) {
-		if ($vars['CalendarFrameSetting']['is_select_room']) {
-			if ($id == Room::PRIVATE_PARENT_ID) {
-				if (! Hash::get($vars, 'exposeRoomOptions.' . $vars['myself'])) {
-					return false;
+		if (! $vars['CalendarFrameSetting']['is_select_room']) {
+			return true;
+		}
+		if ($id == Room::PRIVATE_PARENT_ID) {
+			if (! Hash::get($vars, 'exposeRoomOptions.' . $vars['myself'])) {
+				return false;
+			}
+		} elseif ($id == Room::PUBLIC_PARENT_ID) {
+			$roomIds = array_keys($vars['exposeRoomOptions']);
+			foreach ($roomIds as $roomId) {
+				if ($vars['spaceNameOfRooms'][$roomId] == 'public') {
+					return true;
 				}
-			} else {
-				// 表示対象ルームIDの中にあるか
-				if (! Hash::get($vars, 'exposeRoomOptions.' . $id)) {
-					return false;
-				}
+			}
+			return false;
+		} else {
+			// 表示対象ルームIDの中にあるか
+			if (! Hash::get($vars, 'exposeRoomOptions.' . $id)) {
+				return false;
 			}
 		}
 		return true;

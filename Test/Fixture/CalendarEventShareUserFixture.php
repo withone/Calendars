@@ -48,6 +48,15 @@ class CalendarEventShareUserFixture extends CakeTestFixture {
 			'modified_user' => 1,
 			'modified' => '2016-03-24 07:09:58'
 		),
+		array(
+			'id' => 2,
+			'calendar_event_id' => 27,
+			'share_user' => 2,
+			'created_user' => 1,
+			'created' => '2016-03-24 07:09:58',
+			'modified_user' => 1,
+			'modified' => '2016-03-24 07:09:58'
+		),
 	);
 
 }

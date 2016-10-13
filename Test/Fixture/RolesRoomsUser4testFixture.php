@@ -144,6 +144,14 @@ class RolesRoomsUser4testFixture extends RolesRoomsUserFixture {
 			'room_id' => '3', //コミュニティ
 		),
 		//---add end-----
+		//---add start----
+		//array(
+		//	'id' => '16',
+		//	'roles_room_id' => '9', //管理者
+		//	'user_id' => '2',
+		//	'room_id' => '7', //プライベート
+		//),
+		//---add end-----
 	);
 
 }

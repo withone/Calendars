@@ -166,6 +166,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
  */
 	public function dataProviderSave() {
 		$data1 = $this->__getData();
+		$data1['CalendarActionPlan']['detail_end_datetime'] = '2016-07-29'; //終了が翌日の場合
 
 		$data2 = $this->__getData();
 		$data2['CalendarActionPlan']['is_repeat'] = 1;

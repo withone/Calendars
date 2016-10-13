@@ -16,7 +16,7 @@ echo $this->element('Calendars.scripts');
 		echo $this->element('Calendars.Calendars/calendar_tabs', array('active' => 'weekly', 'frameId' => $frameId, 'languageId' => $languageId));
 	?>
 
-	<?php echo $this->CalendarTurnCalendar->getTurnCalendarOperationsWrap('week', $vars); ?>
+	<?php echo $this->CalendarTurnCalendar->getTurnCalendarOperationsWrap('week', 'top', $vars); ?>
 
 	<div class="row"><!--全体枠-->
 		<div class="col-xs-12 col-sm-12 text-center table-responsive">

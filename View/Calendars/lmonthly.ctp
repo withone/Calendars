@@ -14,7 +14,7 @@ echo $this->element('Calendars.scripts');
 	<?php
 		echo $this->element('Calendars.Calendars/calendar_tabs', array('active' => 'lmonthly', 'frameId' => $frameId, 'languageId' => $languageId));
 	?>
-	<?php echo $this->CalendarTurnCalendar->getTurnCalendarOperationsWrap('month', $vars);	?>
+	<?php echo $this->CalendarTurnCalendar->getTurnCalendarOperationsWrap('month', 'top', $vars);	?>
 	<div class="row"><!--全体枠-->
 		<div class="col-xs-12 col-sm-12">
 			<table class='calendar-monthly-table'>
@@ -40,6 +40,7 @@ echo $this->element('Calendars.scripts');
 			</div>
 		</div>
 	</div><!--全体枠END-->
+	<?php echo $this->CalendarTurnCalendar->getTurnCalendarOperationsWrap('month', 'bottom', $vars);	?>
 	<!-- 予定の内容 -->
 	<?php
 		echo $this->CalendarLegend->getCalendarLegend($vars);

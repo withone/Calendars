@@ -21,7 +21,7 @@ echo $this->element('Calendars.scripts');
 			</div>
 		</div>
 		<div class="col-xs-12  col-sm-10 col-sm-pull-2">
-			<?php echo $this->CalendarTurnCalendar->getTurnCalendarOperations('day', $vars); ?>
+			<?php echo $this->CalendarTurnCalendar->getTurnCalendarOperations('day', 'top', $vars); ?>
 		</div>
 	</div>
 	<?php
