@@ -137,8 +137,7 @@ echo $this->element('Calendars.scripts');
 				if (!empty($myself)) {
 					if ($this->request->data['CalendarActionPlan']['plan_room_id'] == $myself) {
 						$dispValue = 'block';
-					}
-					if (count($exposeRoomOptions) === 1) {
+					} else {
 						$keys = array_keys($exposeRoomOptions);
 						if (array_shift($keys) == $myself) {
 							//ルーム選択肢が１つだけで、それがプライベートの時の、特例対応
