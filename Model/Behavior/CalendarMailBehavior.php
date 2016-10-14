@@ -86,6 +86,17 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 		Current::$current['Block']['id'] = $eventBlockId;
 		Current::$current['Block']['key'] = $eventBlockKey;
 
+		// プライベートのものの場合は自分と共有者に
+		if ($isMyPrivateRoom) {
+			$userIds = Hash::merge(
+				array(
+					Current::read('User.id'),
+				),
+				Hash::extract($data['CalendarEventShareUser'], '{n}.share_user')
+			);
+			$model->CalendarEvent->setSetting(MailQueueBehavior::MAIL_QUEUE_SETTING_USER_IDS, $userIds);
+		}
+
 		$model->CalendarEvent->Behaviors->load('Mails.IsMailSend',
 			array(
 				'keyField' => 'key',
