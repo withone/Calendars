@@ -53,7 +53,7 @@ class CalendarFrameSettingFixture extends CakeTestFixture {
 			'display_count' => 3,
 			'is_myroom' => 1,
 			'is_select_room' => 1,
-			'room_id' => 1,
+			'room_id' => '2',
 			'timeline_base_time' => 1,
 			'created_user' => 1,
 			'created' => '2016-03-24 07:10:18',

@@ -75,7 +75,7 @@ class CalendarActionPlanValidateTest extends NetCommonsValidateTest {
 		$data = array(
 			'Frame' => array(
 				'id' => $frameId,
-				'room_id' => 4, //?
+				'room_id' => '5', //?
 				'language_id' => 2, //?
 				'plugin_key' => 'calendars', //?
 			),
@@ -133,7 +133,7 @@ class CalendarActionPlanValidateTest extends NetCommonsValidateTest {
 				'rrule_term' => 'COUNT',
 				'rrule_count' => 3,
 				'rrule_until' => '2016-07-28',
-				'plan_room_id' => 1,
+				'plan_room_id' => '2',
 				'enable_email' => 0,
 				'email_send_timing]' => 5,
 				'location' => '',
@@ -170,7 +170,7 @@ class CalendarActionPlanValidateTest extends NetCommonsValidateTest {
 		$testCurrentData = array(
 			'Frame' => array(
 				'key' => 'frame_3',
-				'room_id' => 1,
+				'room_id' => '2',
 				'language_id' => 2,
 				'plugin_key' => 'calendars',
 				),

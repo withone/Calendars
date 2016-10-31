@@ -75,7 +75,7 @@ class CalendarEventGetSiblingsTest extends WorkflowGetTest {
 		$testCurrentData = array(
 			'Frame' => array(
 				'key' => 'frame_3',
-				'room_id' => 1,
+				'room_id' => '2',
 				'language_id' => 2,
 				'plugin_key' => 'calendars',
 				),
@@ -83,7 +83,7 @@ class CalendarEventGetSiblingsTest extends WorkflowGetTest {
 				'id' => 1,
 				),
 			'Room' => array(
-				'id' => 1,
+				'id' => '2',
 				),
 			'User' => array(
 				'id' => 1,

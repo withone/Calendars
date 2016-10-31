@@ -153,7 +153,7 @@ class CalendarPlansControllerDeleteTest extends WorkflowControllerDeleteTest {
 		/*
 		$testRoomInfos = array(
 			'roomInfos' => array(
-				'1' => array(
+				'2' => array(
 					'role_key' => 'general_user',
 					'use_workflow' => '1',
 					'content_publishable_value' => 0,

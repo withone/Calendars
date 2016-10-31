@@ -153,7 +153,7 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 				'rrule_term' => 'COUNT',
 				'rrule_count' => '3',
 				'rrule_until' => '2016-09-04',
-				'plan_room_id' => '1',
+				'plan_room_id' => '2',
 				'enable_email' => '',
 				'email_send_timing' => '5',
 				'location' => '',

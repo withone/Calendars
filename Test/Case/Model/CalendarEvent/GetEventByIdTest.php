@@ -74,7 +74,7 @@ class CalendarEventGetEventByIdTest extends WorkflowGetTest {
 		$testCurrentData = array(
 			'Frame' => array(
 				'key' => 'frame_3',
-				'room_id' => 1,
+				'room_id' => '2',
 				'language_id' => 2,
 				'plugin_key' => 'calendars',
 				),
@@ -82,7 +82,7 @@ class CalendarEventGetEventByIdTest extends WorkflowGetTest {
 				'id' => 1,
 				),
 			'Room' => array(
-				'id' => 1,
+				'id' => '2',
 				),
 			'User' => array(
 				'id' => $userId,
@@ -95,7 +95,7 @@ class CalendarEventGetEventByIdTest extends WorkflowGetTest {
 		// カレンダー権限設定情報確保
 		$testRoomInfos = array(
 			'roomInfos' => array(
-				'1' => array(
+				'2' => array(
 					'role_key' => 'room_administrator',
 					'use_workflow' => '',
 					'content_publishable_value' => 0,

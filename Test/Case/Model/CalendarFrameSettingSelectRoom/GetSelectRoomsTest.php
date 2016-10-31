@@ -87,13 +87,13 @@ class CalendarFrameSettingSelectRoomGetSelectRoomsTest extends WorkflowGetTest {
 		$rooms = array(
 			1 => array(
 				'calendar_frame_setting_id' => 1,
-				'room_id' => 1,
+				'room_id' => '2',
 			),
 			//2 => 2,
 			//3 => 3,
 			4 => array(
 				'calendar_frame_setting_id' => 1,
-				'room_id' => 4,
+				'room_id' => '5',
 			),
 			5 => array(
 				'calendar_frame_setting_id' => null,

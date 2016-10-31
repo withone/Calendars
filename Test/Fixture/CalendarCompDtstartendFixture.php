@@ -57,7 +57,7 @@ class CalendarCompDtstartendFixture extends CakeTestFixture {
 		array(
 			'id' => 1,
 			'calendar_comp_rrule_id' => 1,
-			'room_id' => 1,
+			'room_id' => '2',
 			'language_id' => 1,
 			'target_user' => 1,
 			'title' => 'Lorem ipsum dolor sit amet',

@@ -42,7 +42,7 @@ class CalendarFrameSettingSelectRoomFixture extends CakeTestFixture {
 		array(
 			'id' => 1,
 			'calendar_frame_setting_id' => 1,
-			'room_id' => 1,
+			'room_id' => '2',
 			'created_user' => 1,
 			'created' => '2016-03-24 07:10:11',
 			'modified_user' => 1,
@@ -51,7 +51,7 @@ class CalendarFrameSettingSelectRoomFixture extends CakeTestFixture {
 		array(
 			'id' => 2,
 			'calendar_frame_setting_id' => 1,
-			'room_id' => 2,
+			'room_id' => '3',
 			'created_user' => 1,
 			'created' => '2016-03-24 07:10:11',
 			'modified_user' => 1,
@@ -60,7 +60,7 @@ class CalendarFrameSettingSelectRoomFixture extends CakeTestFixture {
 		array(
 			'id' => 3,
 			'calendar_frame_setting_id' => 1,
-			'room_id' => 3,
+			'room_id' => '4',
 			'created_user' => 1,
 			'created' => '2016-03-24 07:10:11',
 			'modified_user' => 1,
@@ -69,7 +69,7 @@ class CalendarFrameSettingSelectRoomFixture extends CakeTestFixture {
 		array(
 			'id' => 4,
 			'calendar_frame_setting_id' => 1,
-			'room_id' => 4,
+			'room_id' => '5',
 			'created_user' => 1,
 			'created' => '2016-03-24 07:10:11',
 			'modified_user' => 1,

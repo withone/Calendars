@@ -40,7 +40,7 @@ class BlockSettingForCalendarFixture extends BlockSettingFixture {
 	public $records = array(
 		array(
 			'plugin_key' => 'calendars',
-			'room_id' => 1,
+			'room_id' => '2',
 			'block_key' => 'block_1',
 			'field_name' => BlockSettingBehavior::FIELD_USE_WORKFLOW,
 			'value' => '1',
