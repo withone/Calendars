@@ -106,23 +106,23 @@ class CalendarFrameSettingSelectRoomSaveCalendarFrameSettingSelectRoomTest exten
 
 		$data['CalendarFrameSettingSelectRoom'] = array();
 		$selectRoomFixture = new CalendarFrameSettingSelectRoomFixture();
-		$data['CalendarFrameSettingSelectRoom'][1] = $selectRoomFixture->records[0];
-		$data['CalendarFrameSettingSelectRoom'][1]['room_id'] = '';
-		$data['CalendarFrameSettingSelectRoom'][2] = $selectRoomFixture->records[1];
-		$data['CalendarFrameSettingSelectRoom'][3] = $selectRoomFixture->records[2];
-		$data['CalendarFrameSettingSelectRoom'][4] = $selectRoomFixture->records[3];
-		$data['CalendarFrameSettingSelectRoom'][5] = array(
+		$data['CalendarFrameSettingSelectRoom']['2'] = $selectRoomFixture->records[0];
+		$data['CalendarFrameSettingSelectRoom']['2']['room_id'] = '';
+		$data['CalendarFrameSettingSelectRoom']['3'] = $selectRoomFixture->records[1];
+		$data['CalendarFrameSettingSelectRoom']['4'] = $selectRoomFixture->records[2];
+		$data['CalendarFrameSettingSelectRoom']['5'] = $selectRoomFixture->records[3];
+		$data['CalendarFrameSettingSelectRoom']['6'] = array(
 			'calendar_frame_setting_id' => 1,
-			'room_id' => 5
+			'room_id' => '6'
 		);
 		$results = array();
 		// * 削除の登録処理
 		$results[0] = array($data);
 		// * 登録処理
-		$data['CalendarFrameSettingSelectRoom'][1]['room_id'] = '1';
+		$data['CalendarFrameSettingSelectRoom']['2']['room_id'] = '2';
 		$results[1] = array($data);
-		$results[1] = Hash::remove($results[1], '1.CalendarFrameSettingSelectRoom.created');
-		$results[1] = Hash::remove($results[1], '1.CalendarFrameSettingSelectRoom.created_user');
+		$results[1] = Hash::remove($results[1], '2.CalendarFrameSettingSelectRoom.created');
+		$results[1] = Hash::remove($results[1], '2.CalendarFrameSettingSelectRoom.created_user');
 
 		return $results;
 	}

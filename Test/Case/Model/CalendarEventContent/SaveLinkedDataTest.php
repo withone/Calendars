@@ -132,7 +132,7 @@ class CalendarEventContentSaveLinkedDataTest extends NetCommonsModelTestCase {
 		$testCurrentData = array(
 			'Frame' => array(
 				'key' => 'frame_3',
-				'room_id' => 1,
+				'room_id' => '2',
 				'language_id' => 2,
 				'plugin_key' => 'calendars',
 				),
@@ -140,7 +140,7 @@ class CalendarEventContentSaveLinkedDataTest extends NetCommonsModelTestCase {
 				'id' => 2,
 				),
 			'Room' => array(
-				'id' => 1,
+				'id' => '2',
 				),
 			'User' => array(
 				'id' => 1, //システム管理者
@@ -153,7 +153,7 @@ class CalendarEventContentSaveLinkedDataTest extends NetCommonsModelTestCase {
 		// カレンダー権限設定情報確保
 		$testRoomInfos = array(
 			'roomInfos' => array(
-				'1' => array(
+				'2' => array(
 					'role_key' => 'room_administrator',
 					'use_workflow' => '',
 					'content_publishable_value' => 1,
@@ -186,7 +186,7 @@ class CalendarEventContentSaveLinkedDataTest extends NetCommonsModelTestCase {
 		$testCurrentData = array(
 			'Frame' => array(
 				'key' => 'frame_3',
-				'room_id' => 1,
+				'room_id' => '2',
 				'language_id' => 2,
 				'plugin_key' => 'calendars',
 				),
@@ -194,7 +194,7 @@ class CalendarEventContentSaveLinkedDataTest extends NetCommonsModelTestCase {
 				'id' => 2,
 				),
 			'Room' => array(
-				'id' => 1,
+				'id' => '2',
 				),
 			'User' => array(
 				'id' => 1,
@@ -207,7 +207,7 @@ class CalendarEventContentSaveLinkedDataTest extends NetCommonsModelTestCase {
 		// カレンダー権限設定情報確保
 		$testRoomInfos = array(
 			'roomInfos' => array(
-				'1' => array(
+				'2' => array(
 					'role_key' => 'room_administrator',
 					'use_workflow' => '',
 					'content_publishable_value' => 1,

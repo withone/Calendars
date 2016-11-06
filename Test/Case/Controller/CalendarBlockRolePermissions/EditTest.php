@@ -194,7 +194,7 @@ class CalendarsBlockRolePermissionsControllerEditTest extends BlockRolePermissio
 		// カレンダー権限設定情報確保
 		$testRoomInfos = array(
 			'roomInfos' => array(
-				'1' => array(
+				'2' => array(
 					'role_key' => 'room_administrator',
 					'use_workflow' => '',
 					'content_publishable_value' => 1,
@@ -267,7 +267,7 @@ class CalendarsBlockRolePermissionsControllerEditTest extends BlockRolePermissio
 		// カレンダー権限設定情報確保
 		$testRoomInfos = array(
 			'roomInfos' => array(
-				'1' => array(
+				'2' => array(
 					'role_key' => 'room_administrator',
 					'use_workflow' => '',
 					'content_publishable_value' => 1,

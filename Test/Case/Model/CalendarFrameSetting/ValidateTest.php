@@ -92,7 +92,7 @@ class CalendarFrameSettingValidateTest extends NetCommonsValidateTest {
 				'message' => __d('net_commons', 'Invalid request.')),
 			array('data' => $data, 'field' => 'room_id', 'value' => 'aa',
 				'message' => __d('net_commons', 'Invalid request.')),
-			array('data' => $data, 'field' => 'room_id', 'value' => '6',
+			array('data' => $data, 'field' => 'room_id', 'value' => '7',
 				'message' => __d('net_commons', 'Invalid request.')),
 			array('data' => $data, 'field' => 'timeline_base_time', 'value' => 'aa',
 				'message' => __d('net_commons', 'Invalid request.')),

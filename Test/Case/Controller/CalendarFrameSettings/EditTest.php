@@ -73,7 +73,7 @@ class CalendarsFrameSettingsControllerEditTest extends NetCommonsControllerTestC
 		$data['CalendarFrameSettingSelectRoom'][4] = $selectRoomFixture->records[3];
 		$data['CalendarFrameSettingSelectRoom'][5] = array(
 			'calendar_frame_setting_id' => 1,
-			'room_id' => 5
+			'room_id' => '6'
 		);
 		return $data;
 	}

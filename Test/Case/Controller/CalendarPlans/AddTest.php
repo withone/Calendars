@@ -140,7 +140,7 @@ class CalendarPlansControllerAddTest extends WorkflowControllerAddTest {
 				'rrule_term' => 'COUNT',
 				'rrule_count' => '3',
 				'rrule_until' => '2016-09-04',
-				'plan_room_id' => '1',
+				'plan_room_id' => '2',
 				'enable_email' => '',
 				'email_send_timing' => '5',
 				'location' => '',
@@ -240,12 +240,12 @@ class CalendarPlansControllerAddTest extends WorkflowControllerAddTest {
 
 		//共有者あり
 		$dataGroup = $data;
-		$dataGroup['CalendarActionPlan']['plan_room_id'] = '7';
+		$dataGroup['CalendarActionPlan']['plan_room_id'] = '8';
 		$dataGroup['GroupsUser'][0]['user_id'] = 2;
 		$dataGroup['GroupsUser'][1]['user_id'] = 1;
 
 		$dataGroupN = $dataGroup;
-		$dataGroupN['CalendarActionPlan']['plan_room_id'] = '4';
+		$dataGroupN['CalendarActionPlan']['plan_room_id'] = '5';
 
 		//繰り返しあり
 		$dataRep = $data;

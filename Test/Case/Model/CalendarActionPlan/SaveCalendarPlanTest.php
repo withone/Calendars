@@ -75,7 +75,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 			'save_1' => '',
 			'Frame' => array(
 				'id' => $frameId,
-				'room_id' => 1, //?
+				'room_id' => '2', //?
 				'language_id' => 2, //?
 				'plugin_key' => 'calendars', //?
 			),
@@ -135,7 +135,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 				'rrule_term' => 'COUNT',
 				'rrule_count' => 3,
 				'rrule_until' => '2016-07-28',
-				'plan_room_id' => 1,
+				'plan_room_id' => '2',
 				'enable_email' => 0,
 				'email_send_timing' => 5,
 				'location' => '',
@@ -295,7 +295,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		$testCurrentData = array(
 			'Frame' => array(
 				'key' => 'frame_3',
-				'room_id' => 1,
+				'room_id' => '2',
 				'language_id' => 2,
 				'plugin_key' => 'calendars',
 				),
@@ -303,7 +303,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 				'id' => 2,
 				),
 			'Room' => array(
-				'id' => 1,
+				'id' => '2',
 				),
 			'User' => array(
 				'id' => 1, //システム管理者
@@ -316,7 +316,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		// カレンダー権限設定情報確保
 		$testRoomInfos = array(
 			'roomInfos' => array(
-				'1' => array(
+				'2' => array(
 					'role_key' => 'room_administrator',
 					'use_workflow' => '',
 					'content_publishable_value' => 1,
@@ -370,7 +370,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		$testCurrentData = array(
 			'Frame' => array(
 				'key' => 'frame_3',
-				'room_id' => 1,
+				'room_id' => '2',
 				'language_id' => 2,
 				'plugin_key' => 'calendars',
 				),
@@ -378,7 +378,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 				'id' => 2,
 				),
 			'Room' => array(
-				'id' => 1,
+				'id' => '2',
 				),
 			'User' => array(
 				'id' => 1,
@@ -391,7 +391,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		// カレンダー権限設定情報確保
 		$testRoomInfos = array(
 			'roomInfos' => array(
-				'1' => array(
+				'2' => array(
 					'role_key' => 'room_administrator',
 					'use_workflow' => '',
 					'content_publishable_value' => 1,
@@ -439,7 +439,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		$testCurrentData = array(
 			'Frame' => array(
 				'key' => 'frame_3',
-				'room_id' => 1,
+				'room_id' => '2',
 				'language_id' => 2,
 				'plugin_key' => 'calendars',
 				),
@@ -447,7 +447,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 				'id' => 2,
 				),
 			'Room' => array(
-				'id' => 1,
+				'id' => '2',
 				),
 			'User' => array(
 				'id' => 1,
@@ -460,7 +460,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		// カレンダー権限設定情報確保
 		$testRoomInfos = array(
 			'roomInfos' => array(
-				'1' => array(
+				'2' => array(
 					'role_key' => 'room_administrator',
 					'use_workflow' => '',
 					'content_publishable_value' => 1,

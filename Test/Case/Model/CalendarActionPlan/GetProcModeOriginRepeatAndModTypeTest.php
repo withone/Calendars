@@ -74,7 +74,7 @@ class CalendarActionPlanGetProcModeOriginRepeatAndModTypeTest extends NetCommons
 			'save_1' => '',
 			'Frame' => array(
 				'id' => $frameId,
-				'room_id' => 1, //?
+				'room_id' => '2', //?
 				'language_id' => 2, //?
 				'plugin_key' => 'calendars', //?
 			),
@@ -134,7 +134,7 @@ class CalendarActionPlanGetProcModeOriginRepeatAndModTypeTest extends NetCommons
 				'rrule_term' => 'COUNT',
 				'rrule_count' => 3,
 				'rrule_until' => '2016-07-28',
-				'plan_room_id' => 1,
+				'plan_room_id' => '2',
 				'enable_email' => 0,
 				'email_send_timing' => 5,
 				'location' => '',
@@ -183,7 +183,7 @@ class CalendarActionPlanGetProcModeOriginRepeatAndModTypeTest extends NetCommons
  *
  * @param array $data data
  * @param array $originEvent
- * @param int $userId ユーザーID 
+ * @param int $userId ユーザーID
  * @param mix $expect 期待値
  * @dataProvider dataProviderGet
  * @return void
@@ -194,7 +194,7 @@ class CalendarActionPlanGetProcModeOriginRepeatAndModTypeTest extends NetCommons
 		$testCurrentData = array(
 			'Frame' => array(
 				'key' => 'frame_3',
-				'room_id' => 1,
+				'room_id' => '2',
 				'language_id' => 2,
 				'plugin_key' => 'calendars',
 				),
@@ -202,7 +202,7 @@ class CalendarActionPlanGetProcModeOriginRepeatAndModTypeTest extends NetCommons
 				'id' => 1,
 				),
 			'Room' => array(
-				'id' => 1,
+				'id' => '2',
 				),
 			'User' => array(
 				'id' => $userId,
@@ -215,7 +215,7 @@ class CalendarActionPlanGetProcModeOriginRepeatAndModTypeTest extends NetCommons
 		// カレンダー権限設定情報確保
 		$testRoomInfos = array(
 			'roomInfos' => array(
-				'1' => array(
+				'2' => array(
 					'role_key' => 'room_administrator',
 					'use_workflow' => '',
 					'content_publishable_value' => 0,

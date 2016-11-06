@@ -40,28 +40,28 @@ class RolesRoom4testFixture extends RolesRoomFixture {
  */
 	public $records = array(
 		//パブリックスペース
-		array('id' => '1', 'room_id' => '1', 'role_key' => 'room_administrator'),
-		array('id' => '2', 'room_id' => '1', 'role_key' => 'chief_editor'),
-		array('id' => '3', 'room_id' => '1', 'role_key' => 'editor'),
-		array('id' => '4', 'room_id' => '1', 'role_key' => 'general_user'),
-		array('id' => '5', 'room_id' => '1', 'role_key' => 'visitor'),
-		//パブリックスペース、別ルーム(room_id=4)
-		array('id' => '6', 'room_id' => '4', 'role_key' => 'room_administrator'),
-		array('id' => '11', 'room_id' => '4', 'role_key' => 'chief_editor'),
-		array('id' => '12', 'room_id' => '4', 'role_key' => 'editor'),
-		array('id' => '13', 'room_id' => '4', 'role_key' => 'general_user'),
-		array('id' => '14', 'room_id' => '4', 'role_key' => 'visitor'),
-		//パブリックスペース、別ルーム(room_id=5、ブロックなし)
-		array('id' => '7', 'room_id' => '5', 'role_key' => 'room_administrator'),
-		//コミュニティスペース、別ルーム(room_id=6, 準備中)
-		array('id' => '8', 'room_id' => '6', 'role_key' => 'room_administrator'),
-		//プライベートスペース、別ルーム(room_id=7, プライベートルーム)
-		array('id' => '9', 'room_id' => '7', 'role_key' => 'room_administrator'),
-		//パブリックスペース、サブサブルーム(room_id=8)
-		array('id' => '10', 'room_id' => '8', 'role_key' => 'room_administrator'),
+		array('id' => '1', 'room_id' => '2', 'role_key' => 'room_administrator'),
+		array('id' => '2', 'room_id' => '2', 'role_key' => 'chief_editor'),
+		array('id' => '3', 'room_id' => '2', 'role_key' => 'editor'),
+		array('id' => '4', 'room_id' => '2', 'role_key' => 'general_user'),
+		array('id' => '5', 'room_id' => '2', 'role_key' => 'visitor'),
+		//パブリックスペース、別ルーム(room_id=5)
+		array('id' => '6', 'room_id' => '5', 'role_key' => 'room_administrator'),
+		array('id' => '11', 'room_id' => '5', 'role_key' => 'chief_editor'),
+		array('id' => '12', 'room_id' => '5', 'role_key' => 'editor'),
+		array('id' => '13', 'room_id' => '5', 'role_key' => 'general_user'),
+		array('id' => '14', 'room_id' => '5', 'role_key' => 'visitor'),
+		//パブリックスペース、別ルーム(room_id=6、ブロックなし)
+		array('id' => '7', 'room_id' => '6', 'role_key' => 'room_administrator'),
+		//コミュニティスペース、別ルーム(room_id=7, 準備中)
+		array('id' => '8', 'room_id' => '7', 'role_key' => 'room_administrator'),
+		//プライベートスペース、別ルーム(room_id=8, プライベートルーム)
+		array('id' => '9', 'room_id' => '8', 'role_key' => 'room_administrator'),
+		//パブリックスペース、サブサブルーム(room_id=9)
+		array('id' => '10', 'room_id' => '9', 'role_key' => 'room_administrator'),
 		//コミュニティスペース
-		array('id' => '15', 'room_id' => '3', 'role_key' => 'room_administrator'),
-		array('id' => '16', 'room_id' => '3', 'role_key' => 'general_user'),
+		array('id' => '15', 'room_id' => '4', 'role_key' => 'room_administrator'),
+		array('id' => '16', 'room_id' => '4', 'role_key' => 'general_user'),
 	);
 
 }

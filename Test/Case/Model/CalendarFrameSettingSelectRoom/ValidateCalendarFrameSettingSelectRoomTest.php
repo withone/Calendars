@@ -88,15 +88,15 @@ class CalendarFrameSettingSelectRoomValidateCalendarFrameSettingSelectRoomTest e
 			'CalendarFrameSettingSelectRoom' => array(
 				array(
 					'calendar_frame_setting_id' => 1,
-					'room_id' => 1
+					'room_id' => '2'
 				),
 				array(
 					'calendar_frame_setting_id' => 1,
-					'room_id' => 4
+					'room_id' => '5'
 				),
 				array(
 					'calendar_frame_setting_id' => 1,
-					'room_id' => 5
+					'room_id' => '6'
 				),
 			)
 		);
@@ -108,7 +108,7 @@ class CalendarFrameSettingSelectRoomValidateCalendarFrameSettingSelectRoomTest e
 				),
 				array(
 					'calendar_frame_setting_id' => 1,
-					'room_id' => 4
+					'room_id' => '5'
 				),
 				array(
 					'calendar_frame_setting_id' => 1,

@@ -126,7 +126,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 		$data3 = array();
 		$expect3 = array();
 		$data3['Frame'] = array(
-			'room_id' => 1,
+			'room_id' => '2',
 			'language_id' => 2,
 			'plugin_key' => 'calendars',
 			'key' => 'key_1');
@@ -135,7 +135,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 		$data4 = array();
 		$expect4 = array();
 		$data4['Frame'] = array(
-			'room_id' => 16,
+			'room_id' => '17',
 			'language_id' => 2,
 			'plugin_key' => 'calendars',
 			'key' => 'frame_3',
@@ -153,7 +153,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 		$data5 = array();
 		$expect5 = array();
 		$data5['Frame'] = array(
-			'room_id' => 1,
+			'room_id' => '2',
 			'language_id' => 2,
 			'plugin_key' => 'calendars',
 			'key' => 'key_1',
@@ -164,7 +164,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 		$data6 = array();
 		$expect6 = array();
 		$data6['Frame'] = array(
-			'room_id' => 16,
+			'room_id' => '17',
 			'language_id' => 2,
 			'plugin_key' => 'calendars',
 			'key' => 'key_2',
@@ -175,7 +175,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 		$data7 = array();
 		$expect7 = array();
 		$data7['Frame'] = array(
-			'room_id' => 16,
+			'room_id' => '17',
 			'language_id' => 2,
 			'plugin_key' => 'calendars',
 			'key' => 'key_3',
