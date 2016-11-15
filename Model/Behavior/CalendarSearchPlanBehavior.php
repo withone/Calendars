@@ -138,11 +138,13 @@ class CalendarSearchPlanBehavior extends CalendarAppBehavior {
 		///////////////////////////////////////////////////////////////////////
 		//自ユーザーを共有指定している他人のプライベート予定をとってくる。
 		//ここは、上記のルームIDの範疇外になるので、別にfindして、plansに
-		//マージすることとする。
-		$privateRoomIds = Hash::extract(
-			($model->CalendarActionPlan->getAllActivePrivateRoomsOfSpace()),
-			'{n}.RoomsLanguage.{n}[language_id=' . Current::read('Language.id') . '].room_id');
-		$privateRoomIds = array_diff($privateRoomIds, (empty($myself) ? array() : array($myself)));
+		//マージすることとする。自分のルームID以外で、かつ、ShareUserが自分である
+		//情報を取得する。
+
+		if (empty($vars['myself'])) {
+			return array();
+		}
+		$myself = $vars['myself'];
 
 		//optionsの再設定
 		$options = Hash::merge(array(
@@ -162,7 +164,10 @@ class CalendarSearchPlanBehavior extends CalendarAppBehavior {
 			),
 			'conditions' => array(
 				$model->CalendarEventShareUser->alias . '.id NOT' => null,
-				$model->alias . '.room_id' => $privateRoomIds,	//IN
+				//$model->alias . '.room_id' => $privateRoomIds,
+				'NOT' => array(
+						$model->alias . '.room_id' => $myself
+				), // 自分以外のルーム
 				$model->CalendarEventShareUser->alias . '.share_user' => Current::read('User.id'),
 			),
 			'joins' => array(

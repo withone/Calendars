@@ -266,36 +266,6 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 	}
 
 /**
- * getAllActivePrivateRoomsOfSpace
- *
- * プライベート空間のアクティブな全ルーム群を取得する
- *
- * @param Model &$model 実際のモデル名
- * @return array 取得されたルーム配列
- */
-	public function getAllActivePrivateRoomsOfSpace(Model &$model) {
-		$spaceId = Space::PRIVATE_SPACE_ID;
-		//指定空間配下で読み取り可能なルーム群を取得し、(room_id => room情報配列)集合にして返す。
-		$conditions = $model->Room->getReadableRoomsConditions(array(
-			'Room.space_id' => $spaceId,
-			'Room.active' => 1,
-		));
-
-		//生成した条件の一部修正。
-		//未ログインだとLEFT JOIN, ログイン後だと INNER JOINとなる。
-		//ここで指定したい条件は LEFT JOINだけなので、joinsのtypeをすりかえる。
-		//
-		foreach ($conditions['joins'] as &$join) {
-			if ($join['type'] === 'INNER') {
-				$join['type'] = 'LEFT';
-			}
-		}
-		//CakeLog::debug("DBG: getRoomsOfSpace conditions[" . print_r($conditions, true) . "]");
-		$rooms = Hash::combine(($model->Room->find('all', $conditions)), '{n}.Room.id', '{n}');
-		return $rooms;
-	}
-
-/**
  * __getPrivateRoomName
  *
  * プライベートルーム名の取得
