@@ -257,7 +257,7 @@ class CalendarEventFixture extends CakeTestFixture {
 		),
 		array( //adminが書いた予定 繰り返しあり(日/2回) 1
 			'id' => '7',
-			'calendar_rrule_id' => '7',
+			'calendar_rrule_id' => '8',
 			'key' => 'calendarplan7',
 			'room_id' => '2',
 			'language_id' => '2',
@@ -282,14 +282,14 @@ class CalendarEventFixture extends CakeTestFixture {
 			'exception_event_id' => '0',
 			'is_enable_mail' => false,
 			'email_send_timing' => '0',
-			'created_user' => '1',
+			'created_user' => '1', //1
 			'created' => '2016-03-24 07:09:51',
-			'modified_user' => '1',
+			'modified_user' => '1', //1
 			'modified' => '2016-03-24 07:09:51'
 		),
 		array( //adminが書いた予定 繰り返しあり(日/2回) 2
 			'id' => '8',
-			'calendar_rrule_id' => '7', //8
+			'calendar_rrule_id' => '8', //8
 			'key' => 'calendarplan7',
 			'room_id' => '2',
 			'language_id' => '2',
@@ -619,7 +619,7 @@ class CalendarEventFixture extends CakeTestFixture {
 			'location' => 'Lorem ipsum dolor sit amet',
 			'contact' => 'Lorem ipsum dolor sit amet',
 			'description' => 'testdescription',
-			'is_allday' => true,
+			'is_allday' => false, //test
 			'start_date' => '20160831',
 			'start_time' => '150000',
 			'dtstart' => '20160831150000',
@@ -901,7 +901,7 @@ class CalendarEventFixture extends CakeTestFixture {
 			'id' => '27',
 			'calendar_rrule_id' => '27',
 			'key' => 'calendarplan27',
-			'room_id' => '4',
+			'room_id' => '8',
 			'language_id' => '2',
 			'target_user' => '1',
 			'title' => 'calendarplan27',

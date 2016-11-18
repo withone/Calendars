@@ -20,7 +20,7 @@ App::uses('CalendarFrameSettingSelectRoomFixture', 'Calendars.Test/Fixture');
  * @author Allcreator <info@allcreator.net>
  * @package NetCommons\Calendars\Test\Case\Controller
  */
-class CalendarsFrameSettingsControllerEditTest extends NetCommonsControllerTestCase {
+class CalendarFrameSettingsControllerEditTest extends NetCommonsControllerTestCase {
 
 /**
  * Fixtures

@@ -51,7 +51,7 @@ class CalendarEventShareUserFixture extends CakeTestFixture {
 		array(
 			'id' => 2,
 			'calendar_event_id' => 27,
-			'share_user' => 2,
+			'share_user' => 3, //編集長と共有
 			'created_user' => 1,
 			'created' => '2016-03-24 07:09:58',
 			'modified_user' => 1,

@@ -73,7 +73,7 @@ class CalendarEventShareUserValidateTest extends NetCommonsValidateTest {
 		//$data['CalendarMailSetting'] = (new CalendarMailSettingFixture())->records[0];
 		$data = array();
 		return array(
-			array('data' => $data, 'field' => 'calender_event_id', 'value' => '',
+			array('data' => $data, 'field' => 'calendar_event_id', 'value' => 'a',
 				'message' => __d('net_commons', 'Invaid request')),
 			array('data' => $data, 'field' => 'share_user', 'value' => 'a',
 				'message' => __d('net_commons', 'Invaid request')),
