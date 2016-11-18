@@ -38,8 +38,9 @@ class CalendarsUtilityCalendarSupportSetDateFormatWithTimezoneoffsetTest extends
 /**
  * setDateFormatWithTimezoneoffset()のテスト
  *
- * @param string $year 年
- * @param string $month 月
+ * @param string $timezoneOffset timezoneOffset
+ * @param string $insertFlag ユーザー系/サーバー系
+ * @param string $time time
  * @param string $expect 期待値
  * @dataProvider dataProviderSetDateFormatWithTimezoneoffset
  *
