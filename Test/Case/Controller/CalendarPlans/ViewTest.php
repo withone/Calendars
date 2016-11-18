@@ -10,7 +10,7 @@
  */
 
 App::uses('CalendarPlansController', 'CalendarPlans.Controller');
-App::uses('NetCommonsControllerTestCase', 'NetCommons.TestSuite');
+//App::uses('NetCommonsControllerTestCase', 'NetCommons.TestSuite');
 App::uses('WorkflowControllerViewTest', 'Workflow.TestSuite');
 App::uses('UserAttributeLayoutFixture', 'UserAttributes.Test/Fixture');
 
@@ -46,6 +46,7 @@ class CalendarPlansControllerViewTest extends WorkflowControllerViewTest {
 		'plugin.user_attributes.user_attribute_layout',
 		'plugin.rooms.room_role_permission4test', //test
 		'plugin.calendars.plugins_role4test', //add
+		'plugin.calendars.room4test',
 	);
 
 /**
@@ -270,7 +271,7 @@ class CalendarPlansControllerViewTest extends WorkflowControllerViewTest {
 			'urlOptions' => array('frame_id' => null, 'key' => 'calendarplan6'),
 			'assert' => array('method' => 'assertNotEmpty'),
 		);
-		//adminが編集長と共有(差し込まれた予定)
+		//adminが編集長(chief_editor)と共有(差し込まれた予定)
 		$results[16] = array(
 			'urlOptions' => array('frame_id' => '6', 'key' => 'calendarplan27'),
 			'assert' => array('method' => 'assertNotEmpty'),
@@ -295,6 +296,9 @@ class CalendarPlansControllerViewTest extends WorkflowControllerViewTest {
 	public function testViewByPublishable($urlOptions, $assert, $exception = null, $return = 'view') {
 		//ログイン
 		TestAuthGeneral::login($this, Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR);
+
+		//テスト設定
+		CakeSession::write('Auth.User.UserRoleSetting.use_private_room', true);
 
 		//テスト実施
 		$url = Hash::merge(array(

@@ -39,9 +39,10 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 		'plugin.rooms.rooms_language4test',
 		'plugin.holidays.holiday',
 		'plugin.holidays.holiday_rrule',
-		'plugin.calendars.roles_room4test', //add
-		'plugin.calendars.roles_rooms_user4test', //add
+		'plugin.calendars.roles_room4test',
+		'plugin.calendars.roles_rooms_user4test',
 		'plugin.user_attributes.user_attribute_layout',
+		//'plugin.calendars.room4test',
 		'plugin.calendars.room4test',
 		//'plugin.rooms.room_role', //add 2016.09.30
 		//'plugin.rooms.room_role_permission4test', //add 2016.09.30
@@ -69,30 +70,29 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
  * @return array
  */
 	private function __getData($originEventId = '0') {
-		$frameId = '6';
-		$blockId = '2';
 		$blockKey = 'block_1';
-
+		$originalRruleId = $originEventId;
 		if ($originEventId == 1) {
 			$originEventKey = 'calendarplan1';
-			$originalRruleId = 1;
 		} elseif ($originEventId == 2) {
 			$originEventKey = 'calendarplan2';
-			$originalRruleId = 2;
 		} elseif ($originEventId == 4) {
 			$originEventKey = 'calendarplan4';
-			$originalRruleId = 4;
 		} elseif ($originEventId == 6) {
 			$originEventKey = 'calendarplan6';
-			$originalRruleId = 6;
+		} elseif ($originEventId == 8) {
+			$originEventKey = 'calendarplan7';
+			$originalRruleId = 8;
+		} elseif ($originEventId == 27) {
+			$originEventKey = 'calendarplan27';
 		}
 		$data = array(
 			'save_' . WorkflowComponent::STATUS_PUBLISHED => null,
 			'Frame' => array(
-				'id' => $frameId
+				'id' => '6',
 			),
 			'Block' => array(
-				'id' => $blockId,
+				'id' => '2',
 				'key' => $blockKey,
 			),
 			'CalendarActionPlan' => array(
@@ -147,23 +147,24 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 						'rrule_bymonth' => array(
 							'YEARLY' => array(
 								'0' => 9,
-							),
-					),
-				),
+				), ), ),
+				'rrule_bymonth' => array(
+					'YEARLY' => array(
+						'0' => 7,
+				), ),
 				'rrule_term' => 'COUNT',
 				'rrule_count' => '3',
 				'rrule_until' => '2016-09-04',
 				'plan_room_id' => '2',
 				'enable_email' => '',
 				'email_send_timing' => '5',
-				'location' => '',
+				'location' => 'locationText',
 				'contact' => '',
 				'description' => '',
 				'timezone_offset' => 'Asia/Tokyo',
 			),
 			'WorkflowComment' => array(
-				'comment' => 'WorkflowComment save test'
-			),
+				'comment' => 'WorkflowComment save test'),
 		);
 		return $data;
 	}
@@ -325,11 +326,31 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 			//'assert' => array('method' => 'assertNotEmpty'),
 			'assert' => array('method' => 'assertContains', 'expected' => __d('calendars', 'only this one')),
 		);
-		//繰り返しあり
+		//繰り返しあり(WEEKLY)
 		$results[2] = array(
 			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan10'),
-			//'assert' => array('method' => 'assertNotEmpty'),
 			'assert' => array('method' => 'assertContains', 'expected' => __d('calendars', 'only this one')), //あとで変更pending
+		);
+		//繰り返しあり(MONTHLY曜日指定)
+		$results[3] = array(
+			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan12'),
+			'assert' => array('method' => 'assertContains', 'expected' => __d('calendars', 'only this one')),
+		);
+		//繰り返しあり(MONTHLY日指定)
+		$results[4] = array(
+			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan17'),
+			//'assert' => array('method' => 'assertContains', 'expected' => __d('calendars', 'only this one')),
+			'assert' => array('method' => 'assertNotContains', 'expected' => __d('calendars', 'only this one')), //CalendarEventが1件の場合は、繰り返し編集の設定なし
+		);
+		//繰り返しあり(YEARLY)(COUNT)
+		$results[5] = array(
+			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan14'),
+			'assert' => array('method' => 'assertContains', 'expected' => __d('calendars', 'only this one')),
+		);
+		//繰り返しあり(YEARLY)(UNTIL)
+		$results[6] = array(
+			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan18'),
+			'assert' => array('method' => 'assertNotContains', 'expected' => __d('calendars', 'only this one')), //CalendarEventが1件の場合は、繰り返し編集の設定なし
 		);
 		array_push($results, Hash::merge($results[$base], array(
 			'assert' => array('method' => 'assertActionLink', 'action' => 'delete', 'linkExist' => false, 'url' => array()),
@@ -376,6 +397,9 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 			TestAuthGeneral::login($this, $role);
 		}
 
+		//テスト設定
+		CakeSession::write('Auth.User.UserRoleSetting.use_private_room', true);
+
 		//テスト実施
 		$this->_testPostAction(
 			'post', $data, Hash::merge(array('action' => 'edit'), $urlOptions), $exception, $return
@@ -408,7 +432,24 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 	public function dataProviderEditPost() {
 		$data = $this->__getData(1);
 		$data2 = $this->__getData(2);
+		//unset($data2['CalendarActionPlan']['timezone_offset']); //timezoneの設定が無いケース（CalendarActionPlan.php:926行目でおちる）
+
 		$data4 = $this->__getData(4);
+
+		//$data5 = $data4;
+
+		$data6 = $this->__getData(2);
+		$data6['CalendarActionPlan']['plan_room_id'] = '8'; //privateroom
+
+		$data7 = $this->__getData(27);
+		$data7['CalendarActionPlan']['plan_room_id'] = '8'; //privateroom
+
+		//$data8 = $this->__getData(8); //この予定のみ変更
+		//$data8['CalendarActionPlan']['is_repeat'] = 1; //※この予定のみで繰り返し変更は指定できない（CalendarPlansController.php:472でエラー）
+		//$data8['CalendarActionPlan']['edit_rrule'] = 1; //この日以降の予定を変更
+
+		//$data5['CalendarActionPlan']['rrule_term'] = 'UNTIL';
+		//$data5['CalendarActionPlan']['rrule_until'] = '2018-01-01';
 
 		return array(
 			//ログインなし
@@ -435,11 +476,32 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 				'data' => $data4, 'role' => Role::ROOM_ROLE_KEY_EDITOR,
 				'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan4'),
 			),
+			//--共有者ありの予定変更
+			array(
+				'data' => $data7, 'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
+				'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan27'),
+			),
+
+			//--コンテンツあり(この予定のみ変更)
+			//array(
+			//	'data' => $data8, 'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
+			//	'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan7'),
+			//),
+			//array(
+			//	'data' => $data5, 'role' => Role::ROOM_ROLE_KEY_EDITOR,
+			//	'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan4'),
+			//),
 			//フレームID指定なしテスト
 			array(
 				'data' => $data2, 'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
 				'urlOptions' => array('frame_id' => null, 'block_id' => $data['Block']['id'], 'key' => 'calendarplan2'),
 			), //pending CalendarPlansController.php 304行目のルート($frameIdが0)は通らない？
+			//--自分のプライベート記事に変更
+			array(
+				'data' => $data6, 'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
+				'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan2'),
+			),
+
 		);
 	}
 
@@ -454,18 +516,37 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
  * @return array
  */
 	public function dataProviderEditValidationError() {
-		$data = $this->__getData(2);
-		$result = array(
-			'data' => $data,
+		$data1 = $this->__getData(2);
+		$result1 = array(
+			'data' => $data1,
 			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan2'),
 		);
 
+		$data2 = $this->__getData(4);
+		$data2['CalendarActionPlan']['is_repeat'] = 1;
+		$data2['CalendarActionPlan']['rrule_term'] = 'UNTIL';
+		$data2['CalendarActionPlan']['rrule_until'] = '2018-01-01';
+
+		$result2 = array(
+			'data' => $data2,
+			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan4'),
+		);
+
 		return array(
-			Hash::merge($result, array(
+			Hash::merge($result1, array(
 				'validationError' => array(
 					'field' => 'CalendarActionPlan.title',
 					'value' => '',
 					'message' => __d('calendars', 'Invalid input. (plan title)'),
+				)
+			)),
+			Hash::merge($result2, array(
+				'validationError' => array(
+					'field' => 'CalendarActionPlan.rrule_until',
+					'value' => '2018-01-01',
+					'message' => __d('calendars',
+						'Cyclic rules using deadline specified exceeds the maximum number of %d',
+						intval(CalendarsComponent::CALENDAR_RRULE_COUNT_MAX)),
 				)
 			)),
 		);
