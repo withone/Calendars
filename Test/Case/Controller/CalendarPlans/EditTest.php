@@ -519,7 +519,7 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 		$data1 = $this->__getData(2);
 		$result1 = array(
 			'data' => $data1,
-			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan2'),
+			'urlOptions' => array('frame_id' => $data1['Frame']['id'], 'block_id' => $data1['Block']['id'], 'key' => 'calendarplan2'),
 		);
 
 		$data2 = $this->__getData(4);
@@ -529,7 +529,7 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 
 		$result2 = array(
 			'data' => $data2,
-			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan4'),
+			'urlOptions' => array('frame_id' => $data2['Frame']['id'], 'block_id' => $data2['Block']['id'], 'key' => 'calendarplan4'),
 		);
 
 		return array(
