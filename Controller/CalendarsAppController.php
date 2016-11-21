@@ -10,6 +10,7 @@
  */
 
 App::uses('AppController', 'Controller');
+App::uses('Space', 'Rooms.Model');
 
 /**
  * CalendarsAppController
@@ -209,9 +210,9 @@ class CalendarsAppController extends AppController {
 		}
 
 		$vars['parentIdType'] = array(	//これも共通なので含めておく。
-			'public' => Room::PUBLIC_PARENT_ID,	//公開
-			'private' => Room::PRIVATE_PARENT_ID,	//プライベート
-			'member' => Room::ROOM_PARENT_ID,	//全会員
+			'public' => Space::getRoomIdRoot(Space::PUBLIC_SPACE_ID),	//公開
+			'private' => Space::getRoomIdRoot(Space::PRIVATE_SPACE_ID),	//プライベート
+			'member' => Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID),	//全会員
 		);
 
 		//room_idとspace_idの対応表を載せておく。
@@ -257,7 +258,7 @@ class CalendarsAppController extends AppController {
 
 /**
  * __setExposeRoomOptionsEtc
- * 
+ *
  * 公開対象一覧のoptions配列と自分自身のroom_idとルーム毎空間名配列を取得
  *
  * @param array &$vars カレンダー用共通変数
@@ -281,7 +282,7 @@ class CalendarsAppController extends AppController {
 
 /**
  * storeRedirectPath
- * 
+ *
  * リダイレクトURLの保存
  *
  * @param array &$vars カレンダー用共通変数

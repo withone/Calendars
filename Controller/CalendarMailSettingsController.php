@@ -123,7 +123,7 @@ class CalendarMailSettingsController extends MailSettingsController {
 			$retRoom[$roomId] = array();
 			$retRoom[$roomId]['roomId'] = $roomId;
 
-			if ($roomId == Room::ROOM_PARENT_ID) {
+			if ($roomId == Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID)) {
 				$retRoom[$roomId]['name'] = __d('calendars', 'All the members');
 			} else {
 				// それぞれのルーム名を取りだして配列作成

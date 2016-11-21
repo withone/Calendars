@@ -8,6 +8,8 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
+
+App::uses('Space', 'Rooms.Model');
 ?>
 <?php
 	$this->NetCommonsForm->unlockField('GroupsUser');
@@ -23,13 +25,13 @@
 
 	//第3引数：ルームIDを指定（引数に任意のルームIDを指定すると、
 	//そのルームに参加しているユーザのみ選択可能になる、
-	//デフォルト値：PUBLIC_PARENT_ID）
-	//最終的にはROOM_PARENT_IDになる予定だが、現状はそれだと
-	//グループ管理が動かないため、暫定対応としてPUBLIC_PARENT_IDを指定
+	//デフォルト値：Space::getRoomIdRoot(Space::PUBLIC_SPACE_ID)）
+	//最終的にはSpace::getRoomIdRoot(Space::COMMUNITY_SPACE_ID)になる予定だが、現状はそれだと
+	//グループ管理が動かないため、暫定対応としてSpace::getRoomIdRoot(Space::PUBLIC_SPACE_ID)を指定
 	//https://github.com/NetCommons3/Users/issues/61
 	//
-	//FIXME: グループ管理改修後、全会員を表すID (Room::ROOM_PARENT_ID)にする事
-	$roomId = Room::PUBLIC_PARENT_ID;
+	//FIXME: グループ管理改修後、全会員を表すID (Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID))にする事
+	$roomId = Space::getRoomIdRoot(Space::PUBLIC_SPACE_ID);
 
 	//第4引数：ユーザIDの配列を指定（編集画面等で、登録時に選択したユー
 	//ザを選択済みとして初期表示したい時に指定、デフォルト値：空配列）

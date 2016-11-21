@@ -42,7 +42,7 @@ class CalendarRoomSelectHelper extends AppHelper {
 		$html .= '<table class="table table-hover">';
 		foreach ($spaces as $space) {
 			$title = $this->Rooms->roomName($space);
-			if ($space['Space']['type'] == Space::PRIVATE_SPACE_TYPE) {
+			if ($space['Space']['id'] == Space::PRIVATE_SPACE_ID) {
 				$html .= $this->_getSpaceListElm($title, $space);
 			} else {
 				$html .= $this->roomSelector(
@@ -51,7 +51,9 @@ class CalendarRoomSelectHelper extends AppHelper {
 		}
 		// 全会員
 		$html .= $this->_getSpaceListElm(
-			__d('calendars', 'All the members'), array('Room' => array('id' => Room::ROOM_PARENT_ID)));
+			__d('calendars', 'All the members'),
+			array('Room' => array('id' => Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID)))
+		);
 
 		$html .= '</table>';
 
@@ -200,7 +202,7 @@ class CalendarRoomSelectHelper extends AppHelper {
 					for ($i = 0; $i < $nest; $i++) {
 						$html .= '<span class="rooms-tree"></span>';
 					}
-					$className .= ($rooms[$roomId]['Room']['space_id'] == Space::ROOM_SPACE_ID) ?
+					$className .= ($rooms[$roomId]['Room']['space_id'] == Space::COMMUNITY_SPACE_ID) ?
 						'group' : 'public';
 					$html .= $this->_getRoomSelectCheckbox($roomId);
 					$html .= "<span class='calendar-plan-mark {$className}'>";

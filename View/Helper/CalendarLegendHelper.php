@@ -8,6 +8,8 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 App::uses('AppHelper', 'View/Helper');
+App::uses('Space', 'Rooms.Model');
+
 /**
  * Calendar Legend Calendar Helper
  *
@@ -58,10 +60,10 @@ class CalendarLegendHelper extends AppHelper {
  * @return string 凡例HTML
  */
 	protected function _getPublicLegend($vars) {
-		if (! $this->_isDisplayLegend($vars, Room::PUBLIC_PARENT_ID)) {
+		if (! $this->_isDisplayLegend($vars, Space::getRoomIdRoot(Space::PUBLIC_SPACE_ID))) {
 			return '';
 		}
-		$html = $this->_getLegend($vars, Room::PUBLIC_PARENT_ID);
+		$html = $this->_getLegend($vars, Space::getRoomIdRoot(Space::PUBLIC_SPACE_ID));
 		return $html;
 	}
 /**
@@ -74,13 +76,13 @@ class CalendarLegendHelper extends AppHelper {
  */
 	protected function _getPrivateLegend($vars) {
 		$html = '';
-		if (! $this->_isDisplayLegend($vars, Room::PRIVATE_PARENT_ID)) {
+		if (! $this->_isDisplayLegend($vars, Space::getRoomIdRoot(Space::PRIVATE_SPACE_ID))) {
 			return '';
 		}
 		if (in_array(Space::PRIVATE_SPACE_ID, $vars['roomSpaceMaps'])) {
-			////$html = $this->_getLegend($vars, Room::PRIVATE_PARENT_ID);
+			////$html = $this->_getLegend($vars, Space::getRoomIdRoot(Space::PRIVATE_SPACE_ID));
 
-			//PRIVATE_PARENT_IDでは、各ユーザ毎のprivateRoomIdにはならない。
+			//Space::getRoomIdRoot(Space::PRIVATE_SPACE_ID)では、各ユーザ毎のprivateRoomIdにはならない。
 			//myselfに、各ユーザ毎のprivateRoomIdをセットするように変えたので
 			//見直した。
 			//
@@ -99,8 +101,9 @@ class CalendarLegendHelper extends AppHelper {
 	protected function _getGroupRoomLegend($vars) {
 		$html = '';
 		// 空間的にはグループスペースでルームIDは「全会員」ではないものがあるか
+		$communitySpaceId = Space::COMMUNITY_SPACE_ID;
 		foreach ($vars['roomSpaceMaps'] as $roomId => $spaceId) {
-			if ($spaceId == Space::ROOM_SPACE_ID && $roomId != Room::ROOM_PARENT_ID) {
+			if ($spaceId == $communitySpaceId && $roomId != Space::getRoomIdRoot($communitySpaceId)) {
 				if ($this->_isDisplayLegend($vars, $roomId)) {
 					$html = $this->_getLegend($vars, $roomId, __d('calendars', 'Room'));
 					break;
@@ -119,11 +122,13 @@ class CalendarLegendHelper extends AppHelper {
  */
 	protected function _getMemberLegend($vars) {
 		$html = '';
-		if (! $this->_isDisplayLegend($vars, Room::ROOM_PARENT_ID)) {
+		if (! $this->_isDisplayLegend($vars, Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID))) {
 			return '';
 		}
-		if (in_array(Space::ROOM_SPACE_ID, $vars['roomSpaceMaps'])) {
-			$html = $this->_getLegend($vars, Room::ROOM_PARENT_ID, __d('calendars', 'All the members'));
+		if (in_array(Space::COMMUNITY_SPACE_ID, $vars['roomSpaceMaps'])) {
+			$html = $this->_getLegend(
+				$vars, Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID), __d('calendars', 'All the members')
+			);
 		}
 		return $html;
 	}
@@ -137,7 +142,7 @@ class CalendarLegendHelper extends AppHelper {
  */
 	protected function _getDoShareLegend($vars) {
 		$html = '';
-		if (! $this->_isDisplayLegend($vars, Room::PRIVATE_PARENT_ID)) {
+		if (! $this->_isDisplayLegend($vars, Space::getRoomIdRoot(Space::PRIVATE_SPACE_ID))) {
 			return '';
 		}
 		// 共有した予定を持てるかどうかはプライベートを持っているかです
@@ -162,7 +167,7 @@ class CalendarLegendHelper extends AppHelper {
  */
 	protected function _getDoneShareLegend($vars) {
 		$html = '';
-		if (! $this->_isDisplayLegend($vars, Room::PRIVATE_PARENT_ID)) {
+		if (! $this->_isDisplayLegend($vars, Space::getRoomIdRoot(Space::PRIVATE_SPACE_ID))) {
 			return '';
 		}
 		$userId = Current::read('User.id');
@@ -220,11 +225,11 @@ class CalendarLegendHelper extends AppHelper {
 		if (! $vars['CalendarFrameSetting']['is_select_room']) {
 			return true;
 		}
-		if ($id == Room::PRIVATE_PARENT_ID) {
+		if ($id == Space::getRoomIdRoot(Space::PRIVATE_SPACE_ID)) {
 			if (! Hash::get($vars, 'exposeRoomOptions.' . $vars['myself'])) {
 				return false;
 			}
-		} elseif ($id == Room::PUBLIC_PARENT_ID) {
+		} elseif ($id == Space::getRoomIdRoot(Space::PUBLIC_SPACE_ID)) {
 			$roomIds = array_keys($vars['exposeRoomOptions']);
 			foreach ($roomIds as $roomId) {
 				if ($vars['spaceNameOfRooms'][$roomId] == 'public') {

@@ -38,7 +38,7 @@ class CalendarCategoryHelper extends AppHelper {
 		$pseudoPlan = $this->CalendarCommon->makePseudoPlanFromEvent($vars, $event);
 		$planMarkClassName = $this->CalendarCommon->getPlanMarkClassName($vars, $pseudoPlan);
 
-		if ($event['CalendarEvent']['room_id'] == Room::ROOM_PARENT_ID) {
+		if ($event['CalendarEvent']['room_id'] == Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID)) {
 			$roomName = __d('calendars', 'All the members');
 		} else {
 			$roomLangs = Hash::extract(

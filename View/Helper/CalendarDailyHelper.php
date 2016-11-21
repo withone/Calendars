@@ -41,7 +41,7 @@ class CalendarDailyHelper extends CalendarMonthlyHelper {
  * @return string
  */
 	public function getSpaceName(&$vars, $roomId, $languageId) {
-		if ($roomId == Room::ROOM_PARENT_ID) {
+		if ($roomId == Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID)) {
 			return __d('calendars', 'All the members');
 		}
 

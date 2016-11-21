@@ -83,7 +83,7 @@ class CalendarPermission extends CalendarsAppModel {
  * getCalendarRoomBlocks
  *
  * 現在存在する全てのルームと、そこに配置されるべきブロック、カレンダーを取り出す
- * 
+ *
  * @param Component $workflow workflow component
  * @return array
  */
@@ -126,11 +126,11 @@ class CalendarPermission extends CalendarsAppModel {
 	public function getCalendarAllMemberRoomBlocks($workflow) {
 		// 読み取り可能なルームを取得
 		$condition = $this->Room->getReadableRoomsConditions();
-		$condition['conditions'] = array('Room.id' => Room::ROOM_PARENT_ID);
+		$condition['conditions'] = array('Room.id' => Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID));
 		$roomBase = $this->Room->find('all', $condition);
 		$roomBase = Hash::combine($roomBase, '{n}.Room.id', '{n}');
 
-		$conditions = $this->_getCalendarConditions(array(Room::ROOM_PARENT_ID));
+		$conditions = $this->_getCalendarConditions(array(Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID)));
 		// ルーム+ブロック情報取得
 		$roomsBlocks = $this->Room->find('all', $conditions);
 		$roomsBlocks = Hash::combine($roomsBlocks, '{n}.Room.id', '{n}');
@@ -196,7 +196,7 @@ class CalendarPermission extends CalendarsAppModel {
  * _setPermission
  *
  * 指定されたルーム、ブロックに相当する権限設定情報を取り出す
- * 
+ *
  * @param object $workflow workflow component
  * @param array &$roomBlocks ルーム、ブロック、情報
  * @param array $readableRoom アクセス可能ルームリスト（ルームでのRole情報が見られる

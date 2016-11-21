@@ -195,7 +195,7 @@ class CalendarMailBehavior extends CalendarAppBehavior {
  * @return void
  */
 	protected function _setRoomTags(Model &$model, $data) {
-		if ($data['CalendarEvent']['room_id'] == Room::ROOM_PARENT_ID) {
+		if ($data['CalendarEvent']['room_id'] == Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID)) {
 			$model->CalendarEvent->setAddEmbedTagValue('X-ROOM', __d('calendars', 'All the members'));
 		}
 	}
