@@ -39,6 +39,21 @@ class Room4testFixture extends RoomFixture {
  * @var array
  */
 	public $records = array(
+		//サイト全体
+		array(
+			'id' => '1',
+			'space_id' => '1',
+			'page_id_top' => null,
+			'parent_id' => null,
+			'lft' => '1',
+			'rght' => '18',
+			'active' => '1',
+			'default_role_key' => 'visitor',
+			'need_approval' => '1',
+			'default_participation' => '1',
+			'page_layout_permitted' => '0',
+			'theme' => null,
+		),
 		//パブリックスペース
 		array(
 			'id' => '2',
