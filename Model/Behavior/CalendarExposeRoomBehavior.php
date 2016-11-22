@@ -76,7 +76,8 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 		//
 		// 全会員が、指定したルームのみ表示ONの時表示ＯＫになっているか確認
 		if (! empty($userId)) {
-			$roomId = Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID);	//全会員を表すIDはこれです。
+			//全会員を表すIDは↓これです。
+			$roomId = Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID);
 			$spaceNameOfRooms[$roomId] = 'member';	//例外的に文字列を渡す
 			$allRoomNames[$roomId] = __d('calendars', 'All the members');
 			if ($this->_isEnableRoomInFrameSetting($roomId, $frameSetting)) {

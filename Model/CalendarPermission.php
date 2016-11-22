@@ -89,7 +89,7 @@ class CalendarPermission extends CalendarsAppModel {
  */
 	public function getCalendarRoomBlocks($workflow) {
 		$this->Room = ClassRegistry::init('Rooms.Room', true);
-		$spaceIds = array(Space::PUBLIC_SPACE_ID, Space::ROOM_SPACE_ID);
+		$spaceIds = array(Space::PUBLIC_SPACE_ID, Space::COMMUNITY_SPACE_ID);
 		$rooms = array();
 
 		// 空間ごとに処理
@@ -130,7 +130,9 @@ class CalendarPermission extends CalendarsAppModel {
 		$roomBase = $this->Room->find('all', $condition);
 		$roomBase = Hash::combine($roomBase, '{n}.Room.id', '{n}');
 
-		$conditions = $this->_getCalendarConditions(array(Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID)));
+		$conditions = $this->_getCalendarConditions(
+			array(Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID))
+		);
 		// ルーム+ブロック情報取得
 		$roomsBlocks = $this->Room->find('all', $conditions);
 		$roomsBlocks = Hash::combine($roomsBlocks, '{n}.Room.id', '{n}');
@@ -139,7 +141,7 @@ class CalendarPermission extends CalendarsAppModel {
 		$this->_setPermission($workflow, $roomsBlocks, $roomBase);
 		// 取得したルーム＋ブロック情報にさらにブロック設定情報を追加でセット
 		$this->_setBlockSetting($roomsBlocks);
-		return array(Space::ROOM_SPACE_ID => $roomsBlocks);
+		return array(Space::COMMUNITY_SPACE_ID => $roomsBlocks);
 	}
 /**
  * _getCalendarConditions
