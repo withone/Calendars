@@ -32,7 +32,7 @@ class ChangeIcalendarUid extends CakeMigration {
 		'up' => array(
 			'alter_field' => array(
 				'calendar_rrules' => array(
-					'icalendar_uid' => array('type' => 'text', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'The source of iCalendarUID information. RRULE split and split destination-related Of the record. | iCalendarUIDの元となる情報。rrule分割元と分割先の関連性を記録する。', 'charset' => 'utf8'),
+					'icalendar_uid' => array('type' => 'text', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'iCalendarUIDの元となる情報。rrule分割元と分割先の関連性を記録する。', 'charset' => 'utf8'),
 				),
 			),
 		),
