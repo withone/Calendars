@@ -58,37 +58,14 @@ class CalendarFrameSettingGetSelectRoomsTest extends WorkflowGetTest {
 	protected $_methodName = 'getSelectRooms';
 
 /**
- * getSelectRooms()のテスト
- *
- * @param int $settingId FrameSettingレコードのID
- * @param string $frameKey frame key
- * @param mix $expect 期待値
- * @dataProvider dataProviderGet
- * @return void
- */
-	public function testGetSelectRooms($settingId, $frameKey, $expect) {
-		$model = $this->_modelName;
-		$methodName = $this->_methodName;
-
-		Current::$current['Frame']['key'] = $frameKey;
-
-		//テスト実施
-		$result = $this->$model->$methodName($settingId);
-
-		//チェック
-		$this->assertEqual($result, $expect);
-	}
-
-/**
  * GetのDataProvider
  *
- * ### 戻り値
+ * #### 戻り値
  *  - data 登録データ
  *
  * @return void
  */
 	public function dataProviderGet() {
-		// Modelのテストのときはログイン状態が作れない？
 		$rooms = array(
 			'2' => array(
 				'calendar_frame_setting_id' => 1,
@@ -127,6 +104,28 @@ class CalendarFrameSettingGetSelectRoomsTest extends WorkflowGetTest {
 			array(null, 'frame_3', $rooms),
 			array(null, null, array()),
 		);
+	}
+
+/**
+ * getSelectRooms()のテスト
+ *
+ * @param int $settingId FrameSettingレコードのID
+ * @param string $frameKey frame key
+ * @param mix $expect 期待値
+ * @dataProvider dataProviderGet
+ * @return void
+ */
+	public function testGetSelectRooms($settingId, $frameKey, $expect) {
+		$model = $this->_modelName;
+		$methodName = $this->_methodName;
+
+		Current::$current['Frame']['key'] = $frameKey;
+
+		//テスト実施
+		$result = $this->$model->$methodName($settingId);
+
+		//チェック
+		$this->assertEqual($result, $expect);
 	}
 
 }

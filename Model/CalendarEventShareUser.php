@@ -80,7 +80,8 @@ class CalendarEventShareUser extends CalendarsAppModel {
  */
 	public function beforeValidate($options = array()) {
 		$this->validate = Hash::merge($this->validate, array(
-			'calender_event_id' => array(
+			//'calender_event_id' => array(
+			'calendar_event_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'required' => true,

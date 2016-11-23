@@ -22,7 +22,7 @@ App::uses('BlockRolePermissionsControllerEditTest', 'Blocks.TestSuite');
  * @author Allcreator <info@allcreator.net>
  * @package NetCommons\Calendars\Test\Case\Controller
  */
-class CalendarsBlockRolePermissionsControllerEditTest extends BlockRolePermissionsControllerEditTest {
+class CalendarBlockRolePermissionsControllerEditTest extends BlockRolePermissionsControllerEditTest {
 
 /**
  * Fixtures

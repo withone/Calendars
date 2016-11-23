@@ -168,38 +168,83 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		$data1 = $this->__getData();
 		$data1['CalendarActionPlan']['detail_end_datetime'] = '2016-07-29'; //終了が翌日の場合
 
-		$data2 = $this->__getData();
+		$data2 = $this->__getData(); //期限指定
 		$data2['CalendarActionPlan']['is_repeat'] = 1;
+		$data2['CalendarActionPlan']['rrule_term'] = 'UNTIL';
+
+		$data2Edit = $data2;
+		$data2Edit['CalendarActionPlan']['origin_event_id'] = 1;
+		$data2Edit['CalendarActionPlan']['origin_event_key'] = 'calendarplan1';
+		$data2Edit['CalendarActionPlan']['plan_room_id'] = 2;
 
 		$data3 = $this->__getData();
 		$data3['CalendarActionPlan']['is_repeat'] = 1;
 		$data3['CalendarActionPlan']['repeat_freq'] = 'WEEKLY';
 
-		$data4 = $this->__getData();
+		$data4 = $this->__getData(); //繰り返し月（曜日指定）
 		$data4['CalendarActionPlan']['is_repeat'] = 1;
 		$data4['CalendarActionPlan']['repeat_freq'] = 'MONTHLY';
 		$data4['CalendarActionPlan']['rrule_byday']['MONTHLY'] = '-1WE'; //
 
-		$data5 = $this->__getData();
+		$data4p = $this->__getData(); //繰り返し月（曜日指定）
+		$data4p['CalendarActionPlan']['is_repeat'] = 1;
+		$data4p['CalendarActionPlan']['repeat_freq'] = 'MONTHLY';
+		$data4p['CalendarActionPlan']['rrule_byday']['MONTHLY'] = '1WE'; //
+
+		$data5 = $this->__getData(); //繰り返し月（日付指定）
 		$data5['CalendarActionPlan']['is_repeat'] = 1;
 		$data5['CalendarActionPlan']['repeat_freq'] = 'MONTHLY';
 		$data5['CalendarActionPlan']['rrule_bymonthday']['MONTHLY'] = 20; //
 
-		$data6 = $this->__getData();
+		$data6 = $this->__getData(); //繰り返し年
 		$data6['CalendarActionPlan']['is_repeat'] = 1;
 		$data6['CalendarActionPlan']['repeat_freq'] = 'YEARLY';
 
+		$data7 = $this->__getData(); //繰り返し年（開始日と同日）
+		$data7['CalendarActionPlan']['is_repeat'] = 1;
+		$data7['CalendarActionPlan']['repeat_freq'] = 'YEARLY';
+		$data7['CalendarActionPlan']['rrule_byday']['WEEKLY']['0'] = 'MO';
+
+		$data8 = $this->__getData(); //時刻指定あり
+		$data8['CalendarActionPlan']['enable_time'] = 1;
+		$data8['CalendarActionPlan']['detail_start_datetime'] = '2016-07-28 11:10';
+		$data8['CalendarActionPlan']['detail_end_datetime'] = '2016-07-30 11:12';
+
+		//$data9 = $this->__getData(); //繰り返し(不明)
+		//$data9['CalendarActionPlan']['is_repeat'] = 1;
+		//$data9['CalendarActionPlan']['repeat_freq'] = 'NONE';
+
+		//$data10 = $this->__getData(); //期限指定
+		//$data10['CalendarActionPlan']['is_repeat'] = 1;
+		//$data10['CalendarActionPlan']['rrule_term'] = 'UNTIL';
+		//$data10['CalendarActionPlan']['rrule_until'] = '2018-01-01';
+
+		$data10 = $this->__getData(); //期限指定
+		$data10['CalendarActionPlan']['is_repeat'] = 1;
+		$data10['CalendarActionPlan']['rrule_term'] = 'UNTIL';
+		$data10['CalendarActionPlan']['rrule_until'] = '20180101'; //フォーマット不正
 		$results = array();
 		// * 編集の登録処理
 		$results[0] = array($data1, 'add'); //リピートなし
 		//$results[1] = array($data1, 'edit'); //リピートなし(edit)
+		//$results[1] = array($data2Edit, 'edit'); //リピートあり(edit)
 
 		$results[2] = array($data2, 'add'); //リピートあり DAILY
 		$results[3] = array($data3, 'add'); //リピートあり WEEKLY
 		$results[4] = array($data4, 'add'); //リピートあり MONTHLY(BYDAY)
-		$results[5] = array($data5, 'add'); //リピートあり MONTHLY(BYDAY)
+		$results[5] = array($data4, 'add'); //リピートあり MONTHLY(BYDAY)
 
+		$results[5] = array($data5, 'add'); //リピートあり MONTHLY(BYDAY)
 		$results[6] = array($data6, 'add'); //リピートあり YEARLY
+		$results[7] = array($data7, 'add'); //リピートあり YEARLY（開始日と同日）
+		$results[8] = array($data8, 'add'); //時刻指定あり
+		$results[9] = array($data4p, 'add');//リピートあり MONTHLY(BYDAY)(WEEKがプラス)
+
+		$results[10] = array($data10, 'add'); //時刻フォーマット不正
+		//$results[9] = array($data9, 'add'); //リピートあり NONE
+		//pending Error Undefined index: FREQ
+		//var/www/app/app/Plugin/Calendars/Model/Behavior/CalendarRruleEntryBehavior.php:127
+		//$results[10] = array($data10, 'add'); //リピートあり DAILY(MAX OVER) （coverate report作成されない、Controller側から試験）
 
 		return $results;
 	}
@@ -257,7 +302,9 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		$data4['save_0'] = '';
 
 		$data5 = $this->__getData('xxx');
-
+		$data6 = $this->__getData();
+		$data6['CalendarActionPlan']['is_repeat'] = 1;
+		$data6['CalendarActionPlan']['rrule_term'] = 'UNTIL';
 		$editKey = array(
 			'CalendarActionPlan' => array(
 			'key' => 'calendarplan1',
@@ -272,10 +319,12 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 			array($data, 'Calendars.CalendarRrule', 'validates', 'InternalErrorException', 'edit'),
 			array($data2, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'edit'), //timezoneでエラー
 			//array($data3, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'add'), //save_でエラー(add) pending 2016.08.04
-			array($data3, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'edit'), //save_でエラー(edit)
+			//array($data3, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'edit'), //save_でエラー(edit)
 			//array($data4, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'add'), //save_でエラー(add) pending 2016.08.04
 
 			array($data5, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'edit'), //block_keyに対応するblockなしでエラー
+			array($data6, 'Calendars.CalendarRrule', 'validates', 'InternalErrorException', 'add'),
+			array($data6, 'Calendars.CalendarRrule', 'save', 'InternalErrorException', 'add'),
 
 		);
 	}

@@ -1,6 +1,6 @@
 <?php
 /**
- * CalendarActionPlan::saveCalendarPlan()のテスト
+ * CalendarActionPlan::deleteCalendarPlan()のテスト
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author AllCreator <info@allcreator.net>
@@ -18,7 +18,7 @@ App::uses('NetCommonsModelTestCase', 'NetCommons.TestSuite');
  * @author AllCreator <info@allcreator.net>
  * @package NetCommons\Calendars\Test\Case\Model\CalendarDeleteActionPlan
  */
-class CalendarDeleteActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
+class CalendarDeleteActionPlanDeleteCalendarPlanTest extends NetCommonsModelTestCase {
 
 /**
  * Fixtures

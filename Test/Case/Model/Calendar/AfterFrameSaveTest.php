@@ -93,6 +93,12 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 				$mock->expects($this->once())
 				->method('save')
 				->will($this->returnValue(array()));
+			} elseif ($data['Frame']['name'] == 'testdata8') {
+				//$this->_mockForReturnTrue($model, 'Calendars.CalendarFrameSetting', 'saveFrameSetting', 1);
+				$mock = $this->getMockForModel('Blocks.Block', array('save'));
+				$mock->expects($this->once())
+				->method('save')
+				->will($this->returnValue(array()));
 			}
 		}
 
@@ -182,6 +188,17 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 			'name' => 'testdata7');
 		$expect7 = $data7;
 
+		//8 Blockのsaveでエラー
+		$data8 = array();
+		$expect8 = array();
+		$data8['Frame'] = array(
+			'room_id' => 17,
+			'language_id' => 2,
+			'plugin_key' => 'calendars',
+			'key' => 'key_4',
+			'name' => 'testdata8');
+		$expect8 = $data8;
+
 		return array(
 			array($data1, $expect1),
 			array($data2, $expect2, 'BadRequestException'),
@@ -190,6 +207,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 			array($data5, $expect5),
 			array($data6, $expect6),
 			array($data7, $expect7, 'InternalErrorException'),
+			array($data8, $expect8, 'InternalErrorException'),
 		);
 	}
 
