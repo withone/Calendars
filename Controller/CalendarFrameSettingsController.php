@@ -183,7 +183,7 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 		// 空間情報
 		$spaces = $this->Room->getSpaces();
 		// ルームツリー
-		$spaceIds = array(Space::PUBLIC_SPACE_ID, Space::ROOM_SPACE_ID);
+		$spaceIds = array(Space::PUBLIC_SPACE_ID, Space::COMMUNITY_SPACE_ID);
 		foreach ($spaceIds as $spaceId) {
 			$rooms[$spaceId] = $this->_getRoom($spaceId);
 			$roomTreeList[$spaceId] = $this->_getRoomTree($spaces[$spaceId]['Room']['id'], $rooms[$spaceId]);
@@ -199,7 +199,7 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 	}
 /**
  * _getRoom
- * 
+ *
  * @param int $spaceId space id
  * @return array
  */
@@ -212,7 +212,7 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 	}
 /**
  * _getRoomTree
- * 
+ *
  * @param int $spaceRoomId room id which is space's
  * @param array $rooms room information
  * @return array

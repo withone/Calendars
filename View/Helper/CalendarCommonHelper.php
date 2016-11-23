@@ -362,7 +362,7 @@ class CalendarCommonHelper extends AppHelper {
 			//WHOLE_SITE_ID = '1',
 			//PUBLIC_SPACE_ID = '2',
 			//PRIVATE_SPACE_ID = '3',
-			//ROOM_SPACE_ID = '4';
+			//COMMUNITY_SPACE_ID = '4';
 
 			//CakeLog::debug("DBG: 未ログインの時は、公開空間の予定のみ表示可能");
 			//$spaceId = $vars['roomSpaceMaps'][$plan['CalendarEvent']['room_id']];

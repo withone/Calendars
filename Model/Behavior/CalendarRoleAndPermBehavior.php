@@ -117,12 +117,13 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 		//$rolesRoomsUsersには、全会員ルーム（space_id ==4 && room_id == 3）の情報がない。
 		// 別途取り出す
 		//予備情報）
-		//バブリックルームを表すroom_idはRoom::PUBLIC_PARENT_IDです。
-		//全会員を表すroom_idはRoom::ROOM_PARENT_IDです。
+		//バブリックルームを表すroom_idはSpace::getRoomIdRoot(Space::PUBLIC_SPACE_ID)です。
+		//全会員を表すroom_idはSpace::getRoomIdRoot(Space::COMMUNITY_SPACE_ID)です。
 		$userId = Current::read('User.id');
 		if (!empty($userId)) {
 			//ログインしている時だけ、全会員roomIdを強制的に追加する。
-			$roleOfRooms[Room::ROOM_PARENT_ID] = $this->__getAllMemberRoleKey($model, $userId);
+			$communityRoomId = Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID);
+			$roleOfRooms[$communityRoomId] = $this->__getAllMemberRoleKey($model, $userId);
 		}
 		//3. ルーム管理＋カレンダー権限管理での承認権限ありなしを取得
 		$roomInfos = $this->__getRolePerms($model, $roleOfRooms);
@@ -169,7 +170,7 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  * __getPermSet
  *
  * 権限情報要素判定取得
- * 
+ *
  * @param int $roomId ルームID
  * @param string $roleName そのルームにおけるロール名
  * @param array $permRooms ルームに置ける権限マッピング状況

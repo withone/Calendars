@@ -16,8 +16,14 @@
 		<td>
 			<?php echo __d('calendars', 'All the members'); ?>
 		</td>
-		<?php echo $this->CalendarPermission->getPermissionCells(Space::ROOM_SPACE_ID, $allMemberRoomBlocks[Space::ROOM_SPACE_ID][Room::ROOM_PARENT_ID]); ?>
-		<?php echo $this->CalendarPermission->getUseWorkflowCells(Space::ROOM_SPACE_ID, $allMemberRoomBlocks[Space::ROOM_SPACE_ID][Room::ROOM_PARENT_ID]); ?>
+		<?php echo $this->CalendarPermission->getPermissionCells(
+				Space::COMMUNITY_SPACE_ID,
+				$allMemberRoomBlocks[Space::COMMUNITY_SPACE_ID][Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID)]
+			); ?>
+		<?php echo $this->CalendarPermission->getUseWorkflowCells(
+				Space::COMMUNITY_SPACE_ID,
+				$allMemberRoomBlocks[Space::COMMUNITY_SPACE_ID][Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID)]
+			); ?>
 	</tr>
 	</tbody>
 </table>

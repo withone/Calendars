@@ -12,7 +12,7 @@
 <uib-tabset type="pills">
 <?php foreach ($spaces as $space): ?>
 	<?php echo $this->CalendarPermission->getSpaceSelectTabStart($space); ?>
-		<?php if ($space['Space']['type'] != Space::PRIVATE_SPACE_TYPE): ?>
+		<?php if ($space['Space']['id'] != Space::PRIVATE_SPACE_ID): ?>
 			<?php echo $this->element('Calendars.CalendarBlockRolePermissions/permission', array(
 				'spaceId' => $space['Space']['id']
 			)); ?>

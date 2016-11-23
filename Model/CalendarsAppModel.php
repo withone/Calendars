@@ -11,6 +11,7 @@
 
 App::uses('AppModel', 'Model');
 App::uses('CalendarRruleUtil', 'Calendars.Utility');
+App::uses('Space', 'Rooms.Model');
 
 /**
  * CalendarsApp Model
@@ -49,9 +50,11 @@ class CalendarsAppModel extends AppModel {
 		// カレンダーは特別に全会員向けルームIDを入れる
 		if (Current::read('User.id')) {
 			if (Hash::extract($roomBase, '{n}.Room[space_id=' . Space::PRIVATE_SPACE_ID . ']')) {
-				$roomIds[Room::PRIVATE_PARENT_ID] = Room::PRIVATE_PARENT_ID;
+				$privateRoomId = Space::getRoomIdRoot(Space::PRIVATE_SPACE_ID);
+				$roomIds[$privateRoomId] = $privateRoomId;
 			}
-			$roomIds[Room::ROOM_PARENT_ID] = Room::ROOM_PARENT_ID;
+			$communityRoomId = Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID);
+			$roomIds[$communityRoomId] = $communityRoomId;
 		}
 		$this->_readableRoomIds = $roomIds;
 		return $roomIds;

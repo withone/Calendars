@@ -36,7 +36,7 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 		}
 
 		$spaces = $model->Room->getSpaces();
-		$spaceIds = array(Space::PUBLIC_SPACE_ID, Space::ROOM_SPACE_ID);
+		$spaceIds = array(Space::PUBLIC_SPACE_ID, Space::COMMUNITY_SPACE_ID);
 
 		$rooms = array();
 		$roomTreeList = array();
@@ -52,13 +52,13 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 		$allRoomNames = array();
 		$myself = null;
 		$userId = Current::read('User.id');
-		foreach ($spaces as $space) {	//Space::PUBLIC_SPACE_ID, Space::ROOM_SPACE_IDを順次処理.
+		foreach ($spaces as $space) {	//Space::PUBLIC_SPACE_ID, Space::COMMUNITY_SPACE_IDを順次処理.
 			//$title = $model->Rooms->roomName($space);
 			$roomsLanguage = Hash::extract($space, 'RoomsLanguage.{n}[language_id=' .
 				Current::read('Language.id') . ']');
 			$title = h($roomsLanguage[0]['name']);
 
-			if ($space['Space']['type'] == Space::PRIVATE_SPACE_TYPE) {
+			if ($space['Space']['id'] == Space::PRIVATE_SPACE_ID) {
 				//プライベート
 				list($myself, $options, $spaceNameOfRooms, $allRoomNames) =
 					$this->__getRoomIdEtcWhenPrivateCase(
@@ -76,10 +76,11 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 		//
 		// 全会員が、指定したルームのみ表示ONの時表示ＯＫになっているか確認
 		if (! empty($userId)) {
-			$roomId = Room::ROOM_PARENT_ID;	//全会員を表すIDはこれです。
+			//全会員を表すIDは↓これです。
+			$roomId = Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID);
 			$spaceNameOfRooms[$roomId] = 'member';	//例外的に文字列を渡す
 			$allRoomNames[$roomId] = __d('calendars', 'All the members');
-			if ($this->_isEnableRoomInFrameSetting(Room::ROOM_PARENT_ID, $frameSetting)) {
+			if ($this->_isEnableRoomInFrameSetting($roomId, $frameSetting)) {
 				//ログインしている時、optionに積む
 				$options[$roomId] = __d('calendars', 'All the members');
 			}
@@ -116,11 +117,11 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 					$targetTitle = h($roomsLanguage[0]['name']);
 
 					$spaceNameOfRooms[$roomId] =
-						($space['Space']['type'] == Space::ROOM_SPACE_ID) ? 'group' : 'public';
+						($space['Space']['type'] == Space::COMMUNITY_SPACE_ID) ? 'group' : 'public';
 					$allRoomNames[$roomId] = $targetTitle;
 
 					if ($this->_isEnableRoomInFrameSetting($roomId, $frameSetting)) {
-						if ($space['Space']['type'] == Space::ROOM_SPACE_ID) {
+						if ($space['Space']['type'] == Space::COMMUNITY_SPACE_ID) {
 							if (empty($userId)) {
 								//未ログインなので、グループ空間をoptionに積んではいけない。抜ける。
 								continue;
@@ -219,7 +220,7 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 
 		//ログイン時
 		$privateRoomId = Hash::extract($readableRoomInfos,
-			'{n}.Room[space_id=' . Space::PRIVATE_SPACE_TYPE . '].id');
+			'{n}.Room[space_id=' . Space::PRIVATE_SPACE_ID . '].id');
 		$privateRoomId = array_shift($privateRoomId);	//privateRoomID取得
 		return $privateRoomId;
 	}

@@ -32,8 +32,8 @@ class AddEmailSendTiming extends CakeMigration {
 		'up' => array(
 			'create_field' => array(
 				'calendar_events' => array(
-					'is_enable_mail' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'comment' => 'Whether or not email notification prior to the event. 0:no notification 1:do notification | イベント前にメール通知するかどうか 0:通知しない 1:通知する | | ', 'after' => 'exception_event_id'),
-					'email_send_timing' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'comment' => 'Event N minutes ago sending e-mail. N is a number. Unit is minutes. | イベントN分前メール通知の値N。単位は分。 | | ', 'after' => 'is_enable_mail'),
+					'is_enable_mail' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'comment' => 'イベント前にメール通知するかどうか 0:通知しない 1:通知する', 'after' => 'exception_event_id'),
+					'email_send_timing' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'comment' => 'イベントN分前メール通知の値N。単位は分。', 'after' => 'is_enable_mail'),
 				),
 			),
 		),

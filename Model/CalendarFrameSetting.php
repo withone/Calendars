@@ -14,6 +14,7 @@
 
 App::uses('CalendarsAppModel', 'Calendars.Model');
 App::uses('CalendarsComponent', 'Calendars.Controller/Component');	//constを使うため
+App::uses('Space', 'Rooms.Model');
 
 /**
  * CalendarFrameSetting Model
@@ -269,8 +270,9 @@ class CalendarFrameSetting extends CalendarsAppModel {
 				return false;
 			}
 			$data['CalendarFrameSetting']['is_myroom'] = false;
+			$privateRoomIdRoot = Space::getRoomIdRoot(Space::PRIVATE_SPACE_ID);
 			if (! $data['CalendarFrameSetting']['is_select_room'] ||
-				!empty($data['CalendarFrameSettingSelectRoom'][Room::PRIVATE_PARENT_ID]['room_id'])) {
+				!empty($data['CalendarFrameSettingSelectRoom'][$privateRoomIdRoot]['room_id'])) {
 				$data['CalendarFrameSetting']['is_myroom'] = true;
 			}
 			//フレームの登録
