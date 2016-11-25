@@ -75,16 +75,10 @@ class CalendarActionPlanValidateTest extends NetCommonsValidateTest {
 		$data = array(
 			'Frame' => array(
 				'id' => $frameId,
-				'room_id' => '5', //?
-				'language_id' => 2, //?
-				'plugin_key' => 'calendars', //?
 			),
 			'Block' => array(
 				'id' => $blockId,
 				'key' => $blockKey,
-				//'language_id' => '2',
-				//'room_id' => '1',
-				//'plugin_key' => $this->plugin,
 			),
 			'CalendarActionPlan' => array(
 				'origin_event_id' => 0,
@@ -179,7 +173,19 @@ class CalendarActionPlanValidateTest extends NetCommonsValidateTest {
 				),
 			);
 		Current::$current = Hash::merge(Current::$current, $testCurrentData);
-
+		// カレンダー権限設定情報確保
+		$testRoomInfos = array(
+			'roomInfos' => array(
+				'1' => array(
+					'role_key' => 'room_administrator',
+					'use_workflow' => '',
+					'content_publishable_value' => 1,
+					'content_editable_value' => 1,
+					'content_creatable_value' => 1,
+				),
+			),
+		);
+		CalendarPermissiveRooms::$roomPermRoles = Hash::merge(CalendarPermissiveRooms::$roomPermRoles, $testRoomInfos);
 		if (is_null($value)) {
 			unset($data[$model][$field]);
 		} else {
@@ -208,16 +214,51 @@ class CalendarActionPlanValidateTest extends NetCommonsValidateTest {
  *  - overwrite 上書きするデータ(省略可)
  *
  * @return array テストデータ
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
 	public function dataProviderValidationError() {
 		$data = $this->__getData();
 		$data2 = $data;
 		$data2['CalendarActionPlan']['detail_start_datetime'] = '2016-07-28';
 		$data2['CalendarActionPlan']['detail_start_datetime'] = '2016-07-28';
-
 		$data3 = $data;
 		$data3['CalendarActionPlan']['is_repeat'] = true;
-
+		$data4 = $data;
+		$data4['CalendarActionPlan']['detail_start_datetime'] = '2016-07-28 12:12';
+		$data4['CalendarActionPlan']['detail_start_datetime'] = '2016-07-28 22:22';
+		$data5 = $data;
+		$data5['CalendarActionPlan']['is_detail'] = false;
+		$data5['CalendarActionPlan']['enable_time'] = true;
+		$data5['CalendarActionPlan']['easy_start_date'] = '2017-01-01';
+		$data5['CalendarActionPlan']['easy_hour_minute_to'] = '2017-02-02 22:22:00';
+		$data5['CalendarActionPlan']['easy_hour_minute_from'] = '2017-02-02 22:23:12';
+		$data6 = $data5;
+		$data6['CalendarActionPlan']['is_detail'] = true;
+		$data7 = $data5;
+		$data7['CalendarActionPlan']['enable_time'] = 0;
+		$data8 = $data5;
+		$data8['CalendarActionPlan']['easy_hour_minute_to'] = '2017-02-02 22:23:20';
+		$data8['CalendarActionPlan']['easy_hour_minute_from'] = '2017-02-02 22:23:12';
+		$data9 = $data5;
+		$data9['CalendarActionPlan']['easy_hour_minute_to'] = '2017-02-02 22:22';
+		$data9['CalendarActionPlan']['easy_hour_minute_from'] = '2017-02-02 22:23';
+		$data10 = $data5;
+		$data10['CalendarActionPlan']['easy_hour_minute_to'] = '2017-01-01 12:22:20';
+		$data10['CalendarActionPlan']['easy_hour_minute_from'] = '2017-01-01 12:22:12';
+		//週単位
+		$data11 = $data;
+		$data11['CalendarActionPlan']['is_repeat'] = true;
+		$data11['CalendarActionPlan']['repeat_freq'] = 'WEEKLY';
+		//月単位
+		$data12 = $data;
+		$data12['CalendarActionPlan']['is_repeat'] = true;
+		$data12['CalendarActionPlan']['rrule_interval']['MONTHLY'] = 1;
+		$data12['CalendarActionPlan']['repeat_freq'] = 'MONTHLY';
+		$data12['CalendarActionPlan']['rrule_byday']['MONTHLY'] = 1;
+		//年単位
+		$data13 = $data;
+		$data13['CalendarActionPlan']['is_repeat'] = true;
+		$data13['CalendarActionPlan']['repeat_freq'] = 'YEARLY';
 		$text101 = 'a123456789a123456789a123456789a123456789a123456789a123456789a123456789a123456789a123456789a123456789a';
 		$text60000 = ''; //詳細文字制限60000字確認用
 		for ($i = 0; $i <= 595; $i++) {
@@ -240,7 +281,6 @@ class CalendarActionPlanValidateTest extends NetCommonsValidateTest {
 			array('data' => $data, 'field' => 'description', 'value' => $text60000,
 				'message' => sprintf(__d('calendars', '%d character limited. (detail)'),
 						CalendarsComponent::CALENDAR_VALIDATOR_TEXTAREA_LEN)),
-
 			//タイトル関連(_doMergeTitleValidat)
 			array('data' => $data, 'field' => 'title', 'value' => '',
 				'message' => __d('calendars', 'Invalid input. (plan title)')),
@@ -251,10 +291,23 @@ class CalendarActionPlanValidateTest extends NetCommonsValidateTest {
 				'message' => sprintf(__d('calendars',
 						'%d character limited. (title icon)'),
 						CalendarsComponent::CALENDAR_VALIDATOR_GENERAL_VCHAR_LEN)),
-
 			//日付時刻関連バリデーション
-			array('data' => $data, 'field' => 'enable_time', 'value' => '',
+			array('data' => $data4, 'field' => 'enable_time', 'value' => 'a',
 				'message' => __d('calendars', 'Invalid input. (time)')),
+			//---(easy指定)-- pending 本ルートは不要
+			array('data' => $data5, 'field' => 'enable_time', 'value' => 'a',
+				'message' => __d('calendars', 'Invalid input. (time)')),
+			array('data' => $data6, 'field' => 'enable_time', 'value' => 'a',
+				'message' => __d('calendars', 'Invalid input. (time)')),
+			array('data' => $data7, 'field' => 'easy_start_date', 'value' => '0',
+				'message' => __d('calendars', 'Invalid input. (year/month/day)')),
+			array('data' => $data8, 'field' => 'enable_time', 'value' => 'a',
+				'message' => __d('calendars', 'Invalid input. (time)')),
+			array('data' => $data9, 'field' => 'enable_time', 'value' => 'a',
+				'message' => __d('calendars', 'Invalid input. (time)')),
+			array('data' => $data10, 'field' => 'enable_time', 'value' => 'a',
+				'message' => __d('calendars', 'Invalid input. (time)')),
+			//--(easy end)
 			//array('data' => $data, 'field' => 'easy_start_date', 'value' => 'a', //pending不要？
 			//	'message' => __d('calendars', 'Invalid input. (time)')),
 			//array('data' => $data, 'field' => 'easy_hour_minute_from', 'value' => 'a', //pending不要？
@@ -269,12 +322,25 @@ class CalendarActionPlanValidateTest extends NetCommonsValidateTest {
 				'message' => __d('calendars', 'Invalid input. (start day (time) and end day (time))')),
 			array('data' => $data, 'field' => 'detail_end_datetime', 'value' => 'll',
 				'message' => __d('calendars', 'Invalid input. (end date)')),
-
 			//繰返し関連
 			array('data' => $data, 'field' => 'edit_rrule', 'value' => 'a',
 				'message' => __d('calendars', 'Invalid input. (change of repetition)')),
 			array('data' => $data, 'field' => 'is_repeat', 'value' => 'a',
 				'message' => __d('calendars', 'Invalid input. (repetition)')),
+			array('data' => $data11, 'field' => 'is_repeat', 'value' => 'a',
+				'message' => __d('calendars', 'Invalid input. (repetition)')),
+			array('data' => $data12, 'field' => 'is_repeat', 'value' => 'a',
+				'message' => __d('calendars', 'Invalid input. (repetition)')),
+			//月単位 pending　エラーになる
+			//↑Indirect modification of overloaded property CalendarActionPlan::$calendarProofreadValidationErrors has no effect
+			//var/www/app/app/Plugin/Calendars/Model/Behavior/CalendarValidateAppBehavior.php:178
+			array('data' => $data13, 'field' => 'is_repeat', 'value' => 'a',
+				'message' => __d('calendars', 'Invalid input. (repetition)')),
+			//array('data' => $data3, 'field' => 'rrule_count', 'value' => '',
+			//	'message' => __d('calendars', 'Invalid input. (repetition)')),
+			//↑pending errorになる　Indirect modification of overloaded property CalendarActionPlan::$calendarProofreadValidationErrors has no effect
+			//var/www/app/app/Plugin/Calendars/Model/Behavior/CalendarPlanRruleValidateBehavior.php:42
+			//var/www/app/app/Plugin/Calendars/Model/Behavior/CalendarPlanRruleValidateBehavior.php:102
 			//array('data' => $data3, 'field' => 'repeat_freq', 'value' => 'a',
 			//	'message' => CalendarsComponent::CALENDAR_RRULE_ERROR_HAPPEND), //pending1 ここは__d定義ではないですがよいでしょうか
 			//↑pending errorになる⇒Indirect modification of overloaded property CalendarActionPlan::$calendarProofreadValidationErrors has no effect

@@ -376,6 +376,11 @@ class CalendarsControllerIndexTest extends NetCommonsControllerTestCase {
 			'assert' => array('method' => 'assertNotEmpty'),
 			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY,
 		);
+		$results[2] = array(
+			'urlOptions' => array('frame_id' => '6', 'block_id' => '2', '?' => array('year' => '2016', 'month' => '7', 'day' => '28')),
+			'assert' => array('method' => 'assertNotEmpty'),
+			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY,
+		);
 		//チェック
 		//--追加ボタンチェック
 		array_push($results, Hash::merge($results[$base], array(

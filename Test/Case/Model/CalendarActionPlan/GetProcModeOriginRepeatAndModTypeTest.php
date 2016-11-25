@@ -261,12 +261,20 @@ class CalendarActionPlanGetProcModeOriginRepeatAndModTypeTest extends NetCommons
 		$data6['CalendarActionPlan']['detail_start_datetime'] = '2016-07-01 00:00';
 		$data6['CalendarActionPlan']['detail_end_datetime'] = '2016-07-12 00:00';
 
+		$data7 = $this->__getData();
+		$data7['CalendarActionPlan']['repeat_freq'] = 'WEEKYL';
+		$data7['CalendarActionPlan']['is_repeat'] = 1;
+		$data7['CalendarActionPlan']['origin_event_id'] = 10;
+		$data7['CalendarActionPlan']['rrule_term'] = 'UNTIL';
+		$data7['CalendarActionPlan']['rrule_until'] = '2018-01-01';
+
 		$originEvent1 = array();
 		$originEvent2 = $this->__getEventData();
 		$originEvent3 = $this->__getEventData();
 		$originEvent4 = $this->__getEventData();
 		$originEvent5 = $this->__getEventData();
 		$originEvent6 = $this->__getEventData();
+		$originEvent7 = $this->__getEventData();
 
 		//list($procMode, $isOriginRepeat, $isTimeMod, $isRepeatMod)
 		$expect1 = array(0 => CalendarsComponent::PLAN_ADD, 1 => false, 2 => false, 3 => false);
@@ -275,6 +283,7 @@ class CalendarActionPlanGetProcModeOriginRepeatAndModTypeTest extends NetCommons
 		$expect4 = array(0 => CalendarsComponent::PLAN_EDIT, 1 => false, 2 => true, 3 => true);
 		$expect5 = array(0 => CalendarsComponent::PLAN_EDIT, 1 => false, 2 => true, 3 => true);
 		$expect6 = array(0 => CalendarsComponent::PLAN_EDIT, 1 => false, 2 => true, 3 => true);
+		$expect7 = array(0 => CalendarsComponent::PLAN_EDIT, 1 => false, 2 => true, 3 => true);
 
 		return array(
 			array($data1, $originEvent1, 1, $expect1), //originEventがEmpty
@@ -283,6 +292,7 @@ class CalendarActionPlanGetProcModeOriginRepeatAndModTypeTest extends NetCommons
 			array($data4, $originEvent4, 1, $expect4), //EDIT
 			array($data5, $originEvent5, 1, $expect5), //EDIT(time zoneが変更されている)
 			array($data6, $originEvent6, 1, $expect6), //EDIT(時間の指定)
+			array($data7, $originEvent7, 1, $expect7), //EDIT
 		);
 	}
 
