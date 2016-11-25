@@ -78,10 +78,8 @@ class StatusAndOthersMoveRruleToEvent extends NetCommonsMigration {
  * @return bool Should process continue
  */
 	public function after($direction) {
-		$this->loadModels(array(
-			'CalendarRrule' => 'Calendars.CalendarRrule',
-			'CalendarEvent' => 'Calendars.CalendarEvent',
-		));
+		$this->CalendarRrule = $this->generateModel('CalendarRrule');
+		$this->CalendarEvent = $this->generateModel('CalendarEvent');
 
 		if ($direction == 'up') {
 			$events = $this->CalendarEvent->find('all', array(
