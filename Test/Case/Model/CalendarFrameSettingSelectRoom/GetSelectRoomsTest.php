@@ -69,6 +69,16 @@ class CalendarFrameSettingSelectRoomGetSelectRoomsTest extends WorkflowGetTest {
 		$model = $this->_modelName;
 		$methodName = $this->_methodName;
 
+		if ($expect == array()) {
+			//$this->_mockForReturn('Caledars.CalendarsAppModel', 'getReadableRoomIds', 9999, 1);
+			//$this->_mockForReturn('CalendarFrameSettingSelectRoom', 'getReadableRoomIds', array(22), 1);
+			$mock = $this->getMockForModel('Calendars.CalendarFrameSettingSelectRoom', array('getReadableRoomIds'));
+			$this->$model = $mock;
+			$mock->expects($this->once())
+				->method('getReadableRoomIds')
+				->will($this->returnValue(77));
+		}
+
 		//テスト実施
 		$result = $this->$model->$methodName($settingId);
 
@@ -120,6 +130,7 @@ class CalendarFrameSettingSelectRoomGetSelectRoomsTest extends WorkflowGetTest {
 			array(1, $rooms),
 			array(100, $errRooms),
 			array(null, $errRooms),
+			array(9999, array()), //取得なし
 		);
 	}
 

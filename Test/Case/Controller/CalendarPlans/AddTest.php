@@ -197,7 +197,7 @@ class CalendarPlansControllerAddTest extends WorkflowControllerAddTest {
 		//作成権限あり
 		$base = 0;
 		$results[0] = array(
-			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id']),
+			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], '?' => array('year' => '2016', 'month' => '9', 'day' => '7', 'hour' => '12')),
 			'assert' => array('method' => 'assertNotEmpty'),
 		);
 		array_push($results, Hash::merge($results[$base], array(
@@ -323,6 +323,7 @@ class CalendarPlansControllerAddTest extends WorkflowControllerAddTest {
 		//繰り返し回数不正
 		$data['CalendarActionPlan']['is_repeat'] = 1;
 		$data['CalendarActionPlan']['rrule_count'] = 1;
+		$data['CalendarActionPlan']['timezone_offset'] = 'Australia/Adelaide'; //timezoneが変わるルート
 		$result = array(
 			'data' => $data,
 			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id']),

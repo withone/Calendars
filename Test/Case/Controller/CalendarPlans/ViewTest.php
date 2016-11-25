@@ -334,6 +334,12 @@ class CalendarPlansControllerViewTest extends WorkflowControllerViewTest {
 			//'assert' => array('method' => 'assertNotEmpty'),
 			'assert' => array('method' => 'assertContains', 'expected' => 'calendarplan27'),
 		);
+		//全会員
+		$results[1] = array(
+			'urlOptions' => array('frame_id' => '6', 'key' => 'calendarplan24'),
+			//'assert' => array('method' => 'assertNotEmpty'),
+			'assert' => array('method' => 'assertContains', 'expected' => 'calendarplan24'),
+		);
 
 		return $results;
 	}

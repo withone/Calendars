@@ -76,7 +76,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 			'Frame' => array(
 				'id' => $frameId,
 				'room_id' => '2', //?
-				'language_id' => 2, //?
+				//'language_id' => 2, //?
 				'plugin_key' => 'calendars', //?
 			),
 			'Block' => array(
@@ -296,15 +296,19 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 
 		$data3 = $this->__getData();
 		unset($data3['save_1']);
+		$data3['CalendarActionPlan']['origin_event_id'] = 1;
+		$data3['CalendarActionPlan']['origin_event_key'] = 'calendarplan1';
 
 		$data4 = $this->__getData();
 		unset($data4['save_1']);
 		$data4['save_0'] = '';
 
 		$data5 = $this->__getData('xxx');
+
 		$data6 = $this->__getData();
 		$data6['CalendarActionPlan']['is_repeat'] = 1;
 		$data6['CalendarActionPlan']['rrule_term'] = 'UNTIL';
+
 		$editKey = array(
 			'CalendarActionPlan' => array(
 			'key' => 'calendarplan1',
@@ -319,13 +323,11 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 			array($data, 'Calendars.CalendarRrule', 'validates', 'InternalErrorException', 'edit'),
 			array($data2, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'edit'), //timezoneでエラー
 			//array($data3, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'add'), //save_でエラー(add) pending 2016.08.04
-			//array($data3, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'edit'), //save_でエラー(edit)
+			array($data3, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'edit'), //save_でエラー(edit)
 			//array($data4, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'add'), //save_でエラー(add) pending 2016.08.04
-
 			array($data5, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'edit'), //block_keyに対応するblockなしでエラー
 			array($data6, 'Calendars.CalendarRrule', 'validates', 'InternalErrorException', 'add'),
 			array($data6, 'Calendars.CalendarRrule', 'save', 'InternalErrorException', 'add'),
-
 		);
 	}
 
