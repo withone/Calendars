@@ -77,14 +77,14 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 			$this->setExpectedException($exception);
 		}
 
-		if (isset($data['Frame']['name'])) {
-			if ($data['Frame']['name'] == 'testdata4') {
+		if (isset($data['FramesLanguage']['name'])) {
+			if ($data['FramesLanguage']['name'] == 'testdata4') {
 				$this->_mockForReturnFalse($model, 'Frames.Frame', 'save', 1);
-			} elseif ($data['Frame']['name'] == 'testdata5') {
+			} elseif ($data['FramesLanguage']['name'] == 'testdata5') {
 				$this->_mockForReturnTrue($model, 'Calendars.Calendar', '_saveFrameChangeAppearance', 1);
-			} elseif ($data['Frame']['name'] == 'testdata6') {
+			} elseif ($data['FramesLanguage']['name'] == 'testdata6') {
 				$this->_mockForReturnTrue($model, 'Calendars.Calendar', '_saveFrameChangeAppearance', 1);
-			} elseif ($data['Frame']['name'] == 'testdata7') {
+			} elseif ($data['FramesLanguage']['name'] == 'testdata7') {
 				//$this->_mockForReturnTrue($model, 'Calendars.Calendar', '_saveFrameChangeAppearance', 1);
 				$this->_mockForReturnTrue($model, 'Calendars.CalendarFrameSetting', 'saveFrameSetting', 1);
 				//$this->_mockForReturnFalse($model, 'Calendars.Calendar', '_saveCalendar', 1);
@@ -93,7 +93,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 				$mock->expects($this->once())
 				->method('save')
 				->will($this->returnValue(array()));
-			} elseif ($data['Frame']['name'] == 'testdata8') {
+			} elseif ($data['FramesLanguage']['name'] == 'testdata8') {
 				//$this->_mockForReturnTrue($model, 'Calendars.CalendarFrameSetting', 'saveFrameSetting', 1);
 				$mock = $this->getMockForModel('Blocks.Block', array('save'));
 				$mock->expects($this->once())

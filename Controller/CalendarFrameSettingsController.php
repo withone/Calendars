@@ -132,7 +132,7 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 	public function beforeFilter() {
 		parent::beforeFilter();
 		$this->Auth->deny('index');
-		$this->Calendar->afterFrameSave(Current::read());
+		$this->Calendar->afterFrameSave(['Frame' => Current::read('Frame')]);
 	}
 
 /**
