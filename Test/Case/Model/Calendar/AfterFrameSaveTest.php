@@ -100,6 +100,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 				->method('save')
 				->will($this->returnValue(array()));
 			}
+			unset($data['FramesLanguage']);
 		}
 
 		//テスト実施
@@ -121,7 +122,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 		//1.すでにブロックIDが存在
 		$data1 = array();
 		$expect1 = array();
-		$data1['Frame']['block_id'] = 1;
+		$data1['Frame']['block_id'] = 2;
 		$expect1 = $data1;
 
 		//2.Frameなし
@@ -133,16 +134,18 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 		$expect3 = array();
 		$data3['Frame'] = array(
 			'room_id' => '2',
-			'language_id' => 2,
 			'plugin_key' => 'calendars',
-			'key' => 'key_1');
+			'key' => 'key_1'
+		);
+		$data3['FramesLanguage'] = array(
+			'language_id' => 2,
+		);
 
 		//4.Frameあり/Blockなし
 		$data4 = array();
 		$expect4 = array();
 		$data4['Frame'] = array(
 			'room_id' => '17',
-			'language_id' => 2,
 			'plugin_key' => 'calendars',
 			'key' => 'frame_3',
 			//'bix_id' => 3,
@@ -152,52 +155,67 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 			//'start_pos' => 0,
 			//'display_count' => 3,
 			//'timeline_base_time' => 8,
+		);
+		$data4['FramesLanguage'] = array(
+			'language_id' => 2,
 			'name' => 'testdata4'
-			);
+		);
 
 		//5.Frameあり/Blockあり(_saveFrameChangeAppearanceでtrue)
 		$data5 = array();
 		$expect5 = array();
 		$data5['Frame'] = array(
 			'room_id' => '2',
-			'language_id' => 2,
 			'plugin_key' => 'calendars',
 			'key' => 'key_1',
-			'name' => 'testdata5');
-		$expect5 = $data5;
+		);
+		$data5['FramesLanguage'] = array(
+			'language_id' => 2,
+			'name' => 'testdata5'
+		);
+		$expect5['Frame'] = $data5['Frame'];
 
 		//6.Frameあり/Blockあり(_saveCalendarでカレンダーを生成)
 		$data6 = array();
 		$expect6 = array();
 		$data6['Frame'] = array(
 			'room_id' => '17',
-			'language_id' => 2,
 			'plugin_key' => 'calendars',
 			'key' => 'key_2',
-			'name' => 'testdata6');
-		$expect6 = $data6;
+		);
+		$data6['FramesLanguage'] = array(
+			'language_id' => 2,
+			'name' => 'testdata6'
+		);
+		$expect6['Frame'] = $data6['Frame'];
 
 		//7.Frameあり/Blockあり(_saveCalendarでカレンダー生成失敗)
 		$data7 = array();
 		$expect7 = array();
 		$data7['Frame'] = array(
 			'room_id' => '17',
-			'language_id' => 2,
 			'plugin_key' => 'calendars',
 			'key' => 'key_3',
-			'name' => 'testdata7');
-		$expect7 = $data7;
+		);
+		$data7['FramesLanguage'] = array(
+			'language_id' => 2,
+			'name' => 'testdata7'
+		);
+		$expect7['Frame'] = $data7['Frame'];
 
 		//8 Blockのsaveでエラー
 		$data8 = array();
 		$expect8 = array();
 		$data8['Frame'] = array(
 			'room_id' => 17,
-			'language_id' => 2,
 			'plugin_key' => 'calendars',
 			'key' => 'key_4',
-			'name' => 'testdata8');
-		$expect8 = $data8;
+		);
+		$data8['FramesLanguage'] = array(
+			'language_id' => 2,
+			'name' => 'testdata8'
+		);
+		$expect8['Frame'] = $data8['Frame'];
 
 		return array(
 			array($data1, $expect1),
