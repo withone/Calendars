@@ -165,7 +165,8 @@ class CalendarEventContentSaveLinkedDataTest extends NetCommonsModelTestCase {
 		CalendarPermissiveRooms::$roomPermRoles = Hash::merge(CalendarPermissiveRooms::$roomPermRoles, $testRoomInfos);
 
 		//テスト実行
-		$result = $this->$model->$method($data);
+		$createdUserWhenUpd = 2;
+		$result = $this->$model->$method($data, $createdUserWhenUpd);
 
 		$this->assertNotEmpty($result);
 	}
