@@ -423,7 +423,7 @@ class CalendarPlansController extends CalendarsAppController {
 				CakeLog::error("DBG: その他の不明なエラーが発生しました。");
 				$this->CalendarActionPlan->validationErrors['rrule_until'] = array();
 				$this->CalendarActionPlan->validationErrors['rrule_until'][] =
-						__d('calendars', '不明なエラーが発生しました。');
+						__d('calendars', 'An unknown error occurred.');
 			}
 
 			//これでエラーmsgが画面上部に数秒間flashされる。
