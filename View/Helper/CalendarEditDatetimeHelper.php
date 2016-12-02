@@ -126,9 +126,6 @@ class CalendarEditDatetimeHelper extends AppHelper {
 			'maxDate' => CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_MAX
 		)));
 
-		if ($label) {
-			$label = __d('calendars', $label);
-		}
 		$html .= $this->NetCommonsForm->input('CalendarActionPlanForDisp.' . $fieldName,
 			array(
 				'div' => false,

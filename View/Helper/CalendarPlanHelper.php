@@ -214,11 +214,12 @@ class CalendarPlanHelper extends AppHelper {
 		foreach ($weeks as $week) {
 			foreach ($wdays as $idx => $wday) {
 				$key = $week . $wday;
+				$weekLabel = $this->__getOrdSuffix($week);
 				if ($week > 0) {
-					$weekOrd = $this->__getOrdSuffix($week);
-					$options[$key] = __d('calendars', $weekOrd . ' week') . ' ' . $this->getWdayString($idx);
+					//改行の位置調整のため、半角スペースが必要
+					$options[$key] = $weekLabel . ' ' . $this->getWdayString($idx);
 				} else {
-					$options[$key] = __d('calendars', 'last week') . $this->getWdayString($idx);
+					$options[$key] = $weekLabel . $this->getWdayString($idx);
 				}
 			}
 		}
@@ -235,13 +236,15 @@ class CalendarPlanHelper extends AppHelper {
 	private function __getOrdSuffix($num) {
 		switch($num) {
 			case 1:
-				return '1st';
+				return __d('calendars', '1st week');
 			case 2:
-				return '2nd';
+				return __d('calendars', '2nd week');
 			case 3:
-				return '3rd';
-			default:
-				return $num . 'th';
+				return __d('calendars', '3rd week');
+			case 4:
+				return __d('calendars', '4th week');
+			case -1:
+				return __d('calendars', 'last week');
 		}
 	}
 /**

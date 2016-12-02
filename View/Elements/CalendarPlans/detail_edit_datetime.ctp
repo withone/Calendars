@@ -24,7 +24,7 @@
 	<?php echo $this->CalendarEditDatetime->makeEditDatetimeHtml(
 		$vars,
 		'datetime',
-		'From',
+		__d('calendars', 'From'),
 		'detail_start_datetime',
 		'detailStartDatetime',
 		'changeDetailStartDatetime'
@@ -36,7 +36,7 @@
 	<?php echo $this->CalendarEditDatetime->makeEditDatetimeHtml(
 	$vars,
 	'date',
-	'All day',
+	__d('calendars', 'All day'),
 	'detail_start_datetime',
 	'detailStartDate',
 	'changeDetailStartDate'
@@ -60,7 +60,7 @@
 	<?php echo $this->CalendarEditDatetime->makeEditDatetimeHtml(
 		$vars,
 		'datetime',
-		'To',
+		__d('calendars', 'To'),
 		'detail_end_datetime',
 		'detailEndDatetime',
 		'changeDetailEndDatetime'
