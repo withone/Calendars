@@ -59,7 +59,7 @@ msgid "Cyclic rules using deadline specified exceeds the maximum number of %d"
 msgstr ""
 
 #: Calendars/Controller/CalendarPlansController.php:426
-msgid "不明なエラーが発生しました。"
+msgid "An unknown error occurred."
 msgstr ""
 
 #: Calendars/Controller/Component/CalendarsComponent.php:263
@@ -183,21 +183,22 @@ msgid "(GMT+12:00) Auckland, Wellington, Fiji, Kamchatka, Marshall Island"
 msgstr ""
 
 #: Calendars/Model/CalendarActionPlan.php:336
-#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:275
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:327
 msgid "Invalid input. (change of repetition)"
 msgstr ""
 
 #: Calendars/Model/CalendarActionPlan.php:343
-#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:277
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:329;331;333;338
 msgid "Invalid input. (repetition)"
 msgstr ""
 
 #: Calendars/Model/CalendarActionPlan.php:370
-#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:257
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:296;299;301;305;307;309
 msgid "Invalid input. (time)"
 msgstr ""
 
 #: Calendars/Model/CalendarActionPlan.php:378
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:303
 msgid "Invalid input. (year/month/day)"
 msgstr ""
 
@@ -214,64 +215,64 @@ msgid "Invalid input. (end time)"
 msgstr ""
 
 #: Calendars/Model/CalendarActionPlan.php:404
-#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:267
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:320
 msgid "Invalid input. (start time)"
 msgstr ""
 
 #: Calendars/Model/CalendarActionPlan.php:408
-#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:269
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:322
 msgid "Invalid input. (start day (time) and end day (time))"
 msgstr ""
 
 #: Calendars/Model/CalendarActionPlan.php:414
-#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:271
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:324
 msgid "Invalid input. (end date)"
 msgstr ""
 
 #: Calendars/Model/CalendarActionPlan.php:434
-#: Calendars/Test/Case/Controller/CalendarPlans/AddTest.php:336
+#: Calendars/Test/Case/Controller/CalendarPlans/AddTest.php:337
 #: Calendars/Test/Case/Controller/CalendarPlans/EditTest.php:540
-#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:246
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:286
 msgid "Invalid input. (plan title)"
 msgstr ""
 
 #: Calendars/Model/CalendarActionPlan.php:438
-#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:248
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:288
 msgid "%d character limited. (plan title)"
 msgstr ""
 
 #: Calendars/Model/CalendarActionPlan.php:447
-#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:251
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:291
 msgid "%d character limited. (title icon)"
 msgstr ""
 
 #: Calendars/Model/CalendarActionPlan.php:477
-#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:229
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:270
 msgid "Invalid input. (authority)"
 msgstr ""
 
 #: Calendars/Model/CalendarActionPlan.php:484
-#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:231
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:272
 msgid "Invalid input. (timezone)"
 msgstr ""
 
 #: Calendars/Model/CalendarActionPlan.php:491
-#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:233
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:274
 msgid "Invalid input. (detail)"
 msgstr ""
 
 #: Calendars/Model/CalendarActionPlan.php:498
-#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:235
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:276
 msgid "%d character limited. (location)"
 msgstr ""
 
 #: Calendars/Model/CalendarActionPlan.php:506
-#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:238
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:279
 msgid "%d character limited. (contact)"
 msgstr ""
 
 #: Calendars/Model/CalendarActionPlan.php:515
-#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:241
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:282
 msgid "%d character limited. (detail)"
 msgstr ""
 
@@ -425,7 +426,7 @@ msgid "Only numbers can be entered."
 msgstr ""
 
 #: Calendars/Model/Behavior/CalendarPlanRruleValidateBehavior.php:61
-#: Calendars/Test/Case/Controller/CalendarPlans/AddTest.php:343
+#: Calendars/Test/Case/Controller/CalendarPlans/AddTest.php:344
 msgid "The number of repetition is %d or more and %d or less."
 msgstr ""
 
@@ -685,8 +686,20 @@ msgstr ""
 msgid "Timeline start time"
 msgstr ""
 
+#: Calendars/View/Elements/CalendarPlans/detail_edit_datetime.ctp:27
+msgid "From"
+msgstr ""
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_datetime.ctp:39
+msgid "All day"
+msgstr ""
+
 #: Calendars/View/Elements/CalendarPlans/detail_edit_datetime.ctp:50
 msgid "-"
+msgstr ""
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_datetime.ctp:63
+msgid "To"
 msgstr ""
 
 #: Calendars/View/Elements/CalendarPlans/detail_edit_etc_details.ctp:16
@@ -930,36 +943,52 @@ msgstr ""
 msgid "%s:%s"
 msgstr ""
 
-#: Calendars/View/Helper/CalendarPlanHelper.php:221
+#: Calendars/View/Helper/CalendarPlanHelper.php:239
+msgid "1st week"
+msgstr ""
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:241
+msgid "2nd week"
+msgstr ""
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:243
+msgid "3rd week"
+msgstr ""
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:245
+msgid "4th week"
+msgstr ""
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:247
 #: Calendars/View/Helper/CalendarPlanRruleHelper.php:324
 msgid "last week"
 msgstr ""
 
-#: Calendars/View/Helper/CalendarPlanHelper.php:259
+#: Calendars/View/Helper/CalendarPlanHelper.php:262
 msgid "Sunday"
 msgstr ""
 
-#: Calendars/View/Helper/CalendarPlanHelper.php:262
+#: Calendars/View/Helper/CalendarPlanHelper.php:265
 msgid "Monday"
 msgstr ""
 
-#: Calendars/View/Helper/CalendarPlanHelper.php:265
+#: Calendars/View/Helper/CalendarPlanHelper.php:268
 msgid "Tuesday"
 msgstr ""
 
-#: Calendars/View/Helper/CalendarPlanHelper.php:268
+#: Calendars/View/Helper/CalendarPlanHelper.php:271
 msgid "Wednesday"
 msgstr ""
 
-#: Calendars/View/Helper/CalendarPlanHelper.php:271
+#: Calendars/View/Helper/CalendarPlanHelper.php:274
 msgid "Thursday"
 msgstr ""
 
-#: Calendars/View/Helper/CalendarPlanHelper.php:274
+#: Calendars/View/Helper/CalendarPlanHelper.php:277
 msgid "Friday"
 msgstr ""
 
-#: Calendars/View/Helper/CalendarPlanHelper.php:277
+#: Calendars/View/Helper/CalendarPlanHelper.php:280
 msgid "Saturday"
 msgstr ""
 
