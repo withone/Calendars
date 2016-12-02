@@ -57,6 +57,10 @@ msgstr  "削除に失敗しました"
 msgid  "There is no event. To continue the event in the blank."
 msgstr  "対象eventがないのでeventを空にして下に流します。"
 
+#: Calendars/Controller/CalendarPlansController.php:426
+msgid "An unknown error occurred."
+msgstr "不明なエラーが発生しました。"
+
 #: Model/CalendarActionPlan.php:313
 msgid  "Invalid input. (change of repetition)"
 msgstr  "繰返しの変更指定が不正です。"
