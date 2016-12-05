@@ -74,9 +74,9 @@ class CalendarEventShareUserValidateTest extends NetCommonsValidateTest {
 		$data = array();
 		return array(
 			array('data' => $data, 'field' => 'calendar_event_id', 'value' => 'a',
-				'message' => __d('net_commons', 'Invaid request')),
+				'message' => __d('net_commons', 'Invalid request.')),
 			array('data' => $data, 'field' => 'share_user', 'value' => 'a',
-				'message' => __d('net_commons', 'Invaid request')),
+				'message' => __d('net_commons', 'Invalid request.')),
 		);
 	}
 
