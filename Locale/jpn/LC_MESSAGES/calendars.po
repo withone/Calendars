@@ -2,8 +2,8 @@
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 #
 #, fuzzy
-msgid  ""
-msgstr  ""
+msgid ""
+msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
@@ -13,1153 +13,1192 @@ msgstr  ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: Controller/CalendarFrameSettingsController.php:113
-msgid  "Monthly Calendar (small)"
-msgstr  "月表示（縮小）"
+#: Calendars/Controller/CalendarFrameSettingsController.php:113
+msgid "Monthly Calendar (small)"
+msgstr "月表示（縮小）"
 
-#: Controller/CalendarFrameSettingsController.php:115
-msgid  "Monthly Calendar (large)"
-msgstr  "月表示（拡大）"
+#: Calendars/Controller/CalendarFrameSettingsController.php:115
+msgid "Monthly Calendar (large)"
+msgstr "月表示（拡大）"
 
-#: Controller/CalendarFrameSettingsController.php:117
-msgid  "Weekly Calendar"
-msgstr  "週表示"
+#: Calendars/Controller/CalendarFrameSettingsController.php:117
+msgid "Weekly Calendar"
+msgstr "週表示"
 
-#: Controller/CalendarFrameSettingsController.php:119
-msgid  "Day View"
-msgstr  "日表示"
+#: Calendars/Controller/CalendarFrameSettingsController.php:119
+msgid "Day View"
+msgstr "日表示"
 
-#: Controller/CalendarFrameSettingsController.php:121
-msgid  "Schedule (ordered-by-time)"
-msgstr  "スケジュール（時間順）"
+#: Calendars/Controller/CalendarFrameSettingsController.php:121
+msgid "Schedule (ordered-by-time)"
+msgstr "スケジュール（時間順）"
 
-#: Controller/CalendarFrameSettingsController.php:123
-msgid  "Schedule (ordered-by-user)"
-msgstr  "スケジュール（会員順）"
+#: Calendars/Controller/CalendarFrameSettingsController.php:123
+msgid "Schedule (ordered-by-user)"
+msgstr "スケジュール（会員順）"
 
-#: Controller/CalendarPlansController.php:101
-msgid  "There is no block ID. Display a blank page."
-msgstr  "ブロックIDがないのでブランクページを表示します"
+#: Calendars/Controller/CalendarMailSettingsController.php:127
+#: Calendars/Model/Behavior/CalendarExposeRoomBehavior.php:82;85
+#: Calendars/Model/Behavior/CalendarMailBehavior.php:199
+#: Calendars/View/Elements/CalendarBlockRolePermissions/permission_all_members.ctp:17
+#: Calendars/View/Helper/CalendarCategoryHelper.php:42
+#: Calendars/View/Helper/CalendarDailyHelper.php:45
+#: Calendars/View/Helper/CalendarLegendHelper.php:130
+#: Calendars/View/Helper/CalendarPermissionHelper.php:43
+#: Calendars/View/Helper/CalendarRoomSelectHelper.php:54
+msgid "All the members"
+msgstr "全会員"
 
-#: Controller/CalendarPlansController.php:121
-msgid  "There is no event. Display a blank page. 1"
-msgstr  "対象eventの指定がないのでブランクページを表示します"
+#: Calendars/Controller/CalendarPlansController.php:233
+msgid "Delete failed."
+msgstr "削除に失敗しました"
 
-#: Controller/CalendarPlansController.php:136;387
-msgid  "There is no event. Display a blank page. 2"
-msgstr  "対象eventがないのでブランクページを表示します"
-
-#: Controller/CalendarPlansController.php:230
-msgid  "Delete failed."
-msgstr  "削除に失敗しました"
-
-#: Controller/CalendarPlansController.php:672
-msgid  "There is no event. To continue the event in the blank."
-msgstr  "対象eventがないのでeventを空にして下に流します。"
+#: Calendars/Controller/CalendarPlansController.php:419
+#: Calendars/Test/Case/Controller/CalendarPlans/EditTest.php:547
+msgid "Cyclic rules using deadline specified exceeds the maximum number of %d"
+msgstr "指定期限まで繰返しルールを適用した場合、最大回数%dを超えます。"
 
 #: Calendars/Controller/CalendarPlansController.php:426
 msgid "An unknown error occurred."
 msgstr "不明なエラーが発生しました。"
 
-#: Model/CalendarActionPlan.php:313
-msgid  "Invalid input. (change of repetition)"
-msgstr  "繰返しの変更指定が不正です。"
-
-#: Model/CalendarActionPlan.php:320
-msgid  "Invalid input. (repetition)"
-msgstr  "予定の繰り返し指定が不正です。"
-
-#: Model/CalendarActionPlan.php:390
-msgid  "Invalid input. (time)"
-msgstr  "時間の指定が不正です"
-
-#: Model/CalendarActionPlan.php:398
-msgid  "Invalid input. (year/month/day)"
-msgstr  "予定（年月日）の指定が不正です"
-
-#: Model/CalendarActionPlan.php:406
-msgid  "Invalid input. (start time)(easy edit mode)."
-msgstr  "予定（開始時間）の指定が不正です"
-
-#: Model/CalendarActionPlan.php:410
-msgid  "Invalid input. (start time and end time)(easy edit mode)"
-msgstr  "開始時分と終了時分の並びが不正です"
-
-#: Model/CalendarActionPlan.php:418
-msgid  "Invalid input. (end time)"
-msgstr  "予定（終了時間）の指定が不正です"
-
-#: Model/CalendarActionPlan.php:424
-msgid  "Invalid input. (start time)"
-msgstr  "開始日（時）が不正です"
-
-#: Model/CalendarActionPlan.php:428
-msgid  "Invalid input. (start day (time) and end day (time))"
-msgstr  "開始日(時)と終了日(時)の並びが不正です"
-
-#: Model/CalendarActionPlan.php:434
-msgid  "Invalid input. (end date)"
-msgstr  "終了日（時）が不正です"
-
-#: Model/CalendarActionPlan.php:454
-msgid  "Invalid input. (plan title)"
-msgstr  "件名が不正です。"
-
-#: Model/CalendarActionPlan.php:458
-msgid  "%d character limited. (plan title)"
-msgstr  "件名は最大 %d 文字です。"
-
-#: Model/CalendarActionPlan.php:467
-msgid  "%d character limited. (title icon)"
-msgstr  "タイトルアイコンは最大 %d 文字です。"
-
-#: Model/CalendarActionPlan.php:497
-msgid  "Invalid input. (authority)"
-msgstr  "権限が不正です。"
-
-#: Model/CalendarActionPlan.php:504
-msgid  "Invalid input. (timezone)"
-msgstr  "タイムゾーンが不正です。"
-
-#: Model/CalendarActionPlan.php:511
-msgid  "Invalid input. (detail)"
-msgstr  "詳細表示の指定が不正です。"
-
-#: Model/CalendarActionPlan.php:518
-msgid  "%d character limited. (location)"
-msgstr  "場所は最大 %d 文字です。"
-
-#: Model/CalendarActionPlan.php:526
-msgid  "%d character limited. (contact)"
-msgstr  "連絡先は最大 %d 文字です。"
-
-#: Model/CalendarActionPlan.php:534
-msgid  "%d character limited. (detail)"
-msgstr  "詳細は最大 %d 文字です。"
-
-#: Model/CalendarDeleteActionPlan.php:134
-msgid  "Invalid input. (edit rrule)"
-msgstr  "rrule編集指定が不正です"
-
-#: Model/CalendarDeleteActionPlan.php:142
-msgid  "Invalid input. (repeat flag)"
-msgstr  "イベントの繰り返しフラグが不正です"
-
-#: Model/CalendarDeleteActionPlan.php:150
-msgid  "Invalid input.  (first sib ebent id)"
-msgstr  "先頭のイベントIDが不正です"
-
-#: Model/CalendarDeleteActionPlan.php:158
-msgid  "Invalid input. (origin event id)"
-msgstr  "オリジナルのイベントIDが不正です"
-
-#: Model/CalendarDeleteActionPlan.php:166
-msgid  "Invalid input. (recurrence flag)"
-msgstr  "イベントの置換フラグが不正です"
-
-#: Model/CalendarEvent.php:179
-msgid  "Please input title text."
-msgstr  "タイトルを入力してください。"
-
-#: Model/CalendarEvent.php:191;201;207;222;228
-msgid  "Invalid value."
-msgstr  "値が不正です。"
-
-#: Model/CalendarEvent.php:195;211
-msgid  "Out of range value."
-msgstr  "範囲外です。"
-
-#: Model/CalendarEventContent.php:90
-msgid  "Model Name"
-msgstr  "モデル名"
-
-#: Model/CalendarEventContent.php:98
-msgid  "content key"
-msgstr  "content key"
-
-#: Model/CalendarEventContent.php:107
-msgid  "calendar_event id"
-msgstr  "calendar_event id"
-
-#: Model/CalendarMailSetting.php:82
-msgid  "Mail Key"
-msgstr  "Mail Key"
-
-#: Model/CalendarMailSetting.php:90
-msgid  "use mail"
-msgstr  "メールを使う"
-
-#: Model/Behavior/CalendarExposeRoomBehavior.php:91
-#: View/Elements/CalendarBlockRolePermissions/permission_all_members.ctp:17
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:18
-#: View/Helper/CalendarLegendHelper.php:115
-#: View/Helper/CalendarPermissionHelper.php:43
-#: View/Helper/CalendarRoomSelectHelper.php:57
-msgid  "All the members"
-msgstr  "全会員"
-
-#: Model/Behavior/CalendarExposeRoomBehavior.php:318
-msgid  "Unknown My Room"
-msgstr  "不明なマイルーム"
-
-#: Model/Behavior/CalendarPlanOptionBehavior.php:33
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:214;235
-msgid  "Before 0 minutes"
-msgstr  "0分前"
-
-#: Model/Behavior/CalendarPlanOptionBehavior.php:34
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:215
-msgid  "Before 5 minutes"
-msgstr  "5分前"
-
-#: Model/Behavior/CalendarPlanOptionBehavior.php:35
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:216
-msgid  "Before 10 minutes"
-msgstr  "10分前"
-
-#: Model/Behavior/CalendarPlanOptionBehavior.php:36
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:217
-msgid  "Before 15 minutes"
-msgstr  "15分前"
-
-#: Model/Behavior/CalendarPlanOptionBehavior.php:37
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:218
-msgid  "Before 20 minutes"
-msgstr  "20分前"
-
-#: Model/Behavior/CalendarPlanOptionBehavior.php:38
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:219
-msgid  "Before 25 minutes"
-msgstr  "25分前"
-
-#: Model/Behavior/CalendarPlanOptionBehavior.php:39
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:220
-msgid  "Before 30 minutes"
-msgstr  "30分前"
-
-#: Model/Behavior/CalendarPlanOptionBehavior.php:40
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:221
-msgid  "Before 45 minutes"
-msgstr  "45分前"
-
-#: Model/Behavior/CalendarPlanOptionBehavior.php:41
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:222
-msgid  "1 hour before"
-msgstr  "1時間前"
-
-#: Model/Behavior/CalendarPlanOptionBehavior.php:42
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:223
-msgid  "2 hours before"
-msgstr  "2時間前"
-
-#: Model/Behavior/CalendarPlanOptionBehavior.php:43
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:224
-msgid  "3 hours before"
-msgstr  "3時間前"
-
-#: Model/Behavior/CalendarPlanOptionBehavior.php:44
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:225
-msgid  "12 hours before"
-msgstr  "12時間前"
-
-#: Model/Behavior/CalendarPlanOptionBehavior.php:45
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:226
-msgid  "24 hours before"
-msgstr  "24時間前"
-
-#: Model/Behavior/CalendarPlanOptionBehavior.php:46
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:227
-msgid  "2 days before"
-msgstr  "2日前"
-
-#: Model/Behavior/CalendarPlanOptionBehavior.php:47
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:228
-msgid  "1 week before"
-msgstr  "1週間前"
-
-#: Model/Behavior/CalendarPlanOptionBehavior.php:48
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:229
-msgid  "Right now"
-msgstr  "今すぐ"
-
-#: Model/Behavior/CalendarPlanRruleValidateBehavior.php:44
-msgid  "Input required. (Times repeated)"
-msgstr  "カレンダー繰返し回数は必須です。"
-
-#: Model/Behavior/CalendarPlanRruleValidateBehavior.php:51
-msgid  "Only numbers can be entered."
-msgstr  "カレンダー繰返し回数は数字のみ可能です。"
-
-#: Model/Behavior/CalendarPlanRruleValidateBehavior.php:60
-msgid  "The number of repetition is %d or more and %d or less."
-msgstr  "カレンダー繰返し回数は%d以上%d以下です。"
-
-#: Model/Behavior/CalendarPlanRruleValidateBehavior.php:137
-msgid  "It is not in the YYYY-MM-DD format."
-msgstr  "日付形式がYYYY-MM-DD形式ではありません。"
-
-#: Model/Behavior/CalendarPlanRruleValidateBehavior.php:141
-msgid  "Invalid input. Day that does not exist has been specified."
-msgstr  "実在しない日が指定されています。"
-
-#: Model/Behavior/CalendarPlanRruleValidateBehavior.php:171
-msgid  "Invalid input. Term end date is earlier than the start date."
-msgstr  "繰返し期限日が開始日より前になっています。"
-
-#: Model/Behavior/CalendarPlanRruleValidateBehavior.php:176
-msgid  "date that can be specified is %s or more and %s or less."
-msgstr  "指定できる日は%sから%sの間です。"
-
-#: Model/Behavior/CalendarValidateAppBehavior.php:60
-msgid  "Invalid input. (repeat interval. Please specify day/week/month/year)"
-msgstr  "繰返し指定ありの単位が日、週、月、年のいずれでもありません。"
-
-#: Model/Behavior/CalendarValidateAppBehavior.php:84
-msgid  "Invalid input. (repeat interval: every day)"
-msgstr  "繰返し指定ありの日単位の日ごとの値が不正です"
-
-#: Model/Behavior/CalendarValidateAppBehavior.php:108
-msgid  "Invalid input. (repeat interval: every week)"
-msgstr  "繰返し指定ありの週単位の週ごとの値が不正です"
-
-#: Model/Behavior/CalendarValidateAppBehavior.php:125
-msgid  "Invalid input. (repeat interval:week)"
-msgstr  "繰返し指定ありの週単位の曜日の指定が不正です"
-
-#: Model/Behavior/CalendarValidateAppBehavior.php:149
-msgid  "Invalid input. (repeat interbal:every month)"
-msgstr  "繰返し指定ありの月単位の月ごとの値が不正です"
-
-#: Model/Behavior/CalendarValidateAppBehavior.php:181
-msgid  "Invalid input. (rrule error. day of the month or date)"
-msgstr  "繰返し指定ありの月単位の曜日または日付指定の値が不正です"
-
-#: Model/Behavior/CalendarValidateAppBehavior.php:206
-msgid  "Invalid input. (rrule error. interval YEARLY)"
-msgstr  "繰返し指定ありの年単位の年ごとの値が不正です"
-
-#: Model/Behavior/CalendarValidateAppBehavior.php:216
-msgid  "Invalid input. (rrule error. Interval of year. there is no specification of the month.)"
-msgstr  "繰返し指定ありの年単位の月が１つも指定されていません"
-
-#: Model/Behavior/CalendarValidateAppBehavior.php:235
-msgid  "Invalid input. (rrule error. Interval of year, specified month.)"
-msgstr  "繰返し指定ありの年単位の月の指定が不正です"
-
-#: Model/Behavior/CalendarValidateAppBehavior.php:248
-msgid  "Invalid input. (rrule error.  Interval of year. Week of the year unit,week value is invalid.)"
-msgstr  "繰返し指定ありの年単位の週と曜日の値が不正です"
-
-#: Utility/CalendarTime.php:454
-msgid  "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
-msgstr  "日|月|火|水|木|金|土"
-
-#: View/CalendarMailSettings/edit.ctp:22
-msgid  "MailSetting.mail_fixed_phrase_body.popover"
-msgstr  "{X-SITE_NAME} : サイト名<br />{X-PLUGIN_NAME} : プラグイン名<br />{X-ROOM} : 公開対象<br />{X-SUBJECT} : 件名<br />{X-START_TIME} : 開始日時<br />{X-END_TIME} : 終了日時<br />{X-LOCATION} : 場所<br />{X-CONTACT} : 連絡先<br />{X-USER} : 記入者<br />{X-TO_DATE} : 記入日時<br />{X-RRULE} : 繰返し<br />{X-BODY} : 詳細<br />{X-URL} : この予定へのURL"
-
-#: View/CalendarPlans/daylist.ctp:22
-msgid  "back to calendar"
-msgstr  "カレンダーに戻る"
-
-#: View/CalendarPlans/delete.ctp:10
-msgid  "delete"
-msgstr  "削除処理"
-
-#: View/CalendarPlans/delete.ctp:63
-msgid  "This plan has been repeatedly set. Select the plan that you want to remove from the following items, please press the delete button.<br />It can not be undone once you delete."
-msgstr  "この予定は繰り返し設定されています。削除する予定を下記項目から選択し、削除ボタンを押してください。<br />一度削除すると元に戻せません。"
-
-#: View/CalendarPlans/delete.ctp:66
-msgid  "Delete event.<br />It can not be undone once you delete."
-msgstr  "この予定を削除します。<br />一度削除すると元に戻せません。"
-
-#: View/CalendarPlans/delete.ctp:73
-#: View/CalendarPlans/detail_edit.ctp:116
-msgid  "only this one"
-msgstr  "この予定のみ"
-
-#: View/CalendarPlans/delete.ctp:75
-#: View/CalendarPlans/detail_edit.ctp:120
-msgid  "all after this one"
-msgstr  "これ以降に指定した全ての予定"
-
-#: View/CalendarPlans/delete.ctp:76
-#: View/CalendarPlans/detail_edit.ctp:122
-msgid  "all"
-msgstr  "設定した全ての予定"
-
-#: View/CalendarPlans/detail_edit.ctp:7
-msgid  "Form to edit schedule item"
-msgstr  "予定の編集"
-
-#: View/CalendarPlans/detail_edit.ctp:9
-msgid  "Form to add schedule item"
-msgstr  "予定の追加"
-
-#: View/CalendarPlans/detail_edit.ctp:94
-msgid  "This plan has been repeatedly set. Select the plan that you want to edit from the following items, Repetation of the plan [only this one] is not displayed."
-msgstr  "この予定は繰り返し設定されています。変更した予定を下記項目から選択し、予定編集してください。なお「この予定のみ」の時は予定の繰返しは表示されません。"
-
-#: View/CalendarPlans/detail_edit.ctp:97
-msgid  "Because it was specified in the [only this one], repetation of the plan can not be specified."
-msgstr  "「この予定のみ」指定で変更された予定なので、予定の繰返しは指定できません。"
-
-#: View/CalendarPlans/detail_edit.ctp:99
-msgid  "When you select the [all] will be re-set to the contents is repeated first plan."
-msgstr  "「設定した全ての予定」を選択すると、現在の編集がキャンセルされ、繰返しの初回予定に再設定されます。"
-
-#: View/CalendarPlans/detail_edit.ctp:153
-msgid  "Setting the date"
-msgstr  "予定日の設定"
-
-#: View/CalendarPlans/detail_edit.ctp:159
-msgid  "Setting the time"
-msgstr  "期間・時間の指定"
-
-#: View/CalendarPlans/detail_edit.ctp:195
-msgid  "All day"
-msgstr  "終日"
-
-#: View/CalendarPlans/detail_edit.ctp:201
-msgid  "From"
-msgstr  "開始"
-
-#: View/CalendarPlans/detail_edit.ctp:315
-msgid  "-"
-msgstr  "-"
-
-#: View/CalendarPlans/detail_edit.ctp:335
-msgid  "To"
-msgstr  "終了"
-
-#: View/CalendarPlans/detail_edit.ctp:421
-msgid  "Repeat the event"
-msgstr  "予定を繰り返す"
-
-#: View/CalendarPlans/detail_edit.ctp:451
-msgid  "Units of repeated"
-msgstr  "繰り返しの単位"
-
-#: View/CalendarPlans/detail_edit.ctp:494
-#: View/Calendars/lmonthly.ctp:21
-#: View/Calendars/smonthly.ctp:35
-#: View/Elements/CalendarFrameSettings/display_count.ctp:19
-#: View/Elements/Calendars/calendar_tabs.ctp:70
-#: View/Helper/CalendarCommonHelper.php:40
-#: View/Helper/CalendarPlanHelper.php:248
-msgid  "day"
-msgstr  "日"
-
-#: View/CalendarPlans/detail_edit.ctp:495
-#: View/Elements/Calendars/calendar_tabs.ctp:59
-#: View/Helper/CalendarMonthlyHelper.php:409
-msgid  "week"
-msgstr  "週"
-
-#: View/CalendarPlans/detail_edit.ctp:496
-#: View/Calendars/lmonthly.ctp:22
-#: View/Calendars/smonthly.ctp:23;36
-#: View/Elements/Calendars/calendar_tabs.ctp:48
-#: View/Helper/CalendarCommonHelper.php:40
-#: View/Helper/CalendarPlanHelper.php:247
-msgid  "month"
-msgstr  "月"
-
-#: View/CalendarPlans/detail_edit.ctp:497
-#: View/Calendars/smonthly.ctp:22
-#: View/Helper/CalendarPlanHelper.php:244
-msgid  "year"
-msgstr  "年"
-
-#: View/CalendarPlans/detail_edit.ctp:522;691
-msgid  "every %dday(s)"
-msgstr  "%d日ごと"
-#: View/Helper/CalendarTurnCalendarHelper.php:158
-msgid  "%dday(s)"
-msgstr  "%d日"
-
-#: View/CalendarPlans/detail_edit.ctp:531;563;628
-msgid  "Repeating pattern"
-msgstr  "繰り返しのパターン"
-
-#: View/CalendarPlans/detail_edit.ctp:570
-msgid  "%dweek(s)"
-msgstr  "%d週"
-
-#: View/CalendarPlans/detail_edit.ctp:635
-msgid  "every %d month(s)"
-msgstr  "%dヶ月ごと"
-
-#: View/CalendarPlans/detail_edit.ctp:654
-msgid  "Please select either."
-msgstr  "どちらかを選択してください。"
-
-#: View/CalendarPlans/detail_edit.ctp:660
-msgid  "- select day of the week -"
-msgstr  "-曜日指定-"
-
-msgid "or"
-msgstr "または"
-
-#: View/CalendarPlans/detail_edit.ctp:689
-msgid  "- select day of the month -"
-msgstr  "-日付指定-"
-
-#: View/CalendarPlans/detail_edit.ctp:717
-msgid  "every %d year(s)"
-msgstr  "%d年ごと"
-
-#: View/CalendarPlans/detail_edit.ctp:737
-#: View/Elements/Calendars/turn_calendar.ctp:71
-#: View/Helper/CalendarTurnCalendarHelper.php:134;147;157
-msgid  "%d"
-msgstr  "%d月"
-
-#: View/CalendarPlans/detail_edit.ctp:758
-msgid  "Setting of repeat"
-msgstr  "繰り返しの設定"
-
-#: View/CalendarPlans/detail_edit.ctp:763
-#: View/Helper/CalendarPlanRruleHelper.php:194
-msgid  "Start date"
-msgstr  "開始日と同日"
-
-#: View/CalendarPlans/detail_edit.ctp:814
-msgid  "Times repeated"
-msgstr  "繰返し回数を指定する"
-
-#: View/CalendarPlans/detail_edit.ctp:815
-msgid  "Day repetition ended"
-msgstr  "繰返しの終了日を指定する"
-
-#: View/CalendarPlans/detail_edit.ctp:824
-msgid  "End date"
-msgstr  "繰返しの終了"
-
-#: View/CalendarPlans/detail_edit.ctp:858
-msgid  "times"
-msgstr  "回"
-
-#: View/CalendarPlans/detail_edit.ctp:899
-msgid  "until"
-msgstr  "まで繰り返す"
-
-#: View/CalendarPlans/detail_edit.ctp:990
-msgid  "Notify by e-mail"
-msgstr  "メール通知"
-
-#: View/CalendarPlans/detail_edit.ctp:1007
-msgid  "e-mail notification before event"
-msgstr  "イベント前にメール通知する"
-
-#: View/CalendarPlans/detail_edit.ctp:1021
-msgid  "Event 5 minutes ago"
-msgstr  "イベント5分前"
-
-#: View/CalendarPlans/detail_edit.ctp:1022
-msgid  "Event 10 minutes ago"
-msgstr  "イベント10分前"
-
-#: View/CalendarPlans/detail_edit.ctp:1023
-msgid  "Event 15 minutes ago"
-msgstr  "イベント15分前"
-
-#: View/CalendarPlans/detail_edit.ctp:1024
-msgid  "Event 20 minutes ago"
-msgstr  "イベント20分前"
-
-#: View/CalendarPlans/detail_edit.ctp:1025
-msgid  "Event 25 minutes ago"
-msgstr  "イベント25分前"
-
-#: View/CalendarPlans/detail_edit.ctp:1026
-msgid  "Event 30 minutes ago"
-msgstr  "イベント30分前"
-
-#: View/CalendarPlans/detail_edit.ctp:1027
-msgid  "Event 45 minutes ago"
-msgstr  "イベント45分前"
-
-#: View/CalendarPlans/detail_edit.ctp:1028
-msgid  "Event 1 hour ago"
-msgstr  "イベント1時間前"
-
-#: View/CalendarPlans/detail_edit.ctp:1029
-msgid  "Event 2 hours ago"
-msgstr  "イベント2時間前"
-
-#: View/CalendarPlans/detail_edit.ctp:1030
-msgid  "Event 3 hours ago"
-msgstr  "イベント3時間前"
-
-#: View/CalendarPlans/detail_edit.ctp:1031
-msgid  "Event 12 hours ago"
-msgstr  "イベント12時間前"
-
-#: View/CalendarPlans/detail_edit.ctp:1032
-msgid  "Event 24 hours ago"
-msgstr  "イベント24時間前"
-
-#: View/CalendarPlans/detail_edit.ctp:1033
-msgid  "Event 2 days ago"
-msgstr  "イベント2日前"
-
-#: View/CalendarPlans/detail_edit.ctp:1034
-msgid  "Event 1 week ago"
-msgstr  "イベント1週間前"
-
+#: Calendars/Controller/Component/CalendarsComponent.php:263
+msgid "(GMT-12:00) Eniwetok, Kwajalein"
+msgstr "(GMT-12:00) エニウェトク、クエジェリン"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:265
+msgid "(GMT-11:00) Midway Island, Samoa"
+msgstr "(GMT-11:00) ミッドウェー島、サモア"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:267
+msgid "(GMT-10:00) Hawaii"
+msgstr "(GMT-10:00) ハワイ"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:269
+msgid "(GMT-9:00) Alaska"
+msgstr "(GMT-9:00) アラスカ"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:271
+msgid "(GMT-8:00) Pacific Time (US & Canada)"
+msgstr "(GMT-8:00) 太平洋標準時（米国およびカナダ）、ティファナ"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:273
+msgid "(GMT-7:00) Mountain Time (US & Canada)"
+msgstr "(GMT-7:00) 山地標準時（米国およびカナダ）"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:276
+msgid "(GMT-6:00) Central Time (US & Canada), Mexico City"
+msgstr "(GMT-6:00) 中部標準時（米国およびカナダ）、メキシコシティ"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:279
+msgid "(GMT-5:00) Eastern Time (US & Canada), Bogota, Lima, Quito"
+msgstr "(GMT-5:00) 東部標準時（米国およびカナダ）、ボゴタ、リマ、キト"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:282
+msgid "(GMT-4:00) Atlantic Time (Canada), Caracas, La Paz"
+msgstr "(GMT-4:00) 大西洋標準時（カナダ）、カラカス、ラパス"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:285
+msgid "(GMT-3:30) Newfoundland"
+msgstr "(GMT-3:30) ニューファンドランド"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:287
+msgid "(GMT-3:00) Brasilia, Buenos Aires, Georgetown"
+msgstr "(GMT-3:00) ブラジリア、ブエノスアイレス、ジョージタウン"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:290
+msgid "(GMT-2:00) Mid-Atlantic"
+msgstr "(GMT-2:00) 中央大西洋"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:292
+msgid "(GMT-1:00) Azores, Cape Verde Islands"
+msgstr "(GMT-1:00) アゾレス諸島、カーボベルデ諸島"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:294
+msgid "(GMT) Greenwich Mean Time, London, Dublin, Lisbon, Casablanca, Monrovia"
+msgstr "(GMT) グリニッジ標準時、ダブリン、ロンドン、リスボン、エジンバラ"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:297
+msgid "(GMT+1:00) Amsterdam, Berlin, Rome, Copenhagen, Brussels, Madrid, Paris"
+msgstr "(GMT+1:00) ブリュッセル、コペンハーゲン、マドリッド、パリ、アムステルダム"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:300
+msgid "(GMT+2:00) Athens, Istanbul, Minsk, Helsinki, Jerusalem, South Africa"
+msgstr "(GMT+2:00) アテネ、イスタンブール、エルサレム、カイロ、ヘルシンキ"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:303
+msgid "(GMT+3:00) Baghdad, Kuwait, Riyadh, Moscow, St. Petersburg"
+msgstr "(GMT+3:00) バグダッド、ナイロビ、クウェート、リヤド、モスクワ"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:305
+msgid "(GMT+3:30) Tehran"
+msgstr "(GMT+3:30) テヘラン"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:307
+msgid "(GMT+4:00) Abu Dhabi, Muscat, Baku, Tbilisi"
+msgstr "(GMT+4:00) アブダビ、マスカット、バク、トビリシ"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:309
+msgid "(GMT+4:30) Kabul"
+msgstr "(GMT+4:30) カブール"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:311
+msgid "(GMT+5:00) Ekaterinburg, Islamabad, Karachi, Tashkent"
+msgstr "(GMT+5:00) イスラマバード、カラチ、タシケント、エカテリンバーグ"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:314
+msgid "(GMT+5:30) Bombay, Calcutta, Madras, New Delhi"
+msgstr "(GMT+5:30) カルカッタ、チェンナイ、ムンバイ、ニューデリー"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:317
+msgid "(GMT+6:00) Almaty, Dhaka, Colombo"
+msgstr "(GMT+6:00) ダッカ、アルマティ、スリ・ジャヤワルダナプラ"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:320
+msgid "(GMT+7:00) Bangkok, Hanoi, Jakarta"
+msgstr "(GMT+7:00) バンコク、ハノイ、ジャカルタ"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:322
+msgid "(GMT+8:00) Beijing, Perth, Singapore, Hong Kong, Urumqi, Taipei"
+msgstr "(GMT+8:00) シンガポール、パース、台北、北京、重慶、香港、ウルムチ"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:325
+msgid "(GMT+9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk"
+msgstr "(GMT+9:00) 東京、大阪、札幌、ソウル、ヤクーツク"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:327
+msgid "(GMT+9:30) Adelaide, Darwin"
+msgstr "(GMT+9:30) アデレード、ダーウィン"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:329
+msgid "(GMT+10:00) Brisbane, Canberra, Melbourne, Sydney, Guam,Vlasdiostok"
+msgstr "(GMT+10:00) ウラジオストク、キャンベラ、メルボルン、シドニー、グアム"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:332
+msgid "(GMT+11:00) Magadan, Solomon Islands, New Caledonia"
+msgstr "(GMT+11:00) マガダン、ソロモン諸島、ニューカレドニア"
+
+#: Calendars/Controller/Component/CalendarsComponent.php:334
+msgid "(GMT+12:00) Auckland, Wellington, Fiji, Kamchatka, Marshall Island"
+msgstr "(GMT+12:00) オークランド、ウェリントン、フィジー、カムチャッカ"
+
+#: Calendars/Model/CalendarActionPlan.php:336
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:327
+msgid "Invalid input. (change of repetition)"
+msgstr "繰返しの変更指定が不正です。"
+
+#: Calendars/Model/CalendarActionPlan.php:343
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:329;331;333;338
+msgid "Invalid input. (repetition)"
+msgstr "予定の繰り返し指定が不正です。"
+
+#: Calendars/Model/CalendarActionPlan.php:370
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:296;299;301;305;307;309
+msgid "Invalid input. (time)"
+msgstr "時間の指定が不正です"
+
+#: Calendars/Model/CalendarActionPlan.php:378
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:303
+msgid "Invalid input. (year/month/day)"
+msgstr "予定（年月日）の指定が不正です"
+
+#: Calendars/Model/CalendarActionPlan.php:386
+msgid "Invalid input. (start time)(easy edit mode)"
+msgstr "予定（開始時間）の指定が不正です"
+
+#: Calendars/Model/CalendarActionPlan.php:390
+msgid "Invalid input. (start time and end time)(easy edit mode)"
+msgstr "開始時分と終了時分の並びが不正です"
+
+#: Calendars/Model/CalendarActionPlan.php:398
+msgid "Invalid input. (end time)"
+msgstr "予定（終了時間）の指定が不正です"
+
+#: Calendars/Model/CalendarActionPlan.php:404
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:320
+msgid "Invalid input. (start time)"
+msgstr "開始日（時）が不正です"
+
+#: Calendars/Model/CalendarActionPlan.php:408
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:322
+msgid "Invalid input. (start day (time) and end day (time))"
+msgstr "開始日(時)と終了日(時)の並びが不正です"
+
+#: Calendars/Model/CalendarActionPlan.php:414
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:324
+msgid "Invalid input. (end date)"
+msgstr "終了日（時）が不正です"
+
+#: Calendars/Model/CalendarActionPlan.php:434
+#: Calendars/Test/Case/Controller/CalendarPlans/AddTest.php:337
+#: Calendars/Test/Case/Controller/CalendarPlans/EditTest.php:540
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:286
+msgid "Invalid input. (plan title)"
+msgstr "件名が不正です。"
+
+#: Calendars/Model/CalendarActionPlan.php:438
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:288
+msgid "%d character limited. (plan title)"
+msgstr "件名は最大 %d 文字です。"
+
+#: Calendars/Model/CalendarActionPlan.php:447
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:291
+msgid "%d character limited. (title icon)"
+msgstr "タイトルアイコンは最大 %d 文字です。"
+
+#: Calendars/Model/CalendarActionPlan.php:477
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:270
+msgid "Invalid input. (authority)"
+msgstr "権限が不正です。"
+
+#: Calendars/Model/CalendarActionPlan.php:484
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:272
+msgid "Invalid input. (timezone)"
+msgstr "タイムゾーンが不正です。"
+
+#: Calendars/Model/CalendarActionPlan.php:491
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:274
+msgid "Invalid input. (detail)"
+msgstr "詳細表示の指定が不正です。"
+
+#: Calendars/Model/CalendarActionPlan.php:498
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:276
+msgid "%d character limited. (location)"
+msgstr "場所は最大 %d 文字です。"
+
+#: Calendars/Model/CalendarActionPlan.php:506
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:279
+msgid "%d character limited. (contact)"
+msgstr "連絡先は最大 %d 文字です。"
+
+#: Calendars/Model/CalendarActionPlan.php:515
+#: Calendars/Test/Case/Model/CalendarActionPlan/ValidateTest.php:282
+msgid "%d character limited. (detail)"
+msgstr "詳細は最大 %d 文字です。"
+
+#: Calendars/Model/CalendarDeleteActionPlan.php:147
+#: Calendars/Test/Case/Model/CalendarDeleteActionPlan/ValidateTest.php:103
+msgid "Invalid input. (edit rrule)"
+msgstr "rrule編集指定が不正です"
+
+#: Calendars/Model/CalendarDeleteActionPlan.php:157
+#: Calendars/Test/Case/Model/CalendarDeleteActionPlan/ValidateTest.php:105
+msgid "Invalid input. (repeat flag)"
+msgstr "イベントの繰り返しフラグが不正です"
+
+#: Calendars/Model/CalendarDeleteActionPlan.php:167
+#: Calendars/Test/Case/Model/CalendarDeleteActionPlan/ValidateTest.php:107
+msgid "Invalid input.  (first sib ebent id)"
+msgstr "先頭のイベントIDが不正です"
+
+#: Calendars/Model/CalendarDeleteActionPlan.php:175
+#: Calendars/Test/Case/Model/CalendarDeleteActionPlan/ValidateTest.php:109
+msgid "Invalid input. (origin event id)"
+msgstr "オリジナルのイベントIDが不正です"
+
+#: Calendars/Model/CalendarDeleteActionPlan.php:183
+#: Calendars/Test/Case/Model/CalendarDeleteActionPlan/ValidateTest.php:111
+msgid "Invalid input. (recurrence flag)"
+msgstr "イベントの置換フラグが不正です"
+
+#: Calendars/Model/CalendarEvent.php:222
+#: Calendars/Test/Case/Model/CalendarEvent/ValidateTest.php:88
+msgid "Please input title text."
+msgstr "タイトルを入力してください。"
+
+#: Calendars/Model/CalendarEvent.php:234;244;250;265;271
+#: Calendars/Test/Case/Model/CalendarEvent/ValidateTest.php:92;96;98;102;104;106
+msgid "Invalid value."
+msgstr "値が不正です。"
+
+#: Calendars/Model/CalendarEvent.php:238;254
+#: Calendars/Test/Case/Model/CalendarEvent/ValidateTest.php:94;100
+msgid "Out of range value."
+msgstr "範囲外です。"
+
+#: Calendars/Model/CalendarEvent.php:379;413
+msgid "There is no event. To continue the event in the blank."
+msgstr "対象eventがないのでeventを空にして下に流します。"
+
+#: Calendars/Model/CalendarEventContent.php:90
+#: Calendars/Test/Case/Model/CalendarEventContent/ValidateTest.php:80
+msgid "Model Name"
+msgstr "モデル名"
+
+#: Calendars/Model/CalendarEventContent.php:98
+#: Calendars/Test/Case/Model/CalendarEventContent/ValidateTest.php:82
+msgid "content key"
+msgstr "content key"
+
+#: Calendars/Model/CalendarEventContent.php:107
+#: Calendars/Test/Case/Model/CalendarEventContent/ValidateTest.php:84
+msgid "calendar_event id"
+msgstr "calendar_event id"
+
+#: Calendars/Model/CalendarMailSetting.php:82
+#: Calendars/Test/Case/Model/CalendarMailSetting/ValidateTest.php:77
+msgid "Mail Key"
+msgstr "Mail Key"
+
+#: Calendars/Model/CalendarMailSetting.php:90
+#: Calendars/Test/Case/Model/CalendarMailSetting/ValidateTest.php:79
+msgid "use mail"
+msgstr "メールを使う"
+
+#: Calendars/Model/Behavior/CalendarExposeRoomBehavior.php:285
+msgid "Unknown My Room"
+msgstr "不明なマイルーム"
+
+#: Calendars/Model/Behavior/CalendarMailBehavior.php:167
+msgid "nothing"
+msgstr "なし"
+
+#: Calendars/Model/Behavior/CalendarPlanOptionBehavior.php:33
+msgid "Before 0 minutes"
+msgstr "0分前"
+
+#: Calendars/Model/Behavior/CalendarPlanOptionBehavior.php:34
+msgid "Before 5 minutes"
+msgstr "5分前"
+
+#: Calendars/Model/Behavior/CalendarPlanOptionBehavior.php:35
+msgid "Before 10 minutes"
+msgstr "10分前"
+
+#: Calendars/Model/Behavior/CalendarPlanOptionBehavior.php:36
+msgid "Before 15 minutes"
+msgstr "15分前"
+
+#: Calendars/Model/Behavior/CalendarPlanOptionBehavior.php:37
+msgid "Before 20 minutes"
+msgstr "20分前"
+
+#: Calendars/Model/Behavior/CalendarPlanOptionBehavior.php:38
+msgid "Before 25 minutes"
+msgstr "25分前"
+
+#: Calendars/Model/Behavior/CalendarPlanOptionBehavior.php:39
+msgid "Before 30 minutes"
+msgstr "30分前"
+
+#: Calendars/Model/Behavior/CalendarPlanOptionBehavior.php:40
+msgid "Before 45 minutes"
+msgstr "45分前"
+
+#: Calendars/Model/Behavior/CalendarPlanOptionBehavior.php:41
+msgid "1 hour before"
+msgstr "1時間前"
+
+#: Calendars/Model/Behavior/CalendarPlanOptionBehavior.php:42
+msgid "2 hours before"
+msgstr "2時間前"
+
+#: Calendars/Model/Behavior/CalendarPlanOptionBehavior.php:43
+msgid "3 hours before"
+msgstr "3時間前"
+
+#: Calendars/Model/Behavior/CalendarPlanOptionBehavior.php:44
+msgid "12 hours before"
+msgstr "12時間前"
+
+#: Calendars/Model/Behavior/CalendarPlanOptionBehavior.php:45
+msgid "24 hours before"
+msgstr "24時間前"
+
+#: Calendars/Model/Behavior/CalendarPlanOptionBehavior.php:46
+msgid "2 days before"
+msgstr "2日前"
+
+#: Calendars/Model/Behavior/CalendarPlanOptionBehavior.php:47
+msgid "1 week before"
+msgstr "1週間前"
+
+#: Calendars/Model/Behavior/CalendarPlanOptionBehavior.php:48
+msgid "Right now"
+msgstr "今すぐ"
+
+#: Calendars/Model/Behavior/CalendarPlanRruleValidateBehavior.php:44
+msgid "Input required. (Times repeated)"
+msgstr "カレンダー繰返し回数は必須です。"
+
+#: Calendars/Model/Behavior/CalendarPlanRruleValidateBehavior.php:51
+msgid "Only numbers can be entered."
+msgstr "カレンダー繰返し回数は数字のみ可能です。"
+
+#: Calendars/Model/Behavior/CalendarPlanRruleValidateBehavior.php:61
+#: Calendars/Test/Case/Controller/CalendarPlans/AddTest.php:344
+msgid "The number of repetition is %d or more and %d or less."
+msgstr "カレンダー繰返し回数は%d以上%d以下です。"
+
+#: Calendars/Model/Behavior/CalendarPlanRruleValidateBehavior.php:140
+msgid "It is not in the YYYY-MM-DD format."
+msgstr "日付形式がYYYY-MM-DD形式ではありません。"
+
+#: Calendars/Model/Behavior/CalendarPlanRruleValidateBehavior.php:144
+msgid "Invalid input. Day that does not exist has been specified."
+msgstr "実在しない日が指定されています。"
+
+#: Calendars/Model/Behavior/CalendarPlanRruleValidateBehavior.php:174
+msgid "Invalid input. Term end date is earlier than the start date."
+msgstr "繰返し期限日が開始日より前になっています。"
+
+#: Calendars/Model/Behavior/CalendarPlanRruleValidateBehavior.php:180
+msgid "date that can be specified is %s or more and %s or less."
+msgstr "指定できる日は%sから%sの間です。"
+
+#: Calendars/Model/Behavior/CalendarValidateAppBehavior.php:61
+msgid "Invalid input. (repeat interval. Please specify day/week/month/year)"
+msgstr "繰返し指定ありの単位が日、週、月、年のいずれでもありません。"
+
+#: Calendars/Model/Behavior/CalendarValidateAppBehavior.php:85
+msgid "Invalid input. (repeat interval: every day)"
+msgstr "繰返し指定ありの日単位の日ごとの値が不正です"
+
+#: Calendars/Model/Behavior/CalendarValidateAppBehavior.php:109
+msgid "Invalid input. (repeat interval: every week)"
+msgstr "繰返し指定ありの週単位の週ごとの値が不正です"
+
+#: Calendars/Model/Behavior/CalendarValidateAppBehavior.php:126
+msgid "Invalid input. (repeat interval:week)"
+msgstr "繰返し指定ありの週単位の曜日の指定が不正です"
+
+#: Calendars/Model/Behavior/CalendarValidateAppBehavior.php:150
+msgid "Invalid input. (repeat interbal:every month)"
+msgstr "繰返し指定ありの月単位の月ごとの値が不正です"
+
+#: Calendars/Model/Behavior/CalendarValidateAppBehavior.php:182
+msgid "Invalid input. (rrule error. day of the month or date)"
+msgstr "繰返し指定ありの月単位の曜日または日付指定の値が不正です"
+
+#: Calendars/Model/Behavior/CalendarValidateAppBehavior.php:207
+msgid "Invalid input. (rrule error. interval YEARLY)"
+msgstr "繰返し指定ありの年単位の年ごとの値が不正です"
+
+#: Calendars/Model/Behavior/CalendarValidateAppBehavior.php:217
+msgid "Invalid input. (rrule error. Interval of year. there is no specification of the month.)"
+msgstr "繰返し指定ありの年単位の月が１つも指定されていません"
+
+#: Calendars/Model/Behavior/CalendarValidateAppBehavior.php:236
+msgid "Invalid input. (rrule error. Interval of year, specified month.)"
+msgstr "繰返し指定ありの年単位の月の指定が不正です"
+
+#: Calendars/Model/Behavior/CalendarValidateAppBehavior.php:249
+msgid "Invalid input. (rrule error.  Interval of year. Week of the year unit,week value is invalid.)"
+msgstr "繰返し指定ありの年単位の週と曜日の値が不正です"
+
+#: Calendars/Test/Case/Controller/CalendarPlans/DeleteTest.php:129
+#: Calendars/Test/Case/Controller/CalendarPlans/EditTest.php:327;332;337;343;348;353
+#: Calendars/View/CalendarPlans/delete.ctp:65
+#: Calendars/View/Helper/CalendarPlanEditRepeatOptionHelper.php:97
+msgid "only this one"
+msgstr "この予定のみ"
+
+#: Calendars/Test/Case/Controller/Calendars/IndexTest.php:200;205;211;217
+#: Calendars/View/Helper/CalendarScheduleHelper.php:388
+msgid "yesterday"
+msgstr "昨日"
+
+#: Calendars/Utility/CalendarTime.php:509
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "日|月|火|水|木|金|土"
+
+#: Calendars/View/CalendarMailSettings/edit.ctp:27
+msgid "Please set from Select the room for which you want e-mail notification settings . It will be the setting of one room."
+msgstr "メール通知設定を行う対象のルームを選んでから設定してください。１ルームずつの設定となります。"
+
+#: Calendars/View/CalendarMailSettings/edit.ctp:28
+msgid "Target room"
+msgstr "対象のルーム"
+
+#: Calendars/View/CalendarMailSettings/edit.ctp:49
+msgid "MailSetting.mail_fixed_phrase_body.popover"
+msgstr "{X-SITE_NAME} : サイト名<br />{X-PLUGIN_NAME} : プラグイン名<br />{X-ROOM} : 公開対象<br />{X-SUBJECT} : 件名<br />{X-START_TIME} : 開始日時<br />{X-END_TIME} : 終了日時<br />{X-LOCATION} : 場所<br />{X-CONTACT} : 連絡先<br />{X-USER} : 記入者<br />{X-TO_DATE} : 記入日時<br />{X-RRULE} : 繰返し<br />{X-BODY} : 詳細<br />{X-URL} : この予定へのURL"
+
+#: Calendars/View/CalendarPlans/can_not_edit.ctp:14
+msgid "Registration and editing of the plan please go from correctly installed in the calendar on the screen ."
+msgstr "申し訳ありませんが、予定の登録・編集は画面に正しく設置されたカレンダーから行ってください。"
+
+#: Calendars/View/CalendarPlans/delete.ctp:14
+msgid "delete"
+msgstr "削除処理"
+
+#: Calendars/View/CalendarPlans/delete.ctp:61
+msgid "This plan has been repeatedly set. Select the plan that you want to remove from the following items, please press the delete button.<br />It can not be undone once you delete."
+msgstr "この予定は繰り返し設定されています。削除する予定を下記項目から選択し、削除ボタンを押してください。<br />一度削除すると元に戻せません。"
+
+#: Calendars/View/CalendarPlans/delete.ctp:67
+#: Calendars/View/Helper/CalendarPlanEditRepeatOptionHelper.php:100
+msgid "all after this one"
+msgstr "これ以降に指定した全ての予定"
+
+#: Calendars/View/CalendarPlans/delete.ctp:68
+#: Calendars/View/Helper/CalendarPlanEditRepeatOptionHelper.php:101
+msgid "all"
+msgstr "設定した全ての予定"
+
+#: Calendars/View/CalendarPlans/delete.ctp:78
+msgid "Delete event.<br />It can not be undone once you delete."
+msgstr "この予定を削除します。<br />一度削除すると元に戻せません。"
+
+#: Calendars/View/CalendarPlans/detail_edit.ctp:91
+msgid "Setting the date"
+msgstr "予定日の設定"
+
+#: Calendars/View/CalendarPlans/detail_edit.ctp:97
+msgid "Setting the time"
+msgstr "期間・時間の指定"
+
+#: Calendars/View/CalendarPlans/view.ctp:54
+msgid "Date and time"
+msgstr "日時"
+
+#: Calendars/View/CalendarPlans/view.ctp:62
+msgid " - "
+msgstr "－"
+
+#: Calendars/View/CalendarPlans/view.ctp:74
+msgid "Repeat the event:"
+msgstr "※繰返し予定："
+
+#: Calendars/View/CalendarPlans/view.ctp:82
+#: Calendars/View/Helper/CalendarExposeTargetHelper.php:87
+msgid "Category"
+msgstr "公開対象"
+
+#: Calendars/View/CalendarPlans/view.ctp:96
+#: Calendars/View/Elements/CalendarPlans/detail_edit_etc_details.ctp:25
+msgid "Location"
+msgstr "場所"
+
+#: Calendars/View/CalendarPlans/view.ctp:103
+#: Calendars/View/Elements/CalendarPlans/detail_edit_etc_details.ctp:35
+#: Calendars/View/Helper/CalendarDailyHelper.php:141
+msgid "Contact"
+msgstr "連絡先"
+
+#: Calendars/View/CalendarPlans/view.ctp:110
+#: Calendars/View/Elements/CalendarPlans/detail_edit_etc_details.ctp:45
+msgid "Details"
+msgstr "詳細"
+
+#: Calendars/View/CalendarPlans/view.ctp:117
+msgid "Author"
+msgstr "作成者"
+
+#: Calendars/View/CalendarPlans/view.ctp:122
+msgid "Date"
+msgstr "更新日時"
+
+#: Calendars/View/Calendars/lmonthly.ctp:24
+#: Calendars/View/Calendars/smonthly.ctp:36
+#: Calendars/View/Helper/CalendarCommonHelper.php:40;392
+msgid "Sun"
+msgstr "日"
+
+#: Calendars/View/Calendars/lmonthly.ctp:25
+#: Calendars/View/Calendars/smonthly.ctp:37
+#: Calendars/View/Helper/CalendarCommonHelper.php:40;393
+msgid "Mon"
+msgstr "月"
+
+#: Calendars/View/Calendars/lmonthly.ctp:26
+#: Calendars/View/Calendars/smonthly.ctp:38
+#: Calendars/View/Helper/CalendarCommonHelper.php:40;394
+msgid "Tue"
+msgstr "火"
+
+#: Calendars/View/Calendars/lmonthly.ctp:27
+#: Calendars/View/Calendars/smonthly.ctp:39
+#: Calendars/View/Helper/CalendarCommonHelper.php:41;395
+msgid "Wed"
+msgstr "水"
+
+#: Calendars/View/Calendars/lmonthly.ctp:28
+#: Calendars/View/Calendars/smonthly.ctp:40
+#: Calendars/View/Helper/CalendarCommonHelper.php:41;396
+msgid "Thu"
+msgstr "木"
+
+#: Calendars/View/Calendars/lmonthly.ctp:29
+#: Calendars/View/Calendars/smonthly.ctp:41
+#: Calendars/View/Helper/CalendarCommonHelper.php:41;397
+msgid "Fri"
+msgstr "金"
+
+#: Calendars/View/Calendars/lmonthly.ctp:30
+#: Calendars/View/Calendars/smonthly.ctp:42
+#: Calendars/View/Helper/CalendarCommonHelper.php:42;398
+msgid "Sat"
+msgstr "土"
+
+#: Calendars/View/Calendars/smonthly.ctp:21
+#: Calendars/View/Helper/CalendarTurnCalendarHelper.php:128
+msgid "<small>%d/</small> %d"
+msgstr "<small>%d年</small> %d月"
+
+#: Calendars/View/Elements/CalendarBlockRolePermissions/edit_form.ctp:21
+msgid "Only you can create your private event."
+msgstr "予定を追加できるのは本人だけです。"
+
+#: Calendars/View/Elements/CalendarBlockRolePermissions/permission.ctp:31
+msgid "It does not exist yet Room."
+msgstr "まだルームが存在しません。"
+
+#: Calendars/View/Elements/CalendarBlockRolePermissions/permission_table_header.ctp:12
+msgid "Set the permissions that you can add an appointment to the calendar."
+msgstr "カレンダーに予定を追加できる権限を設定します。"
+
+#: Calendars/View/Elements/CalendarFrameSettings/display_count.ctp:14
+msgid "Display days"
+msgstr "表示日数"
+
+#: Calendars/View/Elements/CalendarFrameSettings/display_count.ctp:19
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:200
+msgid "%dday(s)"
+msgstr "%d日"
+
+#: Calendars/View/Elements/CalendarFrameSettings/edit_form.ctp:32
+msgid "Display type"
+msgstr "表示方法"
+
+#: Calendars/View/Elements/CalendarFrameSettings/room_select.ctp:26
+msgid "Display only designated room"
+msgstr "指定したルームのみ表示する"
+
+#: Calendars/View/Elements/CalendarFrameSettings/room_select.ctp:33
+msgid "Select room for participation."
+msgstr "表示させるルームを選択してください。"
+
+#: Calendars/View/Elements/CalendarFrameSettings/start_pos.ctp:14
+msgid "Start point"
+msgstr "開始位置"
+
+#: Calendars/View/Elements/CalendarFrameSettings/start_pos.ctp:20
+#: Calendars/View/Helper/CalendarScheduleHelper.php:390
+msgid "today"
+msgstr "今日"
+
+#: Calendars/View/Elements/CalendarFrameSettings/start_pos.ctp:21
+msgid "Previous day"
+msgstr "前日"
+
+#: Calendars/View/Elements/CalendarFrameSettings/timeline_start.ctp:13
+msgid "Timeline start time"
+msgstr "タイムライン開始時刻"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_datetime.ctp:27
+msgid "From"
+msgstr "開始"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_datetime.ctp:39
+msgid "All day"
+msgstr "終日"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_datetime.ctp:50
+msgid "-"
+msgstr "-"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_datetime.ctp:63
+msgid "To"
+msgstr "終了"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_etc_details.ctp:16
 msgid "detail information"
 msgstr "詳細な情報の入力"
 
-#: View/CalendarPlans/detail_edit.ctp:1072
-#: View/CalendarPlans/view.ctp:164
-msgid  "Location"
-msgstr  "場所"
-
-#: View/CalendarPlans/detail_edit.ctp:1089
-#: View/CalendarPlans/view.ctp:175
-msgid  "Contact"
-msgstr  "連絡先"
-
-#: View/CalendarPlans/detail_edit.ctp:1105
-#: View/CalendarPlans/view.ctp:186
-msgid  "Details"
-msgstr  "詳細"
-
-#: View/CalendarPlans/detail_edit.ctp:1132
-#: View/Elements/CalendarPlans/edit_timezone.ctp:4
-msgid  "Time zone"
-msgstr  "タイムゾーン"
-
-#: View/CalendarPlans/easy_edit.ctp:10
-#: View/CalendarPlans/view.ctp:10
-msgid  "Calendar"
-msgstr  "カレンダー"
-
-#: View/CalendarPlans/easy_edit.ctp:54
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:68
-msgid  "Plans(date)"
-msgstr  "予定（年月日）"
-
-#: View/CalendarPlans/easy_edit.ctp:117
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:118
-msgid  "To specify the start time and end time"
-msgstr  "開始時間と終了時間の指定"
-
-#: View/CalendarPlans/easy_edit.ctp:128
-msgid  "Plans(Start time - End time)"
-msgstr  "予定（開始時間～終了時間） "
-
-#: View/CalendarPlans/easy_edit.ctp:200
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:200
-msgid  "Notify by e-mail"
-msgstr  "メールで通知"
-
-#: View/CalendarPlans/easy_edit.ctp:212
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:232
-msgid  "E-mail notification timing"
-msgstr  "メール通知タイミング"
-
-#: View/CalendarPlans/view.ctp:66;73
-msgid  "Date and time"
-msgstr  "日時"
-
-#: View/CalendarPlans/view.ctp:86
-msgid  "End date and time"
-msgstr  "終了日時"
-
-#: View/CalendarPlans/view.ctp:94
-msgid  "-"
-msgstr  "－"
-
-#: View/CalendarPlans/view.ctp:111
-msgid  "Repeat the event:"
-msgstr  "※繰返し予定："
-
-#: View/CalendarPlans/view.ctp:129
-#: View/Elements/CalendarPlans/select_target_to_expose.ctp:21
-#: View/Helper/CalendarExposeTargetHelper.php:61
-msgid  "Category"
-msgstr  "公開対象"
-
-#: View/CalendarPlans/view.ctp:145
-msgid  "People to share the schedule"
-msgstr  "予定を共有する人"
-msgid  "Person who made the schedule"
-msgstr  "予定を入れた人"
-
-#: View/CalendarPlans/view.ctp:198
-msgid  "Author"
-msgstr  "作成者"
-
-#: View/CalendarPlans/view.ctp:207
-msgid  "Date"
-msgstr  "更新日時"
-
-#: View/Calendars/lmonthly.ctp:21
-#: View/Calendars/smonthly.ctp:35
-#: View/Helper/CalendarCommonHelper.php:41
-msgid  "Sun"
-msgstr  "日"
-
-#: View/Calendars/lmonthly.ctp:22
-#: View/Calendars/smonthly.ctp:36
-#: View/Helper/CalendarCommonHelper.php:41
-msgid  "Mon"
-msgstr  "月"
-
-#: View/Calendars/lmonthly.ctp:23
-#: View/Calendars/smonthly.ctp:37
-#: View/Helper/CalendarCommonHelper.php:41
-msgid  "Tue"
-msgstr  "火"
-
-#: View/Calendars/lmonthly.ctp:24
-#: View/Calendars/smonthly.ctp:38
-#: View/Helper/CalendarCommonHelper.php:41
-msgid  "Wed"
-msgstr  "水"
-
-#: View/Calendars/lmonthly.ctp:25
-#: View/Calendars/smonthly.ctp:39
-#: View/Helper/CalendarCommonHelper.php:41
-msgid  "Thu"
-msgstr  "木"
-
-#: View/Calendars/lmonthly.ctp:26
-#: View/Calendars/smonthly.ctp:40
-#: View/Helper/CalendarCommonHelper.php:41
-msgid  "Fri"
-msgstr  "金"
-
-#: View/Calendars/lmonthly.ctp:27
-#: View/Calendars/smonthly.ctp:41
-#: View/Helper/CalendarCommonHelper.php:42
-msgid  "Sat"
-msgstr  "土"
-
-#: View/Elements/CalendarBlockRolePermissions/edit_form.ctp:22
-msgid  "Only you can create your private event."
-msgstr  "予定を追加できるのは本人だけです。"
-
-#: View/Elements/CalendarBlockRolePermissions/permission.ctp:31
-msgid  "It does not exist yet Room."
-msgstr  "まだルームが存在しません。"
-
-#: View/Elements/CalendarBlockRolePermissions/permission_table_header.ctp:12
-msgid  "Set the permissions that you can add an appointment to the calendar."
-msgstr  "カレンダーに予定を追加できる権限を設定します。"
-
-#: View/Elements/CalendarFrameSettings/display_count.ctp:14
-msgid  "Display days"
-msgstr  "表示日数"
-
-#: View/Elements/CalendarFrameSettings/edit_form.ctp:32
-msgid  "Display type"
-msgstr  "表示方法"
-
-#: View/Elements/CalendarFrameSettings/room_select.ctp:27
-msgid  "Display only designated room"
-msgstr  "指定したルームのみ表示する"
-
-#: View/Elements/CalendarFrameSettings/room_select.ctp:36
-msgid  "Select room for participation."
-msgstr  "表示させるルームを選択してください。"
-
-#: View/Elements/CalendarFrameSettings/start_pos.ctp:14
-msgid  "Start point"
-msgstr  "開始位置"
-
-#: View/Elements/CalendarFrameSettings/start_pos.ctp:20
-#: View/Helper/CalendarScheduleHelper.php:398
-msgid  "today"
-msgstr  "今日"
-
-#: View/Elements/CalendarFrameSettings/start_pos.ctp:21
-msgid  "Previous day"
-msgstr  "前日"
-
-#: View/Elements/CalendarFrameSettings/timeline_start.ctp:13
-msgid  "Timeline start time"
-msgstr  "タイムライン開始時刻"
-
-#: View/Elements/CalendarPlans/edit_plan_share.ctp:27
-msgid  "Please select a person to share the schedule."
-msgstr  "予定を共有する人を選択してください。"
-
-#: View/Elements/CalendarPlans/edit_title.ctp:3
-msgid  "Title"
-msgstr  "件名"
-
-#: View/Elements/Calendars/change_sort.ctp:60
-msgid  "Times"
-msgstr  "時間順"
-
-#: View/Elements/Calendars/change_sort.ctp:71
-msgid  "User"
-msgstr  "会員順"
-
-#: View/Elements/Calendars/daily_tabs.ctp:54
-msgid  "Plan list"
-msgstr  "予定一覧"
-
-#: View/Elements/Calendars/daily_tabs.ctp:64
-msgid  "Timeline"
-msgstr  "タイムライン"
-
-#: View/Helper/CalendarTurnCalendarHelper.php:132;145;155
-msgid  "<small>%d/</small> %d"
-msgstr  "<small>%d年</small> %d月"
-
-msgid  "<small>%d/</small>%d/%d<small class=\"%s\">(%s)&nbsp;<br class=\"visible-xs\" />%s</small>"
-msgstr  "<small>%d年</small> %d月%d日<small class=\"%s\">(%s)&nbsp;<br class=\"visible-xs\" />%s</small>"
-
-#: View/Helper/CalendarTurnCalendarHelper.php:182
-msgid  "This month"
-msgstr  "今月へ"
-
-#: View/Helper/CalendarCommonHelper.php:423
-#: View/Helper/CalendarLegendHelper.php:158
-#: View/Helper/CalendarWeeklyHelper.php:236
-msgid  "Schedule of fellow"
-msgstr  "仲間の予定"
-
-#: View/Helper/CalendarDailyHelper.php:133
-#: View/Helper/CalendarScheduleHelper.php:138;227
-msgid  "Location details:"
-msgstr  "場所の詳細:"
-
-#: View/Helper/CalendarDailyHelper.php:137
-#: View/Helper/CalendarScheduleHelper.php:142;232
-msgid  "Contact:"
-msgstr  "連絡先:"
-
-#: View/Helper/CalendarLegendHelper.php:98
-msgid  "Room"
-msgstr  "ルーム"
-
-#: View/Helper/CalendarLegendHelper.php:134
-msgid  "Shared plan"
-msgstr  "共有した予定"
-
-#: View/Helper/CalendarPlanHelper.php:54;83
-msgid  "%s/%s/%s"
-msgstr  "%s年%s月%s日"
-
-#: View/Helper/CalendarPlanHelper.php:59
-msgid  "%s:%s"
-msgstr  "%s:%s"
-
-#: View/Helper/CalendarPlanHelper.php:132
-msgid  "More details"
-msgstr  "詳細な登録"
-
-#: View/Helper/CalendarPlanHelper.php:394
-msgid  "1st week"
-msgstr  "第1週"
-msgid  "2nd week"
-msgstr  "第2週"
-msgid  "3rd week"
-msgstr  "第3週"
-msgid  "4th week"
-msgstr  "第4週"
-
-#: View/Helper/CalendarPlanHelper.php:396
-#: View/Helper/CalendarPlanRruleHelper.php:322
-msgid  "last week"
-msgstr  "最終週"
-
-#: View/Helper/CalendarPlanHelper.php:415
-msgid  "Sunday"
-msgstr  "日曜日"
-
-#: View/Helper/CalendarPlanHelper.php:418
-msgid  "Monday"
-msgstr  "月曜日"
-
-#: View/Helper/CalendarPlanHelper.php:421
-msgid  "Tuesday"
-msgstr  "火曜日"
-
-#: View/Helper/CalendarPlanHelper.php:424
-msgid  "Wednesday"
-msgstr  "水曜日"
-
-#: View/Helper/CalendarPlanHelper.php:427
-msgid  "Thursday"
-msgstr  "木曜日"
-
-#: View/Helper/CalendarPlanHelper.php:430
-msgid  "Friday"
-msgstr  "金曜日"
-
-#: View/Helper/CalendarPlanHelper.php:433
-msgid  "Saturday"
-msgstr  "土曜日"
-
-#: View/Helper/CalendarPlanRruleHelper.php:71
-msgid  "none"
-msgstr  "繰返しなし"
-
-#: View/Helper/CalendarPlanRruleHelper.php:111
-msgid  "%s months"
-msgstr  "%s月"
-
-#: View/Helper/CalendarPlanRruleHelper.php:131
-msgid  "%s days"
-msgstr  "%s日"
-
-#: View/Helper/CalendarPlanRruleHelper.php:150
-msgid  "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
-msgstr  "日曜日|月曜日|火曜日|水曜日|木曜日|金曜日|土曜日"
-
-#: View/Helper/CalendarPlanRruleHelper.php:187
-msgid  "every year"
-msgstr  "毎年"
-
-#: View/Helper/CalendarPlanRruleHelper.php:189
-msgid  "every %s years"
-msgstr  "%s年ごとに"
-
-#: View/Helper/CalendarPlanRruleHelper.php:215
-msgid  "every month"
-msgstr  "毎月"
-
-#: View/Helper/CalendarPlanRruleHelper.php:217
-msgid  "every %s months"
-msgstr  "%sヶ月ごとに"
-
-#: View/Helper/CalendarPlanRruleHelper.php:239
-msgid  "every week"
-msgstr  "毎週"
-
-#: View/Helper/CalendarPlanRruleHelper.php:241
-msgid  "every %s weeks"
-msgstr  "%s週ごとに"
-
-#: View/Helper/CalendarPlanRruleHelper.php:262
-msgid  "every day"
-msgstr  "毎日"
-
-#: View/Helper/CalendarPlanRruleHelper.php:264
-msgid  "every %s days"
-msgstr  "%s日ごとに"
-
-#: View/Helper/CalendarPlanRruleHelper.php:283
-msgid  "Until Y/m/d"
-msgstr  "Y年m月d日まで"
-
-#: View/Helper/CalendarPlanRruleHelper.php:286
-msgid  "%s times"
-msgstr  "%s回"
-
-#: View/Helper/CalendarPlanRruleHelper.php:310
-msgid  "First week"
-msgstr  "第1週"
-
-#: View/Helper/CalendarPlanRruleHelper.php:313
-msgid  "Second week"
-msgstr  "第2週"
-
-#: View/Helper/CalendarPlanRruleHelper.php:316
-msgid  "Third week"
-msgstr  "第3週"
-
-#: View/Helper/CalendarPlanRruleHelper.php:319
-msgid  "Forth week"
-msgstr  "第4週"
-
-#: View/Helper/CalendarScheduleHelper.php:253;297
-msgid  "No plan."
-msgstr  "予定はありません。"
-
-#: View/Helper/CalendarScheduleHelper.php:396
-msgid  "yesterday"
-msgstr  "昨日"
-
-#: View/Helper/CalendarScheduleHelper.php:400
-msgid  "tomorrow"
-msgstr  "明日"
-
-#: View/Helper/CalendarTurnCalendarHelper.php:160
-msgid  "(%s)"
-msgstr  "(%s)"
-
-#: View/Helper/CalendarTurnCalendarHelper.php:185
-msgid  "This week"
-msgstr  "今週へ"
-
-#: View/Helper/CalendarTurnCalendarHelper.php:188
-msgid  "Today"
-msgstr  "今日へ"
-
-#: View/Helper/CalendarUrlHelper.php:135
-msgid  "Back to this month"
-msgstr  "今月に戻る"
-
-#: View/Helper/CalendarUrlHelper.php:137
-msgid  "Back to this week"
-msgstr  "今週に戻る"
-
-#: View/Helper/CalendarUrlHelper.php:139
-msgid  "Back to today"
-msgstr  "今日に戻る"
-
-#: View/Helper/CalendarUrlHelper.php:141
-msgid  "Back to First view"
-msgstr  "最初の画面に戻る"
-
-#: View/CalendarPlans/view.ctp:255
-msgid  "Back"
-msgstr  "戻る"
-
-#: Controller/Component/CalendarsComponent.php:241
-msgid  "(GMT-12:00) Eniwetok, Kwajalein"
-msgstr "(GMT-12:00) エニウェトク、クエジェリン"
-
-#: Controller/Component/CalendarsComponent.php:243
-msgid  "(GMT-11:00) Midway Island, Samoa"
-msgstr "(GMT-11:00) ミッドウェー島、サモア"
-
-#: Controller/Component/CalendarsComponent.php:245
-msgid  "(GMT-10:00) Hawaii"
-msgstr "(GMT-10:00) ハワイ"
-
-#: Controller/Component/CalendarsComponent.php:247
-msgid  "(GMT-9:00) Alaska"
-msgstr "(GMT-9:00) アラスカ"
-
-#: Controller/Component/CalendarsComponent.php:249
-msgid  "(GMT-8:00) Pacific Time (US & Canada)"
-msgstr "(GMT-8:00) 太平洋標準時（米国およびカナダ）、ティファナ"
-
-#: Controller/Component/CalendarsComponent.php:251
-msgid  "(GMT-7:00) Mountain Time (US & Canada)"
-msgstr "(GMT-7:00) 山地標準時（米国およびカナダ）"
-
-#: Controller/Component/CalendarsComponent.php:253
-msgid  "(GMT-6:00) Central Time (US & Canada), Mexico City"
-msgstr "(GMT-6:00) 中部標準時（米国およびカナダ）、メキシコシティ"
-
-#: Controller/Component/CalendarsComponent.php:255
-msgid  "(GMT-5:00) Eastern Time (US & Canada), Bogota, Lima, Quito"
-msgstr "(GMT-5:00) 東部標準時（米国およびカナダ）、ボゴタ、リマ、キト"
-
-#: Controller/Component/CalendarsComponent.php:257
-msgid  "(GMT-4:00) Atlantic Time (Canada), Caracas, La Paz"
-msgstr "(GMT-4:00) 大西洋標準時（カナダ）、カラカス、ラパス"
-
-#: Controller/Component/CalendarsComponent.php:259
-msgid  "(GMT-3:30) Newfoundland"
-msgstr "(GMT-3:30) ニューファンドランド"
-
-#: Controller/Component/CalendarsComponent.php:261
-msgid  "(GMT-3:00) Brasilia, Buenos Aires, Georgetown"
-msgstr "(GMT-3:00) ブラジリア、ブエノスアイレス、ジョージタウン"
-
-#: Controller/Component/CalendarsComponent.php:263
-msgid  "(GMT-2:00) Mid-Atlantic"
-msgstr "(GMT-2:00) 中央大西洋"
-
-#: Controller/Component/CalendarsComponent.php:265
-msgid  "(GMT-1:00) Azores, Cape Verde Islands"
-msgstr "(GMT-1:00) アゾレス諸島、カーボベルデ諸島"
-
-#: Controller/Component/CalendarsComponent.php:267
-msgid  "(GMT) Greenwich Mean Time, London, Dublin, Lisbon, Casablanca, Monrovia"
-msgstr "(GMT) グリニッジ標準時、ダブリン、ロンドン、リスボン、エジンバラ"
-
-#: Controller/Component/CalendarsComponent.php:269
-msgid  "(GMT+1:00) Amsterdam, Berlin, Rome, Copenhagen, Brussels, Madrid, Paris"
-msgstr "(GMT+1:00) ブリュッセル、コペンハーゲン、マドリッド、パリ、アムステルダム"
-
-#: Controller/Component/CalendarsComponent.php:271
-msgid  "(GMT+2:00) Athens, Istanbul, Minsk, Helsinki, Jerusalem, South Africa"
-msgstr "(GMT+2:00) アテネ、イスタンブール、エルサレム、カイロ、ヘルシンキ"
-
-#: Controller/Component/CalendarsComponent.php:273
-msgid  "(GMT+3:00) Baghdad, Kuwait, Riyadh, Moscow, St. Petersburg"
-msgstr "(GMT+3:00) バグダッド、ナイロビ、クウェート、リヤド、モスクワ"
-
-#: Controller/Component/CalendarsComponent.php:275
-msgid  "(GMT+3:30) Tehran"
-msgstr "(GMT+3:30) テヘラン"
-
-#: Controller/Component/CalendarsComponent.php:277
-msgid  "(GMT+4:00) Abu Dhabi, Muscat, Baku, Tbilisi"
-msgstr "(GMT+4:00) アブダビ、マスカット、バク、トビリシ"
-
-#: Controller/Component/CalendarsComponent.php:279
-msgid  "(GMT+4:30) Kabul"
-msgstr "(GMT+4:30) カブール"
-
-#: Controller/Component/CalendarsComponent.php:281
-msgid  "(GMT+5:00) Ekaterinburg, Islamabad, Karachi, Tashkent"
-msgstr "(GMT+5:00) イスラマバード、カラチ、タシケント、エカテリンバーグ"
-
-#: Controller/Component/CalendarsComponent.php:283
-msgid  "(GMT+5:30) Bombay, Calcutta, Madras, New Delhi"
-msgstr "(GMT+5:30) カルカッタ、チェンナイ、ムンバイ、ニューデリー"
-
-#: Controller/Component/CalendarsComponent.php:285
-msgid  "(GMT+6:00) Almaty, Dhaka, Colombo"
-msgstr "(GMT+6:00) ダッカ、アルマティ、スリ・ジャヤワルダナプラ"
-
-#: Controller/Component/CalendarsComponent.php:287
-msgid  "(GMT+7:00) Bangkok, Hanoi, Jakarta"
-msgstr "(GMT+7:00) バンコク、ハノイ、ジャカルタ"
-
-#: Controller/Component/CalendarsComponent.php:289
-msgid  "(GMT+8:00) Beijing, Perth, Singapore, Hong Kong, Urumqi, Taipei"
-msgstr "(GMT+8:00) シンガポール、パース、台北、北京、重慶、香港、ウルムチ"
-
-#: Controller/Component/CalendarsComponent.php:291
-msgid  "(GMT+9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk"
-msgstr "(GMT+9:00) 東京、大阪、札幌、ソウル、ヤクーツク"
-
-#: Controller/Component/CalendarsComponent.php:293
-msgid  "(GMT+9:30) Adelaide, Darwin"
-msgstr "(GMT+9:30) アデレード、ダーウィン"
-
-#: Controller/Component/CalendarsComponent.php:295
-msgid  "(GMT+10:00) Brisbane, Canberra, Melbourne, Sydney, Guam,Vlasdiostok"
-msgstr "(GMT+10:00) ウラジオストク、キャンベラ、メルボルン、シドニー、グアム"
-
-#: Controller/Component/CalendarsComponent.php:297
-msgid  "(GMT+11:00) Magadan, Solomon Islands, New Caledonia"
-msgstr "(GMT+11:00) マガダン、ソロモン諸島、ニューカレドニア"
-
-#: Controller/Component/CalendarsComponent.php:299
-msgid  "(GMT+12:00) Auckland, Wellington, Fiji, Kamchatka, Marshall Island"
-msgstr "(GMT+12:00) オークランド、ウェリントン、フィジー、カムチャッカ"
-
+#: Calendars/View/Elements/CalendarPlans/detail_edit_etc_details.ctp:60
+#: Calendars/View/Elements/CalendarPlans/edit_timezone.ctp:15
+msgid "Time zone"
+msgstr "タイムゾーン"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_heading.ctp:14
+msgid "Form to edit schedule item"
+msgstr "予定の編集"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_heading.ctp:16
+msgid "Form to add schedule item"
+msgstr "予定の追加"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_mail.ctp:39
+msgid "Event 5 minutes ago"
+msgstr "イベント5分前"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_mail.ctp:40
+msgid "Event 10 minutes ago"
+msgstr "イベント10分前"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_mail.ctp:41
+msgid "Event 15 minutes ago"
+msgstr "イベント15分前"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_mail.ctp:42
+msgid "Event 20 minutes ago"
+msgstr "イベント20分前"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_mail.ctp:43
+msgid "Event 25 minutes ago"
+msgstr "イベント25分前"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_mail.ctp:44
+msgid "Event 30 minutes ago"
+msgstr "イベント30分前"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_mail.ctp:45
+msgid "Event 45 minutes ago"
+msgstr "イベント45分前"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_mail.ctp:46
+msgid "Event 1 hour ago"
+msgstr "イベント1時間前"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_mail.ctp:47
+msgid "Event 2 hours ago"
+msgstr "イベント2時間前"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_mail.ctp:48
+msgid "Event 3 hours ago"
+msgstr "イベント3時間前"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_mail.ctp:49
+msgid "Event 12 hours ago"
+msgstr "イベント12時間前"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_mail.ctp:50
+msgid "Event 24 hours ago"
+msgstr "イベント24時間前"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_mail.ctp:51
+msgid "Event 2 days ago"
+msgstr "イベント2日前"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_mail.ctp:52
+msgid "Event 1 week ago"
+msgstr "イベント1週間前"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:16
+msgid "Repeat the event"
+msgstr "予定を繰り返す"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:37
+msgid "Units of repeated"
+msgstr "繰り返しの単位"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:46
+#: Calendars/View/Elements/Calendars/calendar_tabs.ctp:58;61
+msgid "day"
+msgstr "日"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:47
+#: Calendars/View/Elements/Calendars/calendar_tabs.ctp:49;52
+#: Calendars/View/Helper/CalendarMonthlyHelper.php:374
+msgid "week"
+msgstr "週"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:48
+#: Calendars/View/Elements/Calendars/calendar_tabs.ctp:40;43
+msgid "month"
+msgstr "月"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:49
+msgid "year"
+msgstr "年"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:70
+msgid "every %dday(s)"
+msgstr "%d日ごと"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:75;103;149;224
+msgid "Repeating pattern"
+msgstr "繰り返しのパターン"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:109
+msgid "%dweek(s)"
+msgstr "%d週"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:154
+msgid "every %d month(s)"
+msgstr "%dヶ月ごと"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:170
+msgid "Please select either."
+msgstr "どちらかを選択してください。"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:176
+msgid "- select day of the week -"
+msgstr "-曜日指定-"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:192
+msgid "or"
+msgstr "または"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:198
+msgid "- select day of the month -"
+msgstr "-日付指定-"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:229
+msgid "every %d year(s)"
+msgstr "%d年ごと"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:247
+msgid "%d"
+msgstr "%d月"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:263
+msgid "Setting of repeat"
+msgstr "繰り返しの設定"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:266
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:196
+msgid "Start date"
+msgstr "開始日と同日"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:289
+msgid "End date"
+msgstr "繰返しの終了"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:294
+msgid "Times repeated"
+msgstr "繰返し回数を指定する"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:295
+msgid "Day repetition ended"
+msgstr "繰返しの終了日を指定する"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:335
+msgid "times"
+msgstr "回"
+
+#: Calendars/View/Elements/CalendarPlans/detail_edit_repeat_items.ctp:364
+msgid "until"
+msgstr "まで繰り返す"
+
+#: Calendars/View/Elements/CalendarPlans/edit_plan_share.ctp:20
+msgid "Please select a person to share the schedule."
+msgstr "予定を共有する人を選択してください。"
+
+#: Calendars/View/Elements/CalendarPlans/edit_title.ctp:12
+msgid "Title"
+msgstr "件名"
+
+#: Calendars/View/Elements/Calendars/change_sort.ctp:45
+msgid "Times"
+msgstr "時間順"
+
+#: Calendars/View/Elements/Calendars/change_sort.ctp:56
+msgid "User"
+msgstr "会員順"
+
+#: Calendars/View/Elements/Calendars/daily_tabs.ctp:49
+msgid "Plan list"
+msgstr "予定一覧"
+
+#: Calendars/View/Elements/Calendars/daily_tabs.ctp:58
+msgid "Timeline"
+msgstr "タイムライン"
+
+#: Calendars/View/Helper/CalendarCommonHelper.php:416
+#: Calendars/View/Helper/CalendarLegendHelper.php:180
+#: Calendars/View/Helper/CalendarWeeklyHelper.php:207
+msgid "Schedule of fellow"
+msgstr "仲間の予定"
+
+#: Calendars/View/Helper/CalendarDailyHelper.php:137
+#: Calendars/View/Helper/CalendarScheduleHelper.php:137;228
+msgid "Location details:"
+msgstr "場所の詳細:"
+
+#: Calendars/View/Helper/CalendarExposeTargetHelper.php:96
+msgid "You can not change the target space  after published."
+msgstr "あなたは公開された後の予定の対象空間を変更する権限がありません。"
+
+#: Calendars/View/Helper/CalendarLegendHelper.php:108
+msgid "Room"
+msgstr "ルーム"
+
+#: Calendars/View/Helper/CalendarLegendHelper.php:153
+msgid "Shared plan"
+msgstr "共有した予定"
+
+#: Calendars/View/Helper/CalendarPlanEditRepeatOptionHelper.php:112
+msgid "When you select the [all] will be re-set to the contents is repeated first plan."
+msgstr "「設定した全ての予定」を選択すると、現在の編集がキャンセルされ、繰返しの初回予定に再設定されます。"
+
+#: Calendars/View/Helper/CalendarPlanEditRepeatOptionHelper.php:115
+msgid "If you want to edit without changing the schedule key, select "all after this one" and edit."
+msgstr "予定のキーを替えずに編集されたい時は、「この予定のみ」を選択して編集してください。"
+
+#: Calendars/View/Helper/CalendarPlanEditRepeatOptionHelper.php:131
+msgid "This plan has been repeatedly set. Select the plan that you want to edit from the following items, Repetation of the plan [only this one] is not displayed."
+msgstr "この予定は繰り返し設定されています。変更した予定を下記項目から選択し、予定編集してください。なお「この予定のみ」の時は予定の繰返しは表示されません。"
+
+#: Calendars/View/Helper/CalendarPlanEditRepeatOptionHelper.php:137
+msgid "Because it was specified in the [only this one], repetation of the plan can not be specified."
+msgstr "「この予定のみ」指定で変更された予定なので、予定の繰返しは指定できません。"
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:56;85
+msgid "%s/%s/%s"
+msgstr "%s年%s月%s日"
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:61
+msgid "%s:%s"
+msgstr "%s:%s"
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:239
+msgid "1st week"
+msgstr "第1週"
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:241
+msgid "2nd week"
+msgstr "第2週"
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:243
+msgid "3rd week"
+msgstr "第3週"
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:245
+msgid "4th week"
+msgstr "第4週"
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:247
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:324
+msgid "last week"
+msgstr "最終週"
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:262
+msgid "Sunday"
+msgstr "日曜日"
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:265
+msgid "Monday"
+msgstr "月曜日"
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:268
+msgid "Tuesday"
+msgstr "火曜日"
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:271
+msgid "Wednesday"
+msgstr "水曜日"
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:274
+msgid "Thursday"
+msgstr "木曜日"
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:277
+msgid "Friday"
+msgstr "金曜日"
+
+#: Calendars/View/Helper/CalendarPlanHelper.php:280
+msgid "Saturday"
+msgstr "土曜日"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:71
+msgid "none"
+msgstr "繰返しなし"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:109
 msgid "|January|February|March|April|May|June|July|August|September|October|November|December"
 msgstr "|1月|2月|3月|4月|5月|6月|7月|8月|9月|10月|11月|12月"
 
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:134
 msgid "Day %s"
 msgstr "%s日"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:153
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "日曜日|月曜日|火曜日|水曜日|木曜日|金曜日|土曜日"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:190
+msgid "every year"
+msgstr "毎年"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:192
+msgid "every %s years"
+msgstr "%s年ごとに"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:217
+msgid "every month"
+msgstr "毎月"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:219
+msgid "every %s months"
+msgstr "%sヶ月ごとに"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:241
+msgid "every week"
+msgstr "毎週"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:243
+msgid "every %s weeks"
+msgstr "%s週ごとに"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:264
+msgid "every day"
+msgstr "毎日"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:266
+msgid "every %s days"
+msgstr "%s日ごとに"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:285
+msgid "Until Y/m/d"
+msgstr "Y年m月d日まで"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:288
+msgid "%s times"
+msgstr "%s回"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:312
+msgid "First week"
+msgstr "第1週"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:315
+msgid "Second week"
+msgstr "第2週"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:318
+msgid "Third week"
+msgstr "第3週"
+
+#: Calendars/View/Helper/CalendarPlanRruleHelper.php:321
+msgid "Forth week"
+msgstr "第4週"
+
+#: Calendars/View/Helper/CalendarScheduleHelper.php:141;233
+msgid "Contact:"
+msgstr "連絡先:"
+
+#: Calendars/View/Helper/CalendarScheduleHelper.php:247;291
+msgid "No plan."
+msgstr "予定はありません。"
+
+#: Calendars/View/Helper/CalendarScheduleHelper.php:392
+msgid "tomorrow"
+msgstr "明日"
+
+#: Calendars/View/Helper/CalendarShareUsersHelper.php:44
+msgid "People to share the schedule"
+msgstr "予定を共有する人"
+
+#: Calendars/View/Helper/CalendarShareUsersHelper.php:46
+msgid "Person who made the schedule"
+msgstr "予定を入れた人"
+
+#: Calendars/View/Helper/CalendarTurnCalendarHelper.php:135
+msgid "<small>%d/</small>%d/%d<small class=\"%s\">(%s)&nbsp;<br class=\"visible-xs\" />%s</small>"
+msgstr "<small>%d年</small> %d月%d日<small class=\"%s\">(%s)&nbsp;<br class=\"visible-xs\" />%s</small>"
+
+#: Calendars/View/Helper/CalendarTurnCalendarHelper.php:165
+msgid "This month"
+msgstr "今月へ"
+
+#: Calendars/View/Helper/CalendarTurnCalendarHelper.php:168
+msgid "This week"
+msgstr "今週へ"
+
+#: Calendars/View/Helper/CalendarTurnCalendarHelper.php:171
+msgid "Today"
+msgstr "今日へ"
+
+#: Calendars/View/Helper/CalendarUrlHelper.php:171
+msgid "Back"
+msgstr "戻る"
+
+
+
+####### 以下、使われてるか不明
 
 msgid "%d/%d (%s)"
 msgstr "%d月%d日(%s)"
 
-msgid "You can not change the target space  after published."
-msgstr "あなたは公開された後の予定の対象空間を変更する権限がありません。"
+#: View/Helper/CalendarPlanHelper.php:132
+msgid "More details"
+msgstr "詳細な登録"
 
-msgid "Cyclic rules using deadline specified exceeds the maximum number of %d"
-msgstr "指定期限まで繰返しルールを適用した場合、最大回数%dを超えます。"
+#: View/Helper/CalendarPlanRruleHelper.php:111
+msgid "%s months"
+msgstr "%s月"
+
+#: View/Helper/CalendarPlanRruleHelper.php:131
+msgid "%s days"
+msgstr "%s日"
+
+#: View/Helper/CalendarTurnCalendarHelper.php:160
+msgid "(%s)"
+msgstr "(%s)"
+
+#: View/Helper/CalendarUrlHelper.php:135
+msgid "Back to this month"
+msgstr "今月に戻る"
+
+#: View/Helper/CalendarUrlHelper.php:137
+msgid "Back to this week"
+msgstr "今週に戻る"
+
+#: View/Helper/CalendarUrlHelper.php:139
+msgid "Back to today"
+msgstr "今日に戻る"
+
+#: View/Helper/CalendarUrlHelper.php:141
+msgid "Back to First view"
+msgstr "最初の画面に戻る"
 
 msgid "An unknown error has occurred."
 msgstr "不明なエラーが発生しました。"
 
-msgid "Registration and editing of the plan please go from correctly installed in the calendar on the screen ."
-msgstr "申し訳ありませんが、予定の登録・編集は画面に正しく設置されたカレンダーから行ってください。"
+#: Controller/CalendarPlansController.php:101
+msgid "There is no block ID. Display a blank page."
+msgstr "ブロックIDがないのでブランクページを表示します"
 
-msgid "nothing"
-msgstr "なし"
+#: Controller/CalendarPlansController.php:121
+msgid "There is no event. Display a blank page. 1"
+msgstr "対象eventの指定がないのでブランクページを表示します"
 
-msgid "Target room"
-msgstr "対象のルーム"
+#: Controller/CalendarPlansController.php:136;387
+msgid "There is no event. Display a blank page. 2"
+msgstr "対象eventがないのでブランクページを表示します"
 
-msgid "Please set from Select the room for which you want e-mail notification settings . It will be the setting of one room."
-msgstr "メール通知設定を行う対象のルームを選んでから設定してください。１ルームずつの設定となります。"
+#: View/CalendarPlans/daylist.ctp:22
+msgid "back to calendar"
+msgstr "カレンダーに戻る"
+
+#: View/CalendarPlans/detail_edit.ctp:990
+msgid "Notify by e-mail"
+msgstr "メール通知"
+
+#: View/CalendarPlans/detail_edit.ctp:1007
+msgid "e-mail notification before event"
+msgstr "イベント前にメール通知する"
+
+#: View/CalendarPlans/easy_edit.ctp:10
+#: View/CalendarPlans/view.ctp:10
+msgid "Calendar"
+msgstr "カレンダー"
+
+#: View/CalendarPlans/easy_edit.ctp:54
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:68
+msgid "Plans(date)"
+msgstr "予定（年月日）"
+
+#: View/CalendarPlans/easy_edit.ctp:117
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:118
+msgid "To specify the start time and end time"
+msgstr "開始時間と終了時間の指定"
+
+#: View/CalendarPlans/easy_edit.ctp:128
+msgid "Plans(Start time - End time)"
+msgstr "予定（開始時間～終了時間） "
+
+#: View/CalendarPlans/easy_edit.ctp:200
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:200
+msgid "Notify by e-mail"
+msgstr "メールで通知"
+
+#: View/CalendarPlans/easy_edit.ctp:212
+#: View/Elements/CalendarPlans/select_target_to_expose.ctp:232
+msgid "E-mail notification timing"
+msgstr "メール通知タイミング"
+
+#: View/CalendarPlans/view.ctp:86
+msgid "End date and time"
+msgstr "終了日時"
