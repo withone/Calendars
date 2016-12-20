@@ -42,9 +42,11 @@ class CalendarSearchPlanBehavior extends CalendarAppBehavior {
 		// 探すのはis_activeかis_latestのものだけでよい
 		$baseOptions = array(
 			'conditions' => array(
-				'OR' => array(
-					'CalendarEvent.is_active' => true,
-					'CalendarEvent.is_latest' => true,
+				array(
+					'OR' => array(
+						'CalendarEvent.is_active' => true,
+						'CalendarEvent.is_latest' => true,
+					)
 				)
 			),
 			'recursive' => 1,		//belongTo, hasOne, hasMany関係をもつ１階層上下を対象にする。
@@ -53,12 +55,23 @@ class CalendarSearchPlanBehavior extends CalendarAppBehavior {
 		);
 		foreach ($planParams as $field => $val) {
 			$key = $model->alias . '.' . $field;
+			$field = trim($field);
 			switch ($field) {
 				case 'dtstart':
 					$key = $key . ' >=';
 					break;
 				case 'dtend':
 					$key = $key . ' <';
+					break;
+				case 'language_id':
+					$key = 1;
+					$vals = array(
+						'OR' => array(
+							$model->alias . '.' . $field => $val,
+							$model->alias . '.is_translation' => false
+						)
+					);
+					$val = $vals;
 					break;
 				default:
 			}

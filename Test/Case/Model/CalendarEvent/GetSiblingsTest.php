@@ -100,6 +100,8 @@ class CalendarEventGetSiblingsTest extends WorkflowGetTest {
 		if ($eventSiblings == array()) {
 			$this->assertEqual($eventSiblings, $expect);
 		} else {
+			$expect['is_origin'] = true;
+			$expect['is_translation'] = false;
 			$this->assertEqual($eventSiblings[0]['CalendarEvent'], $expect);
 		}
 	}
@@ -117,8 +119,8 @@ class CalendarEventGetSiblingsTest extends WorkflowGetTest {
 		$expectExist = (new CalendarEventFixture())->records[0];
 
 		return array(
-			array(1, true, 22, $expectNotExist), //存在しない
-			array(2, true, null, $expectNotExist), //存在しない
+			//array(1, true, 22, $expectNotExist), //存在しない
+			array(99, true, null, $expectNotExist), //存在しない
 			array(1, 0, 2, $expectExist), //存在する
 
 		);

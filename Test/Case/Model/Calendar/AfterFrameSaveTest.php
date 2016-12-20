@@ -117,6 +117,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
  *  - data 登録データ
  *
  * @return array
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
 	public function dataProviderAfterFrameSave() {
 		//1.すでにブロックIDが存在

@@ -112,6 +112,8 @@ class CalendarEventGetEventByIdTest extends WorkflowGetTest {
 		if ($result == array()) {
 			$this->assertEqual($result, $expect);
 		} else {
+			$expect['is_origin'] = true;
+			$expect['is_translation'] = false;
 			$this->assertEqual($result['CalendarEvent'], $expect);
 		}
 	}

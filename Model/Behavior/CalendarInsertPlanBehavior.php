@@ -79,7 +79,7 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 /**
  * RruleDataへのデータ登録
  *
- * @param Model &$model モデル 
+ * @param Model &$model モデル
  * @param array $planParams 予定パラメータ
  * @param string $icalUidPart icalUidPart
  * @param int $createdUserWhenUpd createdUserWhenUpd
@@ -118,7 +118,7 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 /**
  * EventDataへのデータ登録
  *
- * @param Model &$model モデル 
+ * @param Model &$model モデル
  * @param array $planParams 予定パラメータ
  * @param array $rruleData rruleデータ
  * @param int $createdUserWhenUpd created_userを明示指定する時にnull以外を指定。updatePlanで主に利用されている。

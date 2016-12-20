@@ -348,14 +348,15 @@ class CalendarFrameSetting extends CalendarsAppModel {
 	public function getDefaultFrameSetting() {
 		//start_pos、is_myroom、is_select_roomはtableの初期値をつかう。
 		//frame_key,room_idは明示的に設定されることを想定し、setDefaultではなにもしない。
-		return array(
+		return $this->create(array(
 			$this->alias => array(
 				'display_type' => CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY,
 				'display_count' => CalendarsComponent::CALENDAR_STANDARD_DISPLAY_DAY_COUNT,
 				'timeline_base_time' => CalendarsComponent::CALENDAR_TIMELINE_DEFAULT_BASE_TIME,
 				'is_select_room' => false,
 				'is_myroom' => true,
+				'id' => null,
 			)
-		);
+		));
 	}
 }

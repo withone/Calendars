@@ -204,7 +204,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 /**
  * 予定データの全更新
  *
- * @param Model &$model モデル 
+ * @param Model &$model モデル
  * @param array $planParams 予定パラメータ
  * @param array $rruleData rruleData
  * @param array $eventData eventData(編集画面のevent)
@@ -320,7 +320,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 /**
  * EventDataのデータ更新
  *
- * @param Model &$model モデル 
+ * @param Model &$model モデル
  * @param array $planParams 予定パラメータ
  * @param array $rruleData rruleデータ
  * @param array $eventData eventデータ
