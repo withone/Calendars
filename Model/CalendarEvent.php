@@ -66,6 +66,10 @@ class CalendarEvent extends CalendarsAppModel {
 				'title', 'location', 'contact', 'description'
 			),
 		),
+		//多言語
+		'M17n.M17n' => array(
+			'keyField' => false,
+		),
 	);
 
 /**
@@ -294,6 +298,23 @@ class CalendarEvent extends CalendarsAppModel {
 		$this->_doMergeWorkflowParamValidate(); //Workflowパラメータ関連validation
 		return parent::beforeValidate($options);
 	}
+
+/**
+ * Returns true if all fields pass validation. Will validate hasAndBelongsToMany associations
+ * that use the 'with' key as well. Since _saveMulti is incapable of exiting a save operation.
+ *
+ * Will validate the currently set data. Use Model::set() or Model::create() to set the active data.
+ *
+ * @param array $options An optional array of custom options to be made available in the beforeValidate callback
+ * @return bool True if there are no errors
+ */
+	public function validates($options = array()) {
+		if (Hash::get($this->data, 'CalendarEvent.room_id')) {
+			CalendarPermissiveRooms::setCurrentPermission($this->data['CalendarEvent']['room_id']);
+		}
+		return parent::validates($options);
+	}
+
 /**
  * 自分もふくめた兄弟一覧を取得
  *
@@ -310,7 +331,11 @@ class CalendarEvent extends CalendarsAppModel {
 			'conditions' => array(
 				$this->alias . '.calendar_rrule_id' => $rruleId,
 				//$this->alias . '.is_latest' => 1,
-				$this->alias . '.language_id' => $languageId,
+				//$this->alias . '.language_id' => $languageId,
+				'OR' => array(
+					$this->alias . '.language_id' => $languageId,
+					$this->alias . '.is_translation' => false
+				),
 				$this->alias . '.exception_event_id' => 0,	//除外でない
 			),
 			//'recursive' => -1, //eventだけとる
@@ -561,8 +586,12 @@ class CalendarEvent extends CalendarsAppModel {
 				array('CalendarEvent' . '.is_active' => false),
 				array(
 					'CalendarEvent' . '.' . 'key' => $event['CalendarEvent']['key'],
-					'CalendarEvent' . '.language_id' => (int)$event['CalendarEvent']['language_id'],
-					'CalendarEvent' . '.is_active' => true,
+					//'CalendarEvent' . '.language_id' => (int)$event['CalendarEvent']['language_id'],
+					'OR' => array(
+						'CalendarEvent' . '.language_id' => $event['CalendarEvent']['language_id'],
+						'CalendarEvent' . '.is_translation' => false
+					),
+							'CalendarEvent' . '.is_active' => true,
 					'CalendarEvent' . '.' . 'id !=' =>
 						$event['CalendarEvent']['id'],	//WFとの違い。update対象eventは除外。
 				)
@@ -626,7 +655,11 @@ class CalendarEvent extends CalendarsAppModel {
 			array('CalendarEvent' . '.is_latest' => false),
 			array(
 				'CalendarEvent' . '.' . 'key' => $event['CalendarEvent']['key'],
-				'CalendarEvent' . '.language_id' => (int)$event['CalendarEvent']['language_id'],
+				//'CalendarEvent' . '.language_id' => (int)$event['CalendarEvent']['language_id'],
+				'OR' => array(
+					'CalendarEvent' . '.language_id' => (int)$event['CalendarEvent']['language_id'],
+					'CalendarEvent' . '.is_translation' => false
+				),
 				'CalendarEvent' . '.is_latest' => true,
 			)
 		);

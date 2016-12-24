@@ -167,7 +167,6 @@ class Calendar extends CalendarsAppModel {
 			$block = $this->Block->find('first', array(
 				'conditions' => array(
 					'Block.room_id' => $frame['room_id'],
-					'Block.language_id' => $frame['language_id'],
 					'Block.plugin_key' => $frame['plugin_key'],
 				)
 			));
@@ -233,7 +232,6 @@ class Calendar extends CalendarsAppModel {
 			$block = $this->Block->find('first', array(
 				'conditions' => array(
 					'Block.room_id' => $roomId,
-					'Block.language_id' => $langId,
 					'Block.plugin_key' => $pluginKey,
 				)
 			));
@@ -243,7 +241,6 @@ class Calendar extends CalendarsAppModel {
 				// ブロックを作成する
 				$block = $this->Block->save(array(
 					'room_id' => $roomId,
-					'language_id' => $langId,
 					'plugin_key' => $pluginKey,
 				));
 				if (! $block) {
@@ -383,7 +380,6 @@ class Calendar extends CalendarsAppModel {
 	protected function _makeBlock($frame) {
 		$block = $this->Block->save(array(
 			'room_id' => $frame['room_id'],
-			'language_id' => $frame['language_id'],
 			'plugin_key' => $frame['plugin_key'],
 		));
 		if (! $block) {

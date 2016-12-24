@@ -622,7 +622,7 @@ class CalendarPlansController extends CalendarsAppController {
  * __getSessionStoredRedirectUrl
  *
  * セッションに保存している戻りURLを取り出す
- * 
+ *
  * @return mixed
  */
 	private function __getSessionStoredRedirectUrl() {
@@ -639,7 +639,7 @@ class CalendarPlansController extends CalendarsAppController {
  * __getCreatedUserWhenUpd
  *
  * 変更時の生成者を勘案・取得する
- * 
+ *
  * @param string $procMode procMode
  * @param array $originEvent originEvent
  * @param int $planRoomId planRoomId 選択された公開対象となるroomId

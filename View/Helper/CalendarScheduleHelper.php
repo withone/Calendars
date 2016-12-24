@@ -349,7 +349,7 @@ class CalendarScheduleHelper extends CalendarMonthlyHelper {
  *
  * @param array $vars コントローラーからの情報
  * @param int $dayCount n日目
- * @param int $planCount n日目の予定数 
+ * @param int $planCount n日目の予定数
  * @param int $year 年
  * @param int $month 月
  * @param int $day 日

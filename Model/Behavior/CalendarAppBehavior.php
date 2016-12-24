@@ -75,9 +75,10 @@ class CalendarAppBehavior extends ModelBehavior {
  * @see Model::save()
  */
 	public function beforeValidate(Model $model, $options = array()) {
-		if ($model->alias == 'CalendarEvent') {
-			CalendarPermissiveRooms::setCurrentPermission($model->data['CalendarEvent']['room_id']);
-		}
+		//CalendarEventに移動
+		//if ($model->alias == 'CalendarEvent') {
+		//	CalendarPermissiveRooms::setCurrentPermission($model->data['CalendarEvent']['room_id']);
+		//}
 	}
 /**
  * Called after data has been checked for errors

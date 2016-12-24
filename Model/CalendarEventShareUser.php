@@ -85,14 +85,14 @@ class CalendarEventShareUser extends CalendarsAppModel {
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'required' => true,
-					'message' => __d('net_commons', 'Invaid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 				),
 			),
 			'share_user' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
 					'required' => true,
-					'message' => __d('net_commons', 'Invaid request'),
+					'message' => __d('net_commons', 'Invalid request.'),
 				),
 			),
 		));

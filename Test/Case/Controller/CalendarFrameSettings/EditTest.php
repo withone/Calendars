@@ -175,7 +175,7 @@ class CalendarFrameSettingsControllerEditTest extends NetCommonsControllerTestCa
 		);
 		// ブロックが存在しないフレームID
 		$results[1] = array(
-			'urlOptions' => array('frame_id' => 15),
+			'urlOptions' => array('frame_id' => 16),
 			'assert' => null,
 		);
 		// 存在しないフレームID

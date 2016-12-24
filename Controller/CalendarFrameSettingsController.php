@@ -132,7 +132,7 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 	public function beforeFilter() {
 		parent::beforeFilter();
 		$this->Auth->deny('index');
-		$this->Calendar->afterFrameSave(Current::read());
+		$this->Calendar->afterFrameSave(['Frame' => Current::read('Frame')]);
 	}
 
 /**
@@ -141,7 +141,7 @@ class CalendarFrameSettingsController extends CalendarsAppController {
  * @return void
  */
 	public function edit() {
-		if ($this->request->is('put')) {
+		if ($this->request->is(['put', 'post'])) {
 			//登録(PUT)処理
 			$data = $this->request->data;
 			$data['CalendarFrameSetting']['display_type'] =
@@ -160,21 +160,11 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 		//	なので、ここでは、読むだけでＯＫ．
 		//
 		// 設定情報取り出し
-		$conditions = array('frame_key' => Current::read('Frame.key'));
-		$setting = $this->CalendarFrameSetting->find('first', array(
-			'recursive' => -1,
-			'conditions' => $conditions,
-		));
-		// まだ存在しないフレームについての要求を受けても処理のしようがない
-		// エラーを投げる
-		if (! $setting) {
-			$this->setAction('throwBadRequest');
-		}
-
+		$setting = $this->CalendarFrameSetting->getFrameSetting();
 		$settingId = $setting['CalendarFrameSetting']['id'];
 		$this->set('settingId', $settingId);
 
-		if (! $this->request->is('put')) {
+		if (! $this->request->is(['put', 'post'])) {
 			$this->request->data['CalendarFrameSetting'] = $setting['CalendarFrameSetting'];
 			$this->request->data['CalendarFrameSettingSelectRoom'] =
 				$this->CalendarFrameSetting->getSelectRooms($settingId);

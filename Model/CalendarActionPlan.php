@@ -786,7 +786,7 @@ class CalendarActionPlan extends CalendarsAppModel {
  * validationErrors配列の内、対象項目とmessageを動的に校正する。(主にrruleの複合validate対応)
  *
  * @param Model &$model モデル
- * @return array 
+ * @return array
  */
 	public function proofreadValidationErrors(&$model) {
 		$msg = Hash::get($model->validationErrors, 'repeat_freq.0');

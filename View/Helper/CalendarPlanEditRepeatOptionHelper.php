@@ -113,8 +113,7 @@ class CalendarPlanEditRepeatOptionHelper extends AppHelper {
 				'When you select the [all] will be re-set to the contents is repeated first plan.');
 			$html .= '<br />';
 			$html .= __d('calendars',
-				'予定のキーを替えずに編集されたい時は、' .
-				'「この予定のみ」を選択して編集してください。');
+				'If you want to edit without changing the schedule key, select "all after this one" and edit.');
 			$html .= '</small></p>';
 		}
 		$html .= '</div></div></div>';

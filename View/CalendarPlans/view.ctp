@@ -59,7 +59,7 @@ echo $this->element('Calendars.scripts');
 					?>
 					<?php
 					if (! $event['CalendarEvent']['is_allday']) {
-						echo '&nbsp&nbsp' . __d('calendars', '－') . '&nbsp&nbsp';
+						echo '&nbsp&nbsp' . __d('calendars', ' - ') . '&nbsp&nbsp';
 						$endUserDateWdayTime = $this->CalendarPlan->makeDatetimeWithUserSiteTz($event['CalendarEvent']['dtend'], $event['CalendarEvent']['is_allday']);
 						echo h($endUserDateWdayTime);
 					}

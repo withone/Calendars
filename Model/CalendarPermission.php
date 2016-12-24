@@ -175,7 +175,6 @@ class CalendarPermission extends CalendarsAppModel {
 					'conditions' => array(
 						'Room.id = Block.room_id',
 						'Block.plugin_key' => 'calendars',
-						'Block.language_id' => Current::read('Language.id')
 					)
 				),
 				//				array('table' => 'calendars',
@@ -355,7 +354,6 @@ class CalendarPermission extends CalendarsAppModel {
 		$block = $this->Block->find('first', array(
 			'conditions' => array(
 				'room_id' => $roomId,
-				'language_id' => Current::read('Language.id'),
 				'plugin_key' => 'calendars',
 			),
 			'recursive' => -1
@@ -366,7 +364,6 @@ class CalendarPermission extends CalendarsAppModel {
 		$this->Block->create();
 		$block = $this->Block->save(array(
 			'room_id' => $roomId,
-			'language_id' => Current::read('Language.id'),
 			'plugin_key' => 'calendars',
 		));
 		return $block;

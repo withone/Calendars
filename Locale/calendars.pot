@@ -553,7 +553,7 @@ msgid "Date and time"
 msgstr ""
 
 #: Calendars/View/CalendarPlans/view.ctp:62
-msgid "－"
+msgid " - "
 msgstr ""
 
 #: Calendars/View/CalendarPlans/view.ctp:74
@@ -924,7 +924,7 @@ msgid "When you select the [all] will be re-set to the contents is repeated firs
 msgstr ""
 
 #: Calendars/View/Helper/CalendarPlanEditRepeatOptionHelper.php:115
-msgid "予定のキーを替えずに編集されたい時は、「この予定のみ」を選択して編集してください。"
+msgid "If you want to edit without changing the schedule key, select "all after this one" and edit."
 msgstr ""
 
 #: Calendars/View/Helper/CalendarPlanEditRepeatOptionHelper.php:131
