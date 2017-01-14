@@ -116,7 +116,7 @@ class CalendarCommonHelper extends AppHelper {
 		switch($status) {
 			case WorkflowComponent::STATUS_PUBLISHED:	//承認済
 				break;
-			case WorkflowComponent::STATUS_APPROVED;	//承認待ち
+			case WorkflowComponent::STATUS_APPROVAL_WAITING;	//承認待ち
 				$html = "<span class='workflow-label label label-warning'>" .
 							__d('net_commons', 'Approving') .
 						"</span>";
