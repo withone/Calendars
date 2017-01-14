@@ -729,7 +729,9 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 				$status = $matches[1];
 				$roomId = $data['CalendarActionPlan']['plan_room_id'];
-				$checkStatus = array(WorkflowComponent::STATUS_PUBLISHED, WorkflowComponent::STATUS_APPROVAL_WAITING);
+				$checkStatus = array(
+					WorkflowComponent::STATUS_PUBLISHED, WorkflowComponent::STATUS_APPROVAL_WAITING
+				);
 				if (in_array($status, $checkStatus)) {
 					$status = WorkflowComponent::STATUS_APPROVAL_WAITING;
 					if (CalendarPermissiveRooms::isPublishable($roomId)) {
