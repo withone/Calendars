@@ -392,7 +392,7 @@ class CalendarsAppModel extends AppModel {
 	protected function _getStatus($data) {
 		$statuses = array(
 			WorkflowComponent::STATUS_PUBLISHED,
-			WorkflowComponent::STATUS_APPROVED,
+			WorkflowComponent::STATUS_APPROVAL_WAITING,
 			WorkflowComponent::STATUS_IN_DRAFT,
 			WorkflowComponent::STATUS_DISAPPROVED,
 		);

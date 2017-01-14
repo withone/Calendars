@@ -722,16 +722,18 @@ class CalendarActionPlan extends CalendarsAppModel {
 				//カレンダーでのstatus取得の考え方)
 				//save_NのNをまず取り出し、下記ルールを適用。空間によってはstatusを切り替える。
 				//
-				//status が、STATUS_PUBLISHED（1）承認済＝発行済 又は STATUS_APPROVED （2）承認待ち の時
+				//status が、STATUS_PUBLISHED（1）承認済＝発行済 又は STATUS_APPROVAL_WAITING （2）承認待ち の時
 				//＝＞status値は、現ユーザが指定空間でcontent publish権限あるならPUBLISHED、権限ないならAPPROVED
 				//status が、STATUS_IN_DRAFT（3） 一時保存 又は STATUS_DISAPPROVED（4）差し戻し の時
 				//＝＞status値は、そのまま使う。
 
 				$status = $matches[1];
 				$roomId = $data['CalendarActionPlan']['plan_room_id'];
-				$checkStatus = array(WorkflowComponent::STATUS_PUBLISHED, WorkflowComponent::STATUS_APPROVED);
+				$checkStatus = array(
+					WorkflowComponent::STATUS_PUBLISHED, WorkflowComponent::STATUS_APPROVAL_WAITING
+				);
 				if (in_array($status, $checkStatus)) {
-					$status = WorkflowComponent::STATUS_APPROVED;
+					$status = WorkflowComponent::STATUS_APPROVAL_WAITING;
 					if (CalendarPermissiveRooms::isPublishable($roomId)) {
 						$status = WorkflowComponent::STATUS_PUBLISHED;
 					}

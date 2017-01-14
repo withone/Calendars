@@ -179,7 +179,7 @@ class CalendarPlanHelper extends AppHelper {
 		if (! empty($roomId)) {
 			$isPublishable = CalendarPermissiveRooms::isPublishable($roomId);
 		}
-		if ($isPublishable && $status === WorkflowComponent::STATUS_APPROVED) {
+		if ($isPublishable && $status === WorkflowComponent::STATUS_APPROVAL_WAITING) {
 			$saveTempOptions = array(
 				'label' => __d('net_commons', 'Disapproval'),
 				'class' => 'btn btn-warning' . $this->Button->getButtonSize() . ' btn-workflow',
