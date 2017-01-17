@@ -102,6 +102,7 @@ class CalendarEventGetSiblingsTest extends WorkflowGetTest {
 		} else {
 			$expect['is_origin'] = true;
 			$expect['is_translation'] = false;
+			$expect['is_original_copy'] = false;
 			$this->assertEqual($eventSiblings[0]['CalendarEvent'], $expect);
 		}
 	}
