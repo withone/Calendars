@@ -260,7 +260,7 @@ class CalendarCommonHelper extends AppHelper {
 	protected function _includeToTimeOfDay(&$vars, $plan, $beginOfDay, $endOfDay, $fromTimeOfDay,
 		$toTimeOfDay, &$nctm, &$planOfThisDay) {
 		if (($planOfThisDay === false) && $beginOfDay < $plan['CalendarEvent']['dtend'] &&
-			$plan['CalendarEvent']['dtend'] <= $endOfDay) {
+			$plan['CalendarEvent']['dtend'] < $endOfDay) {
 			//予定の終了日時が、この日に含まれる時
 			$plan['CalendarEvent']['fromTime'] = CalendarTime::getHourColonMin(
 				$nctm->toUserDatetime((($beginOfDay <= $plan['CalendarEvent']['dtstart']) ?
