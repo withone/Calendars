@@ -46,7 +46,7 @@
 	<?php else: ?>
 		<a class='btn btn-default' href="<?php echo $dailyLink; ?>">
 	<?php endif; ?>
-			<?php echo __d('calendars', 'Plan list'); ?></a>
+			<?php echo __d('calendars', 'Plan list'); ?>
 		</a>
 	</div>
 	<div class="btn-group" role="group">
@@ -55,7 +55,7 @@
 	<?php else: ?>
 		<a class="btn btn-default" href="<?php echo $timelineLink; ?>">
 	<?php endif; ?>
-		<?php echo __d('calendars', 'Timeline'); ?></a>
+		<?php echo __d('calendars', 'Timeline'); ?>
 		</a>
 	</div>
 </div>
