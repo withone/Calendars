@@ -134,6 +134,7 @@ class Room4testFixture extends RoomFixture {
 			'id' => '8',
 			'space_id' => '3',
 			'page_id_top' => '7',
+			'parent_id' => '3',
 			'lft' => '11',
 			'rght' => '12',
 			'active' => true,
