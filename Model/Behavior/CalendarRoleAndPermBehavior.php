@@ -230,8 +230,8 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 		if (! $rolesRoomsUser) {
 			return Role::ROOM_ROLE_KEY_VISITOR;
 		}
-		$rolesRoomsUserId = $rolesRoomsUser['RolesRoomsUser']['roles_room_id'];
-		$rolesRooms = $model->RolesRoom->findById($rolesRoomsUserId);
+		$rolesRoomId = $rolesRoomsUser['RolesRoomsUser']['roles_room_id'];
+		$rolesRooms = $model->RolesRoom->findById($rolesRoomId, 'RolesRoom.role_key', null, -1);
 		if (! $rolesRooms) {
 			return Role::ROOM_ROLE_KEY_VISITOR;
 		}
