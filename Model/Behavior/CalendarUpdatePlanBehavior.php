@@ -43,7 +43,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		);
 		//上記のfields定義は、以下の意味です。
 		//   The (event|todoplugin|journal) was registerd into the calendar information.
-		// ＝イベント(またはToDoまたは日報)が予定表の情報に登録されました。
+		// ＝イベント(または To Doまたは日報)が予定表の情報に登録されました。
 
 /**
  * 予定の変更
@@ -428,7 +428,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 
 		//関連コンテンツ(calendar_event_contents)の更新
 		//
-		if (!empty($eventData['CalendarEvent']['CalendarEventContent']['linked_model'])) {
+		if (!empty($eventData['CalendarEvent']['CalendarEventContent']['model'])) {
 			if (!(isset($model->CalendarEventContent))) {
 				$model->loadModels(['CalendarEventContent' => 'Calendars.CalendarEventContent']);
 			}
