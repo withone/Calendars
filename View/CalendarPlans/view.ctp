@@ -34,9 +34,11 @@ echo $this->element('Calendars.scripts');
 			?>
 		</div>
 
+		<?php if (empty($event['CalendarEventContent'])) : ?>
 		<div class="pull-right">
 			<?php echo $this->CalendarButton->getEditButton($vars, $event);?>
 		</div>
+		<?php endif; ?>
 	</header>
 
 	<?php /* ステータス＆タイトル */ ?>
@@ -122,6 +124,13 @@ echo $this->element('Calendars.scripts');
 				<h3><?php echo __d('calendars', 'Date'); ?></h3>
 				<p><?php echo h((new NetCommonsTime())->toUserDatetime($event['CalendarEvent']['modified'])); ?></p>
 			</div><!-- おわり-->
+
+			<?php if (! empty($event['CalendarEventContent'])) : ?>
+			<div data-calendar-name="source" class="calendar-eachplan-box">
+				<h3><?php echo __d('calendars', 'Source of plan'); ?></h3>
+				<p><?php echo $this->CalendarLink->getSourceLink($vars, $event); ?></p>
+			</div><!-- おわり-->
+			<?php endif; ?>
 		</div>
 	</div>
 </article>
