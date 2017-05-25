@@ -40,12 +40,12 @@ class CalendarLinkHelper extends AppHelper {
 		}
 		$sourceTable = $event['CalendarEventContent'][0]['model'];
 		$html = '';
-		switch($sourceTable) {
-		case 'TaskContent':
+		switch ($sourceTable) {
+			case 'TaskContent':
 				$html = __d('calendars', 'from ToDo');
-			break;
-		default:
-				//現在のところToDoと施設予約のみ
+				break;
+			default:
+				//現在のところ To Doと施設予約のみ
 				$html = __d('calendars', 'from Reservation');
 		}
 		return $html;
