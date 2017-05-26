@@ -275,12 +275,6 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 			}
 		}
 
-		//CakeLog::debug("DBG: __getDelOrigin結果. data[" . print_r($data, true) .
-		//	"] calendarKey[" . $calendarKey .
-		//	"] sys[" . print_r($sys, true) .
-		//	"] event[" . print_r($event, true) .
-		//	"] sibs[" . print_r($sibs, true) .
-		//	"]");
 		return array($data, $calendarKey, $event, $sibs);
 	}
 
