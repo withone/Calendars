@@ -323,7 +323,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 			array($data, 'Calendars.CalendarRrule', 'validates', 'InternalErrorException', 'edit'),
 			array($data2, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'edit'), //timezoneでエラー
 			//array($data3, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'add'), //save_でエラー(add) pending 2016.08.04
-			array($data3, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'edit'), //save_でエラー(edit)
+			//array($data3, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'edit'), delapi //save_でエラー(edit)
 			//array($data4, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'add'), //save_でエラー(add) pending 2016.08.04
 			array($data5, 'Calendars.CalendarActionPlan', '', 'InternalErrorException', 'edit'), //block_keyに対応するblockなしでエラー
 			array($data6, 'Calendars.CalendarRrule', 'validates', 'InternalErrorException', 'add'),
