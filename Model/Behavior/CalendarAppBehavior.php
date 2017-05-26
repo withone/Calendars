@@ -385,8 +385,8 @@ class CalendarAppBehavior extends ModelBehavior {
 			'description',
 			'is_allday',
 			'timezone_offset',
-			'linked_model',
-			'linked_content_key',
+			'model',
+			'content_key',
 			'enable_email',
 			'email_send_timing',
 		);
@@ -435,8 +435,8 @@ class CalendarAppBehavior extends ModelBehavior {
 			'enable_email' => $planParams['enable_email'],
 			'email_send_timing' => $planParams['email_send_timing'],
 
-			'linked_model' => '',
-			'linked_content_key' => '',
+			'model' => '',
+			'content_key' => '',
 		);
 
 		$this->setPlanParams2Params($planParams, $params);
@@ -471,8 +471,8 @@ class CalendarAppBehavior extends ModelBehavior {
 		$eventData['CalendarEvent']['email_send_timing'] = $params['email_send_timing'];
 
 		//保存するモデルをここで替える
-		$eventData['CalendarEventContent']['linked_model'] = $params['linked_model'];
-		$eventData['CalendarEventContent']['linked_content_key'] = $params['linked_content_key'];
+		$eventData['CalendarEventContent']['model'] = $params['model'];
+		$eventData['CalendarEventContent']['content_key'] = $params['content_key'];
 
 		//workflowcommentなどの追加拡張データはここで追加する。
 		//
@@ -525,7 +525,7 @@ class CalendarAppBehavior extends ModelBehavior {
 
 		//関連コンテンツの登録
 		if (isset($eventData['CalendarEventContent']) &&
-			$eventData['CalendarEventContent']['linked_model'] !== '') {
+			$eventData['CalendarEventContent']['model'] !== '') {
 			if (!(isset($model->CalendarEventContent))) {
 				$model->loadModels(['CalendarEventContent' => 'Calendar.CalendarEventContent']);
 			}

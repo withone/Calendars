@@ -1104,3 +1104,15 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
+#: View/CalendarPlans/view.ctp:128
+msgid "Source of plan"
+msgstr ""
+
+#: View/CalendarPlans/view.ctp:128
+msgid "from ToDo"
+msgstr ""
+
+#: View/CalendarPlans/view.ctp:128
+msgid "from Reservation"
+msgstr ""
+

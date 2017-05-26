@@ -128,15 +128,24 @@ class CalendarsAppModel extends AppModel {
  *
  * @param array $planParam merge前の予定パラメータ
  * @param array $data POSTされたデータ
+ * @param string $completedRrule すでに完成しているrrule文字列（''以外の時に有効）
  * @return array 成功時 整形,merged後の予定パラメータ. 失敗時 例外をthrowする.
  * @throws InternalErrorException
  */
-	protected function _setAndMergeRrule($planParam, $data) {
+	protected function _setAndMergeRrule($planParam, $data, $completedRrule = '') {
 		//CakeLog::debug("DBGY: data[" . $this->alias . "]=[" . print_r($data[$this->alias], true), "]");
 
 		$rrule = array();
 
 		if ($data[$this->alias]['is_repeat']) {
+			if ($completedRrule !== '') {
+				//下記の$data[$this->alias]['repeat_freq']などをつかわず、
+				//指定された完成形のrrule文字列をそのままセットして返す。
+				//主に、プラグイン連携用
+				$planParam['rrule'] = $completedRrule;
+				return $planParam;
+			}
+
 			//$wdayArray = explode('|', CalendarsComponent::CALENDAR_REPEAT_WDAY);
 			$repeatFreq = $data[$this->alias]['repeat_freq'];
 			$rruleInterval = $data[$this->alias]['rrule_interval'];
