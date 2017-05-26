@@ -19,6 +19,7 @@ App::uses('CalendarPermissiveRooms', 'Calendars.Utility');
  *
  * @author Allcreator <info@allcreator.net>
  * @package NetCommons\Calendars\Model\Behavior
+ * @SuppressWarnings(PHPMD)
  */
 class CalendarLinkBehavior extends CalendarAppBehavior {
 
