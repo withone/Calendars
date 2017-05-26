@@ -67,6 +67,7 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 			),
 		),
 		'Calendars.CalendarTopics',
+		'Calendars.CalendarLink',
 	);
 	// @codingStandardsIgnoreStart
 	// $_schemaはcakePHP2の予約語だが、宣言するとphpcsが警告を出すので抑止する。
@@ -197,15 +198,19 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
  * @param string $originEventKey originEventKey（現eventのkey）
  * @param int $originRruleId originRruleId （現eventのcalendar_rrule_id）
  * @param bool $isOriginRepeat 元データが繰返しかどうか
- * @return int 成功時、削除した指定のeventIdを返す.
+ * @param string $cmd 特例処理を|繋ぎで列記する。（'','skipmail','skiptopic'）
+ * @return int 成功時、削除した指定のeventKeyを返す.
  */
 	public function deleteCalendarPlan($data, $originEventId, $originEventKey,
-		$originRruleId, $isOriginRepeat) {
+		$originRruleId, $isOriginRepeat, $cmd = '') {
 		$this->begin();
 		$eventKey = 0;
+		$cmds = explode(',', $cmd);
 
 		try {
-			$this->_dequeueEmail($data); //mailQueueからのDequeueを先にする。
+			if (! in_array('skipmail', $cmds, true)) {
+				$this->_dequeueEmail($data); //mailQueueからのDequeueを先にする。
+			}
 
 			//現世代予定の情報を一式取り出す
 
@@ -217,7 +222,9 @@ class CalendarDeleteActionPlan extends CalendarsAppModel {
 
 			$eventKey = $this->deletePlan($curPlan, $isOriginRepeat, $editRrule);
 
-			$this->deleteCalendarTopics($eventKey, $isOriginRepeat, $originEventKey, $editRrule);
+			if (! in_array('skiptopic', $cmds, true)) {
+				$this->deleteCalendarTopics($eventKey, $isOriginRepeat, $originEventKey, $editRrule);
+			}
 
 			$this->commit();
 		} catch (Exception $ex) {

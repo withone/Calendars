@@ -41,7 +41,7 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 		);
 		//上記のfields定義は、以下の意味です。
 		//   The (event|todoplugin|journal) was registerd into the calendar information.
-		// ＝イベント(またはToDoまたは日報)が予定表の情報に登録されました。
+		// ＝イベント(または To Doまたは日報)が予定表の情報に登録されました。
 
 /**
  * 予定の追加
@@ -184,11 +184,11 @@ class CalendarInsertPlanBehavior extends CalendarAppBehavior {
 		//注: 他のモデルの組み込みBehaviorをcallする場合、第一引数に$modelの指定はいらない。
 
 		//関連コンテンツの登録
-		if ($eventData['CalendarEventContent']['linked_model'] !== '') {
-			if (!(isset($model->CalendarEventContent))) {
-				$model->loadModels(['CalendarEventContent' => 'Calendars.CalendarEventContent']);
+		if ($eventData['CalendarEventContent']['model'] !== '') {
+			if (!$model->Behaviors->hasMethod('saveLinkMdlCkey')) {
+				$model->Behaviors->load('Calendars.CalendarLinkEntry');
 			}
-			$model->CalendarEventContent->saveLinkedData($eventData, $createdUserWhenUpd);
+			$model->saveLinkMdlCkey($eventData, $createdUserWhenUpd);
 		}
 
 		return $eventData;

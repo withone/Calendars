@@ -255,6 +255,24 @@ class CalendarTime {
 	}
 
 /**
+ * getPrevDay
+ *
+ * 年月日の前日を取得する
+ *
+ * @param int $year 年
+ * @param int $month 月
+ * @param int $day 日
+ * @return array 前日の年と月と日を配列で返す。
+ */
+	public static function getPrevDay($year, $month, $day) {
+		//mktimeのday引数の「その月の日数より大きい値は、
+		//翌月以降の該当する日を表す」仕様を応用して次日の年月日を求める。
+		list($yearOfPrevDay, $monthOfPrevDay, $prevDay) =
+			explode('/', date('Y/m/d', mktime(0, 0, 0, $month, $day - 1, $year)));
+		return array($yearOfPrevDay, $monthOfPrevDay, $prevDay);
+	}
+
+/**
  * getPrevMonth
  *
  * 年月の前月を取得する

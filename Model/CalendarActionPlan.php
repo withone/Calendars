@@ -74,6 +74,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		*/
 		'Calendars.CalendarMail',
 		'Calendars.CalendarTopics',
+		'Calendars.CalendarLink',
 	);
 	// @codingStandardsIgnoreStart
 	// $_schemaはcakePHP2の予約語だが、宣言するとphpcsが警告を出すので抑止する。
@@ -611,12 +612,20 @@ class CalendarActionPlan extends CalendarsAppModel {
 				Current::read('Language.id'),
 				'calendars');
 
-			// 承認メール、公開通知メールの送信
-			$this->sendWorkflowAndNoticeMail($eventId, $isMyPrivateRoom);
+			// taskや施設予約登録とのLinkで登録された予定は、planParamの
+			// modelとcontent_keyに
+			// 値が入っており、その時は承認メール、公開通知メール送信、および
+			// 新着通知はしてはいけない。(NC2と同様の仕様)
+			//
+			if (empty($planParam['model']) && empty($planParam['content_key'])) {
 
-			$this->saveCalendarTopics($eventId);
+				// 承認メール、公開通知メールの送信
+				$this->sendWorkflowAndNoticeMail($eventId, $isMyPrivateRoom);
 
-			$this->_enqueueEmail($data);
+				$this->saveCalendarTopics($eventId);
+
+				$this->_enqueueEmail($data);
+			}
 
 			$this->commit();
 
@@ -672,6 +681,15 @@ class CalendarActionPlan extends CalendarsAppModel {
 			}
 			$planParam['share_users'] = $newShareUsers;
 
+			// tasksや施設予約登録のLinkで登録された予定の場合、
+			// planParamのmodelとcontent_keyに値を記録し、CalendarEventContentに繋げる。
+			//
+			if (! empty($data['CalendarActionPlanForLink']['model']) &&
+				! empty($data['CalendarActionPlanForLink']['content_key'])) {
+				$planParam['model'] = $data['CalendarActionPlanForLink']['model'];
+				$planParam['content_key'] = $data['CalendarActionPlanForLink']['content_key'];
+			}
+
 			//単純なcopyでＯＫな項目群
 			$fields = array(
 				'title', 'title_icon',		//FIXME: insert/update側に追加実装しないといけない項目
@@ -684,16 +702,20 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 			//他の機構で渡さないといけないデータはここでセットすること
 			//
+
+			//カレンダー用のワークフロー
+			//なお、$planParam['model']にLink元の他pluginモデル名が有るときは、
+			//カレンダー用ではなく、そのpluginモデル用のWorkFlowコメントであり、
+			//カレンダーのWFコメントとして間違ってセットしないように注意。
+			//
 			$planParam[CalendarsComponent::ADDITIONAL] = array();
-			//ワークフロー用
-			if (isset($data['WorkflowComment'])) {
+			if (isset($data['WorkflowComment']) && empty($planParam['model'])) {
 				//ワークフローコメントをセットする。
 				$planParam[CalendarsComponent::ADDITIONAL]['WorkflowComment'] = $data['WorkflowComment'];
 				//ワークフローコメントがsave時Block.keyも一緒に必要としてるので、セットする。
 				$planParam[CalendarsComponent::ADDITIONAL]['Block'] = array();
 				$planParam[CalendarsComponent::ADDITIONAL]['Block']['key'] = Current::read('Block.key');
 			}
-
 		} catch(Exception $ex) {
 			//パラメータ変換のどこかでエラーが発生
 			CakeLog::error($ex->getMessage());
@@ -809,9 +831,10 @@ class CalendarActionPlan extends CalendarsAppModel {
  *
  * @param array $data $this->request->data配列が渡される
  * @param array $originEvent 変更元のevent関連データ
+ * @param string $completedRrule すでに完成しているrrule文字列（''以外の時に有効）
  * @return array 処理モード、元データ繰返し有無、時間系変更有無、繰返し系変更有無を配列で返す。
  */
-	public function getProcModeOriginRepeatAndModType($data, $originEvent) {
+	public function getProcModeOriginRepeatAndModType($data, $originEvent, $completedRrule = '') {
 		$cap = $data['CalendarActionPlan'];
 
 		////////////////////////////////
@@ -859,7 +882,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 
 			//POSTされたデータよりrrule配列を生成する。
 			$workParam = array();
-			$workParam = $this->_setAndMergeRrule($workParam, $data);
+			$workParam = $this->_setAndMergeRrule($workParam, $data, $completedRrule);
 			$capRrule = $cru->parseRrule($workParam['rrule']);
 
 			//eventの親rruleモデルよりrruleを取り出し配列化する。

@@ -465,22 +465,22 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 				'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan1'),
 				'exception' => 'ForbiddenException',
 			),
-			//--自分の記事
-			array(
-				'data' => $data2, 'role' => Role::ROOM_ROLE_KEY_GENERAL_USER,
-				'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan2'),
-			),
+			//--自分の記事 apidel
+			//array(
+			//	'data' => $data2, 'role' => Role::ROOM_ROLE_KEY_GENERAL_USER,
+			//	'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan2'),
+			//),
 			//編集権限あり
-			//--コンテンツあり
-			array(
-				'data' => $data4, 'role' => Role::ROOM_ROLE_KEY_EDITOR,
-				'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan4'),
-			),
-			//--共有者ありの予定変更
-			array(
-				'data' => $data7, 'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
-				'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan27'),
-			),
+			//--コンテンツあり apidel
+			//array(
+			//	'data' => $data4, 'role' => Role::ROOM_ROLE_KEY_EDITOR,
+			//	'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan4'),
+			//),
+			//--共有者ありの予定変更 apidel
+			//array(
+			//	'data' => $data7, 'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
+			//	'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan27'),
+			//),
 
 			//--コンテンツあり(この予定のみ変更)
 			//array(
@@ -491,16 +491,16 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 			//	'data' => $data5, 'role' => Role::ROOM_ROLE_KEY_EDITOR,
 			//	'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan4'),
 			//),
-			//フレームID指定なしテスト
-			array(
-				'data' => $data2, 'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
-				'urlOptions' => array('frame_id' => null, 'block_id' => $data['Block']['id'], 'key' => 'calendarplan2'),
-			), //pending CalendarPlansController.php 304行目のルート($frameIdが0)は通らない？
-			//--自分のプライベート記事に変更
-			array(
-				'data' => $data6, 'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
-				'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan2'),
-			),
+			//フレームID指定なしテスト apidel
+			//array(
+			//	'data' => $data2, 'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
+			//	'urlOptions' => array('frame_id' => null, 'block_id' => $data['Block']['id'], 'key' => 'calendarplan2'),
+			//), //pending CalendarPlansController.php 304行目のルート($frameIdが0)は通らない？
+			//--自分のプライベート記事に変更 apidel
+			//array(
+			//	'data' => $data6, 'role' => Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
+			//	'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => 'calendarplan2'),
+			//),
 
 		);
 	}
@@ -540,15 +540,15 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 					'message' => __d('calendars', 'Invalid input. (plan title)'),
 				)
 			)),
-			Hash::merge($result2, array(
-				'validationError' => array(
-					'field' => 'CalendarActionPlan.rrule_until',
-					'value' => '2018-01-01',
-					'message' => __d('calendars',
-						'Cyclic rules using deadline specified exceeds the maximum number of %d',
-						intval(CalendarsComponent::CALENDAR_RRULE_COUNT_MAX)),
-				)
-			)),
+			//Hash::merge($result2, array( delapi
+			//	'validationError' => array(
+			//		'field' => 'CalendarActionPlan.rrule_until',
+			//		'value' => '2018-01-01',
+			//		'message' => __d('calendars',
+			//			'Cyclic rules using deadline specified exceeds the maximum number of %d',
+			//			intval(CalendarsComponent::CALENDAR_RRULE_COUNT_MAX)),
+			//	)
+			//)),
 		);
 	}
 

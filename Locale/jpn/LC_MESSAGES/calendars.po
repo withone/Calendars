@@ -1104,6 +1104,17 @@ msgstr "今日へ"
 msgid "Back"
 msgstr "戻る"
 
+#: View/CalendarPlans/view.ctp:128
+msgid "Source of plan"
+msgstr "記入元"
+
+#: View/CalendarPlans/view.ctp:128
+msgid "from ToDo"
+msgstr "ToDoから記入"
+
+#: View/CalendarPlans/view.ctp:128
+msgid "from Reservation"
+msgstr "施設予約から記入"
 
 
 ####### 以下、使われてるか不明
@@ -1202,3 +1213,4 @@ msgstr "メール通知タイミング"
 #: View/CalendarPlans/view.ctp:86
 msgid "End date and time"
 msgstr "終了日時"
+
