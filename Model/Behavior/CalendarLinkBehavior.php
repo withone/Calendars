@@ -33,8 +33,7 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2015, NetCommons Project
  */
-	//追加変更と削除の共用settings
-	protected $_settings = array(
+	protected $_settings = array( //追加変更と削除の共用settings
 		'linkPlugin' => '',
 		'table' => '',
 		'inputFields' => array(
