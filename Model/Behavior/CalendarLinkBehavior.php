@@ -176,6 +176,7 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
  * @return string 削除したカレンダーのcalendar_keyを返す.失敗した場合、例外送出かfalseを返す
  */
 	public function deletePlanForLink(Model &$model, $data) {
+		$tmpCurrent = Current::$current;
 		//CalendarPlanControllerのbeforeFilter()をトレースする
 		$this->__traceCpcBeforeFiltr($model);
 
@@ -192,7 +193,10 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 		$data = $this->__addCDelApData($model, $data, $sibs);
 
 		//CalendarPlanControllerのdelete()のpost処理部をトレースする
-		return $this->__traceDeletePost($model, $data, $calendarKey);
+
+		$key = $this->__traceDeletePost($model, $data, $calendarKey);
+		Current::$current = $tmpCurrent;
+		return $key;
 	}
 
 /**
@@ -396,9 +400,11 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
  *
  * @param Model &$model reference of instance of model
  * @param array $data データ
- * @return string 保存したカレンダーのcalendar_rrule_keyを返す. カレンダー保存に失敗した場合 null
+ * @return string 保存したカレンダーのcalendar_event_keyを返す. カレンダー保存に失敗した場合 null
  */
 	public function savePlanForLink(Model &$model, $data) {
+		$tmpCurrent = Current::$current;
+
 		//CalendarPlanControllerのbeforeFilter()をトレースする
 		$this->__traceCpcBeforeFiltr($model);
 
@@ -417,7 +423,11 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 		$data = $this->__addCapForLinkData($model, $data);
 
 		//CalendarPlanControllerのadd(),edit()内の_calendarPost()をトレースする
-		return $this->__traceCalendarPost($model, $data, $completedRrule);
+
+		$key = $this->__traceCalendarPost($model, $data, $completedRrule);
+
+		Current::$current = $tmpCurrent;
+		return $key;
 	}
 
 /**
