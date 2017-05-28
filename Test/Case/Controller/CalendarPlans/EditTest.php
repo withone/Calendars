@@ -431,10 +431,10 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
  */
 	public function dataProviderEditPost() {
 		$data = $this->__getData(1);
-		$data2 = $this->__getData(2);
+		//$data2 = $this->__getData(2); delapi
 		//unset($data2['CalendarActionPlan']['timezone_offset']); //timezoneの設定が無いケース（CalendarActionPlan.php:926行目でおちる）
 
-		$data4 = $this->__getData(4);
+		//$data4 = $this->__getData(4); delapi
 
 		//$data5 = $data4;
 
@@ -527,10 +527,10 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 		$data2['CalendarActionPlan']['rrule_term'] = 'UNTIL';
 		$data2['CalendarActionPlan']['rrule_until'] = '2018-01-01';
 
-		$result2 = array(
+		/*$result2 = array(
 			'data' => $data2,
 			'urlOptions' => array('frame_id' => $data2['Frame']['id'], 'block_id' => $data2['Block']['id'], 'key' => 'calendarplan4'),
-		);
+		); delapi */
 
 		return array(
 			Hash::merge($result1, array(
