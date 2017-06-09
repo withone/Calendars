@@ -206,7 +206,8 @@ class CalendarsAppController extends AppController {
 				$order = array('CalendarEvent' . '.dtstart');
 			}
 		} else {
-			$order = array('CalendarEvent' . '.start_date');
+			//$order = array('CalendarEvent' . '.start_date');
+			$order = array('CalendarEvent' . '.dtstart');
 		}
 
 		$vars['parentIdType'] = array(	//これも共通なので含めておく。
