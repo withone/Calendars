@@ -720,6 +720,7 @@ padding: 0;
 	border-radius:5px;
 	z-index:2;
 	padding-left:3px;
+	overflow:hidden;
 }
 
 a.calendar-line-link {
