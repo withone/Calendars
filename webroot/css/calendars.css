@@ -195,6 +195,10 @@
 .calendar-date-move-operations > label > h2 {
 	margin:0;
 }
+.calendar-date-move-operations label:hover {
+	background-color:#eee;
+}
+
 @media screen and (max-width:767px) {
 	.calendar-date-move-operations {
 		margin-top:0.5em;
