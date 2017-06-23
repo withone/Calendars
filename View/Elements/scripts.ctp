@@ -11,6 +11,8 @@
 ?>
 <?php
 echo $this->NetCommonsHtml->script(array(
+'/components/moment/min/moment.min.js',
+'/components/moment/min/moment-with-locales.min.js',
 		'/calendars/js/calendars.js',
 ));
 

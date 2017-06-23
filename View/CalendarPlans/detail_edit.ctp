@@ -12,7 +12,7 @@ echo $this->element('Calendars.scripts');
 ?>
 
 <article ng-controller='CalendarsDetailEdit' class='block-setting-body'
-	ng-init="initialize(<?php echo h(json_encode(array('frameId' => Current::read('Frame.id')))); ?>)">
+	ng-init="initialize(<?php echo h(json_encode(array('frameIdう' => Current::read('Frame.id')))); ?>)">
 
 	<?php /* 画面見出し */ ?>
 	<?php echo $this->element('Calendars.CalendarPlans/detail_edit_heading'); ?>

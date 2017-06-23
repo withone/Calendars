@@ -3,6 +3,8 @@
  * @author info@allcreator.net (Allcreator Co.)
  */
 
+NetCommonsApp.constant('moment', moment);
+
 
 /**
  * angularJS, NonANgularJS共通で使う、プラグイン名前空間
@@ -421,8 +423,8 @@ NetCommonsApp.controller('CalendarDetailEditWysiwyg',
     }]
 );
 NetCommonsApp.controller('CalendarsDetailEdit',
-    ['$scope', '$location', 'NetCommonsModal', '$http', 'NC3_URL',
-      function($scope, $location, NetCommonsModal, $http, NC3_URL) {
+    ['$scope', '$location', 'NetCommonsModal', '$http', 'NC3_URL', 'moment',
+      function($scope, $location, NetCommonsModal, $http, NC3_URL, moment) {
        $scope.repeatArray = [];  //key=Frame.id、value=T/F of checkbox
        //key=Frame.id,value=index number
        //of option elements
@@ -483,8 +485,11 @@ NetCommonsApp.controller('CalendarsDetailEdit',
           }, useTimeFlag);
           return useTimeFlag;
        };
-
+        /**
+         * 開始日変更時の処理
+         */
        $scope.changeDetailStartDate = function(targetId) {
+         var momentStart = moment($scope.detailStartDate);
          //
          // 期間指定フラグONのときは日の設定しない
          var useTimeFlag = $scope.getUseTimeFlag();
@@ -501,11 +506,38 @@ NetCommonsApp.controller('CalendarsDetailEdit',
            //
            var endTargetId = targetId.replace(/Start/g, 'End');
            $('#' + endTargetId).val($scope.detailStartDate);
-
+           // 開始日の変更に合わせて開始時間情報の方も更新しておく
+           $scope.detailStartDatetime = momentStart.format('YYYY-MM-DD HH:mm');
+           // 合わせて終了日時も自動更新
+           $scope.fixEndTime();
          }
        };
-
+        /**
+         * 開始日時に合うように終了日時更新
+         */
+       $scope.fixEndTime = function() {
+         var momentStart = moment($scope.detailStartDatetime);
+         var momentEnd = moment($scope.detailEndDatetime || null);
+         if (! momentEnd.isAfter(momentStart)) {
+           $scope.detailEndDatetime = momentStart.add(1, 'hours').format('YYYY-MM-DD HH:mm:ss');
+         }
+       };
+        /**
+         * 終了日時に合うように開始日時更新
+         */
+        $scope.fixStartTime = function() {
+          var momentStart = moment($scope.detailStartDatetime || null);
+          var momentEnd = moment($scope.detailEndDatetime);
+          if (! momentEnd.isAfter(momentStart)) {
+            $scope.detailStartDatetime = momentEnd.add(-1, 'hours').format('YYYY-MM-DD HH:mm:ss');
+          }
+        };
+        /**
+         * 開始日時変更時処理
+         */
        $scope.changeDetailStartDatetime = function(targetId) {
+         var momentStart = moment($scope.detailStartDatetime);
+
          // 期間指定フラグOFFのときは時間の設定しない
          var useTimeFlag = $scope.getUseTimeFlag();
          if (useTimeFlag == false) {
@@ -515,24 +547,32 @@ NetCommonsApp.controller('CalendarsDetailEdit',
          if ($scope.detailStartDatetime != '') {
            $('#' + targetId).val($scope.detailStartDatetime);
            //
+           $scope.detailStartDate = momentStart.format('YYYY-MM-DD');
+           $scope.fixEndTime();
          }
        };
-
+        /**
+         * 終了日変更時処理（Ver3.1.2時点でこの関数が呼ばれることはない）
+         */
        $scope.changeDetailEndDate = function(targetId) {
+         var momentEnd = moment($scope.detailEndDatetime);
          // 期間指定フラグONのときは日の設定しない
          var useTimeFlag = $scope.getUseTimeFlag();
          if (useTimeFlag == true) {
            return;
          }
-
          //
          if ($scope.detailEndDate != '') {
            $('#' + targetId).val($scope.detailEndDate);
-           //
+           $scope.detailStartEndDatetime = momentEnd.format('YYYY-MM-DD HH:mm');
+           $scope.fixStartTime();
          }
        };
-
+        /**
+         * 終了日時変更時処理
+         */
        $scope.changeDetailEndDatetime = function(targetId) {
+         var momentEnd = moment($scope.detailEndDatetime);
          // 期間指定フラグOFFのときは時間の設定しない
          var useTimeFlag = $scope.getUseTimeFlag();
          if (useTimeFlag == false) {
@@ -541,7 +581,8 @@ NetCommonsApp.controller('CalendarsDetailEdit',
          //
          if ($scope.detailEndDatetime != '') {
            $('#' + targetId).val($scope.detailEndDatetime);
-           //
+           $scope.detailStartEndDate = momentEnd.format('YYYY-MM-DD');
+           $scope.fixStartTime();
          }
        };
 
