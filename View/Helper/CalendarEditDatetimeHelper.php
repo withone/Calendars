@@ -87,7 +87,7 @@ class CalendarEditDatetimeHelper extends AppHelper {
 			$this->request->data['CalendarActionPlan']['timezone_offset'],
 			$dtValue
 		);
-		$dtValue = $dttmObj->format('Y-m-d H-i');
+		$dtValue = $dttmObj->format('Y-m-d H:i');
 
 		$addNgInit = $jsFuncName . "('CalendarActionPlan" . Inflector::camelize($fieldName) . "')";
 
