@@ -96,10 +96,14 @@ class CalendarDailyTimelineHelper extends CalendarMonthlyHelper {
 		$html = '';
 		//$vars['calendarTimelinePlan'] = array();
 		$id = 'plan' . (string)$cnt;
-		//print_r($id);
 
-		if ($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !==
-			$plan['CalendarEvent']['toTime']) {
+		//if (($fromTime !== $plan['CalendarEvent']['fromTime'] || $toTime !==
+		//	$plan['CalendarEvent']['toTime']) || $plan['CalendarEvent']['start_date'] != $plan['CalendarEvent']['end_date']) {
+		//if ($plan['CalendarEvent']['is_allday'] != true) { ←同一日同一開始終了時刻で表示不正
+		//開始日と終了日が同一かつ、開始時間と終了時間が同一の場合は対象外
+		if (($plan['CalendarEvent']['start_date'] != $plan['CalendarEvent']['end_date'] ||
+				$plan['CalendarEvent']['fromTime'] != $plan['CalendarEvent']['toTime']) &&
+					$plan['CalendarEvent']['is_allday'] != true) {
 			$calendarPlanMark = $this->CalendarCommon->getPlanMarkClassName($vars, $plan);
 			$url = $this->CalendarUrl->makePlanShowUrl($year, $month, $day, $plan);
 
@@ -122,6 +126,13 @@ class CalendarDailyTimelineHelper extends CalendarMonthlyHelper {
 
 			$this->_timelineData[$cnt]['fromTime'] = $plan['CalendarEvent']['fromTime'];
 			$this->_timelineData[$cnt]['toTime'] = $plan['CalendarEvent']['toTime'];
+
+			if ($plan['CalendarEvent']['start_date'] != $plan['CalendarEvent']['end_date'] &&
+				$plan['CalendarEvent']['fromTime'] == $plan['CalendarEvent']['toTime']) {
+				if ($plan['CalendarEvent']['toTime'] == '00:00') {
+					$this->_timelineData[$cnt]['toTime'] = '24:00';
+				}
+			}
 			$cnt++;
 		}
 
