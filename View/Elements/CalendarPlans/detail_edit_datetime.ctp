@@ -20,7 +20,7 @@
  なんとなれば、ng-initの操作によるパラメータ設定が日時を先にしないとデフォルトの設定にならないから
 */ ?>
 <?php /* 期間・時間の指定のチェックボックスがONで期間指定の場合の「開始」部分 */ ?>
-<div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-4" ng-cloak><!--表示条件１START-->
+<div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-5" ng-cloak><!--表示条件１START-->
 	<?php echo $this->CalendarEditDatetime->makeEditDatetimeHtml(
 		$vars,
 		'datetime',
@@ -32,7 +32,7 @@
 </div><!--ng-show 表示条件１END-->
 
 <?php /* 期間・時間の指定のチェックボックスがOFFで終日指定の場合の部分 */ ?>
-<div ng-show="<?php echo '!' . $useTime; ?>" class="col-xs-12 col-sm-4"><!--表示条件２START-->
+<div ng-show="<?php echo '!' . $useTime; ?>" class="col-xs-12 col-sm-5"><!--表示条件２START-->
 	<?php echo $this->CalendarEditDatetime->makeEditDatetimeHtml(
 	$vars,
 	'date',
@@ -53,7 +53,7 @@
 
 
 <?php /* 期間・時間の指定のチェックボックスがONで期間指定の場合の「終了」部分 */ ?>
-<div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-4">
+<div ng-show="<?php echo $useTime; ?>" class="col-xs-12 col-sm-5">
 
 	<br class="visible-xs-block">
 

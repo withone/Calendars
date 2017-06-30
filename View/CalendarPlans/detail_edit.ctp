@@ -109,9 +109,7 @@ echo $this->element('Calendars.scripts');
 
 			<?php /* 期日入力（終日／開始、終了）*/ ?>
 			<div class='form-group' data-calendar-name='inputStartEndDateTime'>
-				<div class='col-xs-12'>
-					<?php echo $this->element('Calendars.CalendarPlans/detail_edit_datetime', array('useTime' => $useTime)); ?>
-				</div>
+				<?php echo $this->element('Calendars.CalendarPlans/detail_edit_datetime', array('useTime' => $useTime)); ?>
 			</div><!-- form-group name="inputStartEndDateTime"おわり -->
 
 			<?php /* 繰り返し設定 （この予定のみ変更のときは出さない）*/ ?>
