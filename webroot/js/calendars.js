@@ -506,8 +506,15 @@ NetCommonsApp.controller('CalendarsDetailEdit',
            //
            var endTargetId = targetId.replace(/Start/g, 'End');
            $('#' + endTargetId).val($scope.detailStartDate);
+
+           // ここにくるのは時刻設定OFFのときなんだからやらなくていいのでは
            // 開始日の変更に合わせて開始時間情報の方も更新しておく
-           $scope.detailStartDatetime = momentStart.format('YYYY-MM-DD HH:mm');
+           var momentStartDatetime = moment($scope.detailStartDatetime);
+           momentStartDatetime.year(momentStart.year());
+           momentStartDatetime.month(momentStart.month());
+           momentStartDatetime.date(momentStart.date());
+           $scope.detailStartDatetime = momentStartDatetime.format('YYYY-MM-DD HH:mm');
+
            // 合わせて終了日時も自動更新
            $scope.fixEndTime();
          }
