@@ -126,6 +126,7 @@ class CalendarRrule extends CalendarsAppModel {
 
 		$this->loadModels([
 			'CalendarRrule' => 'Calendars.CalendarRrule',
+			'Block' => 'Blocks.Block',
 		]);
 	}
 
@@ -185,11 +186,34 @@ class CalendarRrule extends CalendarsAppModel {
 	}
 
 /**
- * Called after each successful save operation.
+ * Called after data has been checked for errors
  *
- * @param bool $created True if this save created a new record
- * @param array $options Options passed from Model::save().
  * @return void
- * @throws InternalErrorException
  */
+	public function afterValidate() {
+		// CalendarRruleがBlockBehaviorの動きを期待している
+		// BlockBehaviorはmodelにBlock情報が添えられていることを期待している
+		// 万が一Block情報がなくても、絶対Frame情報はあるよね？が前提の模様
+		//
+		// しかし、Rrruleには予定の対象となるルームにあるBlock情報が設定されていない
+		// カレンダーの予定情報にはフレームがあるとは限らない...
+		// 仕方ないのでここでカレンダーの予定情報に対応するBlock情報を添えるようにしておく
+		// もしもまだBlock情報がないときは
+		// Block配列にroom_idだけ設定しておくとBlockBehaviorが勝手にそのルームにBlockを作ってくれる
+		//
+		$targetRoomId = Hash::get($this->data, 'CalendarRrule.room_id', null);
+		$block = $this->Block->find('first', array(
+			'conditions' => array(
+				'room_id' => $targetRoomId,
+				'plugin_key' => 'calendars'
+			),
+			'recursive' => -1
+		));
+		if ($block) {
+			$this->data['Block'] = $block['Block'];
+		} else {
+			$this->data['Block'] = array();
+			$this->data['Block']['room_id'] = $targetRoomId;
+		}
+	}
 }
