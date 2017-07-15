@@ -125,6 +125,7 @@ class CalendarRrule extends CalendarsAppModel {
 		parent::__construct($id, $table, $ds);
 
 		$this->loadModels([
+			'Calendar' => 'Calendars.Calendar',
 			'CalendarRrule' => 'Calendars.CalendarRrule',
 			'Block' => 'Blocks.Block',
 		]);
@@ -215,5 +216,30 @@ class CalendarRrule extends CalendarsAppModel {
 			$this->data['Block'] = array();
 			$this->data['Block']['room_id'] = $targetRoomId;
 		}
+	}
+/**
+ * Called before each save operation, after validation. Return a non-true result
+ * to halt the save.
+ *
+ * @param array $options Options passed from Model::save().
+ * @return bool True if the operation should continue, false if it should abort
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#beforesave
+ * @see Model::save()
+ */
+	public function beforeSave($options = array()) {
+		$blockKey = Hash::get($this->data, 'Block.key', false);
+		// blockがあるということは必ずcalendarsが存在するはず
+		if ($blockKey) {
+			// 予定対象のルームのブロックにぶら下がるcalendarsに親を変更
+			$calendar = $this->Calendar->find('first', array(
+				'conditions' => array('block_key' => $blockKey),
+				'recursive' => -1
+			));
+			$calendarId = Hash::get($calendar, 'Calendar.id', false);
+			if ($calendarId) {
+				$this->data['CalendarRrule']['calendar_id'] = $calendarId;
+			}
+		}
+		return true;
 	}
 }
