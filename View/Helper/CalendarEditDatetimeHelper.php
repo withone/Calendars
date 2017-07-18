@@ -94,10 +94,24 @@ class CalendarEditDatetimeHelper extends AppHelper {
 		//$enableTime = $this->request->data['CalendarActionPlan']['enable_time'];
 		//
 		if ($type == 'datetime') {
+			$enableTime = Hash::get($this->request->data, 'CalendarActionPlan.enable_time');
+			// 終日予定の場合 DBに格納されている時刻はいい加減なものなのでカットする
+			if (! $enableTime) {
+				$dtValue = substr($dtValue, 0, 10);
+			}
+			// 時間指定されている場合はそのまま表記
 			if (strpos($dtValue, ':') !== false) {
 				$dtDatetimeVal = $dtValue;
 			} else {
-				$dtDatetimeVal = $dtValue . ' 00:00';
+				// 時間が指定されていない場合は開始時間は現在時刻、終了時刻は＋１時刻
+				$userTz = (new NetCommonsTime())->getUserTimezone();
+				$date = new DateTime('now', (new DateTimeZone($userTz)));
+				$dtDatetimeVal = $dtValue . ' ' . $date->format('H:') . '00';
+				if ($ngModel == 'detailEndDatetime') {
+					$date = new DateTime($dtDatetimeVal);
+					$date->add(new DateInterval('PT1H'));
+					$dtDatetimeVal = $date->format('Y-m-d H:i');
+				}
 			}
 			$jsFormat = 'YYYY-MM-DD HH:mm';
 		} elseif ($type == 'date') {
