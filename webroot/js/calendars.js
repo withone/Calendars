@@ -531,7 +531,7 @@ NetCommonsApp.controller('CalendarsDetailEdit',
        };
         /**
          * 終了日時に合うように開始日時更新
-         */
+         * delete for issue#945
         $scope.fixStartTime = function() {
           var momentStart = moment($scope.detailStartDatetime || null);
           var momentEnd = moment($scope.detailEndDatetime);
@@ -539,6 +539,7 @@ NetCommonsApp.controller('CalendarsDetailEdit',
             $scope.detailStartDatetime = momentEnd.add(-1, 'hours').format('YYYY-MM-DD HH:mm:ss');
           }
         };
+         */
         /**
          * 開始日時変更時処理
          */
@@ -569,11 +570,13 @@ NetCommonsApp.controller('CalendarsDetailEdit',
            return;
          }
          //
+         /* delete for issue#945
          if ($scope.detailEndDate != '') {
            $('#' + targetId).val($scope.detailEndDate);
            $scope.detailStartEndDatetime = momentEnd.format('YYYY-MM-DD HH:mm');
            $scope.fixStartTime();
          }
+         */
        };
         /**
          * 終了日時変更時処理
@@ -586,11 +589,13 @@ NetCommonsApp.controller('CalendarsDetailEdit',
            return;
          }
          //
+         /* delete for issue#945
          if ($scope.detailEndDatetime != '') {
            $('#' + targetId).val($scope.detailEndDatetime);
            $scope.detailStartEndDate = momentEnd.format('YYYY-MM-DD');
            $scope.fixStartTime();
          }
+         */
        };
 
        $scope.changeYearMonth = function(prototypeUrl) {
