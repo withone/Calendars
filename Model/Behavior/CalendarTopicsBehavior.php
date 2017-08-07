@@ -77,6 +77,7 @@ class CalendarTopicsBehavior extends CalendarAppBehavior {
 		$model->CalendarEvent->Behaviors->load('Topics.Topics', array(
 			'fields' => array(
 				'path' => '/:plugin_key/calendar_plans/view/:content_key',
+				'summary' => array('description'),
 			),
 			'search_contents' => array(
 				'title', 'location', 'contact', 'description'
