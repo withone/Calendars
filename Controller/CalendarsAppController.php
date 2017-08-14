@@ -46,14 +46,14 @@ class CalendarsAppController extends AppController {
 	);
 
 /**
- * getQueryParam
+ * _getQueryParam
  *
  * カレンダーURLクエリーパラメータ取り出し
  *
  * @param string $paramName 取り出したいパラメータ名
  * @return bool|mixed
  */
-	public function getQueryParam($paramName) {
+	protected function _getQueryParam($paramName) {
 		// ContainerがMainでないときは無視する
 		if (Hash::get($this->request->params, 'requested')) {
 			return false;
@@ -66,21 +66,21 @@ class CalendarsAppController extends AppController {
 		return false;
 	}
 /**
- * setCalendarCommonCurrent
+ * _setCalendarCommonCurrent
  *
  * カレンダー設定情報設定
  *
  * @param array &$vars カレンダー共通情報
  * @return void
  */
-	public function setCalendarCommonCurrent(&$vars) {
+	protected function _setCalendarCommonCurrent(&$vars) {
 		$vars['frame_key'] = Current::read('Frame.key');
 		$data = $this->CalendarFrameSetting->getFrameSetting();
 		Current::$current['CalendarFrameSetting'] = $data['CalendarFrameSetting'];
 	}
 
 /**
- * setDateTimeVars
+ * _setDateTimeVars
  *
  * 日付時刻変数設定
  *
@@ -88,7 +88,7 @@ class CalendarsAppController extends AppController {
  * @param object &$nctm NetCommonsTimeオブジェクト
  * @return void
  */
-	public function setDateTimeVars(&$vars, &$nctm) {
+	protected function _setDateTimeVars(&$vars, &$nctm) {
 		//現在のユーザTZ「考慮済」年月日時分秒を取得
 		$userNowYmdHis = $nctm->toUserDatetime('now');
 		$userNowArray = CalendarTime::transFromYmdHisToArray($userNowYmdHis);
@@ -99,9 +99,9 @@ class CalendarsAppController extends AppController {
 		$vars['year'] = intval($userNowArray['year']);
 		$vars['month'] = intval($userNowArray['month']);
 
-		$qYear = $this->getQueryParam('year');
-		$qMonth = $this->getQueryParam('month');
-		$qDay = $this->getQueryParam('day');
+		$qYear = $this->_getQueryParam('year');
+		$qMonth = $this->_getQueryParam('month');
+		$qDay = $this->_getQueryParam('day');
 		if ($qYear) {
 			if ($qYear < CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_YEAR_MIN) {
 				$qYear = CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_YEAR_MIN;
@@ -135,21 +135,21 @@ class CalendarsAppController extends AppController {
 	}
 
 /**
- * setCalendarCommonVars
+ * _setCalendarCommonVars
  *
  * カレンダー用共通変数設定
  *
  * @param array &$vars カレンダー用共通変数
  * @return void
  */
-	public function setCalendarCommonVars(&$vars) {
-		$this->setCalendarCommonCurrent($vars);
+	protected function _setCalendarCommonVars(&$vars) {
+		$this->_setCalendarCommonCurrent($vars);
 		$vars['CalendarFrameSetting'] = Current::read('CalendarFrameSetting');
 
 		$nctm = new NetCommonsTime();
 
 		//日付時刻変数を設定する
-		$this->setDateTimeVars($vars, $nctm);
+		$this->_setDateTimeVars($vars, $nctm);
 
 		//戻り先変数を設定する
 		//$this->setReturnVars($vars); ※未使用
@@ -301,7 +301,7 @@ class CalendarsAppController extends AppController {
 		}
 		// style指定がないときはデフォルト表示にしているときのはずです
 		// あるときは特殊画面から移動してます
-		$style = $this->getQueryParam('style');
+		$style = $this->_getQueryParam('style');
 		if ($style) {
 			$currentPath = $this->request->here(false);
 		} else {
