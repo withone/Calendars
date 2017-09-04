@@ -31,13 +31,6 @@ class CalendarPermission extends CalendarsAppModel {
 	public $useTable = 'calendars';
 
 /**
- * alias
- *
- * @var string
- */
-	public $alias = 'Calendar';
-
-/**
  * use behaviors
  *
  * @var array
@@ -303,16 +296,13 @@ class CalendarPermission extends CalendarsAppModel {
 					continue;
 				}
 				foreach ($rooms as $roomId => $room) {
-					// Calendar.idが空っぽ
-					//if (empty($room['Calendar']['id'])) {
-						// その場合はブロック未作成なので前もってブロック&Calendar作る
-						$block = $this->saveBlock($roomId);
-						// そのブロックキーを設定して
-						foreach ($room['BlockRolePermission']['content_creatable'] as &$perm) {
-							$perm['block_key'] = $block['Block']['key'];
-						}
-						$room['Calendar']['block_key'] = $block['Block']['key'];
-					//}
+					// その場合はブロック未作成なので前もってブロック&Calendar作る
+					$block = $this->saveBlock($roomId);
+					// そのブロックキーを設定して
+					foreach ($room['BlockRolePermission']['content_creatable'] as &$perm) {
+						$perm['block_key'] = $block['Block']['key'];
+					}
+					$room[$this->alias]['block_key'] = $block['Block']['key'];
 					// 保存する
 					$this->create();
 					$this->set($room);

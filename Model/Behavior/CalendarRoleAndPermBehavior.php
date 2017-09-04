@@ -191,7 +191,7 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 		}
 		$room = $room[0];
 		$useWorkFlow = Hash::get(
-			$room, 'Calendar.use_workflow');
+			$room, 'CalendarPermission.use_workflow');
 		$publishable = Hash::get(
 			$room, 'BlockRolePermission.content_publishable.' . $roleName . '.value');
 		$editable = Hash::get(
