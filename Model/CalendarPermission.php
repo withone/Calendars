@@ -119,13 +119,12 @@ class CalendarPermission extends CalendarsAppModel {
 	public function getCalendarAllMemberRoomBlocks($workflow) {
 		// 読み取り可能なルームを取得
 		$condition = $this->Room->getReadableRoomsConditions();
-		$condition['conditions'] = array('Room.id' => Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID));
+		$communityRoomId = Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID);
+		$condition['conditions'] = array('Room.id' => $communityRoomId);
 		$roomBase = $this->Room->find('all', $condition);
 		$roomBase = Hash::combine($roomBase, '{n}.Room.id', '{n}');
 
-		$conditions = $this->_getCalendarConditions(
-			array(Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID))
-		);
+		$conditions = $this->_getCalendarConditions(array($communityRoomId));
 		// ルーム+ブロック情報取得
 		$roomsBlocks = $this->Room->find('all', $conditions);
 		$roomsBlocks = Hash::combine($roomsBlocks, '{n}.Room.id', '{n}');
