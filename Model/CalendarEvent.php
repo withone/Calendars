@@ -149,6 +149,10 @@ class CalendarEvent extends CalendarsAppModel {
  */
 	public function __construct($id = false, $table = null, $ds = null) {
 		parent::__construct($id, $table, $ds);
+		$this->loadModels([
+			'Block' => 'Blocks.Block',
+		]);
+
 		// すぐはずす
 		$this->Behaviors->unload('Mails.MailQueue');
 		$this->Behaviors->unload('Mails.MailQueueDelete');
@@ -702,9 +706,10 @@ class CalendarEvent extends CalendarsAppModel {
 	public function afterSave($created, $options = array()) {
 		$content = Hash::get($this->data, 'CalendarEvent.description');
 		$roomId = Hash::get($this->data, 'CalendarEvent.room_id');
+		$blockKey = $this->Block->findByRoomIdAndPluginKey($roomId, 'calendars', ['key'], null, -1);
 		$updateDescription = [
 			'content_key' => Hash::get($this->data, 'CalendarEvent.key'),
-			'block_key' => Hash::get($this->data, 'Block.key'),
+			'block_key' => Hash::get($blockKey, 'Block.key', ''),
 			'room_id' => $roomId
 		];
 		$this->updateUploadFile($content, $updateDescription);

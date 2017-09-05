@@ -187,7 +187,7 @@ class CalendarPlansControllerEditTest extends WorkflowControllerEditTest {
 		//ログインなし
 		$results[0] = array(
 			'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id'], 'key' => $data['CalendarActionPlan']['origin_event_key']),
-			'assert' => null, 'exception' => 'ForbiddenException', 'return' => 'json'
+			'assert' => null, 'exception' => 'ForbiddenException'
 		);
 		return $results;
 	}
