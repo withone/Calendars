@@ -294,11 +294,11 @@ class CalendarPlansControllerViewTest extends WorkflowControllerViewTest {
  * @return void
  */
 	public function testViewByPublishable($urlOptions, $assert, $exception = null, $return = 'view') {
+		//テスト設定
+		TestAuthGeneral::$roles[Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR]['UserRoleSetting'] = ['use_private_room' => true];
+
 		//ログイン
 		TestAuthGeneral::login($this, Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR);
-
-		//テスト設定
-		CakeSession::write('Auth.User.UserRoleSetting.use_private_room', true);
 
 		//テスト実施
 		$url = Hash::merge(array(
