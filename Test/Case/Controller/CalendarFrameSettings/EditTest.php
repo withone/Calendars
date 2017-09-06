@@ -239,7 +239,6 @@ class CalendarFrameSettingsControllerEditTest extends NetCommonsControllerTestCa
 				'data' => $data, 'role' => null,
 				'urlOptions' => array('frame_id' => $data['Frame']['id']),
 				'exception' => 'ForbiddenException',
-				'return' => 'json'
 			),
 
 			//正常
