@@ -98,10 +98,10 @@ class CalendarsController extends CalendarsAppController {
 	public function index() {
 		$ctpName = '';
 		$vars = array();
-		$style = $this->getQueryParam('style');
+		$style = $this->_getQueryParam('style');
 		if (! $style) {
 			//style未指定の場合、CalendarFrameSettingモデルのdisplay_type情報から表示するctpを決める。
-			$this->setCalendarCommonCurrent($vars);
+			$this->_setCalendarCommonCurrent($vars);
 			$displayType = Current::read('CalendarFrameSetting.display_type');
 			if ($displayType == CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY) {
 				$style = 'smallmonthly';
@@ -126,7 +126,7 @@ class CalendarsController extends CalendarsAppController {
 		$roomPermRoles = $this->CalendarEvent->prepareCalRoleAndPerm();
 		CalendarPermissiveRooms::setRoomPermRoles($roomPermRoles);
 
-		$ctpName = $this->getCtpAndVars($style, $vars);
+		$ctpName = $this->_getCtpAndVars($style, $vars);
 
 		$frameId = Current::read('Frame.id');
 		$languageId = Current::read('Language.id');
@@ -135,73 +135,73 @@ class CalendarsController extends CalendarsAppController {
 	}
 
 /**
- * getMonthlyVars
+ * _getMonthlyVars
  *
  * 月カレンダー用変数取得
  *
  * @param array $vars カレンンダー情報
  * @return array $vars 月（縮小用）データ
  */
-	public function getMonthlyVars($vars) {
-		$this->setCalendarCommonVars($vars);
+	protected function _getMonthlyVars($vars) {
+		$this->_setCalendarCommonVars($vars);
 		$vars['selectRooms'] = array();	//マージ前の暫定
 		return $vars;
 	}
 
 /**
- * getWeeklyVars
+ * _getWeeklyVars
  *
  * 週単位変数取得
  *
  * @param array $vars カレンンダー情報
  * @return array $vars 週単位データ
  */
-	public function getWeeklyVars($vars) {
-		$this->setCalendarCommonVars($vars);
+	protected function _getWeeklyVars($vars) {
+		$this->_setCalendarCommonVars($vars);
 		$vars['selectRooms'] = array();	//マージ前の暫定
-		$vars['week'] = $this->getQueryParam('week');
+		$vars['week'] = $this->_getQueryParam('week');
 		return $vars;
 	}
 
 /**
- * getDailyListVars
+ * _getDailyListVars
  *
  * 日単位（一覧）用変数取得
  *
  * @param array $vars カレンンダー情報
  * @return array $vars 日単位（一覧）データ
  */
-	public function getDailyListVars($vars) {
-		$this->setCalendarCommonVars($vars);
+	protected function _getDailyListVars($vars) {
+		$this->_setCalendarCommonVars($vars);
 		$vars['tab'] = 'list';
 		return $vars;
 	}
 
 /**
- * getDailyTimelineVars
+ * _getDailyTimelineVars
  *
  * 日単位（タイムライン）用変数取得
  *
  * @param array $vars カレンンダー情報
  * @return array $vars 日単位（タイムライン）データ
  */
-	public function getDailyTimelineVars($vars) {
-		$this->setCalendarCommonVars($vars);
+	protected function _getDailyTimelineVars($vars) {
+		$this->_setCalendarCommonVars($vars);
 		$vars['tab'] = 'timeline';
 		return $vars;
 	}
 
 /**
- * getMemberScheduleVars
+ * _getMemberScheduleVars
  *
  * スケジュール（会員順）用変数取得
  *
  * @param array $vars カレンンダー情報
  * @return array $vars スケジュール（会員順）データ
  */
-	public function getMemberScheduleVars($vars) {
+	protected function _getMemberScheduleVars($vars) {
 		$vars['sort'] = 'member';
-		$this->setCalendarCommonVars($vars);
+		$this->_setCalendarCommonVars($vars);
 
 		$vars['selectRooms'] = array();	//マージ前の暫定
 
@@ -227,16 +227,16 @@ class CalendarsController extends CalendarsAppController {
 	}
 
 /**
- * getTimeScheduleVars
+ * _getTimeScheduleVars
  *
  * スケジュール（時間順）用変数取得
  *
  * @param array $vars カレンンダー情報
  * @return array $vars スケジュール（時間順）データ
  */
-	public function getTimeScheduleVars($vars) {
+	protected function _getTimeScheduleVars($vars) {
 		$vars['sort'] = 'time';
-		$this->setCalendarCommonVars($vars);
+		$this->_setCalendarCommonVars($vars);
 
 		$vars['selectRooms'] = array();	//マージ前の暫定
 
@@ -262,19 +262,19 @@ class CalendarsController extends CalendarsAppController {
 	}
 
 /**
- * getDailyVars
+ * _getDailyVars
  *
  * 日次カレンダー変数取得
  *
  * @param array $vars カレンンダー情報
  * @return array $vars 日次カレンダー変数
  */
-	public function getDailyVars($vars) {
-		$tab = $this->getQueryParam('tab');
+	protected function _getDailyVars($vars) {
+		$tab = $this->_getQueryParam('tab');
 		if ($tab === 'timeline') {
-			$vars = $this->getDailyTimelineVars($vars);
+			$vars = $this->_getDailyTimelineVars($vars);
 		} else {
-			$vars = $this->getDailyListVars($vars);
+			$vars = $this->_getDailyListVars($vars);
 		}
 
 		$vars['selectRooms'] = array();	//マージ前の暫定
@@ -283,15 +283,15 @@ class CalendarsController extends CalendarsAppController {
 	}
 
 /**
- * getScheduleVars
+ * _getScheduleVars
  *
  * スケジュール変数取得
  *
  * @param array $vars カレンンダー情報
  * @return array $vars スケジュール変数
  */
-	public function getScheduleVars($vars) {
-		//$sort = $this->getQueryParam('sort');
+	protected function _getScheduleVars($vars) {
+		//$sort = $this->_getQueryParam('sort');
 		// スケジュール表示のときだけは直接覗くようにする(正式取得しない)
 		// 理由１：スケジュール表示は左カラムから表示されない
 		// 理由２：スケジュール表示の種別指定パラメータをデフォルト表示のときもqueryに入れている
@@ -299,15 +299,15 @@ class CalendarsController extends CalendarsAppController {
 		// 上記理由から直接見ないと処理できないし、直接見てもよそ様フレームと混同しないから
 		$sort = $this->request->query['sort'];
 		if ($sort === 'member') {
-			$vars = $this->getMemberScheduleVars($vars);
+			$vars = $this->_getMemberScheduleVars($vars);
 		} else {
-			$vars = $this->getTimeScheduleVars($vars);
+			$vars = $this->_getTimeScheduleVars($vars);
 		}
 		return $vars;
 	}
 
 /**
- * getCtpAndVars
+ * _getCtpAndVars
  *
  * ctpおよびvars取得
  *
@@ -315,38 +315,38 @@ class CalendarsController extends CalendarsAppController {
  * @param array &$vars カレンダー共通変数
  * @return string ctpNameを格納したstring
  */
-	public function getCtpAndVars($style, &$vars) {
+	protected function _getCtpAndVars($style, &$vars) {
 		$ctpName = '';
 		switch ($style) {
 			case 'smallmonthly':
 				$ctpName = 'smonthly';
-				$vars = $this->getMonthlyVars($vars);	//月カレンダー情報は、拡大・縮小共通
+				$vars = $this->_getMonthlyVars($vars);	//月カレンダー情報は、拡大・縮小共通
 				$vars['style'] = 'smallmonthly';
 				break;
 			case 'largemonthly':
 				$ctpName = 'lmonthly';
-				$vars = $this->getMonthlyVars($vars);	//月カレンダー情報は、拡大・縮小共通
+				$vars = $this->_getMonthlyVars($vars);	//月カレンダー情報は、拡大・縮小共通
 				$vars['style'] = 'largemonthly';
 				break;
 			case 'weekly':
 				$ctpName = 'weekly';
-				$vars = $this->getWeeklyVars($vars);
+				$vars = $this->_getWeeklyVars($vars);
 				$vars['style'] = 'weekly';
 				break;
 			case 'daily':
 				$ctpName = 'daily';
-				$vars = $this->getDailyVars($vars);
+				$vars = $this->_getDailyVars($vars);
 				$vars['style'] = 'daily';
 				break;
 			case 'schedule':
 				$ctpName = 'schedule';
-				$vars = $this->getScheduleVars($vars);
+				$vars = $this->_getScheduleVars($vars);
 				$vars['style'] = 'schedule';
 				break;
 			default:
 				//不明時は月（縮小）
 				$ctpName = 'smonthly';
-				$vars = $this->getMonthlyVars($vars);
+				$vars = $this->_getMonthlyVars($vars);
 				$vars['style'] = 'smallmonthly';
 		}
 

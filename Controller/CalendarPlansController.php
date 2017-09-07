@@ -148,7 +148,7 @@ class CalendarPlansController extends CalendarsAppController {
 		CalendarPermissiveRooms::setRoomPermRoles($this->roomPermRoles);
 
 		// 表示のための各種共通パラメータ設定
-		$this->_vars = $this->getVarsForShow();
+		$this->_vars = $this->_getVarsForShow();
 	}
 
 /**
@@ -495,7 +495,7 @@ class CalendarPlansController extends CalendarsAppController {
 		$this->request->data = $this->CalendarWorks->setCapForView2RequestData(
 			$capForView, $this->request->data);
 
-		$mailSettingInfo = $this->getMailSettingInfo();
+		$mailSettingInfo = $this->_getMailSettingInfo();
 
 		//reuqest->data['GroupUser']にある各共有ユーザの情報取得しセット
 		$shareUsers = array();
@@ -555,16 +555,16 @@ class CalendarPlansController extends CalendarsAppController {
 	}
 
 /**
- * getVarsForShow
+ * _getVarsForShow
  *
  * 個別予定表示用のCtp名および予定情報の取得
  *
  * @return void
  * @throws InternalErrorException
  */
-	public function getVarsForShow() {
+	protected function _getVarsForShow() {
 		$vars = array();
-		$this->setCalendarCommonVars($vars);
+		$this->_setCalendarCommonVars($vars);
 
 		$eventKey = Hash::get($this->request->params, 'key');
 		if ($eventKey) {
@@ -599,13 +599,13 @@ class CalendarPlansController extends CalendarsAppController {
 	}
 
 /**
- * getMailSettingInfo
+ * _getMailSettingInfo
  *
  * メール設定情報の取得
  *
  * @return array メール設定情報の配列
  */
-	public function getMailSettingInfo() {
+	protected function _getMailSettingInfo() {
 		$mailSettingInfo = $this->MailSetting->find('first', array(
 			'conditions' => array(
 				$this->MailSetting->alias . '.plugin_key' => 'calendars',

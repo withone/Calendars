@@ -106,6 +106,7 @@ class CalendarPlanEditRepeatOptionHelper extends AppHelper {
 			'ng-model' => 'editRrule',
 			'ng-init' => "editRrule = '" . $editRrule . "'",
 			'ng-change' => "changeEditRrule(" . Current::read('Frame.id') . ",'" . $firstSibEditLink . "')",
+			'ng-click' => 'sending=true',
 		));
 		if (! $isRecurrence) {
 			$html .= '<p class="help-block text-right"><small>';
