@@ -451,30 +451,16 @@ NetCommonsApp.controller('CalendarsDetailEdit',
        $scope.initialize = function(data) {
          $scope.data = angular.fromJson(data);
        };
-
+       // 繰り返し予定全てを変更の場合のみ、先頭の予定の編集画面にしなくてはならない
+       // location変更で先頭を読みだしていることにする
        $scope.changeEditRrule = function(frameId, firstSibEditLink) {
-         var nums = ['0', '1', '2'];
-         for (var num in nums) {
-           var checked = $('#CalendarActionPlanEditRrule' + num).prop('checked');
-           if (checked) {
-             if (num === '0') { //0
-               //console.log('num[' + num + ']が選択されたので、予定の繰り返しを非表示にします。');
-               //$('div.form-group[data-calendar-name=inputRruleInfo]').css('display', 'none');
-             } else {  //1, 2
-               //console.log('num[' + num + ']が選択されたので、予定の繰り返しを表示します。');
-               //$('div.form-group[data-calendar-name=inputRruleInfo]').css('display', 'block');
-
-               if (num === '2') {
-                 if (firstSibEditLink !== '') {
-                   angular.element('#CalendarActionPlanEditForm input').prop('disabled', true);
-                   angular.element('#CalendarActionPlanEditForm select').prop('disabled', true);
-                   window.location = firstSibEditLink;
-                 } else {
-                   //console.log('全ての繰り返しを選択したのに、繰返しの先頭eventへのeditLinkがないのはおかしい');
-                 }
-               }
-             }
-             break;
+         if ($scope.editRrule === '2') {
+           if (firstSibEditLink !== '') {
+              $scope.$parent.sending = true;
+              angular.element('#CalendarActionPlanEditForm input').prop('disabled', true);
+              angular.element('#CalendarActionPlanEditForm select').prop('disabled', true);
+              angular.element('#CalendarActionPlanEditForm button').prop('disabled', true);
+              window.location = firstSibEditLink;
            }
          }
        };

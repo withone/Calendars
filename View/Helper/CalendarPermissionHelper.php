@@ -109,7 +109,7 @@ class CalendarPermissionHelper extends AppHelper {
 			return '<td></td>';
 		}
 		$roomId = $roomBlock['Room']['id'];
-		$fieldNameBase = $spaceId . '.' . $roomId . '.Calendar.';
+		$fieldNameBase = $spaceId . '.' . $roomId . '.CalendarPermission.';
 		$html = '<td class="text-center">';
 		$html .= $this->NetCommonsForm->hidden($fieldNameBase . 'block_key');
 		$html .= $this->NetCommonsForm->hidden($fieldNameBase . 'id');

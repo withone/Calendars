@@ -149,6 +149,10 @@ class CalendarEvent extends CalendarsAppModel {
  */
 	public function __construct($id = false, $table = null, $ds = null) {
 		parent::__construct($id, $table, $ds);
+		$this->loadModels([
+			'Block' => 'Blocks.Block',
+		]);
+
 		// すぐはずす
 		$this->Behaviors->unload('Mails.MailQueue');
 		$this->Behaviors->unload('Mails.MailQueueDelete');
@@ -663,5 +667,51 @@ class CalendarEvent extends CalendarsAppModel {
 				'CalendarEvent' . '.is_latest' => true,
 			)
 		);
+	}
+
+/**
+ * Called before each save operation, after validation. Return a non-true result
+ * to halt the save.
+ *
+ * @param array $options Options passed from Model::save().
+ * @return bool True if the operation should continue, false if it should abort
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#beforesave
+ * @see Model::save()
+ */
+	public function beforeSave($options = array()) {
+		$content = Hash::get($this->data, 'CalendarEvent.description');
+		if (empty($content)) {
+			return true;
+		}
+
+		$roomId = Hash::get($this->data, 'CalendarEvent.room_id');
+		$newDescription = $this->consistentContent($content, $roomId);
+		if ($content != $newDescription) {
+			$this->data['CalendarEvent']['description'] = $newDescription;
+		}
+		return true;
+	}
+
+/**
+ * Called after each successful save operation.
+ *
+ * @param bool $created True if this save created a new record
+ * @param array $options Options passed from Model::save().
+ * @return void
+ * @throws InternalErrorException
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#aftersave
+ * @see Model::save()
+ * @throws InternalErrorException
+ */
+	public function afterSave($created, $options = array()) {
+		$content = Hash::get($this->data, 'CalendarEvent.description');
+		$roomId = Hash::get($this->data, 'CalendarEvent.room_id');
+		$blockKey = $this->Block->findByRoomIdAndPluginKey($roomId, 'calendars', ['key'], null, -1);
+		$updateDescription = [
+			'content_key' => Hash::get($this->data, 'CalendarEvent.key'),
+			'block_key' => Hash::get($blockKey, 'Block.key', ''),
+			'room_id' => $roomId
+		];
+		$this->updateUploadFile($content, $updateDescription);
 	}
 }

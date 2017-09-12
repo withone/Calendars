@@ -123,7 +123,7 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 		if (!empty($userId)) {
 			//ログインしている時だけ、全会員roomIdを強制的に追加する。
 			$communityRoomId = Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID);
-			$roleOfRooms[$communityRoomId] = $this->__getAllMemberRoleKey($model, $userId);
+			$roleOfRooms[$communityRoomId] = $this->__getAllMemberRoleKey($model, $userId, $communityRoomId);
 		}
 		//3. ルーム管理＋カレンダー権限管理での承認権限ありなしを取得
 		$roomInfos = $this->__getRolePerms($model, $roleOfRooms);
@@ -191,7 +191,7 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 		}
 		$room = $room[0];
 		$useWorkFlow = Hash::get(
-			$room, 'Calendar.use_workflow');
+			$room, 'CalendarPermission.use_workflow');
 		$publishable = Hash::get(
 			$room, 'BlockRolePermission.content_publishable.' . $roleName . '.value');
 		$editable = Hash::get(
@@ -217,23 +217,27 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  *
  * @param Model $model 実際のモデル
  * @param int $userId ユーザーID
+ * @param int $communityRoomId コミュニティルームID
  * @return string 役割
  */
-	private function __getAllMemberRoleKey(Model $model, $userId) {
+	private function __getAllMemberRoleKey(Model $model, $userId, $communityRoomId) {
+		$communityRoom = $model->Room->findById($communityRoomId);
+		$defaultRoleKey = Hash::get($communityRoom, 'Room.default_role_key', Role::ROOM_ROLE_KEY_VISITOR);
 		//全会員
 		$rolesRoomsUser = $model->RolesRoomsUser->find('first', array(
 			'conditions' => array(
-				'user_id' => $userId
+				'user_id' => $userId,
+				'room_id' => $communityRoomId
 			),
 			'recursive' => -1,
 		));
 		if (! $rolesRoomsUser) {
-			return Role::ROOM_ROLE_KEY_VISITOR;
+			return $defaultRoleKey;
 		}
 		$rolesRoomId = $rolesRoomsUser['RolesRoomsUser']['roles_room_id'];
 		$rolesRooms = $model->RolesRoom->findById($rolesRoomId, 'RolesRoom.role_key', null, -1);
 		if (! $rolesRooms) {
-			return Role::ROOM_ROLE_KEY_VISITOR;
+			return $defaultRoleKey;
 		}
 		$roleKey = $rolesRooms['RolesRoom']['role_key'];
 		return $roleKey;

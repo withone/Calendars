@@ -31,13 +31,6 @@ class CalendarPermission extends CalendarsAppModel {
 	public $useTable = 'calendars';
 
 /**
- * alias
- *
- * @var string
- */
-	public $alias = 'Calendar';
-
-/**
  * use behaviors
  *
  * @var array
@@ -126,13 +119,12 @@ class CalendarPermission extends CalendarsAppModel {
 	public function getCalendarAllMemberRoomBlocks($workflow) {
 		// 読み取り可能なルームを取得
 		$condition = $this->Room->getReadableRoomsConditions();
-		$condition['conditions'] = array('Room.id' => Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID));
+		$communityRoomId = Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID);
+		$condition['conditions'] = array('Room.id' => $communityRoomId);
 		$roomBase = $this->Room->find('all', $condition);
 		$roomBase = Hash::combine($roomBase, '{n}.Room.id', '{n}');
 
-		$conditions = $this->_getCalendarConditions(
-			array(Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID))
-		);
+		$conditions = $this->_getCalendarConditions(array($communityRoomId));
 		// ルーム+ブロック情報取得
 		$roomsBlocks = $this->Room->find('all', $conditions);
 		$roomsBlocks = Hash::combine($roomsBlocks, '{n}.Room.id', '{n}');
@@ -157,7 +149,7 @@ class CalendarPermission extends CalendarsAppModel {
 				'Room.*',
 				'RoomsLanguage.*',
 				'Block.*',
-				//'Calendar.*'
+				'CalendarPermission.*'
 			),
 			'recursive' => -1,
 			'joins' => array(
@@ -177,13 +169,13 @@ class CalendarPermission extends CalendarsAppModel {
 						'Block.plugin_key' => 'calendars',
 					)
 				),
-				//				array('table' => 'calendars',
-				//					'alias' => 'Calendar',
-				//					'type' => 'LEFT',
-				//					'conditions' => array(
-				//						'Calendar.block_key = Block.key',
-				//					)
-				//				)
+				array('table' => 'calendars',
+					'alias' => 'CalendarPermission',
+					'type' => 'LEFT',
+					'conditions' => array(
+						'CalendarPermission.block_key = Block.key',
+					)
+				)
 			),
 			'conditions' => array(
 				'Room.id' => $readableRoomIds
@@ -241,7 +233,7 @@ class CalendarPermission extends CalendarsAppModel {
 			$blockKey = Hash::get($roomBlock, 'Block.key');
 			$roomId = Hash::get($roomBlock, 'Block.room_id');
 			$blockSetting = $this->getBlockSetting($blockKey, $roomId);
-			$roomBlock[$this->alias] = $blockSetting[$this->alias];
+			$roomBlock[$this->alias]['use_workflow'] = $blockSetting[$this->alias]['use_workflow'];
 		}
 	}
 /**
@@ -303,16 +295,13 @@ class CalendarPermission extends CalendarsAppModel {
 					continue;
 				}
 				foreach ($rooms as $roomId => $room) {
-					// Calendar.idが空っぽ
-					//if (empty($room['Calendar']['id'])) {
-						// その場合はブロック未作成なので前もってブロック&Calendar作る
-						$block = $this->saveBlock($roomId);
-						// そのブロックキーを設定して
-						foreach ($room['BlockRolePermission']['content_creatable'] as &$perm) {
-							$perm['block_key'] = $block['Block']['key'];
-						}
-						$room['Calendar']['block_key'] = $block['Block']['key'];
-					//}
+					// ブロック未作成なので前もってブロック&Calendar作る
+					$block = $this->saveBlock($roomId);
+					// そのブロックキーを設定して
+					foreach ($room['BlockRolePermission']['content_creatable'] as &$perm) {
+						$perm['block_key'] = $block['Block']['key'];
+					}
+					$room[$this->alias]['block_key'] = $block['Block']['key'];
 					// 保存する
 					$this->create();
 					$this->set($room);
@@ -325,6 +314,7 @@ class CalendarPermission extends CalendarsAppModel {
 					$this->saveBlockSetting($block['Block']['key'], $block['Block']['room_id']);
 
 					$this->Behaviors->disable('Blocks.BlockSetting');
+					$this->log($room, 'debug');
 					if (! $this->save($room, false)) {
 						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 					}

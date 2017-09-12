@@ -215,6 +215,8 @@ class CalendarRrule extends CalendarsAppModel {
 		} else {
 			$this->data['Block'] = array();
 			$this->data['Block']['room_id'] = $targetRoomId;
+			// この場合は後で作成をお願いすることになるので、ここでcreateをしておかないといけない
+			$this->Block->create();
 		}
 	}
 /**
