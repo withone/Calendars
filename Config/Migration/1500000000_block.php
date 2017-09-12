@@ -165,6 +165,9 @@ class CalendarBlockMaintenance extends NetCommonsMigration {
 		}
 
 		// correct以外のblockを削除
+		if (count($correctBlocks) === 1) {
+			$correctBlocks[] = null;
+		}
 		$conditions = [
 			'plugin_key' => 'calendars',
 			'NOT' => [
@@ -174,6 +177,9 @@ class CalendarBlockMaintenance extends NetCommonsMigration {
 		$Block->deleteAll($conditions);
 
 		// correct以外のcalendarを削除
+		if (count($correctCalendars) === 1) {
+			$correctCalendars[] = null;
+		}
 		$conditions = [
 			'NOT' => [
 				'id' => $correctCalendars
