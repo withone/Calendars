@@ -75,7 +75,11 @@ class CalendarPlansControllerAddTest extends WorkflowControllerAddTest {
 			'save_' . WorkflowComponent::STATUS_PUBLISHED => null,
 			//'delete' => null,
 			'Frame' => array(
-				'id' => $frameId
+				'id' => $frameId,
+				'key' => 'frame_3',
+				'room_id' => '2',
+				'language_id' => 2,
+				'plugin_key' => 'calendars',
 			),
 			'Block' => array(
 				'id' => $blockId,
@@ -300,11 +304,13 @@ class CalendarPlansControllerAddTest extends WorkflowControllerAddTest {
 
 			),
 			//blockKey不正
-			array(
-				'data' => $dataError2, 'role' => Role::ROOM_ROLE_KEY_GENERAL_USER,
-				'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id']),
-				'exception' => 'InternalErrorException'
-			),
+			// 正当なBlockが存在してないときは、探し出して正しいものを設定、または新たに作成するようになったので
+			// この試験は不要となった
+			//array(
+			//	'data' => $dataError2, 'role' => Role::ROOM_ROLE_KEY_GENERAL_USER,
+			//	'urlOptions' => array('frame_id' => $data['Frame']['id'], 'block_id' => $data['Block']['id']),
+			//	'exception' => 'InternalErrorException'
+			//),
 		);
 	}
 

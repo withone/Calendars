@@ -10,5 +10,8 @@
  */
 ?>
 <?php echo $this->NetCommonsForm->hidden('Frame.id', array('value' => Current::read('Frame.id'))); ?>
+<?php echo $this->NetCommonsForm->hidden('Frame.room_id', array('value' => Current::read('Frame.room_id'))); ?>
+<?php echo $this->NetCommonsForm->hidden('Frame.plugin_key', array('value' => Current::read('Frame.plugin_key'))); ?>
+<?php echo $this->NetCommonsForm->hidden('Frame.key', array('value' => Current::read('Frame.key'))); ?>
 <?php echo $this->NetCommonsForm->hidden('Block.id', array('value' => Current::read('Block.id'))); ?>
 <?php echo $this->NetCommonsForm->hidden('Block.key', array('value' => Current::read('Block.key')));

@@ -541,9 +541,12 @@ class CalendarActionPlan extends CalendarsAppModel {
  */
 	public function saveCalendarPlan($data, $procMode,
 		$isOriginRepeat, $isTimeMod, $isRepeatMod, $createdUserWhenUpd, $isMyPrivateRoom) {
-		// 設定画面を表示する前にこのルームのアンケートブロックがあるか確認
+		// 設定画面を表示する前にこのルームのブロックがあるか確認
 		// 万が一、まだ存在しない場合には作成しておく
-		$this->Calendar->afterFrameSave(Current::read());
+		// ここで作成されるのはカレンダーが配置されているルームのブロックであって
+		// カレンダー予定対象のルームのブロックではないことに注意
+		// 予定対象ルームのブロックはこの下の処理でCalendarEventが作成されるときに作成されます。
+		$data = $this->Calendar->afterFrameSave($data);
 
 		$this->begin();
 		$eventId = 0;
@@ -557,8 +560,6 @@ class CalendarActionPlan extends CalendarsAppModel {
 			//_setAndMergeDateTimeDetail()で行っています。
 			//
 			$planParam = $this->convertToPlanParamFormat($data);
-
-			//CakeLog::debug("DBG: request_data[" . print_r($data, true) . "]");
 
 			//call元の_calendarPost()の最初でgetStatus($data)の結果が
 			//$data['CalendarActionPlan']['status']に代入されているので
@@ -606,19 +607,12 @@ class CalendarActionPlan extends CalendarsAppModel {
 				return false;
 			}
 
-			// メールやらなんやらが動作する前にはブロックをちゃんと用意しておかねばならない
-			$this->Calendar->prepareBlock(
-				$data['CalendarActionPlan']['plan_room_id'],
-				Current::read('Language.id'),
-				'calendars');
-
 			// taskや施設予約登録とのLinkで登録された予定は、planParamの
 			// modelとcontent_keyに
 			// 値が入っており、その時は承認メール、公開通知メール送信、および
 			// 新着通知はしてはいけない。(NC2と同様の仕様)
 			//
 			if (empty($planParam['model']) && empty($planParam['content_key'])) {
-
 				// 承認メール、公開通知メールの送信
 				$this->sendWorkflowAndNoticeMail($eventId, $isMyPrivateRoom);
 
@@ -649,13 +643,12 @@ class CalendarActionPlan extends CalendarsAppModel {
  */
 	public function convertToPlanParamFormat($data) {
 		$planParam = array();
-
 		try {
 			$model = ClassRegistry::init('Calendars.Calendar');
 			if (!($calendar = $model->findByBlockKey($data['Block']['key']))) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
-			$planParam['calendar_id'] = $calendar[$model->alias]['id'];
+			$planParam['calendar_id'] = Hash::get($calendar, $model->alias . '.id', null);
 
 			////statusは、上流の_calendarPost()直後でカレンダー独自status取得・代入
 			////が実行され、$data['CalendarAtionPlan']['status']にセットされているので

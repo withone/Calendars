@@ -139,8 +139,6 @@ class CalendarPlansController extends CalendarsAppController {
 		// 表示データ上の意味がないのでチェックは行わない
 		// 表示ブロックIDがないときは、パブリックTOPページで仮表示されることに話が決まった
 
-		$this->Auth->allow('add', 'delete', 'edit', 'view');
-
 		$this->CalendarEvent->initSetting($this->Workflow);
 
 		// カレンダー権限設定情報確保

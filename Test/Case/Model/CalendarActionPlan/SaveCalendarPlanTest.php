@@ -78,6 +78,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 				'room_id' => '2', //?
 				//'language_id' => 2, //?
 				'plugin_key' => 'calendars', //?
+				'key' => 'frame_3', //?
 			),
 			'Block' => array(
 				'id' => $blockId,
@@ -223,6 +224,10 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		$data10['CalendarActionPlan']['is_repeat'] = 1;
 		$data10['CalendarActionPlan']['rrule_term'] = 'UNTIL';
 		$data10['CalendarActionPlan']['rrule_until'] = '20180101'; //フォーマット不正
+
+		$data11 = $this->__getData(); //ブロックがまだないところ
+		$data11['CalendarActionPlan']['plan_room_id'] = 6;
+
 		$results = array();
 		// * 編集の登録処理
 		$results[0] = array($data1, 'add'); //リピートなし
@@ -241,6 +246,7 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		$results[9] = array($data4p, 'add');//リピートあり MONTHLY(BYDAY)(WEEKがプラス)
 
 		$results[10] = array($data10, 'add'); //時刻フォーマット不正
+		$results[11] = array($data11, 'add'); //ブロックのないところに予定
 		//$results[9] = array($data9, 'add'); //リピートあり NONE
 		//pending Error Undefined index: FREQ
 		//var/www/app/app/Plugin/Calendars/Model/Behavior/CalendarRruleEntryBehavior.php:127
@@ -274,7 +280,6 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 			array($data, 'Calendars.CalendarEvent', 'save', 'add'),
 			array($editData, 'Calendars.CalendarEvent', 'save', 'edit'),
 			array($data, 'Calendars.CalendarRrule', 'save', 'edit'),
-
 		);
 	}
 
@@ -304,6 +309,8 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		$data4['save_0'] = '';
 
 		$data5 = $this->__getData('xxx');
+		$data5['CalendarActionPlan']['origin_event_id'] = 1;
+		$data5['CalendarActionPlan']['origin_event_key'] = 'calendarplan1';
 
 		$data6 = $this->__getData();
 		$data6['CalendarActionPlan']['is_repeat'] = 1;
@@ -368,6 +375,13 @@ class CalendarActionPlanSaveCalendarPlanTest extends NetCommonsModelTestCase {
 		$testRoomInfos = array(
 			'roomInfos' => array(
 				'2' => array(
+					'role_key' => 'room_administrator',
+					'use_workflow' => '',
+					'content_publishable_value' => 1,
+					'content_editable_value' => 1,
+					'content_creatable_value' => 1,
+				),
+				'6' => array(
 					'role_key' => 'room_administrator',
 					'use_workflow' => '',
 					'content_publishable_value' => 1,

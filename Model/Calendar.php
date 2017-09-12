@@ -149,8 +149,8 @@ class Calendar extends CalendarsAppModel {
  * @throws InternalErrorException
  */
 	public function afterFrameSave($data) {
-		// すでに結びついている場合は何もしないでよい
-		if (!empty($data['Frame']['block_id'])) {
+		// すでに結びついていて実在が確認できる場合は何もしないでよい
+		if (! empty($data['Frame']['block_id']) && $this->Block->findById($data['Frame']['block_id'])) {
 			return $data;
 		}
 
@@ -174,10 +174,10 @@ class Calendar extends CalendarsAppModel {
 			if (empty($block)) {
 				// ブロックを作成する
 				$block = $this->_makeBlock($frame);
-			} else {
-				//取得したBlockを$current[Block]に記録しておく。
-				Current::$current['Block'] = $block['Block'];
 			}
+			//取得したBlockを$current[Block]に記録しておく。
+			Current::$current['Block'] = $block['Block'];
+			$data['Block'] = $block['Block'];
 
 			//Frameモデルに、このブロックのidを記録しておく。 カレンダーの場合、Frame:Blockの関係は n:1
 			$data['Frame']['block_id'] = $block['Block']['id'];
@@ -195,9 +195,11 @@ class Calendar extends CalendarsAppModel {
 			}
 
 			//権限設定
-			if (! $this->_saveCalendar($block)) {
+			$calendar = $this->_saveCalendar($block);
+			if (! $calendar) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
+			$data['Calendar'] = $calendar['Calendar'];
 
 			$this->commit();
 		} catch (Exception $ex) {
@@ -211,54 +213,6 @@ class Calendar extends CalendarsAppModel {
 		}
 
 		return $data;
-	}
-
-/**
- * prepareBlock
- *
- * フレームも何もなくても予定登録のときはこいつをたたいて準備しないといけない
- *
- * @param int $roomId ルームID（企保的に予定の対象のルームID
- * @param int $langId 言語ID
- * @param string $pluginKey プラグインキー（calendars
- * @return mixed 見つかった、もしくは作成したブロック
- * @throws InternalErrorException
- */
-	public function prepareBlock($roomId, $langId, $pluginKey) {
-		$this->begin();
-		try {
-			//Frameモデルに記録されているのと同じ「ルーム,言語,plugin_key=カレンダ」のレコードが
-			//Blockモデルに存在するか調べる
-			$block = $this->Block->find('first', array(
-				'conditions' => array(
-					'Block.room_id' => $roomId,
-					'Block.plugin_key' => $pluginKey,
-				)
-			));
-
-			// まだない場合
-			if (empty($block)) {
-				// ブロックを作成する
-				$block = $this->Block->save(array(
-					'room_id' => $roomId,
-					'plugin_key' => $pluginKey,
-				));
-				if (! $block) {
-					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-				}
-			}
-
-			//権限設定
-			if (! $this->_saveCalendar($block)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-			$this->commit();
-		} catch (Exception $ex) {
-			$this->rollback();
-			CakeLog::error($ex);
-			throw $ex;		//再throw
-		}
-		return $block;
 	}
 
 /**
@@ -385,8 +339,6 @@ class Calendar extends CalendarsAppModel {
 		if (! $block) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
-		//新規に生成したBlockを$current[Block]に記録しておく。
-		Current::$current['Block'] = $block['Block'];
 		return $block;
 	}
 }
