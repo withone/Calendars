@@ -25,7 +25,7 @@ class BlockMigrationInvalidDataBlockFixture extends BlockMigrationNoDataBlockFix
 		[
 			'id' => 1,
 			'room_id' => 1,
-			'plugin_key' => 'Lorem ipsum dolor sit amet',
+			'plugin_key' => 'calendars',
 			'key' => 'block_1',
 			'public_type' => 1,
 			'publish_start' => '2017-09-07 08:10:41',
@@ -39,7 +39,7 @@ class BlockMigrationInvalidDataBlockFixture extends BlockMigrationNoDataBlockFix
 		[
 			'id' => 2,
 			'room_id' => 1,
-			'plugin_key' => 'Lorem ipsum dolor sit amet',
+			'plugin_key' => 'calendars',
 			'key' => 'invalid001',
 			'public_type' => 1,
 			'publish_start' => '2017-09-07 08:10:41',

@@ -97,6 +97,14 @@ class BlockMigrationTest extends CakeTestCase {
 		);
 
 		$this->assertTrue($this->Migration->run('up'));
+
+		/* @var $Block AppModel */
+		$Block = ClassRegistry::init('Block');
+		$expected = [
+			['Block' => ['id' => '1']],
+			['Block' => ['id' => '3']],
+		];
+		$this->assertEqual($Block->find('all', ['fields' => 'id', 'order' => 'id', 'recursive' => -1]), $expected);
 	}
 
 }
