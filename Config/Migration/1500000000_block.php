@@ -252,13 +252,13 @@ class CalendarBlockMaintenance extends NetCommonsMigration {
 		$UploadFile = $this->generateModel('UploadFile');
 
 		$rruleId = $calendarRrule['CalendarRrule']['id'];
-		$events = $CalendarEvent->findByCalendarRruleId($rruleId);
+		$events = $CalendarEvent->findAllByCalendarRruleId($rruleId);
 		if (! $events) {
 			return false;
 		}
 
 		foreach ($events as $event) {
-			$description = $event['description'];
+			$description = $event['CalendarEvent']['description'];
 			$newDescription = $description;
 
 			$matchCount = preg_match_all($searchStr, $description, $matches);
@@ -295,7 +295,7 @@ class CalendarBlockMaintenance extends NetCommonsMigration {
 					$newDescription
 				);
 				// description更新★
-				$CalendarEvent->id = $event['id'];
+				$CalendarEvent->id = $event['CalendarEvent']['id'];
 				if (! $CalendarEvent->saveField('description', $newDescription, array(
 					'validate' => false,
 					'callbacks' => false,
