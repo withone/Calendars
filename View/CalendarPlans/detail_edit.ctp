@@ -9,10 +9,18 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 echo $this->element('Calendars.scripts');
+
+$planRoomId = Hash::get($this->request->data, 'CalendarActionPlan.plan_room_id', array_keys($exposeRoomOptions));
+$jsParameters = array(
+	'frameId' => Current::read('Frame.id'),
+	'myRoomId' => $myself,
+	'canUseGroup' => Current::permission('group_creatable'),
+	'planRoomId' => $planRoomId
+);
 ?>
 
 <article ng-controller='CalendarsDetailEdit' class='block-setting-body'
-	ng-init="initialize(<?php echo h(json_encode(array('frameId' => Current::read('Frame.id')))); ?>)">
+	ng-init="initialize(<?php echo h(json_encode($jsParameters)); ?>)">
 
 	<?php /* 画面見出し */ ?>
 	<?php echo $this->element('Calendars.CalendarPlans/detail_edit_heading'); ?>
@@ -130,22 +138,8 @@ echo $this->element('Calendars.scripts');
 			</div><!-- end form-group-->
 
 			<?php /* 予定の共有設定 */ ?>
-			<?php
-				$dispValue = 'none';
-				if (!empty($myself)) {
-					if ($this->request->data['CalendarActionPlan']['plan_room_id'] == $myself) {
-						$dispValue = 'block';
-					} else {
-						$keys = array_keys($exposeRoomOptions);
-						if (array_shift($keys) == $myself) {
-							//ルーム選択肢が１つだけで、それがプライベートの時の、特例対応
-							$dispValue = 'block';
-						}
-					}
-				}
-			?>
-			<div class="form-group calendar-plan-share_<?php echo $frameId; ?>" data-calendar-name="planShare"
-				 style="display: <?php echo $dispValue; ?>; margin-top:0.5em;">
+			<div class="form-group calendar-plan-share_<?php echo $frameId; ?> " data-calendar-name="planShare"
+                 ng-cloak ng-show="data.canUseGroup == true && data.planRoomId == <?php echo $myself; ?>">
 				<div class="col-xs-12 col-sm-10 col-sm-offset-2">
 					<?php echo $this->element('Calendars.CalendarPlans/edit_plan_share', array('shareUsers', $shareUsers)); ?>
 				</div><!-- col-sm-10おわり -->

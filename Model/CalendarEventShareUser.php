@@ -99,13 +99,4 @@ class CalendarEventShareUser extends CalendarsAppModel {
 
 		return parent::beforeValidate($options);
 	}
-
-/**
- * Called after each successful save operation.
- *
- * @param bool $created True if this save created a new record
- * @param array $options Options passed from Model::save().
- * @return void
- * @throws InternalErrorException
- */
 }

@@ -924,7 +924,7 @@ msgid "When you select the [all] will be re-set to the contents is repeated firs
 msgstr "「設定した全ての予定」を選択すると、現在の編集がキャンセルされ、繰返しの初回予定に再設定されます。"
 
 #: Calendars/View/Helper/CalendarPlanEditRepeatOptionHelper.php:115
-msgid "If you want to edit without changing the schedule key, select "all after this one" and edit."
+msgid "If you want to edit without changing the schedule key, select \"all after this one\" and edit."
 msgstr "予定のキーを替えずに編集されたい時は、「この予定のみ」を選択して編集してください。"
 
 #: Calendars/View/Helper/CalendarPlanEditRepeatOptionHelper.php:131
@@ -1214,3 +1214,5 @@ msgstr "メール通知タイミング"
 msgid "End date and time"
 msgstr "終了日時"
 
+msgid "You can not set sharers."
+msgstr "予定の共有者を設定する権限がありません。"

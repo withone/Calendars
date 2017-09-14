@@ -271,56 +271,6 @@ class CalendarActionPlan extends CalendarsAppModel {
 	}
 
 /**
- * _doMergeDisplayParamValidate
- *
- * 画面パラメータ関連バリデーションのマージ
- *
- * @param bool $isDetailEdit 詳細画面かどうか true=詳細(detail)画面, false=簡易(easy)画面
- * @return void
- */
-	// 未使用
-	//protected function _doMergeDisplayParamValidate($isDetailEdit) {
-	//	$this->validate = Hash::merge($this->validate, array(
-	//		'return_style' => array(
-	//			'rule1' => array(
-	//				'rule' => array('inList', array(
-	//					CalendarsComponent::CALENDAR_STYLE_SMALL_MONTHLY,
-	//					CalendarsComponent::CALENDAR_STYLE_LARGE_MONTHLY,
-	//					CalendarsComponent::CALENDAR_STYLE_WEEKLY,
-	//					CalendarsComponent::CALENDAR_STYLE_DAILY,
-	//					CalendarsComponent::CALENDAR_STYLE_SCHEDULE,
-	//				)),
-	//				'required' => false,
-	//				'allowEmpty' => true,
-	//				'message' => __d('calendars', '戻り先のスタイル指定が不正です。'),
-	//			),
-	//		),
-	//		'return_sort' => array(
-	//			'rule1' => array(
-	//				'rule' => array('inList', array(
-	//					CalendarsComponent::CALENDAR_SCHEDULE_SORT_TIME,
-	//					CalendarsComponent::CALENDAR_SCHEDULE_SORT_MEMBER,
-	//				)),
-	//				'required' => false,	//sort指定はスケジュールの時だけ
-	//				'allowEmpty' => true,
-	//				'message' => __d('calendars', '戻り先のソート指定が不正です。'),
-	//			),
-	//		),
-	//		'return_tab' => array(
-	//			'rule1' => array(
-	//				'rule' => array('inList', array(
-	//					CalendarsComponent::CALENDAR_DAILY_TAB_LIST,
-	//					CalendarsComponent::CALENDAR_DAILY_TAB_TIMELINE,
-	//				)),
-	//				'required' => false,	//tab指定は単一日の時だけ
-	//				'allowEmpty' => true,
-	//				'message' => __d('calendars', '戻り先のタブ指定が不正です。'),
-	//			),
-	//		),
-	//	));
-	//}
-
-/**
  * _doMergeRruleValidate
  *
  * 繰返し関連バリデーションのマージ
@@ -476,6 +426,10 @@ class CalendarActionPlan extends CalendarsAppModel {
 					'required' => true,
 					'allowEmpty' => false,
 					'message' => __d('calendars', 'Invalid input. (authority)'),
+				),
+				'rule2' => array(
+					'rule' => array('checkShareUser'),
+					'message' => __d('calendars', 'You can not set sharers.'),
 				),
 			),
 			'timezone_offset' => array(
