@@ -609,17 +609,6 @@ NetCommonsApp.controller('CalendarsDetailEdit',
          }
        };
 
-       $scope.changeRoom = function(myself, frameId) {
-         var elm = $('.calendar-plan-share_' + frameId);
-         if ($scope.exposeRoomArray[frameId].toString() === myself.toString()) {
-           //console.log('グループ共有が有効になる');
-           elm.show();
-         } else {
-           //console.log('グループ共有が無効になる');
-           elm.hide();
-         }
-       };
-
        $scope.setInitRepeatPeriod = function(frameId, idx) {
          //これで、画面をリフレッシュ
          $scope.selectRepeatPeriodArray[frameId] = idx;
@@ -1011,18 +1000,5 @@ $(function() {
       url = $(evt.target).parents(expr).attr('data-url');
     }
     window.location = url;
-  });
-  $('.select-expose-target').on('change', function(evt) {
-    //console.log("selectExposeTarget change");
-    var myself = $('.select-expose-target').attr('data-myself');
-    var frameId = $('.select-expose-target').attr('data-frame-id');
-    var elm = $('.calendar-plan-share_' + frameId);
-    if ($('.select-expose-target option:selected').val() == myself) {
-      //console.log('グループ共有が有効になる');
-      elm.show();
-    } else {
-      //console.log('グループ共有が無効になる');
-      elm.hide();
-    }
   });
 });

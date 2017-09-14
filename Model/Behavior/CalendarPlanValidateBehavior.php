@@ -52,4 +52,32 @@ class CalendarPlanValidateBehavior extends ModelBehavior {
 		$emailTimingOptions = $model->getNoticeEmailOption();
 		return in_array($value, array_keys($emailTimingOptions));
 	}
+
+/**
+ * CalendarActionPlanでのまとめてValidateのために用意したチェック機能
+ *
+ * @param object &$model use model
+ * @param array $check plan_room_id
+ * @return bool
+ */
+	public function checkShareUser(&$model, $check) {
+		$data = $model->data;
+		// $data['GroupsUser'][n]['user_id']
+		// 共有者の設定がない
+		if (empty(Hash::get($data, 'GroupsUser'))) {
+			// チェック不要
+			return true;
+		}
+
+		// 共有者設定あり
+
+		// グループ作成権限もある
+		if (Current::permission('group_creatable')) {
+			return true;
+		}
+
+		// 共有者設定があるがグループ作成できない人
+		return false;
+	}
+
 }

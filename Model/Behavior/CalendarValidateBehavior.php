@@ -142,4 +142,5 @@ class CalendarValidateBehavior extends ModelBehavior {
 		}
 		return true;
 	}
+
 }

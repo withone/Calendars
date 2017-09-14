@@ -108,6 +108,7 @@ class CalendarExposeTargetHelper extends AppHelper {
 				'data-frame-id' => $frameId,
 				'data-myself' => $myself,
 				'escape' => false,
+				'ng-model' => 'data.planRoomId'
 			));
 		}
 
