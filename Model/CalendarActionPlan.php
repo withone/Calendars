@@ -500,7 +500,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		// ここで作成されるのはカレンダーが配置されているルームのブロックであって
 		// カレンダー予定対象のルームのブロックではないことに注意
 		// 予定対象ルームのブロックはこの下の処理でCalendarEventが作成されるときに作成されます。
-		$data = $this->Calendar->afterFrameSave($data);
+		$data = $this->Calendar->prepareBlockWithoutFrame($data);
 
 		$this->begin();
 		$eventId = 0;

@@ -139,6 +139,48 @@ class Calendar extends CalendarsAppModel {
 	}
 
 /**
+ * ブロック・カレンダーデータ準備
+ *
+ * @param array $data 保存対象データ
+ * @return mixed
+ * @throws InternalErrorException
+ */
+	public function prepareBlockWithoutFrame($data) {
+		$this->begin();
+		try {
+			$block = array();
+			if (isset($data['Block'])) {
+				$block = $this->Block->findById(Hash::get($data, 'Block.id'));
+			}
+			// まだない場合
+			if (empty($block)) {
+				// ブロックを作成する
+				$block = $this->_makeBlock(Hash::get($data, 'CalendarActionPlan.plan_room_id'));
+				if (! $block) {
+					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+				}
+				//取得したBlockを$current[Block]に記録しておく。
+				Current::$current['Block'] = $block['Block'];
+				$data['Block'] = $block['Block'];
+			}
+			//権限設定
+			$calendar = $this->_saveCalendar($block);
+			if (! $calendar) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			$data['Calendar'] = $calendar['Calendar'];
+			$this->commit();
+		} catch (Exception $ex) {
+			//トランザクションRollback
+			$this->rollback();
+			//エラー出力
+			CakeLog::error($ex);
+			throw $ex;		//再throw
+		}
+		return $data;
+	}
+
+/**
  * After frame save hook
  *
  * このルーム・この言語で、アンケートブロックが存在しない場合、Blockモデルにsaveで新規登録する。
@@ -157,28 +199,17 @@ class Calendar extends CalendarsAppModel {
 		$this->begin();
 
 		try {
+			// Frameなしでやってくることは想定外
 			if (empty($data['Frame'])) {
 				throw new BadRequestException(__d('net_commons', 'Bad Request'));
 			}
 			$frame = $data['Frame'];	//FrameモデルですでにFrameモデルデータは登録済み
 
-			//Frameモデルに記録されているのと同じ「ルーム,言語,plugin_key=カレンダ」のレコードが
-			//Blockモデルに存在するか調べる
-			$block = $this->Block->find('first', array(
-				'conditions' => array(
-					'Block.room_id' => $frame['room_id'],
-					'Block.plugin_key' => $frame['plugin_key'],
-				)
-			));
-			// まだない場合
-			if (empty($block)) {
-				// ブロックを作成する
-				$block = $this->_makeBlock($frame);
-			}
-			//取得したBlockを$current[Block]に記録しておく。
-			Current::$current['Block'] = $block['Block'];
-			$data['Block'] = $block['Block'];
+			// ブロックを取得、または作成する
+			$block = $this->_makeBlock($frame['room_id']);
 
+			//取得したBlockを$data[Block]に記録しておく。
+			$data['Block'] = $block['Block'];
 			//Frameモデルに、このブロックのidを記録しておく。 カレンダーの場合、Frame:Blockの関係は n:1
 			$data['Frame']['block_id'] = $block['Block']['id'];
 			if (! $this->Frame->save($data)) {
@@ -327,18 +358,26 @@ class Calendar extends CalendarsAppModel {
  *
  * ブロックを作成する
  *
- * @param array $frame フレーム
+ * @param int $roomId ルームID
  * @return array 生成したブロック
  * @throws InternalErrorException
  */
-	protected function _makeBlock($frame) {
+	protected function _makeBlock($roomId) {
+		//Frameモデルに記録されているのと同じ「ルーム,言語,plugin_key=カレンダ」のレコードが
+		//Blockモデルに存在するか調べる
+		$block = $this->Block->findByRoomIdAndPluginKey($roomId, 'calendars');
+		if ($block) {
+			return $block;
+		}
+		$this->Block->create();
 		$block = $this->Block->save(array(
-			'room_id' => $frame['room_id'],
-			'plugin_key' => $frame['plugin_key'],
+			'room_id' => $roomId,
+			'plugin_key' => 'calendars',
 		));
 		if (! $block) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
+		Current::$current['Block'] = $block['Block'];
 		return $block;
 	}
 }
