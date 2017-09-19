@@ -150,7 +150,7 @@ class CalendarBlockMaintenance extends NetCommonsMigration {
 				// (2)blockのroom_idを目的のものに変える(Block更新★)
 				if (! $Block->updateAll(
 					array('room_id' => $rruleRoomId),
-					array('key' => '\'' . $calendar['Calendar']['block_key'] . '\'')
+					array('key' => $calendar['Calendar']['block_key'])
 				)) {
 					return false;
 				}
@@ -160,29 +160,23 @@ class CalendarBlockMaintenance extends NetCommonsMigration {
 			// あるならそのroom_idを予定の対象のroom_idに変更しておく
 			if (! $this->_updateUploadFile($calendarRrule,
 				array_search($calendarRrule['CalendarRrule']['calendar_id'], $correctCalendars))) {
-				return false;
+					return false;
 			}
 		}
 
 		// correct以外のblockを削除
-		if (count($correctBlocks) === 1) {
-			$correctBlocks[] = 0;
-		}
 		$conditions = [
-			'plugin_key' => 'calendars',
+			'Block.plugin_key' => 'calendars',
 			'NOT' => [
-				'key' => $correctBlocks
+				'Block.key' => $correctBlocks
 			]
 		];
 		$Block->deleteAll($conditions);
 
 		// correct以外のcalendarを削除
-		if (count($correctCalendars) === 1) {
-			$correctCalendars[] = 0;
-		}
 		$conditions = [
 			'NOT' => [
-				'id' => $correctCalendars
+				'Calendar.id' => $correctCalendars
 			]
 		];
 		$Calendar->deleteAll($conditions);

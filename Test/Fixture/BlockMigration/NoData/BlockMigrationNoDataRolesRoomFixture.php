@@ -8,21 +8,13 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  */
 
+App::uses('RolesRoomFixture', 'Rooms.Test/Fixture');
+
 /**
  * BlockMigrationNoDataRolesRoomFixture
  *
  */
-class BlockMigrationNoDataRolesRoomFixture extends CakeTestFixture {
-
-/**
- * Fixture import to be created.
- *
- * @var array
- */
-	public $import = [
-		'table' => 'roles_rooms',
-		'connection' => 'master'
-	];
+class BlockMigrationNoDataRolesRoomFixture extends RolesRoomFixture {
 
 /**
  * Full Table Name
@@ -32,10 +24,10 @@ class BlockMigrationNoDataRolesRoomFixture extends CakeTestFixture {
 	public $table = 'roles_rooms';
 
 /**
- * Fixture records to be inserted.
+ * Records
  *
  * @var array
  */
- 	//public $records = [];
+	public $records = [];
 
 }

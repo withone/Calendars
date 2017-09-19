@@ -25,17 +25,37 @@ class BlockMigrationTest extends CakeTestCase {
 	public $autoFixtures = false;
 
 /**
+ * Control table create/drops on each test method.
+ *
+ * Set this to false to avoid tables to be dropped if they already exist
+ * between each test method. Tables will still be dropped at the
+ * end of each test runner execution.
+ *
+ * @var bool
+ */
+	public $dropTables = false;
+
+/**
  * Fixtures
  *
  * @var array
  */
 	public $fixtures = [
-		'plugin.calendars.BlockMigration/InvalidData/BlockMigrationInvalidDataBlock',
-		'plugin.calendars.BlockMigration/InvalidData/BlockMigrationInvalidDataBlockRolePermission',
-		'plugin.calendars.BlockMigration/InvalidData/BlockMigrationInvalidDataRolesRoom',
-		'plugin.calendars.BlockMigration/InvalidData/BlockMigrationInvalidDataCalendarRrule',
-		'plugin.calendars.BlockMigration/InvalidData/BlockMigrationInvalidDataCalendar',
-		'plugin.calendars.BlockMigration/InvalidData/BlockMigrationInvalidDataCalendarEvent',
+		// 空データFixture
+		'plugin.calendars.BlockMigration/NoData/BlockMigrationNoDataBlock',
+		'plugin.calendars.BlockMigration/NoData/BlockMigrationNoDataBlockRolePermission',
+		'plugin.calendars.BlockMigration/NoData/BlockMigrationNoDataRolesRoom',
+		'plugin.calendars.BlockMigration/NoData/BlockMigrationNoDataCalendarRrule',
+		'plugin.calendars.BlockMigration/NoData/BlockMigrationNoDataCalendar',
+		'plugin.calendars.BlockMigration/NoData/BlockMigrationNoDataCalendarEvent',
+
+		// データありFixture
+		'plugin.calendars.BlockMigration/SomeData/BlockMigrationSomeDataBlock',
+		'plugin.calendars.BlockMigration/SomeData/BlockMigrationSomeDataBlockRolePermission',
+		'plugin.calendars.BlockMigration/SomeData/BlockMigrationSomeDataRolesRoom',
+		'plugin.calendars.BlockMigration/SomeData/BlockMigrationSomeDataCalendarRrule',
+		'plugin.calendars.BlockMigration/SomeData/BlockMigrationSomeDataCalendar',
+		'plugin.calendars.BlockMigration/SomeData/BlockMigrationSomeDataCalendarEvent',
 	];
 
 /**
@@ -88,23 +108,96 @@ class BlockMigrationTest extends CakeTestCase {
  */
 	public function testNoData() {
 		$this->loadFixtures(
-			'BlockMigrationInvalidDataBlock',
-			'BlockMigrationInvalidDataBlockRolePermission',
-			'BlockMigrationInvalidDataRolesRoom',
-			'BlockMigrationInvalidDataCalendarRrule',
-			'BlockMigrationInvalidDataCalendar',
-			'BlockMigrationInvalidDataCalendarEvent'
+			'BlockMigrationNoDataBlock',
+			'BlockMigrationNoDataBlockRolePermission',
+			'BlockMigrationNoDataRolesRoom',
+			'BlockMigrationNoDataCalendarRrule',
+			'BlockMigrationNoDataCalendar',
+			'BlockMigrationNoDataCalendarEvent'
+		);
+
+		$this->assertTrue($this->Migration->run('up'));
+	}
+
+/**
+ * testDown
+ *
+ * @return void
+ */
+	public function testDown() {
+		$this->assertTrue($this->Migration->run('down'));
+	}
+
+/**
+ * testNoData
+ *
+ * @return void
+ */
+	public function testNoDataBlockRolePermissionData() {
+		$this->loadFixtures(
+			'BlockMigrationSomeDataBlock',
+			'BlockMigrationSomeDataBlockRolePermission',
+			'BlockMigrationSomeDataRolesRoom',
+			'BlockMigrationSomeDataCalendarRrule',
+			'BlockMigrationSomeDataCalendar',
+			'BlockMigrationSomeDataCalendarEvent'
 		);
 
 		$this->assertTrue($this->Migration->run('up'));
 
 		/* @var $Block AppModel */
+		/* @var $Calendar AppModel */
+		/* @var $Calendar AppModel */
 		$Block = ClassRegistry::init('Block');
+		$Calendar = ClassRegistry::init('Calendar');
+		$CalendarRrule = ClassRegistry::init('CalendarRrule');
+
 		$expected = [
-			['Block' => ['id' => '1']],
-			['Block' => ['id' => '3']],
+			['Block' => ['id' => '1', 'room_id' => '1', 'key' => 'block001']],
+			['Block' => ['id' => '3', 'room_id' => '999', 'key' => 'block002']],
+			['Block' => ['id' => '100', 'room_id' => '9999', 'key' => 'block100']],
 		];
-		$this->assertEqual($Block->find('all', ['fields' => 'id', 'order' => 'id', 'recursive' => -1]), $expected);
+		$actual = $Block->find(
+			'all',
+			[
+				'fields' => ['id', 'room_id', 'key'],
+				'order' => 'id',
+				'recursive' => -1
+			]
+		);
+		$this->assertEquals($expected, $actual);
+
+		$expected = [
+			['Calendar' => ['id' => '1']],
+			['Calendar' => ['id' => '3']]
+		];
+		$actual = $Calendar->find(
+			'all',
+			[
+				'fields' => 'id',
+				'order' => 'id',
+				'recursive' => -1
+			]
+			);
+		$this->assertEquals($expected, $actual);
+
+		$expected = [
+			['CalendarRrule' => ['id' => '1', 'calendar_id' => '1']],
+			['CalendarRrule' => ['id' => '2', 'calendar_id' => '1']],
+			['CalendarRrule' => ['id' => '3', 'calendar_id' => '3']],
+		];
+		$actual = $CalendarRrule->find(
+			'all',
+			[
+				'fields' => [
+					'id',
+					'calendar_id'
+				],
+				'order' => 'id',
+				'recursive' => -1,
+			]
+		);
+		$this->assertEquals($expected, $actual);
 	}
 
 }

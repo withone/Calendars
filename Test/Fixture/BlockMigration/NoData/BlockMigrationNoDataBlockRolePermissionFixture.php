@@ -8,21 +8,13 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  */
 
+App::uses('BlockRolePermissionFixture', 'Blocks.Test/Fixture');
+
 /**
  * BlockMigrationNoDataBlockRolePermissionFixture
  *
  */
-class BlockMigrationNoDataBlockRolePermissionFixture extends CakeTestFixture {
-
-/**
- * Fixture import to be created.
- *
- * @var array
- */
-	public $import = [
-		'table' => 'block_role_permissions',
-		'connection' => 'master'
-	];
+class BlockMigrationNoDataBlockRolePermissionFixture extends BlockRolePermissionFixture {
 
 /**
  * Full Table Name
@@ -32,10 +24,10 @@ class BlockMigrationNoDataBlockRolePermissionFixture extends CakeTestFixture {
 	public $table = 'block_role_permissions';
 
 /**
- * Fixture records to be inserted.
+ * Records
  *
  * @var array
  */
-	//public $records = [];
+	public $records = [];
 
 }

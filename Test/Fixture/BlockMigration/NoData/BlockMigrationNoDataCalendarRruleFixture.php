@@ -8,21 +8,13 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  */
 
+App::uses('CalendarRruleFixture', 'Calendars.Test/Fixture');
+
 /**
  * BlockMigrationNoDataCalendarRruleFixture
  *
  */
-class BlockMigrationNoDataCalendarRruleFixture extends CakeTestFixture {
-
-/**
- * Fixture import to be created.
- *
- * @var array
- */
-	public $import = [
-		'table' => 'calendar_rrules',
-		'connection' => 'master'
-	];
+class BlockMigrationNoDataCalendarRruleFixture extends CalendarRruleFixture {
 
 /**
  * Full Table Name
@@ -32,10 +24,18 @@ class BlockMigrationNoDataCalendarRruleFixture extends CakeTestFixture {
 	public $table = 'calendar_rrules';
 
 /**
- * Fixture records to be inserted.
+ * Name of the object
+ *
+ * @var string
+ * @see https://github.com/NetCommons3/Calendars/blob/3.1.4/Test/Fixture/CalendarRruleFixture.php#L325
+ */
+	public $name = 'CalendarRrule';
+
+/**
+ * Records
  *
  * @var array
  */
- 	//public $records = [];
+	public $records = [];
 
 }

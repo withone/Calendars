@@ -1,6 +1,6 @@
 <?php
 /**
- * BlockMigrationInvalidDataCalendarFixture
+ * BlockMigrationSomeDataCalendarFixture
  *
  * @copyright Copyright 2014, NetCommons Project
  * @author Kohei Teraguchi <kteraguchi@commonsnet.org>
@@ -11,30 +11,20 @@
 App::uses('BlockMigrationNoDataCalendarFixture', 'Calendars.Test/Fixture/BlockMigration/NoData');
 
 /**
- * BlockMigrationInvalidDataCalendarFixture
+ * BlockMigrationSomeDataCalendarFixture
  *
  */
-class BlockMigrationInvalidDataCalendarFixture extends BlockMigrationNoDataCalendarFixture {
+class BlockMigrationSomeDataCalendarFixture extends BlockMigrationNoDataCalendarFixture {
 
 /**
- * Fixture import to be created.
- *
- * @var array
- */
-	public $import = [
-		'table' => 'calendars',
-		'connection' => 'master'
-	];
-
-/**
- * Fixture records to be inserted.
+ * Records
  *
  * @var array
  */
  	public $records = [
  		[
  			'id' => 1,
-	 		'block_key' => 'block_1',
+	 		'block_key' => 'invalid001',
 			'created_user' => 1,
 	 		'created' => '2016-03-24 07:10:30',
 	 		'modified_user' => 1,
@@ -50,7 +40,7 @@ class BlockMigrationInvalidDataCalendarFixture extends BlockMigrationNoDataCalen
  		],
  		[
  			'id' => 3,
- 			'block_key' => 'invalid002',
+ 			'block_key' => 'block002',
  			'created_user' => 1,
  			'created' => '2016-03-24 07:10:30',
  			'modified_user' => 1,

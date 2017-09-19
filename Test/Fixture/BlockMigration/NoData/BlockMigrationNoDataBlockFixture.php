@@ -8,21 +8,13 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  */
 
+App::uses('BlockFixture', 'Blocks.Test/Fixture');
+
 /**
  * BlockMigrationNoDataBlockFixture
  *
  */
-class BlockMigrationNoDataBlockFixture extends CakeTestFixture {
-
-/**
- * Fixture import to be created.
- *
- * @var array
- */
-	public $import = [
-		'table' => 'blocks',
-		'connection' => 'master'
-	];
+class BlockMigrationNoDataBlockFixture extends BlockFixture {
 
 /**
  * Full Table Name
@@ -32,7 +24,7 @@ class BlockMigrationNoDataBlockFixture extends CakeTestFixture {
 	public $table = 'blocks';
 
 /**
- * Fixture records to be inserted.
+ * Records
  *
  * @var array
  */
