@@ -205,7 +205,6 @@ class CalendarBlockMaintenance extends NetCommonsMigration {
 			'recursive' => -1
 		));
 		if (! $calendar) {
-			CakeLog::error('calendar not found block_key=' . $blockKey);
 			return false;
 		}
 		$correctCalendars[$blockKey] = $calendar['Calendar']['id'];
@@ -232,7 +231,6 @@ class CalendarBlockMaintenance extends NetCommonsMigration {
 			'recursive' => -1
 		));
 		if (! $block) {
-			CakeLog::error('block not found roomId=' . $rruleRoomId);
 			return false;
 		}
 		$correctBlocks[$rruleRoomId] = $block['Block']['key'];
