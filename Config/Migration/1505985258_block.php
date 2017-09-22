@@ -80,6 +80,7 @@ class CalendarBlockMaintenance extends NetCommonsMigration {
 				'calendar_id',
 				'room_id',
 			],
+			'recursive' => -1,
 		];
 		//
 		// 現存する全てのRruleを調べる
@@ -116,6 +117,7 @@ class CalendarBlockMaintenance extends NetCommonsMigration {
 						$calendarRrule['CalendarRrule']['calendar_id'] = $correctCalendars[$correctBlocks[$rruleRoomId]];
 						$CalendarRrule->create();
 						if (! $CalendarRrule->save($calendarRrule, false)) {
+							CakeLog::error('CalendarRrule save error');
 							return false;
 						}
 						// (一致しているときは正しい状態なので何もしません)
@@ -135,6 +137,7 @@ class CalendarBlockMaintenance extends NetCommonsMigration {
 						'validate' => false,
 						'callbacks' => false,
 					))) {
+						CakeLog::error('Calendar save error');
 						return false;
 					}
 				}
@@ -150,8 +153,9 @@ class CalendarBlockMaintenance extends NetCommonsMigration {
 				// (2)blockのroom_idを目的のものに変える(Block更新★)
 				if (! $Block->updateAll(
 					array('room_id' => $rruleRoomId),
-					array('key' => '\'' . $calendar['Calendar']['block_key'] . '\'')
+					array('key' => $calendar['Calendar']['block_key'])
 				)) {
+					CakeLog::error('Block update error');
 					return false;
 				}
 			}
@@ -160,29 +164,24 @@ class CalendarBlockMaintenance extends NetCommonsMigration {
 			// あるならそのroom_idを予定の対象のroom_idに変更しておく
 			if (! $this->_updateUploadFile($calendarRrule,
 				array_search($calendarRrule['CalendarRrule']['calendar_id'], $correctCalendars))) {
-				return false;
+					CakeLog::error('Uploadfile update error');
+					return false;
 			}
 		}
 
 		// correct以外のblockを削除
-		if (count($correctBlocks) === 1) {
-			$correctBlocks[] = 0;
-		}
 		$conditions = [
-			'plugin_key' => 'calendars',
+			'Block.plugin_key' => 'calendars',
 			'NOT' => [
-				'key' => $correctBlocks
+				'Block.key' => $correctBlocks
 			]
 		];
 		$Block->deleteAll($conditions);
 
 		// correct以外のcalendarを削除
-		if (count($correctCalendars) === 1) {
-			$correctCalendars[] = 0;
-		}
 		$conditions = [
 			'NOT' => [
-				'id' => $correctCalendars
+				'Calendar.id' => $correctCalendars
 			]
 		];
 		$Calendar->deleteAll($conditions);
@@ -254,7 +253,8 @@ class CalendarBlockMaintenance extends NetCommonsMigration {
 		$rruleId = $calendarRrule['CalendarRrule']['id'];
 		$events = $CalendarEvent->findAllByCalendarRruleId($rruleId);
 		if (! $events) {
-			return false;
+			CakeLog::info('Cant find event rrule = ' . $rruleId);
+			return true;
 		}
 
 		foreach ($events as $event) {
@@ -279,13 +279,14 @@ class CalendarBlockMaintenance extends NetCommonsMigration {
 				// upload_filesの書き換え★
 				if (! $UploadFile->updateAll(
 					array(
-						'room_id' => $calendarRrule['CalendarRrule']['room_id'],
-						'block_key' => '\'' . $blockKey . '\''
+						'UploadFile.room_id' => $calendarRrule['CalendarRrule']['room_id'],
+						'UploadFile.block_key' => '\'' . $blockKey . '\''
 					),
 					array(
-						'id' => $fileId
+						'UploadFile.id' => $fileId
 					)
 				)) {
+					CakeLog::error('uploadfile updateAll err ' . $fileId);
 					return false;
 				}
 				// 書き換え用のdescriptionの準備
@@ -300,6 +301,7 @@ class CalendarBlockMaintenance extends NetCommonsMigration {
 					'validate' => false,
 					'callbacks' => false,
 				))) {
+					CakeLog::error('uploadFile saveField err ' . $event['CalendarEvent']['id']);
 					return false;
 				}
 			}
