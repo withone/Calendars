@@ -83,7 +83,7 @@ class BlockMigrationTest extends CakeTestCase {
 
 		unset($options['autoinit']);
 		$this->Migration = $MigrationVersion->getMigration(
-			'1500000000_block',
+			'1505985258_block',
 			'CalendarBlockMaintenance',
 			'Calendars',
 			$options
