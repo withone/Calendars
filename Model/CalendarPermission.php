@@ -88,9 +88,10 @@ class CalendarPermission extends CalendarsAppModel {
 		// 空間ごとに処理
 		foreach ($spaceIds as $spaceId) {
 
+			$conditions = $this->Room->getReadableRoomsConditions(array('Room.space_id' => $spaceId));
+			$conditions['recursive'] = -1;
 			// 読み取り可能なルームを取得
-			$readableRoom = $this->Room->find('all',
-				$this->Room->getReadableRoomsConditions(array('Room.space_id' => $spaceId)));
+			$readableRoom = $this->Room->find('all', $conditions);
 			$readableRoomIds = Hash::combine($readableRoom, '{n}.Room.id', '{n}.Room.id');
 			$readableRoom = Hash::combine($readableRoom, '{n}.Room.id', '{n}');
 
@@ -119,13 +120,14 @@ class CalendarPermission extends CalendarsAppModel {
 	public function getCalendarAllMemberRoomBlocks($workflow) {
 		// 読み取り可能なルームを取得
 		$condition = $this->Room->getReadableRoomsConditions();
+		$conditions['recursive'] = -1;
 		$communityRoomId = Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID);
 		$condition['conditions'] = array('Room.id' => $communityRoomId);
 		$roomBase = $this->Room->find('all', $condition);
 		$roomBase = Hash::combine($roomBase, '{n}.Room.id', '{n}');
 
-		$conditions = $this->_getCalendarConditions(array($communityRoomId));
 		// ルーム+ブロック情報取得
+		$conditions = $this->_getCalendarConditions(array($communityRoomId));
 		$roomsBlocks = $this->Room->find('all', $conditions);
 		$roomsBlocks = Hash::combine($roomsBlocks, '{n}.Room.id', '{n}');
 
@@ -149,7 +151,7 @@ class CalendarPermission extends CalendarsAppModel {
 				'Room.*',
 				'RoomsLanguage.*',
 				'Block.*',
-				'CalendarPermission.*'
+				'BlockSetting.value',
 			),
 			'recursive' => -1,
 			'joins' => array(
@@ -169,13 +171,15 @@ class CalendarPermission extends CalendarsAppModel {
 						'Block.plugin_key' => 'calendars',
 					)
 				),
-				array('table' => 'calendars',
-					'alias' => 'CalendarPermission',
+				array('table' => 'block_settings',
+					'alias' => 'BlockSetting',
 					'type' => 'LEFT',
 					'conditions' => array(
-						'CalendarPermission.block_key = Block.key',
+						'Block.key = BlockSetting.block_key',
+						'BlockSetting.plugin_key' => 'calendars',
+						'BlockSetting.field_name' => 'use_workflow',
 					)
-				)
+				),
 			),
 			'conditions' => array(
 				'Room.id' => $readableRoomIds
@@ -213,7 +217,6 @@ class CalendarPermission extends CalendarsAppModel {
 			);
 			if ($permissions) {
 				$roomBlock['BlockRolePermission'] = $permissions['BlockRolePermissions'];
-				//$roomBlock['Roles'] = $permissions['Roles'];
 			}
 			if (isset($readableRoom[$roomBlock['Room']['id']]['RolesRoom'])) {
 				$roomBlock['RolesRoom'] = $readableRoom[$roomBlock['Room']['id']]['RolesRoom'];
@@ -230,10 +233,20 @@ class CalendarPermission extends CalendarsAppModel {
  */
 	protected function _setBlockSetting(&$roomBlocks) {
 		foreach ($roomBlocks as &$roomBlock) {
-			$blockKey = Hash::get($roomBlock, 'Block.key');
+			if (! is_null($roomBlock['BlockSetting']['value'])) {
+				$roomBlock[$this->alias]['use_workflow'] = $roomBlock['BlockSetting']['value'];
+				continue;
+			}
+			$blockKey = Hash::get($roomBlock, 'Block.key', null);
 			$roomId = Hash::get($roomBlock, 'Block.room_id');
-			$blockSetting = $this->getBlockSetting($blockKey, $roomId);
-			$roomBlock[$this->alias]['use_workflow'] = $blockSetting[$this->alias]['use_workflow'];
+
+			// カレンダーブロックがまだ存在しないときはRoomの承認設定を代入する
+			if (is_null($blockKey)) {
+				$roomBlock[$this->alias]['use_workflow'] = Hash::get($roomBlock, 'Room.need_approval');
+			} else {
+				$blockSetting = $this->getBlockSetting($blockKey, $roomId);
+				$roomBlock[$this->alias]['use_workflow'] = $blockSetting[$this->alias]['use_workflow'];
+			}
 		}
 	}
 /**
