@@ -164,11 +164,12 @@ class CalendarBlockRolePermissionsControllerEditTest extends BlockRolePermission
 			);
 			$this->asserts(array($assert), $result);
 
-			$assert = array(
-				'method' => 'assertInput', 'type' => 'input', 'name' => 'data[Block][id]',
-				'value' => $blockId
-			);
-			$this->asserts(array($assert), $result);
+			// 権限設定はリストアップされた全ルーム・全ブロックに行うものでカレントのブロックのチェックは意味がありません
+			//$assert = array(
+			//	'method' => 'assertInput', 'type' => 'input', 'name' => 'data[Block][id]',
+			//	'value' => $blockId
+			//);
+			//$this->asserts(array($assert), $result);
 
 		}
 

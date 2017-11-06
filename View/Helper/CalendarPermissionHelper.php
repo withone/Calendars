@@ -73,7 +73,7 @@ class CalendarPermissionHelper extends AppHelper {
 		$fieldName = $spaceId . '.' . $roomBlock['Room']['id'] . '.BlockRolePermission.content_creatable';
 		$html = '';
 		foreach ($roomBlock['BlockRolePermission']['content_creatable'] as $roleKey => $role) {
-			if (! $role['value'] && $role['fixed']) {
+			if (!$role['value'] && $role['fixed']) {
 				continue;
 			}
 			$html .= '<td class="text-center">';

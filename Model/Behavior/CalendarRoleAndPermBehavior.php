@@ -151,11 +151,11 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 		if (empty($roleOfRooms)) {
 			return array();
 		}
-		$permRooms = $model->CalendarPermission->getCalendarRoomBlocks($this->__workflowCompo);
+		$permRooms = $model->CalendarPermission->getCalendarRoomBlocks();
 
 		// 全会員ルームの情報
 		$allMemberRoom =
-			$model->CalendarPermission->getCalendarAllMemberRoomBlocks($this->__workflowCompo);
+			$model->CalendarPermission->getCalendarAllMemberRoomBlocks();
 		// 全会員ルーム情報もマージしてしまう
 		$permRooms = Hash::mergeDiff($permRooms, $allMemberRoom);
 

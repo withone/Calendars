@@ -184,6 +184,8 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 		// フレーム情報
 		//カレンダーではsaveAssociated()はつかわないので外す。
 		$this->request->data['Frame'] = Current::read('Frame');
+		$this->request->data['Block'] = Current::read('Block');
+
 		// カレンダー表示種別
 		$this->set('displayTypeOptions', $this->_displayTypeOptions);
 	}

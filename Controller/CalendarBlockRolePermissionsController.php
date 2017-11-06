@@ -108,7 +108,7 @@ class CalendarBlockRolePermissionsController extends CalendarsAppController {
 
 		// カレンダー＋ブロック+ルーム
 		// ただし全会員を除く
-		$rooms = $this->CalendarPermission->getCalendarRoomBlocks($this->Workflow);
+		$rooms = $this->CalendarPermission->getCalendarRoomBlocks();
 		$this->set('roomBlocks', $rooms);
 
 		// ルームツリー
@@ -123,7 +123,7 @@ class CalendarBlockRolePermissionsController extends CalendarsAppController {
 
 		// ツリー情報の作成も終わったので
 		// 全会員ルーム情報取得
-		$allMemberRoom = $this->CalendarPermission->getCalendarAllMemberRoomBlocks($this->Workflow);
+		$allMemberRoom = $this->CalendarPermission->getCalendarAllMemberRoomBlocks();
 		$this->set('allMemberRoomBlocks', $allMemberRoom);
 
 		// 全会員ルーム情報もマージしてしまう
@@ -132,5 +132,7 @@ class CalendarBlockRolePermissionsController extends CalendarsAppController {
 		if (! $this->request->is('post')) {
 			$this->request->data = $rooms;
 		}
+		$this->request->data['Block'] = Current::read('Block');
+		$this->request->data['Frame'] = Current::read('Frame');
 	}
 }
