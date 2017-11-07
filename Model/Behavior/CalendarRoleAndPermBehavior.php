@@ -32,27 +32,6 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 	protected $_calRoleAndPerm = null;
 
 /**
- * __workflowCompo
- *
- * ワークフローコンポーネント（こんなところでコンポーネントを見て本当にすみません）
- * @var null
- */
-	private $__workflowCompo = null;
-
-/**
- * initSetting
- *
- * 権限情報を適切にマッピング処理してくれるコンポーネントを取得保持
- *
- * @param Model &$model モデル
- * @param Component $workflow ワークフローコンポーネント
- * @return void
- */
-	public function initSetting(Model &$model, $workflow) {
-		$this->__workflowCompo = $workflow;
-	}
-
-/**
  * prepareCalRoleAndPerm
  *
  * (現ユーザにおける）カレンダー用役割と権限の取得準備

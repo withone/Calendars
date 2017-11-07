@@ -75,22 +75,6 @@ class CalendarsController extends CalendarsAppController {
 	);
 
 /**
- * beforeRender
- *
- * @return void
- */
-	public function beforeFilter() {
-		parent::beforeFilter();
-
-		// 以前はここでCurrentのブロックIDをチェックする処理があったが
-		// カレンダーはCurrentのブロックID（＝現在表示中ページのブロックID）は
-		// 表示データ上の意味がないのでチェックは行わない
-		// 表示ブロックIDがないときは、パブリックTOPページで仮表示されることに話が決まった
-
-		$this->CalendarEvent->initSetting($this->Workflow);
-	}
-
-/**
  * index
  *
  * @return void

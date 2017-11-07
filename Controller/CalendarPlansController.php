@@ -139,8 +139,6 @@ class CalendarPlansController extends CalendarsAppController {
 		// 表示データ上の意味がないのでチェックは行わない
 		// 表示ブロックIDがないときは、パブリックTOPページで仮表示されることに話が決まった
 
-		$this->CalendarEvent->initSetting($this->Workflow);
-
 		// カレンダー権限設定情報確保
 		$this->roomPermRoles = $this->CalendarEvent->prepareCalRoleAndPerm();
 		CalendarPermissiveRooms::setRoomPermRoles($this->roomPermRoles);
