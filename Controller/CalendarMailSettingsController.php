@@ -111,8 +111,6 @@ class CalendarMailSettingsController extends MailSettingsController {
 	protected function _getMailRooms() {
 		$retRoom = array();
 
-		$this->CalendarEvent->initSetting($this->Workflow);
-
 		$roomPermRoles = $this->CalendarEvent->prepareCalRoleAndPerm();
 		CalendarPermissiveRooms::setRoomPermRoles($roomPermRoles);
 

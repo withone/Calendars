@@ -51,13 +51,14 @@ class CalendarsSchema extends CakeSchema {
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
 		'model' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'content_key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'CONTENTキー', 'charset' => 'utf8'),
-		'calendar_event_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+		'calendar_event_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'index'),
 		'created_user' => array('type' => 'integer', 'null' => true, 'default' => '0', 'unsigned' => false, 'comment' => '作成者'),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => '作成日時'),
 		'modified_user' => array('type' => 'integer', 'null' => true, 'default' => '0', 'unsigned' => false, 'comment' => '更新者'),
 		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => '更新日時'),
 		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+			'calendar_event_id' => array('column' => 'calendar_event_id', 'unique' => 0)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
@@ -69,14 +70,15 @@ class CalendarsSchema extends CakeSchema {
  */
 	public $calendar_event_share_users = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary', 'comment' => 'ID'),
-		'calendar_event_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+		'calendar_event_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'index'),
 		'share_user' => array('type' => 'integer', 'null' => true, 'default' => '0', 'unsigned' => false, 'comment' => '情報共有者'),
 		'created_user' => array('type' => 'integer', 'null' => true, 'default' => '0', 'unsigned' => false, 'comment' => '作成者'),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => '作成日時'),
 		'modified_user' => array('type' => 'integer', 'null' => true, 'default' => '0', 'unsigned' => false, 'comment' => '更新者'),
 		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => '更新日時'),
 		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+			'calendar_event_id' => array('column' => 'calendar_event_id', 'unique' => 0)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
@@ -90,7 +92,7 @@ class CalendarsSchema extends CakeSchema {
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary', 'comment' => 'ID'),
 		'calendar_rrule_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
 		'key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'イベントKey', 'charset' => 'utf8'),
-		'room_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'comment' => 'ルームID'),
+		'room_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'index', 'comment' => 'ルームID'),
 		'language_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'comment' => '言語ID'),
 		'is_origin' => array('type' => 'boolean', 'null' => false, 'default' => '1', 'comment' => 'オリジナルかどうか'),
 		'is_translation' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'comment' => '翻訳したかどうか'),
@@ -104,10 +106,10 @@ class CalendarsSchema extends CakeSchema {
 		'is_allday' => array('type' => 'boolean', 'null' => true, 'default' => '1', 'comment' => '終日かどうか | 0:終日ではない | 1:終日'),
 		'start_date' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 8, 'collate' => 'utf8_general_ci', 'comment' => '開始日 (YYYYMMDD形式)', 'charset' => 'utf8'),
 		'start_time' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 6, 'collate' => 'utf8_general_ci', 'comment' => '開始時刻 (hhmmss形式)', 'charset' => 'utf8'),
-		'dtstart' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 14, 'collate' => 'utf8_general_ci', 'comment' => '開始日時 (YYYYMMDDhhmmss) iCalendarのDTDSTARTからTとZを外したもの', 'charset' => 'utf8'),
+		'dtstart' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 14, 'key' => 'index', 'collate' => 'utf8_general_ci', 'comment' => '開始日時 (YYYYMMDDhhmmss) iCalendarのDTDSTARTからTとZを外したもの', 'charset' => 'utf8'),
 		'end_date' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 8, 'collate' => 'utf8_general_ci', 'comment' => '終了日 (YYYYMMDD形式)', 'charset' => 'utf8'),
 		'end_time' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 6, 'collate' => 'utf8_general_ci', 'comment' => '終了時刻 (hhmmss形式)', 'charset' => 'utf8'),
-		'dtend' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 14, 'collate' => 'utf8_general_ci', 'comment' => '終了日時 (YYYYMMDDhhmmss形式) iCalendarのDTENDからTとZをはずしたもの', 'charset' => 'utf8'),
+		'dtend' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 14, 'key' => 'index', 'collate' => 'utf8_general_ci', 'comment' => '終了日時 (YYYYMMDDhhmmss形式) iCalendarのDTENDからTとZをはずしたもの', 'charset' => 'utf8'),
 		'timezone_offset' => array('type' => 'float', 'null' => false, 'default' => '0.0', 'length' => '3,1', 'unsigned' => false, 'comment' => 'タイムゾーンオフセット-12.0～+12.0'),
 		'status' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 4, 'unsigned' => false, 'comment' => '公開状況  1:公開中>、2:公 開申請中、3:下書き中、4:差し戻し'),
 		'is_active' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'comment' => 'アクティブなコンテンツかどうか 0:アクティブでない 1:アクティブ'),
@@ -121,7 +123,10 @@ class CalendarsSchema extends CakeSchema {
 		'modified_user' => array('type' => 'integer', 'null' => true, 'default' => '0', 'unsigned' => false, 'comment' => '更新者'),
 		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => '更新日時'),
 		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+			'dtstart' => array('column' => 'dtstart', 'unique' => 0),
+			'dtend' => array('column' => 'dtend', 'unique' => 0),
+			'room_id' => array('column' => 'room_id', 'unique' => 0)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
