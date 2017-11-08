@@ -410,6 +410,11 @@ class CalendarPermission extends CalendarsAppModel {
 						$perm['block_key'] = $block['Block']['key'];
 					}
 					$room[$this->alias]['block_key'] = $block['Block']['key'];
+					if (! Hash::get($room[$this->alias], 'id', null)) {
+						$calendar = $this->findByBlockKey($block['Block']['key']);
+						$room[$this->alias]['id'] = Hash::get($calendar, 'CalendarPermission.id', null);
+					}
+
 					// 保存する
 					$this->create();
 					$this->set($room);
@@ -422,11 +427,10 @@ class CalendarPermission extends CalendarsAppModel {
 					$this->saveBlockSetting($block['Block']['key'], $block['Block']['room_id']);
 
 					$this->Behaviors->disable('Blocks.BlockSetting');
-					if (! $this->save($room, false)) {
+					if (!$this->save($room, false)) {
 						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 					}
 					$this->Behaviors->enable('Blocks.BlockSetting');
-
 				}
 			}
 			//トランザクションCommit
