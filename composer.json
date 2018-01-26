@@ -1,8 +1,9 @@
 {
-    "name":        "netcommons/calendars",
+    "name": "netcommons/calendars",
     "description": "Calendars for NetCommons Plugin",
-    "homepage":    "http://www.netcommons.org/",
-    "license":     "NetCommons License",
+    "homepage": "http://www.netcommons.org/",
+    "license": "LicenseRef-NetCommons",
+    "license-ref-net-commons": "https://raw.githubusercontent.com/NetCommons3/NetCommons3/master/license.txt",
     "authors": [
         {
             "name": "Toshihide Hashimoto(AllCreator Co., Ltd.)",
@@ -29,27 +30,32 @@
     ],
     "extra": {
         "installer-paths": {
-            "app/Plugin/{$name}": ["type:cakephp-plugin"]
+            "app/Plugin/{$name}": [
+                "type:cakephp-plugin"
+            ]
         }
     },
     "require": {
-        "cakedc/migrations":            "~2.2",
-        "netcommons/blocks":            "@dev",
-        "netcommons/frames":            "@dev",
-        "netcommons/groups":            "@dev",
-        "netcommons/holidays":          "@dev",
-        "netcommons/mails":             "@dev",
-        "netcommons/net-commons":       "@dev",
-        "netcommons/pages":             "@dev",
-        "netcommons/plugin-manager":    "@dev",
-        "netcommons/rooms":             "@dev",
-        "netcommons/topics":            "@dev",
-        "netcommons/users":             "@dev",
-        "netcommons/workflow":          "@dev",
-        "netcommons/wysiwyg":           "@dev"
+        "cakedc/migrations": "~2.2",
+        "netcommons/blocks": "@dev",
+        "netcommons/frames": "@dev",
+        "netcommons/groups": "@dev",
+        "netcommons/holidays": "@dev",
+        "netcommons/mails": "@dev",
+        "netcommons/net-commons": "@dev",
+        "netcommons/pages": "@dev",
+        "netcommons/plugin-manager": "@dev",
+        "netcommons/rooms": "@dev",
+        "netcommons/topics": "@dev",
+        "netcommons/users": "@dev",
+        "netcommons/workflow": "@dev",
+        "netcommons/wysiwyg": "@dev"
     },
-    "type":        "cakephp-plugin",
-    "keywords":    ["cakephp", "calendars"],
+    "type": "cakephp-plugin",
+    "keywords": [
+        "cakephp",
+        "calendars"
+    ],
     "config": {
         "vendor-dir": "vendors"
     }
