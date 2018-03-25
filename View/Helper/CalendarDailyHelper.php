@@ -7,7 +7,7 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
-App::uses('AppHelper', 'View/Helper');
+App::uses('CalendarMonthlyHelper', 'Calendars.View/Helper');
 /**
  * Calendar daily Helper
  *
