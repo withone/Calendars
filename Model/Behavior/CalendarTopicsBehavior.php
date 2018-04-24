@@ -53,6 +53,7 @@ class CalendarTopicsBehavior extends CalendarAppBehavior {
 		$originalRoomId = Current::read('Room.id');
 		$originalBlockId = Current::read('Block.id');
 		$originalFrameBlockId = Current::read('Frame.block_id');
+		$originalFrameId = Current::read('Frame.id');
 
 		// 予定のルームID
 		$eventRoomId = $data['CalendarEvent']['room_id'];
@@ -73,6 +74,7 @@ class CalendarTopicsBehavior extends CalendarAppBehavior {
 		Current::$current['Room']['id'] = $eventRoomId;
 		Current::$current['Block']['id'] = $eventBlockId;
 		Current::$current['Frame']['block_id'] = $eventBlockId;
+		Current::$current['Frame']['id'] = null;
 
 		$model->CalendarEvent->Behaviors->load('Topics.Topics', array(
 			'fields' => array(
@@ -92,6 +94,7 @@ class CalendarTopicsBehavior extends CalendarAppBehavior {
 		Current::$current['Room']['id'] = $originalRoomId;
 		Current::$current['Block']['id'] = $originalBlockId;
 		Current::$current['Frame']['block_id'] = $originalFrameBlockId;
+		Current::$current['Frame']['id'] = $originalFrameId;
 	}
 
 /**
