@@ -23,7 +23,7 @@
 
 			$options = array(
 				'onclick' => false,
-				'ng-click' => "showRepeatConfirmEx(" . $frameId . ", 'repeatdelete', \$event," .
+				'ng-click' => "showRepeatConfirmEx('repeatdelete', \$event," .
 					"'" . $event['CalendarEvent']['key'] . "'," .
 					$firstSibEventId . "," . $originEventId . "," . $isRecurrenceVal . ");",
 			);
@@ -32,7 +32,7 @@
 
 			$options = array(
 				'onclick' => false,
-				'ng-click' => "showRepeatConfirmEx(" . $frameId . ", 'singledelete', \$event," .
+				'ng-click' => "showRepeatConfirmEx('singledelete', \$event," .
 					"'" . $event['CalendarEvent']['key'] . "'," .
 					$firstSibEventId . "," . $originEventId . "," . $isRecurrenceVal . ");",
 			);

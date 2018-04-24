@@ -453,7 +453,7 @@ NetCommonsApp.controller('CalendarsDetailEdit',
        };
        // 繰り返し予定全てを変更の場合のみ、先頭の予定の編集画面にしなくてはならない
        // location変更で先頭を読みだしていることにする
-       $scope.changeEditRrule = function(frameId, firstSibEditLink) {
+       $scope.changeEditRrule = function(firstSibEditLink) {
          if ($scope.editRrule === '2') {
            if (firstSibEditLink !== '') {
               $scope.$parent.sending = true;
@@ -600,15 +600,6 @@ NetCommonsApp.controller('CalendarsDetailEdit',
          window.location = url;
        };
 
-       $scope.toggleRepeatArea = function(frameId) {
-         var elm = $('.calendar-repeat-a-plan-detail_' + frameId);
-         if ($scope.repeatArray[frameId]) {
-           elm.show();
-         } else {
-           elm.hide();
-         }
-       };
-
        $scope.setInitRepeatPeriod = function(frameId, idx) {
          //これで、画面をリフレッシュ
          $scope.selectRepeatPeriodArray[frameId] = idx;
@@ -746,36 +737,13 @@ NetCommonsApp.controller('CalendarsDetailEdit',
        $scope.doSelect = function() {
        };
 
-       $scope.showRepeatTypeSelect = function(frameId, action, $event, eventId) {
-         //クリックのデフォルト動作(この場合form のsubmit)を抑止しておく。
-         $event.preventDefault();
-         if (action === 'delete') {
-           //３選択をエコーバックさせるために、modalを使う。modalの中ではCRUDはさせない.
-           var modalInstance = NetCommonsModal.show($scope, 'CalendarsDetailEdit',
-           NC3_URL + '/calendars/calendar_plans/select/event:' + eventId +
-           '?frame_id=' + frameId);
-           //コールバックセット
-           modalInstance.result.then(
-           function(result) {
-             $scope.result = result;
-             $scope.event = 'close';
-           },
-           function(resutl) {
-             $scope.result = result;
-             $scope.event = 'dismiss';
-           }
-           );
-         }
-       };
-
-       $scope.showRepeatConfirmEx = function(frameId,
+       $scope.showRepeatConfirmEx = function(
        action, $event, eventKey, firstSibEventId, originEventId, isRecurrence) {
 
          var url = NC3_URL + '/calendars/calendar_plans/delete';
          url = url + '/' + eventKey;
-         url = url + '?frame_id=' + frameId;
          if (action != '') {
-           url = url + '&action=' + action;
+           url = url + '?action=' + action;
          }
          if (firstSibEventId > 0) {
            url = url + '&first_sib_event_id=' + firstSibEventId;

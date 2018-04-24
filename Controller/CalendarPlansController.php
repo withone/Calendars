@@ -275,11 +275,6 @@ class CalendarPlansController extends CalendarsAppController {
  * @return void
  */
 	public function add() {
-		$frameId = Current::read('Frame.id');
-		if (! $frameId) {
-			$this->setAction('can_not_edit');
-			return;
-		}
 		if ($this->request->is('post')) {
 			$this->_calendarPost();
 		}
@@ -294,11 +289,6 @@ class CalendarPlansController extends CalendarsAppController {
  * @return void
  */
 	public function edit() {
-		$frameId = Current::read('Frame.id');
-		if (! $frameId) {
-			$this->setAction('can_not_edit');
-			return;
-		}
 		if ($this->request->is('post')) {
 			$this->_calendarPost();
 		}
@@ -512,7 +502,11 @@ class CalendarPlansController extends CalendarsAppController {
 		$this->set('exposeRoomOptions', $this->_exposeRoomOptions);
 		$this->set('myself', $this->_myself);
 		$this->set('emailOptions', $this->_emailOptions);
-		$this->set('frameId', Current::read('Frame.id'));
+		$frameId = Current::read('Frame.id');
+		if (is_null($frameId)) {
+			$frameId = 0;
+		}
+		$this->set('frameId', $frameId);
 		$this->set('languageId', Current::read('Language.id'));
 
 		//$this->request->data['CalendarFrameSettingSelectRoom'] =
@@ -546,7 +540,11 @@ class CalendarPlansController extends CalendarsAppController {
 		$this->set(compact('shareUserInfos', 'createdUserInfo', 'isRepeat'));
 		$this->set('vars', $this->_vars);
 		$this->set('event', $this->eventData);
-		$this->set('frameId', Current::read('Frame.id'));
+		$frameId = Current::read('Frame.id');
+		if (is_null($frameId)) {
+			$frameId = 0;
+		}
+		$this->set('frameId', $frameId);
 		$this->set('languageId', Current::read('Language.id'));
 	}
 
@@ -621,8 +619,21 @@ class CalendarPlansController extends CalendarsAppController {
  */
 	private function __getSessionStoredRedirectUrl() {
 		$frameId = Current::read('Frame.id');
-		$sessPath = CakeSession::read('Config.userAgent') . 'calendars.' . $frameId;
-		$url = $this->Session->read($sessPath);
+		if (! $frameId) {
+			$options = array(
+				'controller' => 'calendars',
+				'action' => 'index',
+				'?' => array(
+					'style' => 'largemonthly',
+					'year' => $this->_vars['year'],
+					'month' => $this->_vars['month'],
+				)
+			);
+			$url = NetCommonsUrl::actionUrl($options);
+		} else {
+			$sessPath = CakeSession::read('Config.userAgent') . 'calendars.' . $frameId;
+			$url = $this->Session->read($sessPath);
+		}
 		if (! $url) {
 			$url = NetCommonsUrl::backToPageUrl();
 		}
