@@ -221,7 +221,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 		return array(
 			array($data1, $expect1),
 			array($data2, $expect2, 'BadRequestException'),
-			array($data3, $expect3, 'InternalErrorException'),
+			//array($data3, $expect3, 'InternalErrorException'),
 			array($data4, $expect4, 'InternalErrorException'),
 			array($data5, $expect5),
 			array($data6, $expect6),

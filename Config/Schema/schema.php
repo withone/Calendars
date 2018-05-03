@@ -163,7 +163,6 @@ class CalendarsSchema extends CakeSchema {
 		'display_count' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 4, 'unsigned' => false, 'comment' => '表示日数'),
 		'is_myroom' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'comment' => 'プライベートルームのカレンダーコンポーネント（イベント等)を表示するかどうか 0:表示しない 1:表示する'),
 		'is_select_room' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'comment' => '指定したルームのみ表示するかどうか 0:表示しない 1:表示する'),
-		'room_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'comment' => 'ルームID'),
 		'timeline_base_time' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'comment' => '単一日タイムライン基準時'),
 		'created_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false, 'comment' => '作成者'),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => '作成日時'),

@@ -315,8 +315,6 @@ class Calendar extends CalendarsAppModel {
 		$frameSetting = $this->CalendarFrameSetting->create();
 		$this->CalendarFrameSetting->setDefaultValue($frameSetting);	//Modelの初期値設定
 		$frameSetting['CalendarFrameSetting']['frame_key'] = $frame['key'];
-		$frameSetting['CalendarFrameSetting']['room_id'] = Current::read('Room.id');
-
 		return $this->CalendarFrameSetting->saveFrameSetting($frameSetting);
 	}
 

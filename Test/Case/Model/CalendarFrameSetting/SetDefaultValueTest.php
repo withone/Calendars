@@ -100,7 +100,6 @@ class CalendarFrameSettingSetDefaultValueTest extends NetCommonsModelTestCase {
 				'is_myroom' => true,
 				'start_pos' => '0',
 				'frame_key' => '',
-				'room_id' => '',
 				'created_user' => null,
 				'created' => null,
 				'modified_user' => null,
