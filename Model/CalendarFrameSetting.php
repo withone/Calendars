@@ -125,7 +125,6 @@ class CalendarFrameSetting extends CalendarsAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
-		$roomIds = $this->getReadableRoomIds();
 		$this->validate = Hash::merge($this->validate, array(
 			'display_type' => array(
 				'rule1' => array(
