@@ -745,6 +745,9 @@ NetCommonsApp.controller('CalendarsDetailEdit',
          if (action != '') {
            url = url + '?action=' + action;
          }
+         if ($scope.data.frameId) {
+           url = url + '&frame_id=' + $scope.data.frameId;
+         }
          if (firstSibEventId > 0) {
            url = url + '&first_sib_event_id=' + firstSibEventId;
          }
