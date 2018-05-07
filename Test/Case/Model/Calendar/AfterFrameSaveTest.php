@@ -99,6 +99,8 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 				$mock->expects($this->once())
 				->method('save')
 				->will($this->returnValue(array()));
+			} elseif ($data['FramesLanguage']['name'] == 'testdata3') {
+				$this->_mockForReturnFalse($model, 'Calendars.CalendarFrameSetting', 'save', 1);
 			}
 			unset($data['FramesLanguage']);
 		}
@@ -140,6 +142,7 @@ class CalendarAfterFrameSaveTest extends NetCommonsModelTestCase {
 		);
 		$data3['FramesLanguage'] = array(
 			'language_id' => 2,
+			'name' => 'testdata3'
 		);
 
 		//4.Frameあり/Blockなし

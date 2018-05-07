@@ -20,7 +20,6 @@
 	echo $this->NetCommonsForm->hidden('CalendarFrameSetting.frame_key');
 	echo $this->NetCommonsForm->hidden('Frame.id');
 	echo $this->NetCommonsForm->hidden('Frame.key');
-	echo $this->NetCommonsForm->hidden('CalendarFrameSetting.room_id');
 	echo $this->NetCommonsForm->hidden('CalendarFrameSetting.is_myroom');
 
 	$displayType = $this->request->data['CalendarFrameSetting']['display_type'];

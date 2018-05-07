@@ -77,13 +77,6 @@ class CalendarFrameSetting extends CalendarsAppModel {
  * @var array
  */
 	public $belongsTo = array(
-		'Room' => array(
-			'className' => 'Rooms.Room',
-			'foreignKey' => 'room_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		),
 		'Frame' => array(
 			'className' => 'Frames.Frame',
 			'foreignKey' => 'frame_key',
@@ -132,7 +125,6 @@ class CalendarFrameSetting extends CalendarsAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
-		$roomIds = $this->getReadableRoomIds();
 		$this->validate = Hash::merge($this->validate, array(
 			'display_type' => array(
 				'rule1' => array(
@@ -194,17 +186,6 @@ class CalendarFrameSetting extends CalendarsAppModel {
 					'required' => true,
 					'message' => __d('net_commons', 'Invalid request.'),
 				),
-			),
-			'room_id' => array(
-				'rule1' => array(
-					'rule' => array('numeric'),
-					'required' => true,
-					'message' => __d('net_commons', 'Invalid request.'),
-				),
-				'rule2' => array(
-					'rule' => array('inList', $roomIds),
-					'message' => __d('net_commons', 'Invalid request.'),
-				)
 			),
 			'timeline_base_time' => array(
 				'rule1' => array(
@@ -347,7 +328,7 @@ class CalendarFrameSetting extends CalendarsAppModel {
  */
 	public function getDefaultFrameSetting() {
 		//start_pos、is_myroom、is_select_roomはtableの初期値をつかう。
-		//frame_key,room_idは明示的に設定されることを想定し、setDefaultではなにもしない。
+		//frame_keyは明示的に設定されることを想定し、setDefaultではなにもしない。
 		return $this->create(array(
 			$this->alias => array(
 				'display_type' => CalendarsComponent::CALENDAR_DISP_TYPE_SMALL_MONTHLY,
