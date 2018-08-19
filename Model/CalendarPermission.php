@@ -210,7 +210,8 @@ class CalendarPermission extends CalendarsAppModel {
 				'Room.id' => $readableRoomIds
 			),
 			'order' => array(
-				'Room.lft asc'
+				//'Room.lft asc'
+				'Room.sort_key asc'
 			)
 		);
 	}
