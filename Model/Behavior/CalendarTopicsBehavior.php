@@ -133,8 +133,12 @@ class CalendarTopicsBehavior extends CalendarAppBehavior {
  * @return array ShareUser配列
  */
 	protected function _getShareUsers($data) {
-		$ret = array();
-		$ret = Hash::combine($data['CalendarEventShareUser'], '{n}.share_user', '{n}.share_user');
+		$ret = [];
+		if (isset($data['CalendarEventShareUser'])) {
+			foreach ($data['CalendarEventShareUser'] as $shareUser) {
+				$ret[$shareUser['share_user']] = $shareUser['share_user'];
+			}
+		}
 		return $ret;
 	}
 }

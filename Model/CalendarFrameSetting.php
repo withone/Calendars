@@ -125,7 +125,7 @@ class CalendarFrameSetting extends CalendarsAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
-		$this->validate = Hash::merge($this->validate, array(
+		$this->validate = array_merge($this->validate, array(
 			'display_type' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),

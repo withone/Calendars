@@ -89,8 +89,11 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 		));
 
 		//CakeLog::debug("DBG: rolesRoomsUsers[" . print_r($rolesRoomsUsers, true) . "]");
-		$roleOfRooms = Hash::combine($rolesRoomsUsers,
-			'{n}.RolesRoomsUser.room_id', '{n}.RolesRoom.role_key');
+		$roleOfRooms = [];
+		foreach ($rolesRoomsUsers as $rolesRoomsUser) {
+			$roleOfRooms[$rolesRoomsUser['RolesRoomsUser']['room_id']]
+				= $rolesRoomsUser['RolesRoom']['role_key'];
+		}
 
 		//注）
 		//$rolesRoomsUsersには、バプリックルーム（space_id ==2 && room_id == 1）の情報はあるが、
@@ -170,16 +173,21 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
 			);
 		}
 		$room = $room[0];
-		$useWorkFlow = Hash::get(
-			$room, 'CalendarPermission.use_workflow');
-		$publishable = Hash::get(
-			$room, 'BlockRolePermission.content_publishable.' . $roleName . '.value');
-		$editable = Hash::get(
-			$room, 'BlockRolePermission.content_editable.' . $roleName . '.value');
-		$creatable = Hash::get(
-			$room, 'BlockRolePermission.content_creatable.' . $roleName . '.value');
-		$mail = Hash::get(
-			$room, 'BlockRolePermission.mail_editable.' . $roleName . '.value');
+		$useWorkFlow = isset($room['CalendarPermission']['use_workflow'])
+			? $room['CalendarPermission']['use_workflow']
+			: null;
+		$publishable = isset($room['BlockRolePermission']['content_publishable'][$roleName]['value'])
+			? $room['BlockRolePermission']['content_publishable'][$roleName]['value']
+			: null;
+		$editable = isset($room['BlockRolePermission']['content_editable'][$roleName]['value'])
+			? $room['BlockRolePermission']['content_editable'][$roleName]['value']
+			: null;
+		$creatable = isset($room['BlockRolePermission']['content_creatable'][$roleName]['value'])
+			? $room['BlockRolePermission']['content_creatable'][$roleName]['value']
+			: null;
+		$mail = isset($room['BlockRolePermission']['mail_editable'][$roleName]['value'])
+			? $room['BlockRolePermission']['mail_editable'][$roleName]['value']
+			: null;
 		return array(
 			'role_key' => $roleName,
 			'use_workflow' => $useWorkFlow,
@@ -202,7 +210,10 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  */
 	private function __getAllMemberRoleKey(Model $model, $userId, $communityRoomId) {
 		$communityRoom = $model->Room->findById($communityRoomId);
-		$defaultRoleKey = Hash::get($communityRoom, 'Room.default_role_key', Role::ROOM_ROLE_KEY_VISITOR);
+		$defaultRoleKey = Role::ROOM_ROLE_KEY_VISITOR;
+		if (isset($communityRoom['Room']['default_role_key'])) {
+			$defaultRoleKey = $communityRoom['Room']['default_role_key'];
+		}
 		//全会員
 		$rolesRoomsUser = $model->RolesRoomsUser->find('first', array(
 			'conditions' => array(

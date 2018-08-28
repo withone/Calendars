@@ -54,9 +54,13 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 		$userId = Current::read('User.id');
 		foreach ($spaces as $space) {	//Space::PUBLIC_SPACE_ID, Space::COMMUNITY_SPACE_IDを順次処理.
 			//$title = $model->Rooms->roomName($space);
-			$roomsLanguage = Hash::extract($space, 'RoomsLanguage.{n}[language_id=' .
-				Current::read('Language.id') . ']');
-			$title = h($roomsLanguage[0]['name']);
+			$title = '';
+			foreach ($space['RoomsLanguage'] as $item) {
+				if ($item['language_id'] === Current::read('Language.id')) {
+					$title = $item['name'];
+					break;
+				}
+			}
 
 			if ($space['Space']['id'] == Space::PRIVATE_SPACE_ID) {
 				//プライベート
@@ -104,17 +108,24 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
  * @param array $spaceNameOfRooms ルーム毎空間名配列
  * @param array $allRoomNames ルーム名一覧
  * @return array マージ後のoptions配列とルーム毎空間名配列
+ *
+ * 速度改善の修正に伴って発生したため抑制
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
 	public function mergeSelectExposeTargetOptions(Model &$model, $options, $title, $space,
 		$roomTreeList, $rooms, $frameSetting, $spaceNameOfRooms, $allRoomNames) {
 		$userId = Current::read('User.id');
 		if ($roomTreeList) {
 			foreach ($roomTreeList as $roomId => $tree) {
-				if (Hash::get($rooms, $roomId)) {
+				if (isset($rooms[$roomId])) {
 					$nest = substr_count($tree, Room::$treeParser);
-					$roomsLanguage = Hash::extract($rooms[$roomId],
-						'RoomsLanguage.{n}[language_id=' . Current::read('Language.id') . ']');
-					$targetTitle = h($roomsLanguage[0]['name']);
+					$targetTitle = '';
+					foreach ($rooms[$roomId]['RoomsLanguage'] as $item) {
+						if ($item['language_id'] === Current::read('Language.id')) {
+							$targetTitle = h($item['name']);
+							break;
+						}
+					}
 
 					$spaceNameOfRooms[$roomId] =
 						($space['Space']['type'] == Space::COMMUNITY_SPACE_ID) ? 'group' : 'public';
@@ -173,13 +184,14 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
  */
 	public function getRoomsOfSpace(Model &$model, $spaceId) {
 		//指定空間配下で読み取り可能なルーム群を取得し、(room_id => room情報配列)集合にして返す。
-		$rooms = Hash::combine(
-			($model->Room->find('all',
-				$model->Room->getReadableRoomsConditions(array('Room.space_id' => $spaceId)))
-			),
-			'{n}.Room.id', '{n}'
+		$rooms = $model->Room->find('all',
+			$model->Room->getReadableRoomsConditions(['Room.space_id' => $spaceId])
 		);
-		return $rooms;
+		$roomArr = [];
+		foreach ($rooms as $room) {
+			$roomArr[$room['Room']['id']] = $room;
+		}
+		return $roomArr;
 	}
 
 /**
@@ -219,10 +231,12 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 		}
 
 		//ログイン時
-		$privateRoomId = Hash::extract($readableRoomInfos,
-			'{n}.Room[space_id=' . Space::PRIVATE_SPACE_ID . '].id');
-		$privateRoomId = array_shift($privateRoomId);	//privateRoomID取得
-		return $privateRoomId;
+		foreach ($readableRoomInfos as $readableRoomInfo) {
+			if ($readableRoomInfo['Room']['space_id'] === Space::PRIVATE_SPACE_ID) {
+				return $readableRoomInfo['Room']['id'];
+			}
+		}
+		return null;
 	}
 
 /**

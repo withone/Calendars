@@ -80,7 +80,7 @@ class CalendarFrameSettingSelectRoom extends CalendarsAppModel {
  */
 	public function beforeValidate($options = array()) {
 		$roomIds = $this->getReadableRoomIds();
-		$this->validate = Hash::merge($this->validate, array(
+		$this->validate = array_merge($this->validate, array(
 			'calendar_frame_setting_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
@@ -137,8 +137,11 @@ class CalendarFrameSettingSelectRoom extends CalendarsAppModel {
 		if (! $selectRoom) {
 			return array();
 		}
-		$selectRoom = Hash::combine($selectRoom, '{n}.Room.id', '{n}.CalendarFrameSettingSelectRoom');
-		return $selectRoom;
+		$selectRoomArr = [];
+		foreach ($selectRoom as $item) {
+			$selectRoomArr[$item['Room']['id']] = $item['CalendarFrameSettingSelectRoom'];
+		}
+		return $selectRoomArr;
 	}
 
 /**

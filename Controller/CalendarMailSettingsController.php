@@ -18,6 +18,10 @@ App::uses('CalendarPermissiveRooms', 'Calendars.Utility');
  *
  * @author Allcreator <info@allcreator.net>
  * @package NetCommons\Calendars\Controller
+ *
+ * @property RoomsLanguage $RoomsLanguage
+ * @property CalendarEvent $CalendarEvent
+ * @property CalendarPermission $CalendarPermission
  */
 
 class CalendarMailSettingsController extends MailSettingsController {
@@ -90,10 +94,15 @@ class CalendarMailSettingsController extends MailSettingsController {
 		$this->backUrl = NetCommonsUrl::backToPageUrl(true);
 
 		$mailRooms = $this->_getMailRooms();
-		$mailSelect = Hash::combine($mailRooms, '{n}.roomId', '{n}.name');
+		$mailSelect = [];
+		foreach ($mailRooms as $mailRoom) {
+			$mailSelect[$mailRoom['roomId']] = $mailRoom['name'];
+		}
 		$this->set('mailRooms', $mailSelect);
 
-		$specifiedRoomId = Hash::get($this->request->query, 'room');
+		$specifiedRoomId = isset($this->request->query['room'])
+			? $this->request->query['room']
+			: null;
 		if ($specifiedRoomId !== false && isset($mailRooms[$specifiedRoomId])) {
 			// 問題なければ強制すり替え
 			Current::$current['Room']['id'] = $specifiedRoomId;
@@ -109,7 +118,7 @@ class CalendarMailSettingsController extends MailSettingsController {
  * @return array
  */
 	protected function _getMailRooms() {
-		$retRoom = array();
+		$retRoom = [];
 
 		$roomPermRoles = $this->CalendarEvent->prepareCalRoleAndPerm();
 		CalendarPermissiveRooms::setRoomPermRoles($roomPermRoles);
@@ -117,21 +126,26 @@ class CalendarMailSettingsController extends MailSettingsController {
 		// メール設定ができるルームの一覧を取り出す
 		$mailEditableRoomIds = CalendarPermissiveRooms::getMailEditableRoomIdList();
 
+		$roomLangs = $this->RoomsLanguage->find('all', [
+			'fields' => ['RoomsLanguage.room_id', 'RoomsLanguage.name'],
+			'conditions' => [
+				'room_id' => $mailEditableRoomIds,
+				'language_id' => Current::read('Language.id')
+			]
+		]);
+		$roomLangNameArr = [];
+		foreach ($roomLangs as $roomLang) {
+			$roomLangNameArr[$roomLang['RoomsLanguage']['room_id']] = $roomLang['RoomsLanguage']['name'];
+		}
+
 		foreach ($mailEditableRoomIds as $roomId) {
-			$retRoom[$roomId] = array();
+			$retRoom[$roomId] = [];
 			$retRoom[$roomId]['roomId'] = $roomId;
 
 			if ($roomId == Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID)) {
 				$retRoom[$roomId]['name'] = __d('calendars', 'All the members');
 			} else {
-				// それぞれのルーム名を取りだして配列作成
-				$roomLang = $this->RoomsLanguage->find('first', array(
-					'conditions' => array(
-						'room_id' => $roomId,
-						'language_id' => Current::read('Language.id')
-					)
-				));
-				$retRoom[$roomId]['name'] = $roomLang['RoomsLanguage']['name'];
+				$retRoom[$roomId]['name'] = isset($roomLangNameArr[$roomId]) ? $roomLangNameArr[$roomId] : '';
 			}
 
 			// それぞれのルームにすでにカレンダーブロックがあるかチェック
