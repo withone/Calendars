@@ -45,11 +45,18 @@ class CalendarsAppModel extends AppModel {
 		$this->Room = ClassRegistry::init('Rooms.Room', true);
 		$condition = $this->Room->getReadableRoomsConditions();
 		$roomBase = $this->Room->find('all', $condition);
-		$roomIds = Hash::combine($roomBase, '{n}.Room.id', '{n}.Room.id');
+		$roomIds = [];
+		$hasPrivateSpace = false;
+		foreach ($roomBase as $room) {
+			$roomIds[$room['Room']['id']] = $room['Room']['id'];
+			if ($room['Room']['space_id'] === Space::PRIVATE_SPACE_ID) {
+				$hasPrivateSpace = true;
+			}
+		}
 		// カレンダーは特別にプライベートスペースIDを入れる
 		// カレンダーは特別に全会員向けルームIDを入れる
 		if (Current::read('User.id')) {
-			if (Hash::extract($roomBase, '{n}.Room[space_id=' . Space::PRIVATE_SPACE_ID . ']')) {
+			if ($hasPrivateSpace) {
 				$privateRoomId = Space::getRoomIdRoot(Space::PRIVATE_SPACE_ID);
 				$roomIds[$privateRoomId] = $privateRoomId;
 			}

@@ -10,7 +10,9 @@
  */
 echo $this->element('Calendars.scripts');
 
-$planRoomId = Hash::get($this->request->data, 'CalendarActionPlan.plan_room_id', array_keys($exposeRoomOptions));
+$planRoomId = isset($this->request->data['CalendarActionPlan']['plan_room_id'])
+	? $this->request->data['CalendarActionPlan']['plan_room_id']
+	: array_keys($exposeRoomOptions);
 $jsParameters = array(
 	'frameId' => Current::read('Frame.id'),
 	'myRoomId' => $myself,

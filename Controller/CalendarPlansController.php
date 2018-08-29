@@ -201,7 +201,6 @@ class CalendarPlansController extends CalendarsAppController {
 					$this->NetCommons->handleValidationError($this->CalendarDeleteActionPlan->validationErrors);
 				} else {
 					//削除実行
-					//
 
 					//元データ繰返し有無の取得
 					$eventSiblings = $this->CalendarEvent->getSiblings(
@@ -520,24 +519,27 @@ class CalendarPlansController extends CalendarsAppController {
  */
 	public function view() {
 		$event = $this->eventData;
-		$shareUserInfos = array();
-		foreach ($this->shareUsers as $shareUser) {
-			$shareUserInfos[] =
-				$this->User->getUser(
-					$shareUser[$this->CalendarEventShareUser->alias]['share_user'],
-					$event[$this->CalendarEvent->alias]['language_id']);
-		}
 
-		$createdUserInfo =
-			$this->User->getUser($event[$this->CalendarEvent->alias]['created_user'],
-				$event[$this->CalendarEvent->alias]['language_id']);
+		$shareUserIdArr = [];
+		foreach ($this->shareUsers as $shareUser) {
+			$shareUserIdArr[] = $shareUser['CalendarEventShareUser']['share_user'];
+		}
+		// 不要なイベントを発生させないためにBehaviorを除去
+		$this->User->Behaviors->unload('Files.Attachment');
+		$shareUserInfos = $this->User->find('all', [
+			'recursive' => -1,
+			'fields' => ['User.id', 'User.handlename'],
+			'conditions' => [
+				$this->User->alias . '.id' => $shareUserIdArr
+			],
+		]);
 
 		$isRepeat = $event['CalendarRrule']['rrule'] !== '' ? true : false;
 
 		//testセッション方式
 		$url = $this->__getSessionStoredRedirectUrl();
 		$this->_vars['returnUrl'] = $url;
-		$this->set(compact('shareUserInfos', 'createdUserInfo', 'isRepeat'));
+		$this->set(compact('shareUserInfos', 'isRepeat'));
 		$this->set('vars', $this->_vars);
 		$this->set('event', $this->eventData);
 		$frameId = Current::read('Frame.id');
@@ -553,18 +555,21 @@ class CalendarPlansController extends CalendarsAppController {
  *
  * 個別予定表示用のCtp名および予定情報の取得
  *
- * @return void
+ * @return array
  * @throws InternalErrorException
  */
 	protected function _getVarsForShow() {
 		$vars = array();
 		$this->_setCalendarCommonVars($vars);
 
-		$eventKey = Hash::get($this->request->params, 'key');
-		if ($eventKey) {
+		if (isset($this->request->params['key'])) {
+			$eventKey = $this->request->params['key'];
 			$this->eventData = $this->CalendarEvent->getEventByKey($eventKey);
-			$vars['eventId'] = Hash::get($this->eventData, 'CalendarEvent.id');
+			$vars['eventId'] = isset($this->eventData['CalendarEvent']['id'])
+				? $this->eventData['CalendarEvent']['id']
+				: null;
 			$this->shareUsers = $this->CalendarEventShareUser->find('all', array(
+				'fields' => ['CalendarEventShareUser.share_user'],
 				'conditions' => array(
 					$this->CalendarEventShareUser->alias . '.calendar_event_id' =>
 						$vars['eventId'],

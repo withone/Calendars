@@ -152,7 +152,7 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 		}
 		$model->CalendarRrule->set($rruleData);
 		if (!$model->CalendarRrule->validates()) {	//CalendarRruleのチェック
-			$model->validationErrors = Hash::merge(
+			$model->validationErrors = array_merge(
 				$model->validationErrors, $model->CalendarRrule->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
@@ -230,7 +230,7 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 
 		$model->CalendarEvent->set($eventData);
 		if (!$model->CalendarEvent->validates()) {	//CalendarEventのチェック
-			$model->validationErrors = Hash::merge(
+			$model->validationErrors = array_merge(
 				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
@@ -338,7 +338,7 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 		}
 		$model->CalendarEventContent->set($contentData);
 		if (!$model->CalendarEventContent->validates()) {	//CalendarEventContentのチェック
-			$model->validationErrors = Hash::merge(
+			$model->validationErrors = array_merge(
 				$model->validationErrors, $model->CalendarEventContent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
@@ -395,7 +395,7 @@ class CalendarPlanGenerationBehavior extends CalendarAppBehavior {
 		}
 		$model->CalendarEventShareUser->set($shareUserData);
 		if (!$model->CalendarEventShareUser->validates()) {	//CalendarEventShareUserのチェック
-			$model->validationErrors = Hash::merge(
+			$model->validationErrors = array_merge(
 				$model->validationErrors, $model->CalendarEventShareUser->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}

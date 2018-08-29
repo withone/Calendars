@@ -21,17 +21,17 @@
 			'day' => $vars['day'],
 		)
 	);
-	$weeklyLinkArr = Hash::merge($baseLinkArr, array(
-		'?' => array('style' => 'weekly')
-	));
+	$weeklyLinkArr = array_merge($baseLinkArr, [
+		'?' => ['style' => 'weekly']
+	]);
 
-	$lmonthlyLinkArr = Hash::merge($baseLinkArr, array(
-		'?' => array('style' => 'largemonthly')
-	));
+	$lmonthlyLinkArr = array_merge($baseLinkArr, [
+		'?' => ['style' => 'largemonthly']
+	]);
 
-	$dailyLinkArr = Hash::merge($baseLinkArr, array(
-		'?' => array('style' => 'daily', 'tab' => 'list')
-	));
+	$dailyLinkArr = array_merge($baseLinkArr, [
+		'?' => ['style' => 'daily', 'tab' => 'list']
+	]);
 ?>
 
 <ul role='tablist' class='nav nav-tabs calendar-date-move-tablist'>
@@ -53,7 +53,7 @@
 <?php endif; ?>
 		</li>
 
-<?php if ($active === 'daily'): ?> 
+<?php if ($active === 'daily'): ?>
 		<li class='active'>
 		<a href="#"><?php echo __d('calendars', 'day'); ?></a>
 <?php else: ?>

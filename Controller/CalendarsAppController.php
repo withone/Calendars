@@ -55,13 +55,17 @@ class CalendarsAppController extends AppController {
  */
 	protected function _getQueryParam($paramName) {
 		// ContainerがMainでないときは無視する
-		if (Hash::get($this->request->params, 'requested')) {
+		if (isset($this->request->params['requested'])) {
 			return false;
 		}
 
-		$queryFrameId = Hash::get($this->request->query, 'frame_id');
+		$queryFrameId = isset($this->request->query['frame_id'])
+			? $this->request->query['frame_id']
+			: null;
 		if (! $queryFrameId || Current::read('Frame.id') == $queryFrameId) {
-			return Hash::get($this->request->query, $paramName);
+			return isset($this->request->query[$paramName])
+				? $this->request->query[$paramName]
+				: null;
 		}
 		return false;
 	}
@@ -250,7 +254,10 @@ class CalendarsAppController extends AppController {
 				$this->Room->alias . '.id'
 			)
 		));
-		$vars['roomSpaceMaps'] = Hash::combine($rooms, '{n}.Room.id', '{n}.Room.space_id');
+		$vars['roomSpaceMaps'] = [];
+		foreach ($rooms as $room) {
+			$vars['roomSpaceMaps'][$room['Room']['id']] = $room['Room']['space_id'];
+		}
 		$roomsLanguages = $this->RoomsLanguages->find('all', array(
 			'conditions' => array(
 				'room_id' => $this->CalendarEvent->getReadableRoomIds(),

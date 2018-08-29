@@ -161,8 +161,12 @@ class CalendarUrlHelper extends AppHelper {
 		// 本当は共通関数[getQueryParam]を使いたかったが、
 		// AppControllerに作っちゃったためHelperから呼びづらく、似たコードを書いてしまった
 		// 許してほしい
-		$isNotMain = Hash::get($this->request->params, 'requested');
-		$frameId = Hash::get($this->request->query, 'frame_id');
+		$isNotMain = isset($this->request->params['requested'])
+			? $this->request->params['requested']
+			: null;
+		$frameId = isset($this->request->query['frame_id'])
+			? $this->request->query['frame_id']
+			: null;
 
 		if ($frameId === null || $frameId != Current::read('Frame.id') || $isNotMain) {
 			return '';

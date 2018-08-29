@@ -62,10 +62,9 @@ class CalendarPlanValidateBehavior extends ModelBehavior {
  */
 	public function checkShareUser(&$model, $check) {
 		$data = $model->data;
-		// $data['GroupsUser'][n]['user_id']
 		// 共有者の設定がない
-		$shareUsers = Hash::get($data, 'GroupsUser', null);
-		if (empty($shareUsers)) {
+		if (! isset($data['GroupsUser']) ||
+			empty($data['GroupsUser'])) {
 			// チェック不要
 			return true;
 		}
