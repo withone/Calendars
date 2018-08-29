@@ -64,7 +64,7 @@ class CalendarPlanValidateBehavior extends ModelBehavior {
 		$data = $model->data;
 		// 共有者の設定がない
 		if (! isset($data['GroupsUser']) ||
-		    empty($data['GroupsUser'])) {
+			empty($data['GroupsUser'])) {
 			// チェック不要
 			return true;
 		}
