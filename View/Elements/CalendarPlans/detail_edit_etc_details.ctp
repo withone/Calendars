@@ -56,13 +56,16 @@
 			<div class="col-xs-12">
 				<?php
 				$tzTbl = CalendarsComponent::getTzTbl();
-				$options = Hash::combine($tzTbl, '{s}.2', '{s}.0');
+				$options = [];
+				foreach ($tzTbl as $item) {
+					$options[$item[2]] = $item[0];
+				}
 				echo $this->NetCommonsForm->label('CalendarActionPlan.timezone_offset' . Inflector::camelize('timezone'), __d('calendars', 'Time zone'));
 				echo $this->NetCommonsForm->select('CalendarActionPlan.timezone_offset', $options, array(
-				'value' => $this->request->data['CalendarActionPlan']['timezone_offset'],
-				'class' => 'form-control',
-				'empty' => false,
-				'required' => true,
+					'value' => $this->request->data['CalendarActionPlan']['timezone_offset'],
+					'class' => 'form-control',
+					'empty' => false,
+					'required' => true,
 				));
 				echo $this->NetCommonsForm->error('CalendarActionPlan.timezone_offset');
 			?>

@@ -173,9 +173,12 @@ class CalendarPlanHelper extends AppHelper {
 		// 差し戻しボタンになるかんじ
 		// 現在登録されている予定のルームの権限を調べる
 		$isPublishable = false;
-		$status = null;
-		$roomId = Hash::get($event, 'CalendarEvent.room_id');
-		$status = Hash::get($event, 'CalendarEvent.status');
+		$status = isset($event['CalendarEvent']['status'])
+			? $event['CalendarEvent']['status']
+			: null;
+		$roomId = isset($event['CalendarEvent']['room_id'])
+			? $event['CalendarEvent']['room_id']
+			: null;
 		if (! empty($roomId)) {
 			$isPublishable = CalendarPermissiveRooms::isPublishable($roomId);
 		}

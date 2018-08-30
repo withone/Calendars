@@ -43,21 +43,26 @@ class CalendarPlanEditRepeatOptionHelper extends AppHelper {
  * @param int $firstSibDay デフォルト登録日
  * @param bool $isRecurrence 繰り返し
  * @return string
+ *
+ * 速度改善の修正に伴って発生したため抑制
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
  */
 	public function makeEditRepeatOption(
 		$eventSiblings, $firstSibEventKey, $firstSibYear, $firstSibMonth, $firstSibDay, $isRecurrence) {
-		$orgNumOfEvSiblings = Hash::get($this->request->data,
-			'CalendarActionPlan.origin_num_of_event_siblings');
+		$orgNumOfEvSiblings =
+			isset($this->request->data['CalendarActionPlan']['origin_num_of_event_siblings'])
+				? $this->request->data['CalendarActionPlan']['origin_num_of_event_siblings']
+				: null;
 		if (count($eventSiblings) <= 1 && $orgNumOfEvSiblings <= 1) {
 			return '';
 		}
 
-		$editRrule = Hash::get($this->request->query, 'editrrule');
-		if ($editRrule === null) {
-			$editRrule = Hash::get($this->request->data, 'CalendarActionPlan.edit_rrule');
-			if ($editRrule === null) {
-				$editRrule = 0;
-			}
+		$editRrule = 0;
+		if (isset($this->request->query['editrrule'])) {
+			$editRrule = $this->request->query['editrrule'];
+		} elseif (isset($this->request->data['CalendarActionPlan']['edit_rrule'])) {
+			$editRrule = $this->request->data['CalendarActionPlan']['edit_rrule'];
 		}
 
 		$html = '<div class="form-group" data-calendar-name="RepeatSet">';

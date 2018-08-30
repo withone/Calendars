@@ -279,7 +279,7 @@ class CalendarActionPlan extends CalendarsAppModel {
  * @return void
  */
 	protected function _doMergeRruleValidate($isDetailEdit) {
-		$this->validate = Hash::merge($this->validate, array(
+		$this->validate = array_merge($this->validate, array(
 			'edit_rrule' => array(
 				'rule1' => array(
 					'rule' => array('inList', array(0, 1, 2)),
@@ -313,7 +313,7 @@ class CalendarActionPlan extends CalendarsAppModel {
  * @return void
  */
 	protected function _doMergeDatetimeValidate($isDetailEdit) {
-		$this->validate = Hash::merge($this->validate, array(
+		$this->validate = array_merge($this->validate, array(
 			'enable_time' => array(
 				'rule1' => array(
 					'rule' => array('inList', array(0, 1)),
@@ -377,7 +377,7 @@ class CalendarActionPlan extends CalendarsAppModel {
  * @return void
  */
 	protected function _doMergeTitleValidate($isDetailEdit) {
-		$this->validate = Hash::merge($this->validate, array(
+		$this->validate = array_merge($this->validate, array(
 			'title' => array(
 				'rule1' => array(
 					'rule' => array('notBlank'),
@@ -419,7 +419,7 @@ class CalendarActionPlan extends CalendarsAppModel {
 		//$this->_doMergeDisplayParamValidate($isDetailEdit);	//画面パラメータ関連validation
 		$this->_doMergeTitleValidate($isDetailEdit);	//タイトル関連validation
 		$this->_doMergeDatetimeValidate($isDetailEdit);	//日付時刻関連validation
-		$this->validate = Hash::merge($this->validate, array(	//コンテンツ関連validation
+		$this->validate = array_merge($this->validate, array(	//コンテンツ関連validation
 			'plan_room_id' => array(
 				'rule1' => array(
 					'rule' => array('allowedRoomId'),
@@ -602,7 +602,9 @@ class CalendarActionPlan extends CalendarsAppModel {
 			if (!($calendar = $model->findByBlockKey($data['Block']['key']))) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
-			$planParam['calendar_id'] = Hash::get($calendar, $model->alias . '.id', null);
+			$planParam['calendar_id'] = isset($calendar[$model->alias]['id'])
+				? $calendar[$model->alias]['id']
+				: null;
 
 			////statusは、上流の_calendarPost()直後でカレンダー独自status取得・代入
 			////が実行され、$data['CalendarAtionPlan']['status']にセットされているので
@@ -615,7 +617,12 @@ class CalendarActionPlan extends CalendarsAppModel {
 			$planParam = $this->_setAndMergeDateTime($planParam, $data);
 			$planParam = $this->_setAndMergeRrule($planParam, $data);
 
-			$shareUsers = Hash::extract($data, 'GroupsUser.{n}.user_id');
+			$shareUsers = [];
+			if (isset($data['GroupsUser'])) {
+				foreach ($data['GroupsUser'] as $groupUser) {
+					$shareUsers[] = $groupUser['user_id'];
+				}
+			}
 			$myUserId = Current::read('User.id');
 			$newShareUsers = array();
 			foreach ($shareUsers as $user) {
@@ -760,12 +767,14 @@ class CalendarActionPlan extends CalendarsAppModel {
  * @return array
  */
 	public function proofreadValidationErrors(&$model) {
-		$msg = Hash::get($model->validationErrors, 'repeat_freq.0');
+		$msg = isset($model->validationErrors['repeat_freq'][0])
+			? $model->validationErrors['repeat_freq'][0]
+			: null;
 		if ($msg === CalendarsComponent::CALENDAR_RRULE_ERROR_HAPPEND) {
 			unset($model->validationErrors['repeat_freq']);
 			//CakeLog::debug("DBG: proofread count[" . count($model->calendarProofreadValidationErrors) . "]");
 			if (count($model->calendarProofreadValidationErrors) > 0) {
-				$model->validationErrors = Hash::merge($model->validationErrors,
+				$model->validationErrors = array_merge($model->validationErrors,
 					$model->calendarProofreadValidationErrors);
 			}
 		}

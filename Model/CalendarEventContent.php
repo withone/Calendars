@@ -83,7 +83,7 @@ class CalendarEventContent extends CalendarsAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
-		$this->validate = Hash::merge($this->validate, array(
+		$this->validate = array_merge($this->validate, array(
 			'model' => array(
 				'notBlank' => array(
 					'rule' => array('notBlank'),

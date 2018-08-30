@@ -41,12 +41,14 @@ class CalendarCategoryHelper extends AppHelper {
 		if ($event['CalendarEvent']['room_id'] == Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID)) {
 			$roomName = __d('calendars', 'All the members');
 		} else {
-			$roomLangs = Hash::extract(
-				$vars['roomsLanguages'],
-				'{n}.RoomsLanguages[room_id=' . $event['CalendarEvent']['room_id'] . ']');
-			$roomLang = Hash::extract($roomLangs, '{n}[language_id=' . Current::read('Language.id') . ']');
-			$roomName = $this->CalendarCommon->decideRoomName(
-				Hash::get($roomLang, '0.name'), $planMarkClassName);
+			$roomName = '';
+			foreach ($vars['roomsLanguages'] as $roomsLanguage) {
+				if ($roomsLanguage['RoomsLanguages']['room_id'] === $event['CalendarEvent']['room_id']) {
+					$roomName = $roomsLanguage['RoomsLanguages']['name'];
+					break;
+				}
+			}
+			$roomName = $this->CalendarCommon->decideRoomName($roomName, $planMarkClassName);
 		}
 		$html = '';
 		$html .= '<span class="calendar-plan-mark ' . $planMarkClassName . '"></span>';

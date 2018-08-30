@@ -79,7 +79,7 @@ class CalendarEventShareUser extends CalendarsAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
-		$this->validate = Hash::merge($this->validate, array(
+		$this->validate = array_merge($this->validate, array(
 			//'calender_event_id' => array(
 			'calendar_event_id' => array(
 				'rule1' => array(

@@ -20,6 +20,9 @@ App::uses('CalendarsAppModel', 'Calendars.Model');
  *
  * @author AllCreator Co., Ltd. <info@allcreator.net>
  * @package NetCommons\Calendars\Model
+ *
+ * 速度改善の修正に伴って発生したため抑制
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class CalendarEvent extends CalendarsAppModel {
 
@@ -166,7 +169,7 @@ class CalendarEvent extends CalendarsAppModel {
  * @return void
  */
 	protected function _doMergeWorkflowParamValidate() {
-		$this->validate = Hash::merge($this->validate, array(
+		$this->validate = array_merge($this->validate, array(
 			'language_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
@@ -205,7 +208,7 @@ class CalendarEvent extends CalendarsAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
-		$this->validate = Hash::merge($this->validate, array(
+		$this->validate = array_merge($this->validate, array(
 			'calendar_rrule_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
@@ -313,7 +316,7 @@ class CalendarEvent extends CalendarsAppModel {
  * @return bool True if there are no errors
  */
 	public function validates($options = array()) {
-		if (Hash::get($this->data, 'CalendarEvent.room_id')) {
+		if (isset($this->data['CalendarEvent']['room_id'])) {
 			CalendarPermissiveRooms::setCurrentPermission($this->data['CalendarEvent']['room_id']);
 		}
 		return parent::validates($options);
@@ -365,10 +368,14 @@ class CalendarEvent extends CalendarsAppModel {
  */
 	public function canDeleteContent($data) {
 		// 発行済み状態を取得
-		$isPublished = Hash::get($data, 'CalendarEvent.is_published');
+		$isPublished = isset($data['CalendarEvent']['is_published'])
+			? $data['CalendarEvent']['is_published']
+			: false;
 
 		// 予定の対象ルームIDを取得
-		$roomId = Hash::get($data, 'CalendarEvent.room_id');
+		$roomId = isset($data['CalendarEvent']['room_id'])
+			? $data['CalendarEvent']['room_id']
+			: null;
 
 		// データの対象空間での発行権限を取得
 		$canPublish = CalendarPermissiveRooms::isPublishable($roomId);
@@ -472,7 +479,7 @@ class CalendarEvent extends CalendarsAppModel {
 				if ($isPublished) {
 					if ($isPublished['Room']['space_id'] != Space::PRIVATE_SPACE_ID) {
 						$event[$this->alias]['is_published'] =
-							Hash::get($isPublished, $this->alias . '.is_active');
+							$isPublished[$this->alias]['is_active'];
 					}
 				}
 				return $event;
@@ -547,8 +554,16 @@ class CalendarEvent extends CalendarsAppModel {
 		$event[$this->alias]['is_share'] = false; // 共有した
 		$userId = Current::read('User.id');
 		if (! empty($userId)) {
-			$share = Hash::extract($event, 'CalendarEventShareUser.{n}[share_user=' . $userId . ']');
-			if (! empty($share)) {
+			$isShare = false;
+			if (isset($event['CalendarEventShareUser'])) {
+				foreach ($event['CalendarEventShareUser'] as $item) {
+					if ((int)$item['share_user'] == $userId) {
+						$isShare = true;
+						break;
+					}
+				}
+			}
+			if ($isShare) {
 				$event[$this->alias]['pseudo_friend_share_plan'] = true;
 			} else {
 				if (! empty($event['CalendarEventShareUser'])) {
@@ -679,12 +694,14 @@ class CalendarEvent extends CalendarsAppModel {
  * @see Model::save()
  */
 	public function beforeSave($options = array()) {
-		$content = Hash::get($this->data, 'CalendarEvent.description');
+		$content = isset($this->data['CalendarEvent']['description'])
+			? $this->data['CalendarEvent']['description']
+			: null;
 		if (empty($content)) {
 			return true;
 		}
 
-		$roomId = Hash::get($this->data, 'CalendarEvent.room_id');
+		$roomId = $this->data['CalendarEvent']['room_id'];
 		$newDescription = $this->consistentContent($content, $roomId);
 		if ($content != $newDescription) {
 			$this->data['CalendarEvent']['description'] = $newDescription;
@@ -701,15 +718,22 @@ class CalendarEvent extends CalendarsAppModel {
  * @throws InternalErrorException
  * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#aftersave
  * @see Model::save()
- * @throws InternalErrorException
  */
 	public function afterSave($created, $options = array()) {
-		$content = Hash::get($this->data, 'CalendarEvent.description');
-		$roomId = Hash::get($this->data, 'CalendarEvent.room_id');
+		$content = isset($this->data['CalendarEvent']['description'])
+			? $this->data['CalendarEvent']['description']
+			: null;
+		$roomId = isset($this->data['CalendarEvent']['room_id'])
+			? $this->data['CalendarEvent']['room_id']
+			: null;
 		$blockKey = $this->Block->findByRoomIdAndPluginKey($roomId, 'calendars', ['key'], null, -1);
 		$updateDescription = [
-			'content_key' => Hash::get($this->data, 'CalendarEvent.key'),
-			'block_key' => Hash::get($blockKey, 'Block.key', ''),
+			'content_key' => isset($this->data['CalendarEvent']['key'])
+				? $this->data['CalendarEvent']['key']
+				: null,
+			'block_key' => isset($blockKey['Block']['key'])
+				? $blockKey['Block']['key']
+				: null,
 			'room_id' => $roomId
 		];
 		$this->updateUploadFile($content, $updateDescription);
