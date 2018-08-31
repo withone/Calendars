@@ -16,6 +16,9 @@
  *
  * @author Allcreator <info@allcreator.net>
  * @package NetCommons\Calendars\Utility
+ *
+ * 速度改善の修正に伴って発生したため抑制
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class CalendarSupport {
 
@@ -25,14 +28,16 @@ class CalendarSupport {
  * 配列の最初の要素を取り出す。文字列であればそのまま返す。
  *
  * @param mixed $data data
- * @return mixed 成功時：$dateの最初要素を取り出す。空配列は''を返す。変数が文字列ならそのまま返す。失敗：falseを返す。
+ * @return mixed 成功時：$dataの最初要素を取り出す。空配列は''を返す。変数が文字列ならそのまま返す。失敗：falseを返す。
  */
 	public static function getMixedToString($data) {
 		if (is_string($data)) {
 			return $data;
 		}
 		if (is_array($data)) {
-			return Hash::get($data, '0');
+			return isset($data[0])
+				? $data[0]
+				: null;
 			/*
 				if (count($data) === 0 || !isset($data[0])) {
 					return '';
@@ -369,7 +374,7 @@ class CalendarSupport {
  * convTzOffset2TzId
  *
  * timezoneOffset(数字-12.0-12.0）からtzId(Asia/Tokyoなど)への変換
- * 
+ *
  * @param double $tzOffsetVal timezoneのoffset値(-12.0 - 12.0)
  * @return string timezoneId
  */

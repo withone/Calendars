@@ -191,7 +191,7 @@ class CalendarRoomSelectHelper extends AppHelper {
 			foreach ($roomTreeList as $roomId => $tree) {
 				$className = 'calendar-plan-mark-';
 
-				if (Hash::get($rooms, $roomId)) {
+				if (isset($rooms[$roomId])) {
 					$nest = substr_count($tree, Room::$treeParser);
 					$ngClass = $this->__getNgClass($roomId, 'success', '', array());
 					$html .= '<tr><td ' . $ngClass . '>';

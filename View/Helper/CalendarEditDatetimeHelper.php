@@ -52,7 +52,9 @@ class CalendarEditDatetimeHelper extends AppHelper {
  * @return string HTML
  */
 	protected function _getHiddens($fieldName) {
-		$dtValue = Hash::get($this->request->data, 'CalendarActionPlan.' . $fieldName);
+		$dtValue = isset($this->request->data['CalendarActionPlan'][$fieldName])
+			? $this->request->data['CalendarActionPlan'][$fieldName]
+			: null;
 		// そのフィールドはDatetimePickerでいじるのでunlockFieldとしておく
 		$this->NetCommonsForm->unlockField('CalendarActionPlan.' . $fieldName);
 		// 隠しフィールド必須
@@ -80,7 +82,9 @@ class CalendarEditDatetimeHelper extends AppHelper {
 		$html = '';
 
 		// 指定フィールドのデータ取り出し
-		$dtValue = Hash::get($this->request->data, 'CalendarActionPlan.' . $fieldName);
+		$dtValue = isset($this->request->data['CalendarActionPlan'][$fieldName])
+			? $this->request->data['CalendarActionPlan'][$fieldName]
+			: null;
 
 		$calTime = new CalendarTime();
 		$dttmObj = $calTime->getDtObjWithTzDateTimeString(
@@ -94,7 +98,10 @@ class CalendarEditDatetimeHelper extends AppHelper {
 		//$enableTime = $this->request->data['CalendarActionPlan']['enable_time'];
 		//
 		if ($type == 'datetime') {
-			$enableTime = Hash::get($this->request->data, 'CalendarActionPlan.enable_time');
+			$enableTime = isset($this->request->data['CalendarActionPlan']['enable_time'])
+				? $this->request->data['CalendarActionPlan']['enable_time']
+				: null;
+
 			// 終日予定の場合 DBに格納されている時刻はいい加減なものなのでカットする
 			if (! $enableTime) {
 				$dtValue = substr($dtValue, 0, 10);

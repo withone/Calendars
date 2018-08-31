@@ -98,8 +98,10 @@ class CalendarPermissionComponent extends Component {
 		}
 		//$roomPermRoles = $this->controller->roomPermRoles;
 		$calendarEv = $this->controller->eventData['CalendarEvent'];
-		$shareUsersIds = Hash::extract(
-			$this->controller->shareUsers, '{n}.CalendarEventShareUser.share_user');
+		$shareUsersIds = [];
+		foreach ($this->controller->shareUsers as $shareUser) {
+			$shareUsersIds[] = $shareUser['CalendarEventShareUser']['share_user'];
+		}
 
 		// ルームに参加している
 		if (in_array($calendarEv['room_id'], CalendarPermissiveRooms::getAccessibleRoomIdList())) {

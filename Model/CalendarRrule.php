@@ -141,7 +141,7 @@ class CalendarRrule extends CalendarsAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
-		$this->validate = Hash::merge($this->validate, array(
+		$this->validate = array_merge($this->validate, array(
 			'calendar_id' => array(
 				'rule1' => array(
 					'rule' => array('numeric'),
@@ -202,7 +202,9 @@ class CalendarRrule extends CalendarsAppModel {
 		// もしもまだBlock情報がないときは
 		// Block配列にroom_idだけ設定しておくとBlockBehaviorが勝手にそのルームにBlockを作ってくれる
 		//
-		$targetRoomId = Hash::get($this->data, 'CalendarRrule.room_id', null);
+		$targetRoomId = isset($this->data['CalendarRrule']['room_id'])
+			? $this->data['CalendarRrule']['room_id']
+			: null;
 		$block = $this->Block->find('first', array(
 			'conditions' => array(
 				'room_id' => $targetRoomId,
@@ -229,17 +231,15 @@ class CalendarRrule extends CalendarsAppModel {
  * @see Model::save()
  */
 	public function beforeSave($options = array()) {
-		$blockKey = Hash::get($this->data, 'Block.key', false);
 		// blockがあるということは必ずcalendarsが存在するはず
-		if ($blockKey) {
+		if (isset($this->data['Block']['key'])) {
 			// 予定対象のルームのブロックにぶら下がるcalendarsに親を変更
 			$calendar = $this->Calendar->find('first', array(
-				'conditions' => array('block_key' => $blockKey),
+				'conditions' => array('block_key' => $this->data['Block']['key']),
 				'recursive' => -1
 			));
-			$calendarId = Hash::get($calendar, 'Calendar.id', false);
-			if ($calendarId) {
-				$this->data['CalendarRrule']['calendar_id'] = $calendarId;
+			if (isset($calendar['Calendar']['id'])) {
+				$this->data['CalendarRrule']['calendar_id'] = $calendar['Calendar']['id'];
 			}
 		}
 		return true;

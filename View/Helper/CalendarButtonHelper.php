@@ -101,6 +101,9 @@ class CalendarButtonHelper extends AppHelper {
  * @param array $vars カレンダー情報
  * @param array $options オプション情報
  * @return string
+ *
+ * 速度改善の修正に伴って発生したため抑制
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
 	public function getAddButton($vars, $options = null) {
 		// まだ作成可能かどうかの判断フラグが設定されていない場合
@@ -109,7 +112,8 @@ class CalendarButtonHelper extends AppHelper {
 		if ($frameId === null) {
 			$frameId = 0;
 		}
-		if (Hash::get($this->_isCreatable, $frameId) === null) {
+		if (! isset($this->_isCreatable[$frameId]) ||
+				$this->_isCreatable[$frameId] === null) {
 			$rooms = CalendarPermissiveRooms::getCreatableRoomIdList();
 			if (empty($rooms)) {
 				$this->_isCreatable[$frameId] = false;

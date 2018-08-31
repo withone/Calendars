@@ -87,8 +87,7 @@ class CalendarShareUsersHelper extends AppHelper {
  * @return bool
  */
 	public function isShareEvent($event) {
-		$shareUser = Hash::get($event, 'CalendarEventShareUser');
-		if (empty($shareUser)) {
+		if (empty($event['CalendarEventShareUser'])) {
 			return false;
 		}
 		return true;
