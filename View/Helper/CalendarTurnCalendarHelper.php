@@ -192,10 +192,9 @@ class CalendarTurnCalendarHelper extends AppHelper {
 			$dateArr = $this->_getNowDate($type, $vars);
 		}
 		// 指定されたdateArrがカレンダー範囲を超えるものの場合はfalseを返す
-		$day = Hash::get($dateArr, 'day');
-		if (! $day) {
-			$day = 1;
-		}
+		$day = isset($dateArr['day'])
+			? $dateArr['day']
+			: 1;
 		$tmstamp = mktime(0, 0, 0, $dateArr['month'], $day, $dateArr['year']);
 		if ($tmstamp < CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_TM_MIN ||
 			$tmstamp > CalendarsComponent::CALENDAR_RRULE_TERM_UNTIL_TM_MAX) {
@@ -208,7 +207,7 @@ class CalendarTurnCalendarHelper extends AppHelper {
 			'action' => 'index',
 			'block_id' => '',
 			'frame_id' => Current::read('Frame.id'),
-			'?' => Hash::merge(array('style' => $vars['style']), $dateArr),
+			'?' => array_merge(['style' => $vars['style']], $dateArr),
 		);
 		if (isset($vars['tab'])) {
 			$urlArray['?']['tab'] = $vars['tab'];

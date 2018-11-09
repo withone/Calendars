@@ -88,12 +88,10 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 
 		// プライベートのものの場合は自分と共有者に
 		if ($isMyPrivateRoom) {
-			$userIds = Hash::merge(
-				array(
-					Current::read('User.id'),
-				),
-				Hash::extract($data['CalendarEventShareUser'], '{n}.share_user')
-			);
+			$userIds = [Current::read('User.id')];
+			foreach ($data['CalendarEventShareUser'] as $shareUser) {
+				$userIds[] = $shareUser['share_user'];
+			}
 			$model->CalendarEvent->setSetting(MailQueueBehavior::MAIL_QUEUE_SETTING_USER_IDS, $userIds);
 		}
 

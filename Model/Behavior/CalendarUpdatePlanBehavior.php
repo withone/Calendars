@@ -256,7 +256,10 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			//そうしないと、直近のidだけ消しても、過去世代の同一keyの別idの
 			//eventデータが拾われてしますから。
 			////$eventIds = Hash::extract($newPlan, 'CalendarEvent.{n}.id');
-			$eventKeys = Hash::extract($newPlan, 'CalendarEvent.{n}.key');
+			$eventKeys = [];
+			foreach ($newPlan['CalendarEvent'] as $item) {
+				$eventKeys[] = $item['key'];
+			}
 			$this->__deleteOrUpdateAllEvents($model, $status, $eventData, $eventKeys);
 
 			/////////////////
@@ -385,7 +388,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		$model->CalendarEvent->set($eventData);
 
 		if (!$model->CalendarEvent->validates()) {		//eventDataをチェック
-			$model->validationErrors = Hash::merge(
+			$model->validationErrors = array_merge(
 				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
@@ -403,7 +406,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 				'validate' => false,
 				'callbacks' => true,
 			))) {	//保存のみ
-			$model->validationErrors = Hash::merge(
+			$model->validationErrors = array_merge(
 				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
@@ -422,7 +425,9 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		$model->updateShareUsers(
 			$planParams['share_users'],
 			$eventId,
-			Hash::get($eventData, 'CalendarEvent.CalendarEventShareUser'),
+			isset($eventData['CalendarEvent']['CalendarEventShareUser'])
+				? $eventData['CalendarEvent']['CalendarEventShareUser']
+				: null,
 			$createdUserWhenUpd
 		);
 
@@ -503,7 +508,12 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			//eventのidではなく、keyで消さないといけない。（なぜなら同一キーをもつ過去世代が複数あり
 			//１つのidをけしても、同一keyの他のidのデータが拾われて表示されてしまうため。
 			////$eventIds = Hash::extract($newPlan['CalendarEvent'], '{n}[dtstart>=' . $baseDtstart . '].id');
-			$eventKeys = Hash::extract($newPlan['CalendarEvent'], '{n}[dtstart>=' . $baseDtstart . '].key');
+			$eventKeys = [];
+			foreach ($newPlan['CalendarEvent'] as $item) {
+				if ($newPlan['CalendarEvent']['dtstart'] >= $baseDtstart) {
+					$eventKeys[] = $item['key'];
+				}
+			}
 			$this->__deleteOrUpdateAllEvents($model, $status, $eventData, $eventKeys);
 
 			//////////////////////////////
@@ -576,8 +586,12 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			//画面より入力された開始の日付時刻を、$baseDtstartにする。
 			$baseDtstart = $eventData['CalendarEvent']['dtstart'];
 
-			$eventsAfterBase = Hash::extract(
-				$newPlan['CalendarEvent'], '{n}[dtstart>=' . $baseDtstart . ']');
+			$eventsAfterBase = [];
+			foreach ($newPlan['CalendarEvent'] as $item) {
+				if ($item['dtstart'] >= $baseDtstart) {
+					$eventsAfterBase[] = $item;
+				}
+			}
 
 			$index = 0;
 			foreach ($eventsAfterBase as $fields) {
@@ -613,8 +627,14 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 		//この時点で、$newPlan['CalendarRrule']、$newPlan['CalendarEvent']のcreated_userは、
 		//createdUserWhenUpd考慮済になっている。
 		$rruleData['CalendarRrule'] = $newPlan['CalendarRrule'];
-		$events = Hash::extract($newPlan, 'CalendarEvent.{n}[id=' . $newPlan['new_event_id'] . ']');
-		$eventData['CalendarEvent'] = $events[0];
+		$calendarEvent = [];
+		foreach ($newPlan['CalendarEvent'] as $item) {
+			if ($item['id'] === $newPlan['new_event_id']) {
+				$calendarEvent = $item;
+				break;
+			}
+		}
+		$eventData['CalendarEvent'] = $calendarEvent;
 		return array($eventData, $rruleData);
 	}
 
@@ -779,7 +799,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			//第３引数callbacks==trueで、メール関連のafterDeleteを動かす？ FIXME: 要確認
 			//
 			if (!$model->CalendarEvent->deleteAll($conditions, true, true)) {
-				$model->validationErrors = Hash::merge(
+				$model->validationErrors = array_merge(
 					$model->validationErrors, $model->CalendarEvent->validationErrors);
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
@@ -801,7 +821,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 			);
 			$conditions = array($model->CalendarEvent->alias . '.key' => $eventKeys);
 			if (!$model->CalendarEvent->updateAll($fields, $conditions)) {
-				$model->validationErrors = Hash::merge(
+				$model->validationErrors = array_merge(
 					$model->validationErrors, $model->CalendarEvent->validationErrors);
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}

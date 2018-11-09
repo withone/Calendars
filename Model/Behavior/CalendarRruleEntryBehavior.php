@@ -79,7 +79,7 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 		);
 		$eventData = $model->CalendarEvent->find('first', $params);
 		if (!is_array($eventData) || !isset($eventData['CalendarEvent'])) {
-			$model->validationErrors = Hash::merge(
+			$model->validationErrors = array_merge(
 				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}

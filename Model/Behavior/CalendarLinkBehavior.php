@@ -288,7 +288,10 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
  */
 	private function __getDelFirstSib(Model &$model, $data, $sibs) {
 		if (! empty($sibs)) {
-			$eventIds = array_keys(Hash::combine($sibs, '{n}.CalendarEvent.id', '{n}.CalendarEvent.id'));
+			$eventIds = [];
+			foreach ($sibs as $sib) {
+				$eventIds[$sib['CalendarEvent']['id']] = $sib['CalendarEvent']['id'];
+			}
 			$data['CalendarDeleteActionPlan']['first_sib_event_id'] = min($eventIds);
 			//CakeLog::debug("DBG: sibs[" . print_r($sibs, true) .
 			//	"] eventIds[" . print_r($eventIds, true) .
@@ -525,7 +528,7 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 		if (!(isset($model->CalendarEvent))) {
 			$model->loadModels(['CalendarEvent' => 'Calendars.CalendarEvent']);
 		}
-		$model->CalendarEvent->initSetting($WorkflowComponent);
+		// $model->CalendarEvent->initSetting($WorkflowComponent);
 
 		// カレンダー権限設定情報確保
 		$roomPermRoles = $model->CalendarEvent->prepareCalRoleAndPerm();

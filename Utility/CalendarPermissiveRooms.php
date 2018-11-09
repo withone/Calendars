@@ -120,7 +120,8 @@ class CalendarPermissiveRooms {
 		$rooms = array();
 		foreach (self::$roomPermRoles['roomInfos'] as $roomId => $roomPerm) {
 			foreach ($perms as $perm) {
-				if (Hash::get($roomPerm, $perm)) {
+				if (isset($roomPerm[$perm]) &&
+					$roomPerm[$perm]) {
 					$rooms[$roomId] = $roomId;
 				}
 			}
@@ -141,7 +142,9 @@ class CalendarPermissiveRooms {
 		if (! isset(self::$roomPermRoles['roomInfos'][$roomId])) {
 			return false;
 		}
-		$useWorkflow = Hash::get(self::$roomPermRoles, 'roomInfos.' . $roomId . '.use_workflow');
+		$useWorkflow = isset(self::$roomPermRoles['roomInfos'][$roomId]['use_workflow'])
+			? self::$roomPermRoles['roomInfos'][$roomId]['use_workflow']
+			: null;
 
 		if ($useWorkflow == false) {
 			// ルームが承認不要の場合は、creatble権限があればよい
@@ -194,7 +197,7 @@ class CalendarPermissiveRooms {
 		// ここが呼ばれるってことは絶対にroomInfosが絶対あることが前提
 		$useWorkflow = self::$roomPermRoles['roomInfos'][$roomId]['use_workflow'];
 
-		self::$backupPermissions['current'] = Hash::get(Current::$current, 'Permission');
+		self::$backupPermissions['current'] = Current::$current['Permission'];
 		self::$backupPermissions['permission'] = Current::$permission;
 
 		// 承認不要のときは作成権限があれば発行できる
@@ -210,22 +213,12 @@ class CalendarPermissiveRooms {
 		Current::$current['Permission']['content_creatable']['value'] =
 			self::$roomPermRoles['roomInfos'][$roomId]['content_creatable_value'];
 
-		$pathKey = $roomId . '.Permission.%s.value';
-		Current::$permission = Hash::insert(
-			Current::$permission,
-			sprintf($pathKey, 'content_publishable'),
-			Current::$current['Permission']['content_publishable']['value']
-		);
-		Current::$permission = Hash::insert(
-			Current::$permission,
-			sprintf($pathKey, 'content_editable'),
-			Current::$current['Permission']['content_editable']['value']
-		);
-		Current::$permission = Hash::insert(
-			Current::$permission,
-			sprintf($pathKey, 'content_creatable'),
-			Current::$current['Permission']['content_creatable']['value']
-		);
+		Current::$permission[$roomId]['Permission']['content_publishable']['value']
+			= Current::$current['Permission']['content_publishable']['value'];
+		Current::$permission[$roomId]['Permission']['content_editable']['value']
+			= Current::$current['Permission']['content_editable']['value'];
+		Current::$permission[$roomId]['Permission']['content_creatable']['value']
+			= Current::$current['Permission']['content_creatable']['value'];
 	}
 /**
  * recoverCurrentPermission
@@ -237,8 +230,12 @@ class CalendarPermissiveRooms {
  * @return void
  */
 	public static function recoverCurrentPermission() {
-		Current::$current['Permission'] = Hash::get(self::$backupPermissions, 'current', array());
-		Current::$permission = Hash::get(self::$backupPermissions, 'permission', array());
+		Current::$current['Permission'] = isset(self::$backupPermissions['current'])
+			? self::$backupPermissions['current']
+			: [];
+		Current::$permission = isset(self::$backupPermissions['permission'])
+			? self::$backupPermissions['permission']
+			: [];
 
 		self::$backupPermissions = array();
 	}

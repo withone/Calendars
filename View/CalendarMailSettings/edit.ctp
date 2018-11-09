@@ -35,7 +35,7 @@ $urlParams = array(
 					<?php foreach ($mailRooms as $key => $name) : ?>
 					<li<?php echo ($key == Current::read('Room.id') ? ' class="active"' : ''); ?>>
 						<?php echo $this->NetCommonsHtml->link($name,
-							Hash::merge($urlParams, array('?' => array('room' => $key)))
+							$urlParams + ['?' => ['room' => $key]]
 						); ?>
 					</li>
 					<?php endforeach; ?>

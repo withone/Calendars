@@ -15,6 +15,9 @@ App::uses('WorkflowComponent', 'Workflow.Controller/Component');
  *
  * @author Allcreator Co., Ltd. <info@allcreator.net>
  * @package NetCommons\Calendars\View\Helper
+ *
+ * 速度改善の修正に伴って発生したため抑制
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class CalendarCommonHelper extends AppHelper {
 
@@ -54,7 +57,10 @@ class CalendarCommonHelper extends AppHelper {
  */
 	public function makePseudoPlanFromEvent(&$vars, $event) {
 		$plan = $event;
-		$shareUsers = Hash::extract($plan, 'CalendarEventShareUser.{n}.share_user');
+		$shareUsers = [];
+		foreach ($plan['CalendarEventShareUser'] as $item) {
+			$shareUsers[] = $item['share_user'];
+		}
 		if (!empty($shareUsers) && in_array(Current::read('User.id'), $shareUsers)) {
 			//共有者の一覧に「自分がある」＝共有「された」仲間の予定である。
 			//なので、その印として、$plan['CalendarEvent'] に擬似項目と値
@@ -150,9 +156,11 @@ class CalendarCommonHelper extends AppHelper {
 	public function getHolidayTitle($year, $month, $day, $holidays, $cnt) {
 		$holidayTitle = '';
 		$ymd = sprintf("%04d-%02d-%02d", $year, $month, $day);
-		$hday = Hash::extract($holidays, '{n}.Holiday[holiday=' . $ymd . '].title');
-		if (count($hday) === 1) {
-			$holidayTitle = $hday[0];	//祝日タイトル
+		foreach ($holidays as $holiday) {
+			if ($holiday['Holiday']['holiday'] === $ymd) {
+				$holidayTitle = $holiday['Holiday']['title'];
+				break;
+			}
 		}
 		return $holidayTitle;
 	}
@@ -191,9 +199,10 @@ class CalendarCommonHelper extends AppHelper {
  */
 	public function makeTextColor($year, $month, $day, $holidays, $cnt) {
 		$ymd = sprintf("%04d-%02d-%02d", $year, $month, $day);
-		$hday = Hash::extract($holidays, '{n}.Holiday[holiday=' . $ymd . '].holiday');
-		if (count($hday) === 1) {
-			return 'calendar-sunday';	//祝日
+		foreach ($holidays as $holiday) {
+			if ($holiday['Holiday']['holiday'] === $ymd) {
+				return 'calendar-sunday';	//祝日
+			}
 		}
 
 		//祝日ではないので、通常ルール適用

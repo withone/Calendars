@@ -45,13 +45,13 @@ class CalendarCrudPlanCommonBehavior extends CalendarAppBehavior {
 		$model->CalendarRrule->set($rruleData);
 
 		if (!$model->CalendarRrule->validates()) {
-			$model->validationErrors = Hash::merge(
+			$model->validationErrors = array_merge(
 				$model->validationErrors, $model->CalendarRrule->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
 		if (!$model->CalendarRrule->save($rruleData, false)) {
-			$model->validationErrors = Hash::merge(
+			$model->validationErrors = array_merge(
 				$model->validationErrors, $model->CalendarRrule->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}

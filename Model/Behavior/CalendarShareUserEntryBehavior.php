@@ -93,13 +93,12 @@ class CalendarShareUserEntryBehavior extends CalendarAppBehavior {
 		if (!is_array($shareUsers)) {
 			$shareUsers = array();
 		}
-		if (!is_array($oldShareUserDataAry)) {
-			$oldShareUserDataAry = array();
+		$oldShareUsers = [];
+		if (is_array($oldShareUserDataAry)) {
+			foreach ($oldShareUserDataAry as $item) {
+				$oldShareUsers[] = $item['share_user'];
+			}
 		}
-
-		//CakeLog::debug("DBG: oldShareUserDataAry1[" . print_r($oldShareUserDataAry, true) . "]");
-		$oldShareUsers = Hash::extract($oldShareUserDataAry, '{n}.share_user');
-		//CakeLog::debug("DBG: oldShareUserUsers[" . print_r($oldShareUsers, true) . "]");
 
 		sort($shareUsers, SORT_NUMERIC);		//新しい共有ユーザ群
 		sort($oldShareUsers, SORT_NUMERIC);	//古い共有ユーザ群

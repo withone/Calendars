@@ -199,8 +199,11 @@ class CalendarFrameSettingsController extends CalendarsAppController {
 		//$rooms = $this->Room->find('threaded', $this->Room->getReadableRoomsConditions($spaceId));
 		$rooms = $this->Room->find('all',
 			$this->Room->getReadableRoomsConditions(array('Room.space_id' => $spaceId)));
-		$rooms = Hash::combine($rooms, '{n}.Room.id', '{n}');
-		return $rooms;
+		$roomArr = [];
+		foreach ($rooms as $room) {
+			$roomArr[$room['Room']['id']] = $room;
+		}
+		return $roomArr;
 	}
 /**
  * _getRoomTree

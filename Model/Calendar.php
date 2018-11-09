@@ -112,7 +112,7 @@ class Calendar extends CalendarsAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
-		$this->validate = Hash::merge($this->validate, array(
+		$this->validate = array_merge($this->validate, array(
 			'block_key' => array(
 				'rule1' => array(
 					'rule' => array('notBlank'),
@@ -150,12 +150,12 @@ class Calendar extends CalendarsAppModel {
 		try {
 			$block = array();
 			if (isset($data['Block'])) {
-				$block = $this->Block->findById(Hash::get($data, 'Block.id'));
+				$block = $this->Block->findById($data['Block']['id']);
 			}
 			// まだない場合
 			if (empty($block)) {
 				// ブロックを作成する
-				$block = $this->_makeBlock(Hash::get($data, 'CalendarActionPlan.plan_room_id'));
+				$block = $this->_makeBlock($data['CalendarActionPlan']['plan_room_id']);
 				if (! $block) {
 					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 				}
@@ -278,7 +278,7 @@ class Calendar extends CalendarsAppModel {
  */
 	protected function _generateMailSettingData() {
 		$data = $this->MailSetting->create();
-		$data = Hash::merge($data,
+		$data = array_merge($data,
 			array(
 				$this->MailSetting->alias => array(
 					'block_key' => Current::read('Block.key'),

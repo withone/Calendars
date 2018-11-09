@@ -66,8 +66,6 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 		$this->loadEventAndRruleModels($model);
 
 		//対象となるデータを$eventData、$rruleDataそれぞれにセット
-		$eventData = $rruleData = array();
-
 		list($eventData, $rruleData) = $this->setCurEventDataAndRruleData($model, $curPlan);
 
 		//「全削除」、「指定以降削除」、「この予定のみ削除or元予定に繰返しなし」
@@ -100,7 +98,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 			//第３引数callbacks==trueで、メール関連のafterDeleteを動かす？ FIXME: 要確認
 			//
 			if (!$model->CalendarEvent->deleteAll($conditions, true, true)) {
-				$model->validationErrors = Hash::merge(
+				$model->validationErrors = array_merge(
 					$model->validationErrors, $model->CalendarEvent->validationErrors);
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
@@ -214,7 +212,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 /**
  * 予定データの全削除
  *
- * @param Model &$model モデル 
+ * @param Model &$model モデル
  * @param array $rruleData rruleData
  * @param array $eventData eventData(編集画面のevent)
  * @param array $curPlan 現世代予定データ
@@ -238,7 +236,10 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 		//eventのidではなく、keyで消すこと。
 		//そうしないと、直近のidだけ消しても、過去世代の同一keyの別idの
 		//eventデータが拾われてしますから。
-		$eventKeys = Hash::extract($curPlan, 'CalendarEvent.{n}.key');
+		$eventKeys = [];
+		foreach ($curPlan['CalendarEvent'] as $item) {
+			$eventKeys[] = $item['key'];
+		}
 
 		//(2) 実際に削除する。
 		$conditions = array(
@@ -250,7 +251,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 		//第３引数callbacks==trueで、メール関連のデキューをここでおこなう？ FIXME:要確認
 		//
 		if (!$model->CalendarEvent->deleteAll($conditions, true, true)) {
-			$model->validationErrors = Hash::merge(
+			$model->validationErrors = array_merge(
 				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
@@ -315,7 +316,12 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 
 		//eventのidではなく、keyで消さないといけない。（なぜなら同一キーをもつ過去世代が複数あり
 		//１つのidをけしても、同一keyの他のidのデータが拾われて表示されてしまうため。
-		$eventKeys = Hash::extract($curPlan['CalendarEvent'], '{n}[dtstart>=' . $baseDtstart . '].key');
+		$eventKeys = [];
+		foreach ($curPlan['CalendarEvent'] as $item) {
+			if ($item['dtstart'] >= $baseDtstart) {
+				$eventKeys[] = $item['key'];
+			}
+		}
 
 		//(1)-1 実際に削除する。
 		$conditions = array(
@@ -328,7 +334,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 		//第３引数callbacks==trueで、メール関連のafterDeleteを動かす？ FIXME: 要確認
 		//
 		if (!$model->CalendarEvent->deleteAll($conditions, true, true)) {
-			$model->validationErrors = Hash::merge(
+			$model->validationErrors = array_merge(
 				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
@@ -365,8 +371,14 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
  */
 	public function setCurEventDataAndRruleData(Model &$model, $curPlan) {
 		$rruleData['CalendarRrule'] = $curPlan['CalendarRrule'];
-		$events = Hash::extract($curPlan, 'CalendarEvent.{n}[id=' . $curPlan['cur_event_id'] . ']');
-		$eventData['CalendarEvent'] = $events[0];
+		$calendarEvent = [];
+		foreach ($curPlan['CalendarEvent'] as $item) {
+			if ((int)$item['id'] === $curPlan['cur_event_id']) {
+				$calendarEvent = $item;
+				break;
+			}
+		}
+		$eventData['CalendarEvent'] = $calendarEvent;
 		return array($eventData, $rruleData);
 	}
 

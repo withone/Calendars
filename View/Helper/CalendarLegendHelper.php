@@ -33,7 +33,7 @@ class CalendarLegendHelper extends AppHelper {
  *
  * 凡例取得
  *
- * @param array $vars カレンンダー情報
+ * @param array $vars カレンダー情報
  * @return string 凡例HTML
  */
 	public function getCalendarLegend($vars) {
@@ -56,7 +56,7 @@ class CalendarLegendHelper extends AppHelper {
  *
  * パブリック 凡例取得
  *
- * @param array $vars カレンンダー情報
+ * @param array $vars カレンダー情報
  * @return string 凡例HTML
  */
 	protected function _getPublicLegend($vars) {
@@ -71,7 +71,7 @@ class CalendarLegendHelper extends AppHelper {
  *
  * プライベート 凡例取得
  *
- * @param array $vars カレンンダー情報
+ * @param array $vars カレンダー情報
  * @return string 凡例HTML
  */
 	protected function _getPrivateLegend($vars) {
@@ -95,7 +95,7 @@ class CalendarLegendHelper extends AppHelper {
  *
  * グループルーム 凡例取得
  *
- * @param array $vars カレンンダー情報
+ * @param array $vars カレンダー情報
  * @return string 凡例HTML
  */
 	protected function _getGroupRoomLegend($vars) {
@@ -117,7 +117,7 @@ class CalendarLegendHelper extends AppHelper {
  *
  * 全会員 凡例取得
  *
- * @param array $vars カレンンダー情報
+ * @param array $vars カレンダー情報
  * @return string 凡例HTML
  */
 	protected function _getMemberLegend($vars) {
@@ -137,7 +137,7 @@ class CalendarLegendHelper extends AppHelper {
  *
  * 共有した予定 凡例取得
  *
- * @param array $vars カレンンダー情報
+ * @param array $vars カレンダー情報
  * @return string 凡例HTML
  */
 	protected function _getDoShareLegend($vars) {
@@ -162,7 +162,7 @@ class CalendarLegendHelper extends AppHelper {
  *
  * 仲間の予定 凡例取得
  *
- * @param array $vars カレンンダー情報
+ * @param array $vars カレンダー情報
  * @return string 凡例HTML
  */
 	protected function _getDoneShareLegend($vars) {
@@ -226,7 +226,7 @@ class CalendarLegendHelper extends AppHelper {
 			return true;
 		}
 		if ($id == Space::getRoomIdRoot(Space::PRIVATE_SPACE_ID)) {
-			if (! Hash::get($vars, 'exposeRoomOptions.' . $vars['myself'])) {
+			if (! isset($vars['exposeRoomOptions'][$vars['myself']])) {
 				return false;
 			}
 		} elseif ($id == Space::getRoomIdRoot(Space::PUBLIC_SPACE_ID)) {
@@ -239,7 +239,7 @@ class CalendarLegendHelper extends AppHelper {
 			return false;
 		} else {
 			// 表示対象ルームIDの中にあるか
-			if (! Hash::get($vars, 'exposeRoomOptions.' . $id)) {
+			if (! isset($vars['exposeRoomOptions'][$id])) {
 				return false;
 			}
 		}

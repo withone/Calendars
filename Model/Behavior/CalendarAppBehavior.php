@@ -122,7 +122,7 @@ class CalendarAppBehavior extends ModelBehavior {
 			$rruleData = $model->CalendarRrule->find('first', $params);
 			if (!is_array($rruleData) || !isset($rruleData['CalendarRrule'])) {
 				$model->validationErrors =
-					Hash::merge($model->validationErrors, $model->CalendarRrule->validationErrors);
+					array_merge($model->validationErrors, $model->CalendarRrule->validationErrors);
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 			//CalendarRruleのデータを記録し、２度目以降に備える。
@@ -157,7 +157,7 @@ class CalendarAppBehavior extends ModelBehavior {
 		//なお、追加情報(workflowcomment)は WFCのafterSave()で自動セットされる。
 		//
 		if (!$model->CalendarEvent->save($rEventData, false)) { //保存のみ
-			$model->validationErrors = Hash::merge(
+			$model->validationErrors = array_merge(
 				$model->validationErrors, $model->CalendarEvent->validationErrors);
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
@@ -224,8 +224,9 @@ class CalendarAppBehavior extends ModelBehavior {
 		}
 
 		//workflowcommentなどの追加拡張データはここで追加する。
-		//
-		$addInfo = Hash::get($planParams, CalendarsComponent::ADDITIONAL);
+		$addInfo = isset($planParams[CalendarsComponent::ADDITIONAL])
+			? $planParams[CalendarsComponent::ADDITIONAL]
+			: null;
 		if (! empty($addInfo)) {
 			foreach ($addInfo as $modelName => $vals) {
 				$rEventData[$modelName] = $vals;
@@ -475,8 +476,9 @@ class CalendarAppBehavior extends ModelBehavior {
 		$eventData['CalendarEventContent']['content_key'] = $params['content_key'];
 
 		//workflowcommentなどの追加拡張データはここで追加する。
-		//
-		$addInfo = Hash::get($planParams, CalendarsComponent::ADDITIONAL);
+		$addInfo = isset($planParams[CalendarsComponent::ADDITIONAL])
+			? $planParams[CalendarsComponent::ADDITIONAL]
+			: null;
 		if (! empty($addInfo)) {
 			foreach ($addInfo as $modelName => $vals) {
 				$eventData[$modelName] = $vals;

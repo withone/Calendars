@@ -68,7 +68,7 @@ class CalendarShareUsersHelper extends AppHelper {
 			$html = '';
 			foreach ($shareUsers as $shareUser) {
 				$html .= $this->DisplayUser->handleLink($shareUser,
-					array('avatar' => true), array(), 'User');
+					array('avatar' => true), [], 'User');
 				$html .= ',&nbsp;&nbsp;';
 			}
 			$html = trim($html, ',&nbsp;&nbsp;');
@@ -87,8 +87,7 @@ class CalendarShareUsersHelper extends AppHelper {
  * @return bool
  */
 	public function isShareEvent($event) {
-		$shareUser = Hash::get($event, 'CalendarEventShareUser');
-		if (empty($shareUser)) {
+		if (empty($event['CalendarEventShareUser'])) {
 			return false;
 		}
 		return true;
