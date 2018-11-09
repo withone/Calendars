@@ -353,7 +353,6 @@ class CalendarPermission extends CalendarsAppModel {
 					),
 					'recursive' => -1
 				));
-				$this->log($blockSetting, 'debug');
 				if ($blockSetting) {
 					$roomBlock[$this->alias]['use_workflow'] = $blockSetting[$this->alias]['use_workflow'];
 				} else {
