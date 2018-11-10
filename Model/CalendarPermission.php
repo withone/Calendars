@@ -88,7 +88,8 @@ class CalendarPermission extends CalendarsAppModel {
 			'Room' => 'Rooms.Room',
 			'DefaultRolePermission' => 'Roles.DefaultRolePermission',
 			'RolesRoom' => 'Rooms.RolesRoom',
-			'Block' => 'Blocks.Block'
+			'Block' => 'Blocks.Block',
+			'BlockSetting' => 'Blocks.BlockSetting'
 		]);
 	}
 
@@ -370,8 +371,21 @@ class CalendarPermission extends CalendarsAppModel {
 			if (is_null($blockKey)) {
 				$roomBlock[$this->alias]['use_workflow'] = $roomBlock['Room']['need_approval'];
 			} else {
-				$blockSetting = $this->getBlockSetting($blockKey, $roomId);
-				$roomBlock[$this->alias]['use_workflow'] = $blockSetting[$this->alias]['use_workflow'];
+				//$blockSetting = $this->getBlockSetting($blockKey, $roomId);
+				$blockSetting = $this->BlockSetting->find('first', array(
+					'conditions' => array(
+						'plugin_key' => 'calendars',
+						'room_id' => $roomId,
+						'block_key' => $blockKey,
+						'field_name' => 'use_workflow'
+					),
+					'recursive' => -1
+				));
+				if ($blockSetting) {
+					$roomBlock[$this->alias]['use_workflow'] = $blockSetting[$this->alias]['use_workflow'];
+				} else {
+					$roomBlock[$this->alias]['use_workflow'] = Hash::get($roomBlock, 'Room.need_approval');
+				}
 			}
 		}
 	}
