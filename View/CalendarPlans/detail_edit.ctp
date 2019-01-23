@@ -28,6 +28,7 @@ $jsParameters = array(
 	<?php echo $this->element('Calendars.CalendarPlans/detail_edit_heading'); ?>
 
 	<div class='panel panel-default'>
+		<?php /* $this->NetCommonsForm->create(); */ ?>
 		<?php echo $this->element('Calendars.CalendarPlans/edit_form_create'); ?>
 		<?php echo $this->element('Calendars.CalendarPlans/required_hiddens'); ?>
 		<?php
@@ -172,27 +173,27 @@ $jsParameters = array(
 		<div class="panel-footer text-center">
 			<?php echo $this->CalendarPlan->makeEditButtonHtml('CalendarActionPlan.status', $vars, $event); ?>
 		</div><!--panel-footerの閉じるタグ-->
-	<?php echo $this->NetCommonsForm->end(); ?>
+		<?php echo $this->NetCommonsForm->end(); ?>
 
-	<?php if (isset($event['CalendarEvent']) && ($this->request->params['action'] === 'edit' && $this->CalendarWorkflow->canDelete($event))) : ?>
-		<div class="panel-footer text-right">
-			<?php
-			echo $this->element('Calendars.CalendarPlans/delete_form', array(
-				'frameId' => $frameId,
-				'event' => $event,
-				'capForView' => $capForView,
-				'eventSiblings' => $eventSiblings,
-				'firstSib' => $firstSib,
-				'firstSibYear' => $firstSibYear,
-				'firstSibMonth' => $firstSibMonth,
-				'firstSibDay' => $firstSibDay,
-				'firstSibEventId' => $firstSibEventId,
-				'originEventId' => $originEventId,
-				'isRecurrence' => $isRecurrence,
-			));
-			?>
-		</div>
-	<?php endif; ?>
+		<?php if (isset($event['CalendarEvent']) && ($this->request->params['action'] === 'edit' && $this->CalendarWorkflow->canDelete($event))) : ?>
+			<div class="panel-footer text-right">
+				<?php
+				echo $this->element('Calendars.CalendarPlans/delete_form', array(
+					'frameId' => $frameId,
+					'event' => $event,
+					'capForView' => $capForView,
+					'eventSiblings' => $eventSiblings,
+					'firstSib' => $firstSib,
+					'firstSibYear' => $firstSibYear,
+					'firstSibMonth' => $firstSibMonth,
+					'firstSibDay' => $firstSibDay,
+					'firstSibEventId' => $firstSibEventId,
+					'originEventId' => $originEventId,
+					'isRecurrence' => $isRecurrence,
+				));
+				?>
+			</div>
+		<?php endif; ?>
 
 	</div><!--end panel-->
 
