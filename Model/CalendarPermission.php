@@ -373,6 +373,7 @@ class CalendarPermission extends CalendarsAppModel {
 			} else {
 				//$blockSetting = $this->getBlockSetting($blockKey, $roomId);
 				$blockSetting = $this->BlockSetting->find('first', array(
+					'fileds' => array('value'),
 					'conditions' => array(
 						'plugin_key' => 'calendars',
 						'room_id' => $roomId,
@@ -382,7 +383,7 @@ class CalendarPermission extends CalendarsAppModel {
 					'recursive' => -1
 				));
 				if ($blockSetting) {
-					$roomBlock[$this->alias]['use_workflow'] = $blockSetting[$this->alias]['use_workflow'];
+					$roomBlock[$this->alias]['use_workflow'] = $blockSetting[$this->alias]['value'];
 				} else {
 					$roomBlock[$this->alias]['use_workflow'] = Hash::get($roomBlock, 'Room.need_approval');
 				}
