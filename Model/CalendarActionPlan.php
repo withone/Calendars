@@ -35,6 +35,13 @@ class CalendarActionPlan extends CalendarsAppModel {
 	public $useTable = false;
 
 /**
+ * 再帰回数限界チェックフラグ
+ *
+ * @var bool
+ */
+	public $isOverMaxRruleIndex = false;
+
+/**
  * use behaviors
  *
  * @var array
