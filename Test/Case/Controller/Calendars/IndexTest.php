@@ -81,7 +81,7 @@ class CalendarsControllerIndexTest extends NetCommonsControllerTestCase {
 				'id' => $blockId,
 				'key' => $blockKey,
 				'language_id' => '2',
-				'room_id' => '1',
+				'room_id' => '2',
 				'plugin_key' => $this->plugin,
 			),
 		);
@@ -385,7 +385,7 @@ class CalendarsControllerIndexTest extends NetCommonsControllerTestCase {
 		//--追加ボタンチェック
 		array_push($results, Hash::merge($results[$base], array(
 			//'assert' => array('method' => 'assertActionLink', 'action' => 'add', 'linkExist' => true, 'url' => array()),
-			'assert' => array('method' => 'assertContains', 'expected' => '/calendars/calendar_plans/add?'),
+			'assert' => array('method' => 'assertContains', 'expected' => '/calendars/calendar_plans/add/?'),
 			'defStyle' => CalendarsComponent::CALENDAR_DISP_TYPE_LARGE_MONTHLY,
 		)));
 		//フレームID指定なしテスト
