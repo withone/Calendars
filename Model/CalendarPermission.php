@@ -101,7 +101,20 @@ class CalendarPermission extends CalendarsAppModel {
  * @return array
  */
 	public function getCalendarRoomBlocks() {
-		$spaceIds = array(Space::PUBLIC_SPACE_ID, Space::COMMUNITY_SPACE_ID);
+		//$spaceIds = array(Space::PUBLIC_SPACE_ID, Space::COMMUNITY_SPACE_ID);
+		$spaceModel = ClassRegistry::init('Rooms.Space');
+		$spaces =$spaceModel->getSpaces();
+		foreach ($spaces as $space) {
+			// もとのコードがプライベートとサイト全体のスペース以外を取得していたのでここでも除外する
+			$spaceId = $space['Space']['id'];
+			if (in_array($spaceId, [
+					Space::PRIVATE_SPACE_ID,
+					Space::WHOLE_SITE_ID
+				]) === false) {
+				$spaceIds[] = $space['Space']['id'];
+
+			}
+		}
 		$rooms = array();
 		// 空間ごとに処理
 		foreach ($spaceIds as $spaceId) {
@@ -149,6 +162,7 @@ class CalendarPermission extends CalendarsAppModel {
 		$condition['conditions'] = array('Room.id' => $communityRoomId);
 		$roomBase = $this->Room->find('all', $condition);
 		$roomArr = [];
+
 		foreach ($roomBase as $item) {
 			$roomArr[$item['Room']['id']] = $item;
 		}

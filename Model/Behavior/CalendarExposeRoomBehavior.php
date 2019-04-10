@@ -36,7 +36,7 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 		}
 
 		$spaces = $model->Room->getSpaces();
-		$spaceIds = array(Space::PUBLIC_SPACE_ID, Space::COMMUNITY_SPACE_ID);
+		//$spaceIds = array(Space::PUBLIC_SPACE_ID, Space::COMMUNITY_SPACE_ID);
 
 		// $rooms, $roomTreeListはプライベート以外で必用
 		//$rooms = array();
@@ -46,7 +46,6 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 		//	$roomTreeList[$spaceId] = $this->getRoomTreeOfSpace(
 		//		$model, $spaces[$spaceId]['Room']['id'], $rooms[$spaceId]);
 		//}
-
 
 		//オプション生成
 		$options = array();
