@@ -36,15 +36,16 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 		}
 
 		$spaces = $model->Room->getSpaces();
-		$spaceIds = array(Space::PUBLIC_SPACE_ID, Space::COMMUNITY_SPACE_ID);
+		//$spaceIds = array(Space::PUBLIC_SPACE_ID, Space::COMMUNITY_SPACE_ID);
 
-		$rooms = array();
-		$roomTreeList = array();
-		foreach ($spaceIds as $spaceId) {
-			$rooms[$spaceId] = $this->getRoomsOfSpace($model, $spaceId);
-			$roomTreeList[$spaceId] = $this->getRoomTreeOfSpace(
-				$model, $spaces[$spaceId]['Room']['id'], $rooms[$spaceId]);
-		}
+		// $rooms, $roomTreeListはプライベート以外で必用
+		//$rooms = array();
+		//$roomTreeList = array();
+		//foreach ($spaceIds as $spaceId) {
+		//	$rooms[$spaceId] = $this->getRoomsOfSpace($model, $spaceId);
+		//	$roomTreeList[$spaceId] = $this->getRoomTreeOfSpace(
+		//		$model, $spaces[$spaceId]['Room']['id'], $rooms[$spaceId]);
+		//}
 
 		//オプション生成
 		$options = array();
@@ -62,17 +63,24 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
 				}
 			}
 
-			if ($space['Space']['id'] == Space::PRIVATE_SPACE_ID) {
+			$spaceId = $space['Space']['id'];
+
+			if ($spaceId == Space::PRIVATE_SPACE_ID) {
 				//プライベート
 				list($myself, $options, $spaceNameOfRooms, $allRoomNames) =
 					$this->__getRoomIdEtcWhenPrivateCase(
 						$model, $space, $frameSetting, $userId, $title,
 						$myself, $options, $spaceNameOfRooms, $allRoomNames);
-			} else {	//公開空間またはグループ空間
+			} else {	//公開空間またはグループ空間(プライベートスペース以外）
+
+				$room = $this->getRoomsOfSpace($model, $spaceId);
+				$roomTree =  $this->getRoomTreeOfSpace(
+					$model, $spaces[$spaceId]['Room']['id'], $room);
+
 				list($options, $spaceNameOfRooms, $allRoomNames) =
 					$this->mergeSelectExposeTargetOptions(
-						$model, $options, $title, $space, $roomTreeList[$space['Space']['id']],
-						$rooms[$space['Space']['id']], $frameSetting, $spaceNameOfRooms, $allRoomNames);
+						$model, $options, $title, $space, $roomTree,
+						$room, $frameSetting, $spaceNameOfRooms, $allRoomNames);
 			}
 		}
 
