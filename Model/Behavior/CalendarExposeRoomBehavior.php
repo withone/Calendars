@@ -25,11 +25,11 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
  *
  * 公開可能なルーム一覧をselectのoptions配列および自分自身のroomd_idを取得
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param int $frameSetting フレーム設定情報
  * @return mixed 生成したoptions配列とmyself(自分自身のroom_id)とルーム毎空間名配列を返す
  */
-	public function getExposeRoomOptions(Model &$model, $frameSetting) {
+	public function getExposeRoomOptions(Model $model, $frameSetting) {
 		//事前準備
 		if (!(isset($this->Room))) {
 			$model->loadModels(['Room' => 'Rooms.Room']);
@@ -106,7 +106,7 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
  *
  * 空間単位で、空間、ルーム、サブルーム要素を$otions配列にマージする
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param array $options マージ元のoptions配列
  * @param string $title タイトル
  * @param array $space 空間配列
@@ -120,7 +120,7 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
  * 速度改善の修正に伴って発生したため抑制
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
-	public function mergeSelectExposeTargetOptions(Model &$model, $options, $title, $space,
+	public function mergeSelectExposeTargetOptions(Model $model, $options, $title, $space,
 		$roomTreeList, $rooms, $frameSetting, $spaceNameOfRooms, $allRoomNames) {
 		$userId = Current::read('User.id');
 		if ($roomTreeList) {
@@ -186,11 +186,11 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
  *
  * 指定空間のルーム群を取得する
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param int $spaceId space id
  * @return array 取得されたルーム配列
  */
-	public function getRoomsOfSpace(Model &$model, $spaceId) {
+	public function getRoomsOfSpace(Model $model, $spaceId) {
 		//指定空間配下で読み取り可能なルーム群を取得し、(room_id => room情報配列)集合にして返す。
 		$rooms = $model->Room->find('all',
 			$model->Room->getReadableRoomsConditions(['Room.space_id' => $spaceId])
@@ -207,12 +207,12 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
  *
  * 指定空間にあるルーム群よりルームルームTreeリスト取得
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param int $spaceRoomId room id which is space's
  * @param array $rooms room information
  * @return array 指定した
  */
-	public function getRoomTreeOfSpace(Model &$model, $spaceRoomId, $rooms) {
+	public function getRoomTreeOfSpace(Model $model, $spaceRoomId, $rooms) {
 		$roomTreeList = $model->Room->generateTreeList(
 			array('Room.id' => array_merge(array($spaceRoomId), array_keys($rooms))
 			), null, null, Room::$treeParser);
@@ -224,10 +224,10 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
  *
  * ログイン者のプライベートルームIDを返す
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @return mixed 成功時、ルームIDを返す。失敗時はnullを返す。
  */
-	public function getMyPrivateRoomId(&$model) {
+	public function getMyPrivateRoomId($model) {
 		$userId = Current::read('User.id');
 		if (!isset($model->Room)) {
 			$model->loadModels(['Room' => 'Roomrs.Room']);
@@ -252,7 +252,7 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
  *
  * プライベート時、各種変数・配列を取得セット
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param array $space space配列
  * @param array $frameSetting frameSetting配列
  * @param int $userId userId
@@ -263,7 +263,7 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
  * @param array $allRoomNames ルーム名一覧
  * @return array プライベート時の情報を、$myselfと$optionsと$spaceNameOfRoomsにセットし、配列に格納して返す。
  */
-	private function __getRoomIdEtcWhenPrivateCase(&$model, $space, $frameSetting,
+	private function __getRoomIdEtcWhenPrivateCase($model, $space, $frameSetting,
 		$userId, $title, $myself, $options, $spaceNameOfRooms, $allRoomNames) {
 		//プライベート
 		//
@@ -293,11 +293,11 @@ class CalendarExposeRoomBehavior extends CalendarAppBehavior {
  *
  * プライベートルーム名の取得
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param string $myself プライベートルームのroom_id
  * @return array 取得されたプライベートルーム名
  */
-	private function __getPrivateRoomName(&$model, $myself) {
+	private function __getPrivateRoomName($model, $myself) {
 		if (!isset($model->RoomsLanguage)) {
 			$model->loadModels(['RoomsLanguage' => 'Rooms.RoomsLanguage']);
 		}

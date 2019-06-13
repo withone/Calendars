@@ -45,7 +45,7 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 /**
  * Rruleテーブルへの登録
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param array $planParams 予定パラメータ
  * @param array $rruleData rruleデータ
  * @param array $eventData eventデータ
@@ -53,7 +53,7 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
  * @return void
  * @throws InternalErrorException
  */
-	public function insertRrule(Model &$model, $planParams, $rruleData, $eventData,
+	public function insertRrule(Model $model, $planParams, $rruleData, $eventData,
 		$createdUserWhenUpd = null) {
 		if (isset($model->rrule)) {	//behaviorメソッドでrruleを渡すための工夫
 			unset($model->rrule);
@@ -111,14 +111,14 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
 /**
  * 周期性登録
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param array $planParams planParams
  * @param array $rruleData rruleData
  * @param array $startEventData eventデータ
  * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return void
  */
-	public function insertPriodEntry(Model &$model, $planParams, $rruleData, $startEventData,
+	public function insertPriodEntry(Model $model, $planParams, $rruleData, $startEventData,
 		$createdUserWhenUpd) {
 		//CakeLog::debug("DBG: In insertPriodEntry(). i set model->rrule[INDEX] to 1.");
 
@@ -158,14 +158,14 @@ class CalendarRruleEntryBehavior extends CalendarAppBehavior {
  *
  * 月用周期性登録
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param array &$planParams planParams
  * @param array &$rruleData rruleData
  * @param array &$startEventData eventデータ
  * @param int &$createdUserWhenUpd createdUserWhenUpd
  * @return void
  */
-	protected function _insertMonthlyPriodEntry(Model &$model,
+	protected function _insertMonthlyPriodEntry(Model $model,
 		&$planParams, &$rruleData, &$startEventData, &$createdUserWhenUpd) {
 		if (!$model->Behaviors->hasMethod('insertMonthlyByMonthday')) {
 			$model->Behaviors->load('Calendars.CalendarMonthlyEntry');

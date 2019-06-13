@@ -36,7 +36,7 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  *
  * (現ユーザにおける）カレンダー用役割と権限の取得準備
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @return array $readableRoomIds(参照可能room一覧),
  *                $roleOfRooms(ルームごとでの役割一覧)、
  *                $roomInfos(ルームでのルーム管理＋カレンダー権限管理での承認権限有無一覧),
@@ -44,7 +44,7 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
-	public function prepareCalRoleAndPerm(Model &$model) {
+	public function prepareCalRoleAndPerm(Model $model) {
 		$frameId = Current::read('Frame.id');
 		if (isset($this->_calRoleAndPerm[$frameId])) {
 			return $this->_calRoleAndPerm[$frameId];
@@ -125,11 +125,11 @@ class CalendarRoleAndPermBehavior extends CalendarAppBehavior {
  *
  * 権限情報の取得
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param array $roleOfRooms ルームに置けるロール情報配列
  * @return array
  */
-	private function __getRolePerms(Model &$model, $roleOfRooms) {
+	private function __getRolePerms(Model $model, $roleOfRooms) {
 		//　Roleが何もない＝未ログイン
 		if (empty($roleOfRooms)) {
 			return array();

@@ -22,11 +22,11 @@ class CalendarValidateBehavior extends ModelBehavior {
 /**
  * Checks YYYYMMDD format
  *
- * @param Model &$model use model
+ * @param Model $model use model
  * @param array $check check date string
  * @return bool
  */
-	public function checkYyyymmdd(Model &$model, $check) {
+	public function checkYyyymmdd(Model $model, $check) {
 		$value = array_values($check);
 		$value = $value[0];
 
@@ -40,11 +40,11 @@ class CalendarValidateBehavior extends ModelBehavior {
 /**
  * Checks  format Ymd
  *
- * @param object &$model use model
+ * @param object $model use model
  * @param array $check check date string
  * @return bool
  */
-	public function checkYmd(&$model, $check) {
+	public function checkYmd($model, $check) {
 		$value = array_values($check);
 		$value = $value[0];
 
@@ -58,11 +58,11 @@ class CalendarValidateBehavior extends ModelBehavior {
 /**
  * Checks  format His
  *
- * @param object &$model use model
+ * @param object $model use model
  * @param array $check check date string
  * @return bool
  */
-	public function checkHis(&$model, $check) {
+	public function checkHis($model, $check) {
 		$value = array_values($check);
 		$value = $value[0];
 
@@ -76,12 +76,12 @@ class CalendarValidateBehavior extends ModelBehavior {
 /**
  * Checks  date MaxMin
  *
- * @param object &$model use model
+ * @param object $model use model
  * @param array $check 入力配列. Ymd date stringを値にもつ。
  * @param string $edge 'start' or 'end'
  * @return bool
  */
-	public function checkMaxMinDate(&$model, $check, $edge) {
+	public function checkMaxMinDate($model, $check, $edge) {
 		$value = array_values($check);
 		$Ymd = $value[0];
 
@@ -107,10 +107,10 @@ class CalendarValidateBehavior extends ModelBehavior {
 /**
  * Checks  reverse date
  *
- * @param object &$model use model
+ * @param object $model use model
  * @return bool
  */
-	public function checkReverseDate(&$model) {
+	public function checkReverseDate($model) {
 		if (strlen($model->data[$model->alias]['start_date']) !== 8 ||
 			strlen($model->data[$model->alias]['end_date']) !== 8) {
 			return false;
@@ -125,11 +125,11 @@ class CalendarValidateBehavior extends ModelBehavior {
 /**
  * Checks  timezone offset
  *
- * @param object &$model use model
+ * @param object $model use model
  * @param array $check 入力配列. timezone_offset（-12.0 - +12.0）の数値
  * @return bool
  */
-	public function checkTimezoneOffset(&$model, $check) {
+	public function checkTimezoneOffset($model, $check) {
 		$value = array_values($check);
 		$value = $value[0];
 

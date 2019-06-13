@@ -50,7 +50,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
  *
  * 予定の削除
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param array $curPlan 現世代予定（この現世代予定に対して削除を行う)
  * @param bool $isOriginRepeat 現予定が繰返しありかなしか
  * @param string $editRrule 編集ルール (この予定のみ、この予定以降、全ての予定)
@@ -58,7 +58,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
-	public function deletePlan(Model &$model, $curPlan,
+	public function deletePlan(Model $model, $curPlan,
 		$isOriginRepeat, $editRrule = self::CALENDAR_PLAN_EDIT_THIS) {
 		$eventKey = $curPlan['cur_event_key'];
 
@@ -177,12 +177,12 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 /**
  * CalendarEventの対象データ取得
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param int $eventId CalendarEvent.id
  * @param string $editRrule editRrule デフォルト値 self::CALENDAR_PLAN_EDIT_THIS
  * @return 成功時 array 条件にマッチするCalendarEventDataとそのbelongsTo,hasOne関係のデータ（実際には、CalendarRruleData), 失敗時 空配列
  */
-	public function getCalendarEventAndRrule(Model &$model, $eventId, $editRrule) {
+	public function getCalendarEventAndRrule(Model $model, $eventId, $editRrule) {
 		$params = array(
 			'conditions' => array('CalendarEvent.id' => $eventId),
 			'recursive' => 0,		//belongTo, hasOneの１跨ぎの関係までとってくる。
@@ -212,7 +212,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 /**
  * 予定データの全削除
  *
- * @param Model &$model モデル
+ * @param Model $model モデル
  * @param array $rruleData rruleData
  * @param array $eventData eventData(編集画面のevent)
  * @param array $curPlan 現世代予定データ
@@ -220,7 +220,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
-	public function deletePlanAll(Model &$model, $rruleData, $eventData, $curPlan) {
+	public function deletePlanAll(Model $model, $rruleData, $eventData, $curPlan) {
 		if (!(isset($model->CalendarRrule))) {
 			$model->loadModels([
 				'CalendarRrule' => 'Calendars.CalendarRrule',
@@ -284,7 +284,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 /**
  * 指定eventデータ以降の予定の削除
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param array $rruleData rruleData
  * @param array $eventData eventData
  * @param array $curPlan 現世代予定データ
@@ -292,7 +292,7 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
-	public function deletePlanByAfter(Model &$model, $rruleData, $eventData, $curPlan) {
+	public function deletePlanByAfter(Model $model, $rruleData, $eventData, $curPlan) {
 		if (!(isset($model->CalendarRrule))) {
 			$model->loadModels([
 				'CalendarRrule' => 'Calendars.CalendarRrule',
@@ -364,12 +364,12 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
 /**
  * curPlanより現在eventDataとrruleDataに値セット
  *
- * @param Model &$model モデル
+ * @param Model $model モデル
  * @param array $curPlan 現世代予定
  * @return array array($eventData, $rruleData)を返す
  * @throws InternalErrorException
  */
-	public function setCurEventDataAndRruleData(Model &$model, $curPlan) {
+	public function setCurEventDataAndRruleData(Model $model, $curPlan) {
 		$rruleData['CalendarRrule'] = $curPlan['CalendarRrule'];
 		$calendarEvent = [];
 		foreach ($curPlan['CalendarEvent'] as $item) {
@@ -387,12 +387,12 @@ class CalendarDeletePlanBehavior extends CalendarAppBehavior {
  *
  * request->data情報より、editRruleモードを決定し返す。
  *
- * @param Model &$model モデル
+ * @param Model $model モデル
  * @param array $data data
  * @return string 成功時editRruleモード(0/1/2)を返す。失敗時 例外をthrowする
  * @throws InternalErrorException
  */
-	public function getEditRruleForUpdate(Model &$model, $data) {
+	public function getEditRruleForUpdate(Model $model, $data) {
 		if (empty($data['CalendarActionPlan']['edit_rrule'])) {
 			//edit_rruleが存在しないか'0'ならば、「この予定のみ変更」
 			return self::CALENDAR_PLAN_EDIT_THIS;

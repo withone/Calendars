@@ -48,7 +48,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 /**
  * 予定の変更
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param array $planParams  予定パラメータ
  * @param array $newPlan 新世代予定（この新世代予定に対して変更をかけていく）
  * @param string $status status（Workflowステータス)
@@ -58,7 +58,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @return 変更成功時 int calendarEventId
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
-	public function updatePlan(Model &$model, $planParams, $newPlan, $status,
+	public function updatePlan(Model $model, $planParams, $newPlan, $status,
 		$isInfoArray, $editRrule = self::CALENDAR_PLAN_EDIT_THIS, $createdUserWhenUpd = null) {
 		$eventId = $newPlan['new_event_id'];
 
@@ -169,12 +169,12 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 /**
  * CalendarEventの対象データ取得
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param int $eventId CalendarEvent.id
  * @param string $editRrule editRrule デフォルト値 self::CALENDAR_PLAN_EDIT_THIS
  * @return 成功時 array 条件にマッチするCalendarEventDataとそのbelongsTo,hasOne関係のデータ（実際には、CalendarRruleData), 失敗時 空配列
  */
-	public function getCalendarEventAndRrule(Model &$model, $eventId, $editRrule) {
+	public function getCalendarEventAndRrule(Model $model, $eventId, $editRrule) {
 		$params = array(
 			'conditions' => array('CalendarEvent.id' => $eventId),
 			'recursive' => 0,		//belongTo, hasOneの１跨ぎの関係までとってくる。
@@ -204,7 +204,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 /**
  * 予定データの全更新
  *
- * @param Model &$model モデル
+ * @param Model $model モデル
  * @param array $planParams 予定パラメータ
  * @param array $rruleData rruleData
  * @param array $eventData eventData(編集画面のevent)
@@ -217,7 +217,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
-	public function updatePlanAll(Model &$model, $planParams, $rruleData, $eventData,
+	public function updatePlanAll(Model $model, $planParams, $rruleData, $eventData,
 		$newPlan, $isArray, $status, $editRrule, $createdUserWhenUpd) {
 		$isOriginRepeat = $isArray[0];
 		$isTimeMod = $isArray[1];
@@ -323,7 +323,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 /**
  * EventDataのデータ更新
  *
- * @param Model &$model モデル
+ * @param Model $model モデル
  * @param array $planParams 予定パラメータ
  * @param array $rruleData rruleデータ
  * @param array $eventData eventデータ
@@ -334,7 +334,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @return array $eventData 変更後の$eventDataを返す
  * @throws InternalErrorException
  */
-	public function updateDtstartData(Model &$model, $planParams, $rruleData, $eventData,
+	public function updateDtstartData(Model $model, $planParams, $rruleData, $eventData,
 			$isArrays, $index, $editRrule, $createdUserWhenUpd = null) {
 		//bool $isOriginRepeat isOriginRepeat
 		//bool $isTimeMod isTimeMod
@@ -450,7 +450,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 /**
  * 指定eventデータ以降の予定の変更
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param array $planParams  予定パラメータ
  * @param array $rruleData rruleData
  * @param array $eventData eventData
@@ -463,7 +463,7 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  * @throws InternalErrorException
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
-	public function updatePlanByAfter(Model &$model, $planParams, $rruleData, $eventData,
+	public function updatePlanByAfter(Model $model, $planParams, $rruleData, $eventData,
 		$newPlan, $isArray, $status, $editRrule, $createdUserWhenUpd) {
 		$eventId = $newPlan['new_event_id'];
 		////$rruleKey = $rruleData['CalendarRrule']['key'];
@@ -618,12 +618,12 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 /**
  * resutlsよりeventDataとrruleDataに値セット
  *
- * @param Model &$model モデル
+ * @param Model $model モデル
  * @param array $newPlan 新世代予定
  * @return array array($eventData, $rruleData)を返す
  * @throws InternalErrorException
  */
-	public function setEventDataAndRruleData(Model &$model, $newPlan) {
+	public function setEventDataAndRruleData(Model $model, $newPlan) {
 		//この時点で、$newPlan['CalendarRrule']、$newPlan['CalendarEvent']のcreated_userは、
 		//createdUserWhenUpd考慮済になっている。
 		$rruleData['CalendarRrule'] = $newPlan['CalendarRrule'];
@@ -643,12 +643,12 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  *
  * request->data情報より、editRruleモードを決定し返す。
  *
- * @param Model &$model モデル
+ * @param Model $model モデル
  * @param array $data data
  * @return string 成功時editRruleモード(0/1/2)を返す。失敗時 例外をthrowする
  * @throws InternalErrorException
  */
-	public function getEditRruleForUpdate(Model &$model, $data) {
+	public function getEditRruleForUpdate(Model $model, $data) {
 		if (empty($data['CalendarActionPlan']['edit_rrule'])) {
 			//edit_rruleが存在しないか'0'ならば、「この予定のみ変更」
 			return self::CALENDAR_PLAN_EDIT_THIS;
@@ -666,14 +666,14 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
 /**
  * RruleDataのデータ更新
  *
- * @param Model &$model モデル
+ * @param Model $model モデル
  * @param array $planParams 予定パラメータ
  * @param array $rruleData 更新対象となるrruleData
  * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return array $rruleDataを返す
  * @throws InternalErrorException
  */
-	public function updateRruleData(Model &$model, $planParams, $rruleData,
+	public function updateRruleData(Model $model, $planParams, $rruleData,
 		$createdUserWhenUpd = null) {
 		if (!(isset($model->CalendarRrule) && is_callable($model->CalendarRrule->create))) {
 			$model->loadModels([
@@ -779,14 +779,14 @@ class CalendarUpdatePlanBehavior extends CalendarAppBehavior {
  *
  * 指定した全イベントデータの削除または更新処理
  *
- * @param Model &$model 実際のモデル名
+ * @param Model $model 実際のモデル名
  * @param string $status status
  * @param array $eventData 元となるeventData
  * @param array $eventKeys 対象とするeventデータ群のkey集合
  * @return void
  * @throws InternalErrorException
  */
-	private function __deleteOrUpdateAllEvents(Model &$model, $status, $eventData, $eventKeys) {
+	private function __deleteOrUpdateAllEvents(Model $model, $status, $eventData, $eventKeys) {
 		if ($status == WorkflowComponent::STATUS_PUBLISHED) {
 			// (1)-1 statusが発行済の場合、実際に削除する。
 			$conditions = array(

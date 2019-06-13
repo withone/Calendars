@@ -28,12 +28,12 @@ class CalendarTopicsBehavior extends CalendarAppBehavior {
  *
  * 新着設定
  *
- * @param Model &$model モデル
+ * @param Model $model モデル
  * @param int $eventId イベントID（繰り返しの場合は先頭のイベント）
  * @return void
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function saveCalendarTopics(Model &$model, $eventId) {
+	public function saveCalendarTopics(Model $model, $eventId) {
 		$model->loadModels([
 			'Block' => 'Blocks.Block',
 			'CalendarEvent' => 'Calendars.CalendarEvent'
@@ -102,7 +102,7 @@ class CalendarTopicsBehavior extends CalendarAppBehavior {
  *
  * 新着削除
  *
- * @param Model &$model モデル
+ * @param Model $model モデル
  * @param string $eventKey イベントKey
  * @param bool $isOriginRepeat 繰り返しか
  * @param string $originEventKey 繰り返しの場合のオリジナルのキー
@@ -110,7 +110,7 @@ class CalendarTopicsBehavior extends CalendarAppBehavior {
  * @return void
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function deleteCalendarTopics(Model &$model, $eventKey, $isOriginRepeat,
+	public function deleteCalendarTopics(Model $model, $eventKey, $isOriginRepeat,
 		$originEventKey, $editRrule) {
 		// 繰り返し系で
 		// 全て削除、以外で

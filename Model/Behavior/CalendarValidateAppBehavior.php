@@ -24,11 +24,11 @@ class CalendarValidateAppBehavior extends ModelBehavior {
  *
  * Rrule規則の繰返し周期チェック
  *
- * @param Model &$model モデル変数
+ * @param Model $model モデル変数
  * @param array $check 入力配列
  * @return bool 成功時true, 失敗時false
  */
-	protected function _checkRepateFreq(Model &$model, $check) {
+	protected function _checkRepateFreq(Model $model, $check) {
 		if (!isset($model->CalendarActionPlan)) {
 			$model->loadModels(['CalendarActionPlan' => 'Calendars.CalendarActionPlan']);
 		}
@@ -70,11 +70,11 @@ class CalendarValidateAppBehavior extends ModelBehavior {
  *
  * 日用Rrule規則の繰返し周期チェック
  *
- * @param Model &$model モデル変数
+ * @param Model $model モデル変数
  * @param array &$check 入力配列
  * @return bool 成功時true, 失敗時false
  */
-	private function __checkDailyRepateFreq(Model &$model, &$check) {
+	private function __checkDailyRepateFreq(Model $model, &$check) {
 		if (!in_array($model->data[$model->alias]['rrule_interval']['DAILY'],
 				range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_DAILY_MIN,
 					CalendarsComponent::CALENDAR_RRULE_INTERVAL_DAILY_MAX))) {
@@ -93,11 +93,11 @@ class CalendarValidateAppBehavior extends ModelBehavior {
  *
  * 週用Rrule規則の繰返し周期チェック
  *
- * @param Model &$model モデル変数
+ * @param Model $model モデル変数
  * @param array &$check 入力配列
  * @return bool 成功時true, 失敗時false
  */
-	private function __checkWeeklyRepateFreq(Model &$model, &$check) {
+	private function __checkWeeklyRepateFreq(Model $model, &$check) {
 		if (!in_array($model->data[$model->alias]['rrule_interval']['WEEKLY'],
 			range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_WEEKLY_MIN,
 				CalendarsComponent::CALENDAR_RRULE_INTERVAL_WEEKLY_MAX))) {
@@ -134,11 +134,11 @@ class CalendarValidateAppBehavior extends ModelBehavior {
  *
  * 月用Rrule規則の繰返し周期チェック
  *
- * @param Model &$model モデル変数
+ * @param Model $model モデル変数
  * @param array &$check 入力配列
  * @return bool 成功時true, 失敗時false
  */
-	private function __checkMonthlyRepateFreq(Model &$model, &$check) {
+	private function __checkMonthlyRepateFreq(Model $model, &$check) {
 		if (!in_array($model->data[$model->alias]['rrule_interval']['MONTHLY'],
 			range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_MONTHLY_MIN,
 				CalendarsComponent::CALENDAR_RRULE_INTERVAL_MONTHLY_MAX))) {
@@ -191,11 +191,11 @@ class CalendarValidateAppBehavior extends ModelBehavior {
  *
  * 年用Rrule規則の繰返し周期チェック
  *
- * @param Model &$model モデル変数
+ * @param Model $model モデル変数
  * @param array &$check 入力配列
  * @return bool 成功時true, 失敗時false
  */
-	private function __checkYearlyRepateFreq(Model &$model, &$check) {
+	private function __checkYearlyRepateFreq(Model $model, &$check) {
 		if (!in_array($model->data[$model->alias]['rrule_interval']['YEARLY'],
 			range(CalendarsComponent::CALENDAR_RRULE_INTERVAL_YEARLY_MIN,
 				CalendarsComponent::CALENDAR_RRULE_INTERVAL_YEARLY_MAX))) {

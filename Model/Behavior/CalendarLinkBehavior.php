@@ -172,11 +172,11 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * Plugin連携用カレンダー削除
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @param array $data データ
  * @return string 削除したカレンダーのcalendar_keyを返す.失敗した場合、例外送出かfalseを返す
  */
-	public function deletePlanForLink(Model &$model, $data) {
+	public function deletePlanForLink(Model $model, $data) {
 		$tmpCurrent = Current::$current;
 		//CalendarPlanControllerのbeforeFilter()をトレースする
 		$this->__traceCpcBeforeFiltr($model);
@@ -203,11 +203,11 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * CalendarDeleteActionPlanに初期値をセット
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @param array $data データ
  * @return array セットした$dataを返す
  */
-	private function __setDefaultCDelApData(Model &$model, $data) {
+	private function __setDefaultCDelApData(Model $model, $data) {
 		//初期化
 		$data['CalendarDeleteActionPlan'] = array(
 			'is_repeat' => 0, //0,1
@@ -222,12 +222,12 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * CalendarDeleteActionPlanにいくつか値をセット
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @param array $data データ
  * @param array $sibs sibs
  * @return array セットした$dataを返す
  */
-	private function __addCDelApData(Model &$model, $data, $sibs) {
+	private function __addCDelApData(Model $model, $data, $sibs) {
 		if ($this->settings[$model->alias]['isDelRepeat']) {
 			$data['CalendarDeleteActionPlan']['is_repeat'] = 1;
 		}
@@ -250,11 +250,11 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * __getDelOrigin
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @param array $data データ
  * @return array
  */
-	private function __getDelOrigin(Model &$model, $data) {
+	private function __getDelOrigin(Model $model, $data) {
 		$calendarKey = '';
 		$event = $sibs = array();
 
@@ -281,12 +281,12 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * __getDelFirstSib
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @param array $data データ
  * @param array $sibs sibs
  * @return array
  */
-	private function __getDelFirstSib(Model &$model, $data, $sibs) {
+	private function __getDelFirstSib(Model $model, $data, $sibs) {
 		if (! empty($sibs)) {
 			$eventIds = [];
 			foreach ($sibs as $sib) {
@@ -303,14 +303,14 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * delete()のPost処理部をトレースする
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @param array $data データ
  * @param array $calendarKey calendarKey
  * @return void
  * @throws InternalErrorException
  * @SuppressWarnings(PHPMD)
  */
-	private function __traceDeletePost(Model &$model, $data, $calendarKey) {
+	private function __traceDeletePost(Model $model, $data, $calendarKey) {
 		if (strpos($model->alias, 'CalendarDeleteActionPlan') === false) {
 			//モデルが違う！
 			CakeLog::error("モデル[" . $model->alias . "]がCalendarDeleteActionPlanではない");
@@ -396,11 +396,11 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * Plugin連携用カレンダー登録(追加・変更）
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @param array $data データ
  * @return string 保存したカレンダーのcalendar_event_keyを返す. カレンダー保存に失敗した場合 null
  */
-	public function savePlanForLink(Model &$model, $data) {
+	public function savePlanForLink(Model $model, $data) {
 		$tmpCurrent = Current::$current;
 
 		//CalendarPlanControllerのbeforeFilter()をトレースする
@@ -431,12 +431,12 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * __prepareCalAndBlk
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @param array $data データ
  * @return array
  * @throws InternalErrorException
  */
-	private function __prepareCalAndBlk(Model &$model, $data) {
+	private function __prepareCalAndBlk(Model $model, $data) {
 		//この予定(rrule,event)の親となるcalendar及びそれと1:1となるblock
 		//（空間=予定対象room_id&&plugin_key=calendars)の準備をする。
 		//有れば利用し、なければ「作る」。
@@ -518,10 +518,10 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * __traceCpcBeforeFiltr
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @return void
  */
-	private function __traceCpcBeforeFiltr(Model &$model) {
+	private function __traceCpcBeforeFiltr(Model $model) {
 		//Auth->allow()処理は不要
 
 		$WorkflowComponent = new WorkflowComponent(new ComponentCollection());
@@ -540,12 +540,12 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * __traceCalendarPost
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @param array $data データ
  * @param array $completedRrule completedRrule
  * @return bool/string
  */
-	private function __traceCalendarPost(Model &$model, $data, $completedRrule) {
+	private function __traceCalendarPost(Model $model, $data, $completedRrule) {
 		$myself = null;
 		$userId = Current::read('User.id');
 		if ($userId) {
@@ -685,11 +685,11 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * カレンダー用データ生成追加
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @param string $data わたされたrequest->data
  * @return array カレンダーデータを追加した$data配列
  */
-	private function __addCapData(Model &$model, $data) {
+	private function __addCapData(Model $model, $data) {
 		$data['CalendarActionPlan'] = array(
 			'origin_event_id' => 0,
 			'origin_event_key' => '',
@@ -787,11 +787,11 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * __makeRruleInfo
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @param string $data data
  * @return array
  */
-	private function __makeRruleInfo(Model &$model, $data) {
+	private function __makeRruleInfo(Model $model, $data) {
 		if ($this->settings[$model->alias]['isRepeat']) {
 			$data['CalendarActionPlan']['is_repeat'] = 1;
 
@@ -809,11 +809,11 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * __makePlanRoomId
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @param string $data data
  * @return array
  */
-	private function __makePlanRoomId(Model &$model, $data) {
+	private function __makePlanRoomId(Model $model, $data) {
 		if ($this->settings[$model->alias]['isPlanRoomId']) {
 			$planRoomTable = $this->settings[$model->alias]['planRoomTable'];
 			$planRoomId = $this->settings[$model->alias]['plan_room_id'];
@@ -829,11 +829,11 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * __getStatusForLink
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @param string $data data
  * @return array
  */
-	private function __getStatusForLink(Model &$model, $data) {
+	private function __getStatusForLink(Model $model, $data) {
 		if (! isset($data['save_1'])) {
 			return '0';
 		}
@@ -856,11 +856,11 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * __getSysInfo
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @param string $data data
  * @return array
  */
-	private function __getSysInfo(Model &$model, $data) {
+	private function __getSysInfo(Model $model, $data) {
 		$table = $this->settings[$model->alias]['table'];
 		$sysFields = $this->settings[$model->alias]['sysFields'];
 		$sys = array();
@@ -875,12 +875,12 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * __makeOriginInfo
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @param string $data data
  * @param string $event event
  * @return array
  */
-	private function __makeOriginInfo(Model &$model, $data, $event) {
+	private function __makeOriginInfo(Model $model, $data, $event) {
 		$data['CalendarActionPlan']['origin_event_id'] = $event['CalendarEvent']['id'];
 		$data['CalendarActionPlan']['origin_event_key'] = $event['CalendarEvent']['key'];
 		$data['CalendarActionPlan']['origin_event_recurrence'] =
@@ -899,11 +899,11 @@ class CalendarLinkBehavior extends CalendarAppBehavior {
 /**
  * __makeStartendDatetime
  *
- * @param Model &$model reference of instance of model
+ * @param Model $model reference of instance of model
  * @param string $data data
  * @return array
  */
-	private function __makeStartendDatetime(Model &$model, $data) {
+	private function __makeStartendDatetime(Model $model, $data) {
 		$table = $this->settings[$model->alias]['table'];
 		$startendFields = $this->settings[$model->alias]['startendFields'];
 		$startend = array(

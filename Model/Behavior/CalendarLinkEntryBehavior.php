@@ -34,13 +34,13 @@ class CalendarLinkEntryBehavior extends CalendarAppBehavior {
 /**
  * saveLinkMdlCkey カレンダーイベントコンテンツ登録 
  *
- * @param Model &$model model
+ * @param Model $model model
  * @param array $rEventData イベントデータ
  * @param int $createdUserWhenUpd createdUserWhenUpd
  * @return mixed 成功時はModel::content
  * @throws InternalErrorException
  */
-	public function saveLinkMdlCkey(Model &$model, $rEventData, $createdUserWhenUpd = null) {
+	public function saveLinkMdlCkey(Model $model, $rEventData, $createdUserWhenUpd = null) {
 		if (!(isset($model->CalendarEventContent))) {
 			$model->CalendarEventContent = ClassRegistry::init('Calendars.CalendarEventContent', true);
 		}

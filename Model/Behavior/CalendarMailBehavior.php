@@ -29,13 +29,13 @@ class CalendarMailBehavior extends CalendarAppBehavior {
  * 承認依頼メールや公開通知メールを送る処理
  * カレンダーは「カレント」のルームIDじゃない情報を作ったりするのでカレントのすり替え処理が必要
  *
- * @param Model &$model モデル
+ * @param Model $model モデル
  * @param int $eventId イベントID（繰り返しの場合は先頭のイベント）
  * @param bool $isMyPrivateRoom （プライベートルームの情報かどうか）
  * @return void
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function sendWorkflowAndNoticeMail(Model &$model, $eventId, $isMyPrivateRoom) {
+	public function sendWorkflowAndNoticeMail(Model $model, $eventId, $isMyPrivateRoom) {
 		$model->loadModels([
 			'Block' => 'Blocks.Block',
 			'CalendarEvent' => 'Calendars.CalendarEvent'
@@ -124,11 +124,11 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 /**
  * _setDateTags
  *
- * @param Model &$model モデル
+ * @param Model $model モデル
  * @param array $data 予定データ
  * @return void
  */
-	protected function _setDateTags(Model &$model, $data) {
+	protected function _setDateTags(Model $model, $data) {
 		$view = new View();
 		$planHelper = $view->loadHelper('Calendars.CalendarPlan');
 
@@ -148,11 +148,11 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 /**
  * _setRruleTags
  *
- * @param Model &$model モデル
+ * @param Model $model モデル
  * @param array $data 予定データ
  * @return void
  */
-	protected function _setRruleTags(Model &$model, $data) {
+	protected function _setRruleTags(Model $model, $data) {
 		$view = new View();
 		$rruleHelper = $view->loadHelper('Calendars.CalendarPlanRrule');
 
@@ -168,11 +168,11 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 /**
  * _setUrlTags
  *
- * @param Model &$model モデル
+ * @param Model $model モデル
  * @param array $data 予定データ
  * @return void
  */
-	protected function _setUrlTags(Model &$model, $data) {
+	protected function _setUrlTags(Model $model, $data) {
 		$url = NetCommonsUrl::actionUrl(array(
 			'plugin' => Current::read('Plugin.key'),
 			'controller' => 'calendar_plans',
@@ -188,11 +188,11 @@ class CalendarMailBehavior extends CalendarAppBehavior {
 /**
  * _setRoomTags
  *
- * @param Model &$model モデル
+ * @param Model $model モデル
  * @param array $data 予定データ
  * @return void
  */
-	protected function _setRoomTags(Model &$model, $data) {
+	protected function _setRoomTags(Model $model, $data) {
 		if ($data['CalendarEvent']['room_id'] == Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID)) {
 			$model->CalendarEvent->setAddEmbedTagValue('X-ROOM', __d('calendars', 'All the members'));
 		}
